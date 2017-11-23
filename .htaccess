@@ -1,0 +1,45 @@
+RewriteEngine On
+
+# Redirect to HTTPS
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://catalog.beer%{REQUEST_URI} [L,NE,R=301]
+Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+# Deny Access to Folder Indexes
+Options -Indexes
+
+# Down for Maintenance
+# RewriteCond %{REQUEST_URI} !\.(css|ico|jpg|js|png)$
+# My IP Address for testing
+# RewriteCond %{REMOTE_ADDR} !^111\.111\.111\.111$
+# RewriteRule .* /error/503.php [L]
+
+# Redirect Error Pages
+# ErrorDocument 403 /errors/403.php
+# ErrorDocument 404 /errors/404.php
+# ErrorDocument 500 /errors/500.php
+# ErrorDocument 503 /errors/503.php
+
+# Clean URLs
+RewriteRule ^contact$	contact.php	[L]
+RewriteRule ^privacy$	privacy.php	[L]
+RewriteRule ^terms$	terms.php	[L]
+RewriteRule ^api-docs$	api-docs.php	[L]
+
+# Redirect Pages
+RewriteRule ^account$ account.php [L]
+RewriteRule ^brewer$ brewer-list.php [L]
+RewriteRule ^brewer/add$ brewer-add.php [L]
+RewriteRule ^brewer/([-0-9a-f]{36})/add-location$ location-add.php?brewerID=$1 [L]
+RewriteRule ^location/([-0-9a-f]{36})/add-address$ address-add.php?locationID=$1 [L]
+RewriteRule ^location/([-0-9a-f]{36})/?$ brewer-list.php [L]
+RewriteRule ^location/?$ brewer-list.php [L]
+RewriteRule ^brewer/([-0-9a-f]{36})$ brewer.php?brewerID=$1 [L]
+RewriteRule ^beer$ beer-list.php [L]
+RewriteRule ^beer/add/([-0-9a-f]{36})$ beer-add.php?brewerID=$1 [L]
+RewriteRule ^beer/([-0-9a-f]{36})$ beer.php?beerID=$1 [L]
+RewriteRule ^signup/?$ create-account.php [L]
+RewriteRule ^login/?$ login.php [L]
+RewriteRule ^logout/?$ logout.php [L]
+RewriteRule ^verify-email(\/[-0-9a-f]{36})?$ verify-email.php?emailAuth=$1 [L]
