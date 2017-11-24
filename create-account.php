@@ -95,9 +95,10 @@ if(isset($_POST['signupFormHidden'])){
 			$name = '';
 			$email = '';
 			$password = '';
+			$termsAgreement = false;
 			$error = false;
 			$errorMsg = '';
-			$validState = array('name'=>'', 'email'=>'', 'password'=>'');
+			$validState = array('name'=>'', 'email'=>'', 'password'=>'', 'terms_agreement'=>'');
 			$validMsg = array('name'=>'', 'email'=>'', 'password'=>'');
 		}else{
 			// Error
