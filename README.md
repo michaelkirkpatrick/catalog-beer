@@ -10,3 +10,8 @@ Comments, issues and pull requests welcome.
 
 Michael Kirkpatrick  
 Founder, Catalog.beer
+
+## See Also
+
+* [Catalog.beer API - GitHub](https://github.com/michaelkirkpatrick/catalog-beer-api)
+* [Catalog.beer MySQL Schema - GitHub](https://github.com/michaelkirkpatrick/catalog-beer-mysql)
