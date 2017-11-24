@@ -13,11 +13,8 @@ class SendEmail {
 	
 	// Variables
 	public $email;
-	
-	// Private
-	private $subject = '';
-	private $plainText = '';
-	private $htmlBody = '';
+	public $subject = '';
+	public $plainText = '';
 	
 	// Validation
 	public $error = false;
@@ -46,7 +43,7 @@ class SendEmail {
 					
 					// Log Error
 					$errorLog = new LogError();
-					$errorLog->errorNumber = 28;
+					$errorLog->errorNumber = 'C7';
 					$errorLog->errorMsg = 'Email address > 255 characters';
 					$errorLog->badData = $email;
 					$errorLog->filename = 'API / SendEmail.class.php';
@@ -59,7 +56,7 @@ class SendEmail {
 
 				// Log Error
 				$errorLog = new LogError();
-				$errorLog->errorNumber = 29;
+				$errorLog->errorNumber = 'C8';
 				$errorLog->errorMsg = 'Invliad Email. Does not pass filter_var';
 				$errorLog->badData = $email;
 				$errorLog->filename = 'API / SendEmail.class.php';
@@ -72,7 +69,7 @@ class SendEmail {
 
 			// Log Error
 			$errorLog = new LogError();
-			$errorLog->errorNumber = 30;
+			$errorLog->errorNumber = 'C9';
 			$errorLog->errorMsg = 'No email address provided';
 			$errorLog->badData = $email;
 			$errorLog->filename = 'SendEmail.class.php';
@@ -83,7 +80,7 @@ class SendEmail {
 		return $validEmail;
 	}
 	
-	private function send(){
+	public function send(){
 		
 		/*---
 		Required Set Variables
@@ -99,7 +96,7 @@ class SendEmail {
 			
 			// Log Error
 			$errorLog = new LogError();
-			$errorLog->errorNumber = 87;
+			$errorLog->errorNumber = 'C10';
 			$errorLog->errorMsg = 'Missing email';
 			$errorLog->badData = '';
 			$errorLog->filename = 'API / SendEmail.class.php';
@@ -113,7 +110,7 @@ class SendEmail {
 			
 			// Log Error
 			$errorLog = new LogError();
-			$errorLog->errorNumber = 88;
+			$errorLog->errorNumber = 'C11';
 			$errorLog->errorMsg = 'Missing subject';
 			$errorLog->badData = '';
 			$errorLog->filename = 'API / SendEmail.class.php';
@@ -127,7 +124,7 @@ class SendEmail {
 			
 			// Log Error
 			$errorLog = new LogError();
-			$errorLog->errorNumber = 89;
+			$errorLog->errorNumber = 'C12';
 			$errorLog->errorMsg = 'Missing plain text of email';
 			$errorLog->badData = '';
 			$errorLog->filename = 'API / SendEmail.class.php';
@@ -160,7 +157,7 @@ class SendEmail {
 			// Headers
 			$from = 'Catalog.beer <michael@catalog.beer>';
 			$replyto = 'michael@catalog.beer';
-			$headers = array('From'=>$from, 'To'=>$this->email, 'Subject'=>$this->subject, 'Reply-To'=>$replyto);
+			$headers = array('From'=>$from, 'To'=>'michael@interchangedesign.com', 'Subject'=>$this->subject, 'Reply-To'=>$replyto);
 
 			// Plain Text
 			$mime->setTXTBody($this->plainText);
@@ -190,7 +187,7 @@ class SendEmail {
 
 				// Log Error
 				$errorLog = new LogError();
-				$errorLog->errorNumber = 91;
+				$errorLog->errorNumber = 'C13';
 				$errorLog->errorMsg = 'Error sending email';
 				$errorLog->badData = $mail->getMessage();
 				$errorLog->filename = 'API / SendEmail.class.php';
