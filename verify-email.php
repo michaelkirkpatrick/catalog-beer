@@ -1,6 +1,6 @@
 <?php
 // Initialize
-$guest = false;
+$guest = true;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
 // HTML Head
@@ -16,6 +16,7 @@ $emailAuth = substr($_GET['emailAuth'], 1, 36);
 		<div class="jumbotron">
 			<?php
 			if(!empty($emailAuth)){
+				$api = new API();
 				$verifyResp = $api->request('POST', '/users/verify-email/' . $emailAuth , '');
 				$apiData = json_decode($verifyResp);
 				if(isset($apiData->error)){
