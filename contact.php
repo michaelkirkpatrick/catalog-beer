@@ -35,13 +35,13 @@ if(isset($_POST['submit'])){
 		}else{
 			// String too long
 			$error = TRUE;
-			$validState['name'] = 'error';
+			$validState['name'] = 'invalid';
 			$validMsg['name'] = 'Sorry, your name is a little too long for us to process. Please enter a name less than 255 characters in length.';
 		}
 	}else{
 		// Missing Name
 		$error = TRUE;
-		$validState['name'] = 'error';
+		$validState['name'] = 'invalid';
 		$validMsg['name'] = 'What\'s your name?';
 	}
 	
@@ -54,13 +54,13 @@ if(isset($_POST['submit'])){
 		}else{
 			// Subject too long
 			$error = TRUE;
-			$validState['subject'] = 'error';
+			$validState['subject'] = 'invalid';
 			$validMsg['subject'] = 'Sorry, the subject of your message is a little too long for us to process. Please enter a subject less than 255 characters in length.';
 		}
 	}else{
 		// Missing Subject
 		$error = TRUE;
-		$validState['subject'] = 'error';
+		$validState['subject'] = 'invalid';
 		$validMsg['subject'] = 'What\'s the subject of your message?';
 	}
 	
@@ -82,7 +82,7 @@ if(isset($_POST['submit'])){
 	}else{
 		// Missing Message
 		$error = TRUE;
-		$validState['message'] = 'error';
+		$validState['message'] = 'invalid';
 		$validMsg['message'] = 'What\'s your message?';
 	}
 	

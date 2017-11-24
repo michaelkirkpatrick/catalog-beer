@@ -32,20 +32,18 @@ class Textarea {
 	public function display(){
 
 		// Error Class
-		$feedbackStates = array('success', 'warning', 'error');
+		$feedbackStates = array('valid', 'invalid');
 		if(in_array($this->validState, $feedbackStates)){
-			$classAdd = ' has-feedback';
 			$validation = true;
-			if($this->validState == 'success'){$classAdd .= ' has-success';}
-			if($this->validState == 'warning'){$classAdd .= ' has-warning';}
-			if($this->validState == 'error'){$classAdd .= ' has-error';}
+			if($this->validState == 'valid'){$classAdd = ' is-valid';}
+			if($this->validState == 'invalid'){$classAdd = ' is-invalid';}
 		}else{
 			$validation = false;
 			$classAdd = '';
 		}
 
 		// Start Div
-		$return = '<div class="form-group' . $classAdd . '">';
+		$return = '<div class="form-group">';
 
 		// Label
 		$return .= '<label for="' . htmlspecialchars($this->name) . 'Field" class="control-label">' . $this->description;
@@ -55,7 +53,7 @@ class Textarea {
 		$return .= '</label>';
 
 		// Textarea Field Start
-		$return .= '<textarea class="form-control" id="' . htmlspecialchars($this->name) . 'Field" name="' . $this->name . '" rows="' . $this->rows . '"';
+		$return .= '<textarea class="form-control' . $classAdd . '" id="' . htmlspecialchars($this->name) . 'Field" name="' . $this->name . '" rows="' . $this->rows . '"';
 		if($validation){
 			$return .= ' aria-describedby="helpMsg' . htmlspecialchars($this->name) . '"';
 		}
@@ -74,16 +72,11 @@ class Textarea {
 
 
 		// Validation State
-		if(!empty($this->validState)){
-
-			// Validation Message
-			if($this->validState == 'success'){
-				$this->validMsg = '(success)';
-				$validClass = 'sr-only';
-			}else{
-				$validClass = 'help-block';
-			}
-			$return .= '<span class="' . $validClass . '" id="helpMsg' . htmlspecialchars($this->name) . '">' . htmlspecialchars($this->validMsg) . '</span>';
+		if($this->validState == 'invalid'){
+			// Message
+			$text = new Text(true, true, true);
+			$message = $text->get($this->validMsg);
+			$return .= '<div class="invalid-feedback">' . $message . '</div>';
 		}
 
 		// Close Div
