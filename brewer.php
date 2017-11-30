@@ -265,7 +265,7 @@ echo $htmlHead->html;
 		
 		if(count($brewerData->data) > 0){
 			// Column Sizing
-			$perColumn = round(count($brewerData->data)/3, 0, PHP_ROUND_HALF_UP);
+			$perColumn = ceil(count($brewerData->data)/3);
 			$i = 1;
 						
 			// First column
