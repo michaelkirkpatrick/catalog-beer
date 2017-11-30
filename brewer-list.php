@@ -85,7 +85,7 @@ echo $htmlHead->html;
 		// Setup Columns
 		echo '<div class="row">';
 		echo '<div class="col-md-4">';
-		$perColumn = round(count($brewerData->data)/3, 0, PHP_ROUND_HALF_UP);
+		$perColumn = ceil(count($brewerData->data)/3);
 		$j = 1;
 		$firstLetterStore = '';
 		$numericShown = false;
