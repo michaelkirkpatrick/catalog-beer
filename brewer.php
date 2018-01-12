@@ -10,9 +10,16 @@ $brewerResp = $api->request('GET', '/brewer/' . $brewerID . '/beer', '');
 $brewerData = json_decode($brewerResp);
 if(isset($brewerData->error)){
 	// Invalid Brewer ID
-	//header('location: /error/404.php');
-	//exit();
-	echo 'not found...';
+	// Log Error
+	$errorLog = new LogError();
+	$errorLog->errorNumber = 'C14';
+	$errorLog->errorMsg = 'Invalid brewerID';
+	$errorLog->badData = "brewerID: $brewerID\n" . $brewerData->error_msg;
+	$errorLog->filename = 'brewer.php';
+	$errorLog->write();
+	
+	header('location: /error_page/404.php');
+	exit();
 }
 
 // HTML Head
