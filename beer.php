@@ -9,10 +9,18 @@ $api = new API();
 $beerResp = $api->request('GET', '/beer/' . $beerID, '');
 $beerData = json_decode($beerResp);
 if(isset($beerData->error)){
-	// Invalid Brewer ID
-	//header('location: /error/404.php');
-	//exit();
-	echo 'not found...';
+	// Invalid beerID
+	// Log Error
+	$errorLog = new LogError();
+	$errorLog->errorNumber = 'C15';
+	$errorLog->errorMsg = 'Invalid beerID';
+	$errorLog->badData = "beerID: $beerID\n" . $beerData->error_msg;
+	$errorLog->filename = 'beer.php';
+	$errorLog->write();
+	
+	http_response_code(404);
+	header('location: /error_page/404.php');
+	exit();
 }
 
 // HTML Head
