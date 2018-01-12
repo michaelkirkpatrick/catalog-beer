@@ -18,6 +18,7 @@ if(isset($brewerData->error)){
 	$errorLog->filename = 'brewer.php';
 	$errorLog->write();
 	
+	http_response_code(404);
 	header('location: /error_page/404.php');
 	exit();
 }
