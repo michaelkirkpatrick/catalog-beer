@@ -124,6 +124,8 @@ echo $htmlHead->html;
 			// Margin
 			if($addMargin){
 				$margin = ' style="margin-left:15px;"';
+			}else{
+				$margin = '';
 			}
 			
 			// Show HTML
