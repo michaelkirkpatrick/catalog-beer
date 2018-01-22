@@ -26,10 +26,16 @@ class API {
 			$apiKeyResp = $this->request('GET', '/users/' . $_SESSION['userID'] . '/api-key', '');
 			if(!$this->error){
 				$apiKeyJSON = json_decode($apiKeyResp);
-				if(isset($apiKeyJSON->api_key)){
-					if(!empty($apiKeyJSON->api_key)){
-						// Save API Key
-						$this->apiKey = $apiKeyJSON->api_key;
+				if(isset($apiKeyJSON->error)){
+					// Error
+					$this->error = true;
+					$this->errorMsg = $apiKeyJSON->error_msg;
+				}else{
+					if(isset($apiKeyJSON->api_key)){
+						if(!empty($apiKeyJSON->api_key)){
+							// Save API Key
+							$this->apiKey = $apiKeyJSON->api_key;
+						}
 					}
 				}
 			}
@@ -60,12 +66,19 @@ class API {
 		);
 		
 		// Request Type
-		if($type == 'POST'){
-			$json = json_encode($data);
-			$headerArray[] = "content-type: application/json";
-			$optionsArray[CURLOPT_POSTFIELDS] = $json;
-		}
-		
+		switch($type){
+			case 'POST':
+				$json = json_encode($data);
+				$headerArray[] = "content-type: application/json";
+				$optionsArray[CURLOPT_POSTFIELDS] = $json;
+				break;
+			case 'PUT':
+				$json = json_encode($data);
+				$headerArray[] = "content-type: application/json";
+				$optionsArray[CURLOPT_POSTFIELDS] = $json;
+				break;
+		}	
+				
 		// Create cURL Request
 		$curl = curl_init();
 		curl_setopt_array($curl, $optionsArray);
