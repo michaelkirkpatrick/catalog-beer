@@ -15,9 +15,11 @@ $brewerID = '';
 $name = '';
 $url = '';
 $country_code = 'US';
+$autofocus = true;
 
 // Get Brewery Info
 if(isset($_GET['brewerID'])){
+	// Get BrewerID from URL
 	$brewerID = $_GET['brewerID'];
 	$brewerResp = $api->request('GET', '/brewer/' . $brewerID, '');
 	$brewerData = json_decode($brewerResp);
@@ -31,6 +33,9 @@ if(isset($_GET['brewerID'])){
 		
 		// Process Form
 		if(isset($_POST['submit'])){
+			// Remove Input Field Autofocus
+			$autofocus = false;
+			
 			// Get Posted Variables
 			$name = $_POST['name'];
 			$url = $_POST['url'];
@@ -110,6 +115,7 @@ echo $htmlHead->html;
 					$inputName->type = 'text';
 					$inputName->required = true;
 					$inputName->value = $name;
+					$inputName->autofocus = $autofocus;
 					$inputName->validState = $validState['name'];
 					$inputName->validMsg = $validMsg['name'];
 					echo $inputName->display();
