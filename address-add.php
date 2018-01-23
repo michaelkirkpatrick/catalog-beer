@@ -20,9 +20,11 @@ $zip = '';
 $zip5 = '';
 $zip4 = '';
 $telephone = '';
+$autofocus = true;
 
 // Get Brewery Info
 if(isset($_GET['locationID'])){
+	// Get LocationID from URL
 	$locationID = $_GET['locationID'];
 	$locationResp = $api->request('GET', '/location/' . $locationID, '');
 	$locationData = json_decode($locationResp);
@@ -45,6 +47,9 @@ if(isset($_GET['locationID'])){
 		
 		// Process Form
 		if(isset($_POST['submit'])){
+			// Remove Autofocus
+			$autofocus = false;
+			
 			// Get Posted Variables
 			$address1 = $_POST['address1'];
 			$address2 = $_POST['address2'];
@@ -120,6 +125,7 @@ echo $htmlHead->html;
 					$inputAddress2->type = 'text';
 					$inputAddress2->required = true;
 					$inputAddress2->value = $address2;
+					$inputAddress2->autofocus = $autofocus;
 					$inputAddress2->validState = $validState['address2'];
 					$inputAddress2->validMsg = $validMsg['address2'];
 					echo $inputAddress2->display();
