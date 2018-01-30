@@ -38,6 +38,9 @@ class DropDown {
 	public $required = false;
 
 	public function display(){
+		
+		// Selected Value Tagged?
+		$selectedShown = false;
 
 		// Default for Label
 		if(empty($this->showLabel)){
@@ -81,7 +84,13 @@ class DropDown {
 		// Options
 		for($i=0; $i<count($this->values); $i++){
 			$return .= '<option value="' . htmlspecialchars($this->values[$i]) . '"';
-			if($this->currentValue === $this->values[$i]){$return .= ' selected';}
+			if($this->currentValue === $this->values[$i] && !$selectedShown){
+				// Show as selected
+				$return .= ' selected';
+				
+				// Erase current value to prevent future matches
+				$selectedShown = true;
+			}
 			$return .= '>' . htmlspecialchars($this->descriptions[$i]) . '</option>' . "\n";
 		}
 
