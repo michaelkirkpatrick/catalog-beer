@@ -26,6 +26,7 @@ class SendEmail {
 		
 		// Trim Email
 		$email = trim($email);
+		$email = strtolower($email);
 		
 		if(!empty($email)){
 			// Not Blank
