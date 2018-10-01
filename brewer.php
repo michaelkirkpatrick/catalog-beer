@@ -34,16 +34,25 @@ echo $htmlHead->html;
 <body>
 <style>
 	@media only screen and (max-width: 991px) {
+		/* Mobile */
 		.navFloat {
 			float:left;
 			width: 10rem;
 			margin-top: 2rem;
 		}
+		#map {
+			height: 200px;
+			margin-bottom: 2rem;
+		}
 	}
 	@media only screen and (min-width: 992px) {
+		/* Desktop */
 		.navFloat {
 			float:right;
 			width: 10rem;
+		}
+		#map {
+			height: 100%;
 		}
 	}
 </style>
@@ -231,9 +240,19 @@ echo $htmlHead->html;
 					// No Action Needed
 					break;
 				case 2:
-					// Add Two Blank Columns
-					echo '<div class="col-md-4"></div>' . "\n";
-					echo '<div class="col-md-4"></div>' . "\n";
+					if(count($locationData->data) > 1 || empty($locationDetailData->latitude)){
+						// Multiple Locations or No Latitude/Longitude
+						// Add Two Blank Columns
+						echo '<div class="col-md-4"></div>' . "\n";
+						echo '<div class="col-md-4"></div>' . "\n";
+					}else{
+						// Add Map to Right Two Columns
+						echo '<div class="col-md-8">' . "\n";
+						
+						echo '<div id="map"></div>' . "\n";
+						echo "<script>function initMap(){var map;var breweryLocation={lat:" . $locationDetailData->latitude . ",lng:" . $locationDetailData->longitude . "};map=new google.maps.Map(document.getElementById('map'),{center:breweryLocation,zoom:12,zoomControl:true,fullscreenControl:false,streetViewControl:false,mapTypeControl:false});var marker=new google.maps.Marker({position:breweryLocation,map:map})}</script>\n";
+						echo '</div>' . "\n";
+					}
 					
 					// Close Row
 					echo '</div>';
@@ -320,6 +339,15 @@ echo $htmlHead->html;
 		}
 		?>
   </div>
-  <?php echo $nav->footer(); ?>
+	<?php
+	// Load Google Map?
+	if(count($locationData->data) > 0 && !empty($locationDetailData->latitude)){
+		// Add Google Maps Javascript
+		echo '<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbTNud5BpMY01Z3h5dTpNvdSijQXY4fog&callback=initMap"
+    async defer></script>';
+	}
+	// Load Footer
+	 echo $nav->footer();
+	?>
 </body>
 </html>
