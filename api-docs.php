@@ -1027,6 +1027,16 @@ curl -X GET \
 			<td>The ISO 3166&#8211;1 short name for the country, in title case. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard.</td>
 		</tr>
 		<tr>
+			<td><var>latitude</var><br><small class="text-muted">(optional)</small></td>
+			<td>float</td>
+			<td>The latitude of the location.</td>
+		</tr>
+		<tr>
+			<td><var>longitude</var><br><small class="text-muted">(optional)</small></td>
+			<td>float</td>
+			<td>The longitude of the location.</td>
+		</tr>
+		<tr>
 			<td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
 			<td>integer</td>
 			<td>An unformatted integer string representing the telephone number of the location. Does not include the country code. For example, a US telephone number written in the international format as +1 (555) 444&#8211;3333 is stored as 5554443333 in our database. Country codes, if required, can be mapped from the <var>country_code</var> field.</td>
@@ -1045,24 +1055,26 @@ curl -X GET \
 
 <pre class="api-code">
 {
-  "id": "1e147187-241c-195b-33d4-7fd2b905cd0a",
-  "object": "location",
-  "name": "Scripps Ranch",
-  "brewer_id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
-  "url": "https://www.ballastpoint.com/locations/",
-  "country_code": "US",
-  "country_short_name": "United States of America",
-  "telephone": 8586952739,
-  "address": {
-    "address1": "",
-    "address2": "10051 Old Grove Rd",
-    "city": "San Diego",
-    "sub_code": "US-CA",
-    "state_short": "CA",
-    "state_long": "California",
-    "zip5": 92131,
-    "zip4": 1654
-  }
+    "id": "4920c879-76a6-4bb7-dccf-5f2642e28c08",
+    "object": "location",
+    "name": "San Diego",
+    "brewer_id": "634996c1-5ffb-9099-b015-11cbfe8bb53f",
+    "url": "",
+    "country_code": "US",
+    "country_short_name": "United States of America",
+    "latitude": 32.8882179,
+    "longitude": -117.1498184,
+    "telephone": 8585499888,
+    "address": {
+        "address1": "",
+        "address2": "9990 Alesmith Ct",
+        "city": "San Diego",
+        "sub_code": "US-CA",
+        "state_short": "CA",
+        "state_long": "California",
+        "zip5": 92126,
+        "zip4": 4200
+    }
 }
 </pre>
 
