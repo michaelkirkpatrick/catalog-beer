@@ -53,6 +53,7 @@ echo $htmlHead->html;
 		}
 		#map {
 			height: 100%;
+			width: 100%;
 		}
 	}
 </style>
@@ -248,9 +249,9 @@ echo $htmlHead->html;
 					}else{
 						// Add Map to Right Two Columns
 						echo '<div class="col-md-8">' . "\n";
-						
+						echo '<script src="https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js"></script>';
 						echo '<div id="map"></div>' . "\n";
-						echo "<script>function initMap(){var map;var breweryLocation={lat:" . $locationDetailData->latitude . ",lng:" . $locationDetailData->longitude . "};map=new google.maps.Map(document.getElementById('map'),{center:breweryLocation,zoom:12,zoomControl:true,fullscreenControl:false,streetViewControl:false,mapTypeControl:false});var marker=new google.maps.Marker({position:breweryLocation,map:map})}</script>\n";
+						echo '<script>mapkit.init({authorizationCallback:function(done){var xhr=new XMLHttpRequest();xhr.open("GET","/jwt-token.php");xhr.addEventListener("load",function(){done(this.responseText)});xhr.send()}});var map=new mapkit.Map("map");var brewery=new mapkit.Coordinate(' . $locationDetailData->latitude . ',' . $locationDetailData->longitude . ');var breweryAnnotation=new mapkit.MarkerAnnotation(brewery,{title:"' . $brewerName . '"});map.showItems(breweryAnnotation);var BreweryLocation=new mapkit.CoordinateRegion(new mapkit.Coordinate(' . $locationDetailData->latitude . ',' . $locationDetailData->longitude . '),new mapkit.CoordinateSpan(0.01,0.01));map.region=BreweryLocation;</script>' . "\n";
 						echo '</div>' . "\n";
 					}
 					
@@ -340,11 +341,10 @@ echo $htmlHead->html;
 		?>
   </div>
 	<?php
-	// Load Google Map?
+	// Load Map?
 	if(count($locationData->data) > 0 && !empty($locationDetailData->latitude)){
-		// Add Google Maps Javascript
-		echo '<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbTNud5BpMY01Z3h5dTpNvdSijQXY4fog&callback=initMap"
-    async defer></script>';
+		// Add  Maps Javascript
+		echo '';
 	}
 	// Load Footer
 	 echo $nav->footer();
