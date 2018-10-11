@@ -17,6 +17,12 @@ echo $htmlHead->html;
 	h2, h3 {
 		margin-top:5rem;
 	}
+	h4 {
+		margin-top:2rem;
+	}
+	var {
+		color: #579a4a;
+	}
 </style>
 <body>
 	<?php
@@ -49,13 +55,14 @@ echo $htmlHead->html;
 					<a class="list-group-item list-group-item-action" href="#location-add">&gt; Add a Location</a>
 					<a class="list-group-item list-group-item-action" href="#location-add-address">&gt; Add an Address to a Location</a>
 					<a class="list-group-item list-group-item-action" href="#location-retrieve">&gt; Retrieve a Location</a>
+					<a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
 					<a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
 					<a class="list-group-item list-group-item-action" href="#us-address-object">&gt; The US Address Object</a>
 				</div>
 			</div>
 			<div class="col-md-8">
-				<h1>API Reference</h1>
-				<p>Last Updated: November 22, 2017</p>
+				<h1 id="top">API Reference</h1>
+				<p>Last Updated: October 10, 2018</p>
 				
 				<h2 id="url">API Basics</h2>
 				<hr>
@@ -142,6 +149,7 @@ echo $htmlHead->html;
   }
 }
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 				
 				<h2 id="brewer">Brewer</h2>
 				<hr>
@@ -236,6 +244,7 @@ echo $htmlHead->html;
   "instagram_url": "https://www.instagram.com/hopsaintbrewco/"
 }
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 
 				<h3 id="brewer-create">Add a Brewer</h3>
 
@@ -300,6 +309,7 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{"name":"","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u2019t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u2019s at the heart of HopSaint - a community that fosters lasting relationships & enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/","facebook_url":"http:\/\/www.facebook.com\/hopsaintbrewingco","twitter_url":"","instagram_url":"http:\/\/instagram.com\/hopsaintbrewco"}'
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 
 				<h3 id="brewer-retrieve">Retrieve a Brewer</h3>
 
@@ -317,6 +327,7 @@ curl -X GET \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 
 				<h3 id="brewer-list-all">List all Brewers</h3>
 
@@ -324,11 +335,11 @@ curl -X GET \
 
 				<pre class="api-code">GET https://api.catalog.beer/brewer</pre>
 				
-				<h4>Arguments</h4>
+				<h4>Query Parameters</h4>
 				<table class="table">
 					<thead>
 						<tr>
-							<th scope="col">Argument</th>
+							<th scope="col">Name</th>
 							<th scope="col">Type</th>
 							<th scope="col">Description</th>
 						</tr>
@@ -346,10 +357,13 @@ curl -X GET \
 						</tr>
 					</tbody>
 				</table>
-				<p>A sample request with arguments. Be sure to encode all non-alphanumeric characters except -_.</p>
+				
+				<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
+				
 				<pre class="api-code">GET https://api.catalog.beer/brewer?count=5&amp;cursor=NQ%3D%3D</pre>
 				
-				<h4>Returns</h4>
+				<h4>Reponse</h4>
+				
 				<p>This request returns a list object with the following parameters.</p>
 				
 				<table class="table">
@@ -427,6 +441,7 @@ curl -X GET \
   ]
 }
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 
 				<h3 id="brewer-count">Number of Brewers</h3>
 
@@ -479,6 +494,7 @@ curl -X GET \
   "value": 3
 }
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 
 				<h3 id="brewer-beers">List all Beers made by a Brewer</h3>
 
@@ -585,6 +601,7 @@ curl -X GET \
   ]
 }
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 
 				<h3 id="brewer-locations">List all the Locations for a Brewer</h3>
 
@@ -660,6 +677,7 @@ curl -X GET \
   ]
 }
 </pre>
+				<p><a href="#top">^ Return to top</a></p>
 				
 				<h2 id="beer">Beer</h2>
 				<hr>
@@ -760,6 +778,7 @@ curl -X GET \
     }
 }
 </pre>
+								<p><a href="#top">^ Return to top</a></p>
 
 				<h3 id="beer-create">Add a Beer</h3>
 
@@ -818,6 +837,8 @@ curl -X GET \
  -H &#8216;content-type: application/json&#8217;
  -d &#8216;{&#8220;brewer_id&#8221;:&#8220;e7fa4e64-a39e-fd06-f82a&#8211;37de2a7dfbda&#8221;,&#8220;name&#8221;:&#8220;Schooner Wet Hop&#8221;,&#8220;style&#8221;:&#8220;Ale with Wet Hops&#8221;,&#8220;description&#8221;:&#8220;Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal. To brew this beer we get Cascade Hops from Yakima, Washington. They are picked, shipped and put into the brew within 36 hours. The Wet Hops have a grassy, vegetal, chlorophyll flavor that is reminiscent of fresh cut Greens. We showcase this 100% Cascade Hop Beer with a very light and crisp grain bill including a small portion of rice. This allows the aroma and flavor from such a rare, very seasonal ingredient, to shine.&#8221;,&#8220;abv&#8221;:&#8220;5.5&#8221;,&#8220;ibu&#8221;:&#8220;25&#8221;}&#8217;</pre>
 
+<p><a href="#top">^ Return to top</a></p>
+
 <h3 id="beer-retrieve">Retrieve a Beer</h3>
 
 <p>To retrieve a beer, send a <strong>GET</strong> request to the <code>/beer</code> endpoint with the <var>{beer_id}</var> parameter appended to the path.</p>
@@ -834,6 +855,8 @@ curl -X GET \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
+							
+<p><a href="#top">^ Return to top</a></p>
 
 <h3 id="beer-list-all">List all Beer</h3>
 
@@ -841,11 +864,11 @@ curl -X GET \
 
 <pre class="api-code">GET https://api.catalog.beer/beer</pre>
 
-				<h4>Arguments</h4>
+				<h4>Query Parameters</h4>
 				<table class="table">
 					<thead>
 						<tr>
-							<th scope="col">Argument</th>
+							<th scope="col">Name</th>
 							<th scope="col">Type</th>
 							<th scope="col">Description</th>
 						</tr>
@@ -863,10 +886,10 @@ curl -X GET \
 						</tr>
 					</tbody>
 				</table>
-				<p>A sample request with arguments. Be sure to encode all non-alphanumeric characters except -_.</p>
+				<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except -_.</p>
 				<pre class="api-code">GET https://api.catalog.beer/beer?count=5&amp;cursor=NQ%3D%3D</pre>
 				
-				<h4>Returns</h4>
+				<h4>Response</h4>
 <p>This request returns a list object with the following parameters.</p>
 								
 <table class="table">
@@ -901,7 +924,7 @@ curl -X GET \
 		<tr>
 			<td><var>data</var></td>
 			<td>array</td>
-			<td>An array containing all the beers in the database sorted alphabetically by name. Each array object has the following attributes: id and name, described below.</td>
+			<td>An array containing all the beers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var> and <var>name</var>, described below.</td>
 		</tr>
 		<tr>
 			<td><var>id</var></td>
@@ -948,6 +971,8 @@ curl -X GET \
   ]
 }
 </pre>
+								
+<p><a href="#top">^ Return to top</a></p>
 
 <h3 id="beer-count">Number of Beers</h3>
 
@@ -973,6 +998,8 @@ curl -X GET \
   "value": 87
 }
 </pre>
+								
+<p><a href="#top">^ Return to top</a></p>
 								
 <h2 id="location">Location</h2>
 
@@ -1077,6 +1104,8 @@ curl -X GET \
     }
 }
 </pre>
+								
+<p><a href="#top">^ Return to top</a></p>
 
 <h3 id="location-add">Add a Location</h3>
 
@@ -1138,6 +1167,8 @@ curl -X POST \
  &#8220;country_short_name&#8221;: &#8220;United States of America&#8221;
 }
 </pre>
+								
+<p><a href="#top">^ Return to top</a></p>
 
 <h3 id="location-add-address">Add an Address to a Location</h3>
 
@@ -1230,10 +1261,12 @@ curl -X POST \
   }
 }
 </pre>
+								
+<p><a href="#top">^ Return to top</a></p>
 
 <h3 id="location-retrieve">Retrieve a Location</h3>
 
-								<p>To retrieve a location, send a GET request to the <code>/location</code> endpoint with the <var>{location_id}</var> parameter appended to the path.</p>
+								<p>To retrieve a location, send a <strong>GET</strong> request to the <code>/location</code> endpoint with the <var>{location_id}</var> parameter appended to the path.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location/{location_id}</pre>
 
@@ -1247,10 +1280,193 @@ curl -X GET \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
+								
+<p><a href="#top">^ Return to top</a></p>
+								
+<!----- /LOCATIONS/NEARBY ----->
 
+<h3 id="nearby-locations">Find Nearby Locations</h3>
+
+<p>One of the questions that gets asked most is &#8220;where is the nearest brewery?&#8221; or &#8220;I&#8217;m heading to Acme town, what breweries are local?&#8221;. To answer those questions or questions like them, use this endpoint.</p>
+
+<p>To retrieve a location, send a <strong>GET</strong> request to the <code>/location/nearby </code> endpoint with the <var>{latitude}</var> and <var>{longitude}</var> query parameters appended to the path.</p>
+								
+<h4>Query Parameters</h4>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>latitude</var></td>
+			<td>float</td>
+			<td>The latitude of the location where you would like to search around. Combined with longitude, this pair describes the center of your search radius.</td>
+		</tr>
+		<tr>
+			<td><var>longitude</var></td>
+			<td>float</td>
+			<td>The longitude of the location where you would like to search around. Combined with latitude, this pair describes the center of your search radius.</td>
+		</tr>
+		<tr>
+			<td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The radius of the search circle, centered at the provided latitude and longitude. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+		</tr>
+		<tr>
+			<td><var>metric</var><br><small class="text-muted">(optional)</small></td>
+			<td>boolean</td>
+			<td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a searh radius and results measured in miles, though you can state it explicitly.</td>
+		</tr>
+		<tr>
+			<td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>A opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+		</tr>
+		<tr>
+			<td><var>count</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The number of results you would like returned from your request. The default value is 100.</td>
+		</tr>
+	</tbody>
+</table>
+								
+<p>A sample request with query parameters.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/location/nearby?latitude={latitude}&longitude={longitude}</pre>
+								
+<h4>Response</h4>
+<p>This request returns a list object with the following parameters.</p>
+								
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>object</var></td>
+			<td>string</td>
+			<td>The name of the object. In this case: “list”.</td>
+		</tr>
+		<tr>
+			<td><var>url</var></td>
+			<td>string</td>
+			<td>The API endpoint accessed to retrieve this object. In this case: <code>/location/nearby</code>.</td>
+		</tr>
+		<tr>
+			<td><var>has_more</var></td>
+			<td>Boolean</td>
+			<td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
+		</tr>
+		<tr>
+			<td><var>next_cursor</var></td>
+			<td>string</td>
+			<td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
+		</tr>
+		<tr>
+			<td><var>data</var></td>
+			<td>array</td>
+			<td>
+				<p>An array containing all the locations that match your query parameters. The array contains the following:</p>
+				<ul>
+					<li>A <a href="#location-object">location object</a></li>
+					<li>A distance object containing <var>distance</var> and the <var>units</var> of that measurement. These are described below</li>
+					<li>A <a href="#brewer-object">brewer object</a></li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td><var>distance</var></td>
+			<td>float</td>
+			<td>The straight line distance from the query <var>latitude</var> and <var>longitude</var> to the brewery, rounded to the tenths place (a single decimal place).</td>
+		</tr>
+		<tr>
+			<td><var>units</var></td>
+			<td>string</td>
+			<td>The unit of distance. The value of this field will be either &#8220;miles&#8221; (the default value) or &#8220;kilometers&#8221; if the <var>metric</var> query parameter is set to <var>true</var>.</td>
+		</tr>
+	</tbody>
+</table>
+								
+<h4>Sample Request</h4>
+								
+<pre class="api-code">
+curl -X GET \
+  'https://api-staging.catalog.beer/location/nearby?latitude=32.748482&longitude=-117.130094&search_radius=10&count=1 \
+  -H 'Accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+								
+<h4>Sample Response</h4>
+								
+<pre class="api-code">
+{
+    "object": "list",
+    "url": "/location/nearby",
+    "has_more": true,
+    "next_cursor": "MQ==",
+    "data": [
+        {
+            "location": {
+                "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
+                "object": "location",
+                "name": "North Park",
+                "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+                "url": "",
+                "country_code": "US",
+                "country_short_name": "United States of America",
+                "latitude": "32.7476883",
+                "longitude": "-117.1285400",
+                "telephone": 6192557136,
+                "address": {
+                    "address1": "",
+                    "address2": "3812 Grim Ave",
+                    "city": "San Diego",
+                    "sub_code": "US-CA",
+                    "state_short": "CA",
+                    "state_long": "California",
+                    "zip5": 92104,
+                    "zip4": 3602
+                }
+            },
+            "distance": {
+                "distance": 0.1,
+                "units": "miles"
+            },
+            "brewer": {
+                "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+                "object": "brewer",
+                "name": "Mike Hess Brewing Co.",
+                "description": "",
+                "short_description": "",
+                "url": "https://www.mikehessbrewing.com/",
+                "cb_verified": true,
+                "brewer_verified": false,
+                "facebook_url": "https://www.facebook.com/MikeHessBrewingCoNorthPark/",
+                "twitter_url": "https://twitter.com/mikehessbrewing",
+                "instagram_url": "https://www.instagram.com/mikehessbrewing/?hl=en"
+            }
+        }
+    ]
+}
+</pre>
+					
+<p><a href="#top">^ Return to top</a></p>
+								
+<!---------- US ADDRESSES ---------->
+								
 <h2 id="us-address">US Address</h2>
 
 <p>For locations in the United States, data is stored and captured using the US Addresses data structure.</p>
+								
+<!----- US ADDRESSES: OBJECT ----->
 
 <h3 id="us-address-object">The US Address Object</h3>
 
@@ -1307,6 +1523,9 @@ curl -X GET \
 		</tr>
 	</tbody>
 </table>
+
+<p><a href="#top">^ Return to top</a></p>
+								
 			</div>
 		</div>
   </div>
