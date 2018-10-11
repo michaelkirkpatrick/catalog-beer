@@ -12,7 +12,8 @@ $sendEmail->send();
 class SendEmail {
 	
 	// Variables
-	public $email;
+	public $email = '';	// From email (e.g. "hannah@catalog.beer")
+	public $name = ''; 	// From name (e.g. "Hannah Brewer")
 	public $subject = '';
 	public $plainText = '';
 	
@@ -85,10 +86,27 @@ class SendEmail {
 		
 		/*---
 		Required Set Variables
-		$this->email
+		$this->email --> FROM Email (as submitted in Contact Form)
 		$this->subject
 		$this->plainText
 		---*/
+		
+		if(empty($this->name)){
+			// Missing Email
+			$this->error = true;
+			$this->errorMsg = 'Whoops, looks like a bug on our end. We\'ve logged the issue and our support team will look into it.';
+			
+			// Log Error
+			$errorLog = new LogError();
+			$errorLog->errorNumber = 'C16';
+			$errorLog->errorMsg = 'Missing name';
+			$errorLog->badData = '';
+			$errorLog->filename = 'API / SendEmail.class.php';
+			$errorLog->write();
+		}else{
+			// Prep Name
+			$this->name = strip_tags($this->name);
+		}
 		
 		if(empty($this->email)){
 			// Missing Email
@@ -116,6 +134,9 @@ class SendEmail {
 			$errorLog->badData = '';
 			$errorLog->filename = 'API / SendEmail.class.php';
 			$errorLog->write();
+		}else{
+			// Prep Subject
+			$this->subject = strip_tags($this->subject);
 		}
 		
 		if(empty($this->plainText)){
@@ -130,6 +151,10 @@ class SendEmail {
 			$errorLog->badData = '';
 			$errorLog->filename = 'API / SendEmail.class.php';
 			$errorLog->write();
+		}else{
+			// Prep Message
+			$prefix = '-- Catalog.beer Website Email --' . "\n\n" . 'From: ' . $this->name . ' <' . $this->email . '>' . "\n\n";
+			$this->plainText = $prefix . strip_tags($this->plainText);
 		}
 		
 		// Validate Email
@@ -157,7 +182,7 @@ class SendEmail {
 
 			// Headers
 			$from = 'Catalog.beer <michael@catalog.beer>';
-			$replyto = 'michael@catalog.beer';
+			$replyto = $this->email;
 			$headers = array('From'=>$from, 'To'=>'michael@interchangedesign.com', 'Subject'=>$this->subject, 'Reply-To'=>$replyto);
 
 			// Plain Text
@@ -178,7 +203,7 @@ class SendEmail {
 			PEAR Send Mail
 			http://pear.php.net/manual/en/package.mail.mail.send.php
 			--- */
-			$mail = $smtp->send($this->email, $headers, $body);
+			$mail = $smtp->send('michael@interchangedesign.com', $headers, $body);
 
 			// Process Errors
 			if(PEAR::isError($mail)){
