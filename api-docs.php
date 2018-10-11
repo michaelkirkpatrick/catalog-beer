@@ -1374,7 +1374,7 @@ curl -X GET \
 			<td><var>data</var></td>
 			<td>array</td>
 			<td>
-				<p>An array containing all the locations that match your query parameters. The array contains the following:</p>
+				<p>An array containing all the locations that match your query parameters. The array contains the following for each result:</p>
 				<ul>
 					<li>A <a href="#location-object">location object</a></li>
 					<li>A distance object containing <var>distance</var> and the <var>units</var> of that measurement. These are described below</li>
