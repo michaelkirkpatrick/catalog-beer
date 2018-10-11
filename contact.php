@@ -32,6 +32,7 @@ if(isset($_POST['submit'])){
 		if(strlen($name <= 255)){
 			// Valid Name
 			$validState['name'] = 'success';
+			$sendEmail->name = $name;
 		}else{
 			// String too long
 			$error = TRUE;
