@@ -91,18 +91,25 @@ if(isset($_POST['submit'])){
 		// Send to Michael
 		$sendEmail->send();
 		
-		// Alert
-		$alert->msg = 'Thank you! Your message has been sent.';
-		$alert->type = 'success';
-		$alert->dismissible = true;
-		
-		// Clear Variables
-		$name = '';
-		$email = '';
-		$subject = '';
-		$message = '';
-		$validState = array('name'=>'', 'email'=>'', 'subject'=>'', 'message'=>'');
-		$validMsg = array('name'=>'', 'email'=>'', 'subject'=>'', 'message'=>'');
+		if(!$sendEmail->error){
+			// Email sent, show message
+			$alert->msg = 'Thank you! Your message has been sent.';
+			$alert->type = 'success';
+			$alert->dismissible = true;
+
+			// Clear Variables
+			$name = '';
+			$email = '';
+			$subject = '';
+			$message = '';
+			$validState = array('name'=>'', 'email'=>'', 'subject'=>'', 'message'=>'');
+			$validMsg = array('name'=>'', 'email'=>'', 'subject'=>'', 'message'=>'');
+		}else{
+			// Error Sending Email
+			// Email sent, show message
+			$alert->msg = 'Sorry, we encountered an error when we tried sending your message. It was unable to be sent. We\'ve logged the issue and our support team will look into it.';
+			$alert->type = 'error';
+		}
 	}
 }
 
