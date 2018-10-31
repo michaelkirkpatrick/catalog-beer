@@ -20,7 +20,7 @@ echo $htmlHead->html;
 			<div class="col-md-8">
     		<h1>Privacy Policy</h1>
 
-				<p>Last updated on October 11, 2018</p>
+				<p>Last updated on October 30, 2018</p>
 
 				<p>Your privacy is important to us here at Catalog.beer. So we’ve developed a Privacy Policy that covers how we collect, use, disclose, and store your information. Please <a href="/contact">let us know</a> if you have any questions.</p>
 
@@ -65,7 +65,7 @@ echo $htmlHead->html;
 
 				<h3>Google</h3>
 
-				<p>Catalog.beer uses Google&#8217;s <a href="https://www.google.com/recaptcha/intro/invisible.html">invisible reCAPTCHA</a> on our account creation page to help prevent robots from creating accounts. You can find Google&#8217;s <a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a> and <a href="https://www.google.com/intl/en/policies/terms/">Terms of Service</a> at the aforementioned links.</p>
+				<p>Catalog.beer uses Google&#8217;s <a href="https://www.google.com/recaptcha/intro/invisible.html">invisible reCAPTCHA</a> on our account creation and contact pages to help prevent robots from creating accounts and sending us spam email respectively. You can find Google&#8217;s <a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a> and <a href="https://www.google.com/intl/en/policies/terms/">Terms of Service</a> at the aforementioned links.</p>
 
 				<h2>Others</h2>
 
