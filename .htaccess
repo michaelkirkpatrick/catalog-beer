@@ -2,7 +2,7 @@ RewriteEngine On
 
 # Redirect to HTTPS
 RewriteCond %{HTTPS} off [OR]
-RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteCond %{HTTP_HOST} ^www\.catalog\.beer [NC]
 RewriteRule ^ https://catalog.beer%{REQUEST_URI} [L,NE,R=301]
 Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 
