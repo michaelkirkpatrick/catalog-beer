@@ -2,6 +2,10 @@
 /* ---
 $checkbox = new Checkbox();
 echo $checkbox->display('name', 'text', 'value', $variable);
+
+FINISH UPDATING
+http://getbootstrap.com/docs/4.0/components/forms/#custom-forms
+
 --- */
 
 class Checkbox{
@@ -37,8 +41,7 @@ class Checkbox{
 
 		// Begin Checkbox
 		$text1 = new Text(false, false, true);
-		$html .= '<label class="form-check-label' . $classAdd . '">';
-		$html .= '<input type="checkbox" value="' . $text1->get($this->value) . '" name="' . $text1->get($this->name) . '" class="form-check-input"';
+		$html .= '<input class="form-check-input" type="checkbox" value="' . $text1->get($this->value) . '" name="' . $text1->get($this->name) . '" id="check' . $text1->get($this->name) . '"';
 		
 		// Checked?
 		if(is_array($this->variable)){
@@ -51,15 +54,13 @@ class Checkbox{
 			if($this->variable == $this->value){
 				$html .= ' checked';
 			}
-		}
+		}		
+		$html .= '>';
 		
-		// Finish HTML
+		// Label
 		$text2 = new Text(true, true, true);
 		$textString = $text2->get($this->text);
-		
-		$html .= '>';
-		$html .= ' ' . $textString;
-		$html .= "</label>\n";
+		$html .= '<label class="form-check-label" for="check' . $text1->get($this->name) . '"> ' . $textString . "</label>\n";
 		$html .= "</div>\n";
 
 		// Return
