@@ -341,11 +341,6 @@ echo $htmlHead->html;
 		?>
   </div>
 	<?php
-	// Load Map?
-	if(count($locationData->data) > 0 && !empty($locationDetailData->latitude)){
-		// Add  Maps Javascript
-		echo '';
-	}
 	// Load Footer
 	 echo $nav->footer();
 	?>
