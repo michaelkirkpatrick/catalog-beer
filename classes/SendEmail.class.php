@@ -1,12 +1,8 @@
 <?php
 /* ---
+Catalog.beer
 $sendEmail = new SendEmail();
 $sendEmail->email = '';
-$sendEmail->subject = '';
-$sendEmail->filename = 'VAR'; // replace VAR, i.e. email-VAR.html
-$sendEmail->find = array(); // Optional
-$sendEmail->replace = array(); // Optional
-$sendEmail->send();
 --- */
 
 class SendEmail {
@@ -16,6 +12,7 @@ class SendEmail {
 	public $name = ''; 	// From name (e.g. "Hannah Brewer")
 	public $subject = '';
 	public $plainText = '';
+	private $postmarkServerToken = '';
 	
 	// Validation
 	public $error = false;
@@ -48,7 +45,7 @@ class SendEmail {
 					$errorLog->errorNumber = 'C7';
 					$errorLog->errorMsg = 'Email address > 255 characters';
 					$errorLog->badData = $email;
-					$errorLog->filename = 'API / SendEmail.class.php';
+					$errorLog->filename = 'SendEmail.class.php';
 					$errorLog->write();
 				}
 			}else{
@@ -61,7 +58,7 @@ class SendEmail {
 				$errorLog->errorNumber = 'C8';
 				$errorLog->errorMsg = 'Invliad Email. Does not pass filter_var';
 				$errorLog->badData = $email;
-				$errorLog->filename = 'API / SendEmail.class.php';
+				$errorLog->filename = 'SendEmail.class.php';
 				$errorLog->write();
 			}
 		}else{
@@ -82,17 +79,15 @@ class SendEmail {
 		return $validEmail;
 	}
 	
-	public function send(){
-		
-		/*---
-		Required Set Variables
-		$this->email --> FROM Email (as submitted in Contact Form)
-		$this->subject
-		$this->plainText
-		---*/
+	public function send($name, $email, $subject, $message){
+		// Save to Class
+		$this->name = $name;
+		$this->email = $email;
+		$this->subject = $subject;
+		$this->plainText = $message;
 		
 		if(empty($this->name)){
-			// Missing Email
+			// Missing Name
 			$this->error = true;
 			$this->errorMsg = 'Whoops, looks like a bug on our end. We\'ve logged the issue and our support team will look into it.';
 			
@@ -101,7 +96,7 @@ class SendEmail {
 			$errorLog->errorNumber = 'C16';
 			$errorLog->errorMsg = 'Missing name';
 			$errorLog->badData = '';
-			$errorLog->filename = 'API / SendEmail.class.php';
+			$errorLog->filename = 'SendEmail.class.php';
 			$errorLog->write();
 		}else{
 			// Prep Name
@@ -118,12 +113,15 @@ class SendEmail {
 			$errorLog->errorNumber = 'C10';
 			$errorLog->errorMsg = 'Missing email';
 			$errorLog->badData = '';
-			$errorLog->filename = 'API / SendEmail.class.php';
+			$errorLog->filename = 'SendEmail.class.php';
 			$errorLog->write();
+		}else{
+			// Validate Email
+			$this->validateEmail($this->email);
 		}
 		
 		if(empty($this->subject)){
-			// Missing Email
+			// Missing Subject
 			$this->error = true;
 			$this->errorMsg = 'Whoops, looks like a bug on our end. We\'ve logged the issue and our support team will look into it.';
 			
@@ -132,7 +130,7 @@ class SendEmail {
 			$errorLog->errorNumber = 'C11';
 			$errorLog->errorMsg = 'Missing subject';
 			$errorLog->badData = '';
-			$errorLog->filename = 'API / SendEmail.class.php';
+			$errorLog->filename = 'SendEmail.class.php';
 			$errorLog->write();
 		}else{
 			// Prep Subject
@@ -140,7 +138,7 @@ class SendEmail {
 		}
 		
 		if(empty($this->plainText)){
-			// Missing Email
+			// Missing Message
 			$this->error = true;
 			$this->errorMsg = 'Whoops, looks like a bug on our end. We\'ve logged the issue and our support team will look into it.';
 			
@@ -149,7 +147,7 @@ class SendEmail {
 			$errorLog->errorNumber = 'C12';
 			$errorLog->errorMsg = 'Missing plain text of email';
 			$errorLog->badData = '';
-			$errorLog->filename = 'API / SendEmail.class.php';
+			$errorLog->filename = 'SendEmail.class.php';
 			$errorLog->write();
 		}else{
 			// Prep Message
@@ -157,67 +155,65 @@ class SendEmail {
 			$this->plainText = $prefix . strip_tags($this->plainText);
 		}
 		
-		// Validate Email
-		$this->validateEmail($this->email);
-		
 		if(!$this->error){
-			// Required Files
-			include 'Mail.php';
-			include 'Mail/mime.php';
+			$postmarkSendEmail = new PostmarkSendEmail();
+			$text = new Text(true, false, false);
+			$postmarkSendEmail->generateBody('michael@catalog.beer', $this->subject, 'contact-form', $text->get($this->plainText), $this->plainText);
+			
+			$json = json_encode($postmarkSendEmail);
 
-			/* ---
-			PEAR Mail Factory
-			http://pear.php.net/manual/en/package.mail.mail.factory.php
-			--- */
-			$host = "smtp-relay.gmail.com";
-			$port = 587;
-			$smtp = Mail::factory('smtp', array('host'=>$host, 'port'=>$port));
+			// Start cURL
+			$curl = curl_init();
 
-			/* ---
-			PEAR MIME
-			http://pear.php.net/manual/en/package.mail.mail-mime.mail-mime.php
-			--- */
-			$crlf = "\n";
-			$mime = new Mail_mime(array('eol' => $crlf));
+			curl_setopt_array($curl, array(
+				CURLOPT_URL => "https://api.postmarkapp.com/email",
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_MAXREDIRS => 10,
+				CURLOPT_TIMEOUT => 30,
+				CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+				CURLOPT_CUSTOMREQUEST => "POST",
+				CURLOPT_HTTPHEADER => array(
+					"Accept: application/json",
+					"cache-control: no-cache",
+					"Content-Type: application/json",
+					"X-Postmark-Server-Token: " . $this->postmarkServerToken
+				),
+				CURLOPT_POSTFIELDS => "$json"
+			));
 
-			// Headers
-			$from = 'Catalog.beer <michael@catalog.beer>';
-			$replyto = $this->email;
-			$headers = array('From'=>$from, 'To'=>'michael@interchangedesign.com', 'Subject'=>$this->subject, 'Reply-To'=>$replyto);
+			$response = curl_exec($curl);
+			$err = curl_error($curl);
 
-			// Plain Text
-			$mime->setTXTBody($this->plainText);
+			curl_close($curl);
 
-			$body = $mime->get();
-			$headers = $mime->headers($headers);
-
-			$smtp = Mail::factory('smtp',
-				array ('host' => 'smtp-relay.gmail.com',
-							 'port' => 587,
-							 'auth' => true,
-							 'username' => '',
-							 'password' => '',
-							 'debug' => false));
-
-			/* ---
-			PEAR Send Mail
-			http://pear.php.net/manual/en/package.mail.mail.send.php
-			--- */
-			$mail = $smtp->send('michael@interchangedesign.com', $headers, $body);
-
-			// Process Errors
-			if(PEAR::isError($mail)){
-				// Error Sending Email
+			if($err){
+				// cURL Error
 				$this->error = true;
 				$this->errorMsg = 'Whoops, looks like a bug on our end. We\'ve logged the issue and our support team will look into it.';
 
 				// Log Error
 				$errorLog = new LogError();
-				$errorLog->errorNumber = 'C13';
-				$errorLog->errorMsg = 'Error sending email';
-				$errorLog->badData = $mail->getMessage();
-				$errorLog->filename = 'API / SendEmail.class.php';
+				$errorLog->errorNumber = 'C19';
+				$errorLog->errorMsg = 'cURL Error';
+				$errorLog->badData = $err;
+				$errorLog->filename = 'SendEmail.class.php';
 				$errorLog->write();
+			}else{
+				// Response Received
+				$decodedReponse = json_decode($response);
+				if($decodedReponse->ErrorCode != 0){
+					// Error Sending Email
+					$this->error = true;
+					$this->errorMsg = 'Sorry, there was an error sending your email. We\'ve logged the issue and our support team will look into it.';
+
+					// Log Error
+					$errorLog = new LogError();
+					$errorLog->errorNumber = 'C20';
+					$errorLog->errorMsg = 'Postmark App Error';
+					$errorLog->badData = $decodedReponse;
+					$errorLog->filename = 'SendEmail.class.php';
+					$errorLog->write();
+				}
 			}
 		}
 	}
