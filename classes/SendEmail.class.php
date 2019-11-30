@@ -158,7 +158,7 @@ class SendEmail {
 		if(!$this->error){
 			$postmarkSendEmail = new PostmarkSendEmail();
 			$text = new Text(true, false, false);
-			$postmarkSendEmail->generateBody('michael@catalog.beer', $this->subject, 'contact-form', $text->get($this->plainText), $this->plainText);
+			$postmarkSendEmail->generateBody('michael@catalog.beer', $this->subject, 'contact-form', $text->get($this->plainText), $this->plainText, $this->email);
 			
 			$json = json_encode($postmarkSendEmail);
 
