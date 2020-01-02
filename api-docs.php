@@ -4,7 +4,7 @@ $guest = true;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
 // HTML Head
-$htmlHead = new htmlHead('API Documentation: Catalog.beer');
+$htmlHead = new htmlHead('API Documentation');
 echo $htmlHead->html;
 ?>
 <style>
