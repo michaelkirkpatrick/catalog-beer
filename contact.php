@@ -156,7 +156,7 @@ if(isset($_POST['signupFormHidden'])){
 }
 
 // HTML Head
-$htmlHead = new htmlHead('Catalog.beer: The Internet\'s Beer Database');
+$htmlHead = new htmlHead('Contact Us');
 $htmlHead->addDescription('Drop us a line. Our team will get back to you within 24-hours.');
 echo $htmlHead->html;
 ?>
