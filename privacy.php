@@ -4,7 +4,7 @@ $guest = true;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
 // HTML Head
-$htmlHead = new htmlHead('Privacy Policy: Catalog.beer');
+$htmlHead = new htmlHead('Privacy Policy');
 echo $htmlHead->html;
 ?>
 <body>

@@ -4,7 +4,7 @@ $guest = true;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
 // HTML Head
-$htmlHead = new htmlHead('Verify Email - Catalog.beer');
+$htmlHead = new htmlHead('Verify Email');
 echo $htmlHead->html;
 
 // Email Auth Code
