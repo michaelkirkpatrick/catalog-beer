@@ -50,7 +50,7 @@ if(isset($_GET['page'])){
 $cursor = base64_encode(($page-1)*$perPage);
 
 // HTML Head
-$htmlHead = new htmlHead('List of Beers - Catalog.beer');
+$htmlHead = new htmlHead('List of Beers');
 echo $htmlHead->html;
 ?>
 <body>

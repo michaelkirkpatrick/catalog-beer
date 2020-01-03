@@ -22,25 +22,31 @@ Options -Indexes
 # ErrorDocument 503 /errors/503.php
 
 # Clean URLs
-RewriteRule ^contact$	contact.php	[L]
-RewriteRule ^privacy$	privacy.php	[L]
-RewriteRule ^terms$	terms.php	[L]
-RewriteRule ^api-docs$	api-docs.php	[L]
+RewriteRule ^account/?$ 	account.php [L]
+RewriteRule ^api-docs/?$	api-docs.php	[L]
+RewriteRule ^api-usage/?$	api-usage.php	[L]
+RewriteRule ^contact/?$		contact.php	[L]
+RewriteRule ^login/?$ 		login.php [L]
+RewriteRule ^logout/?$ 		logout.php [L]
+RewriteRule ^privacy/?$		privacy.php	[L]
+RewriteRule ^signup/?$		create-account.php [L]
+RewriteRule ^terms/?$		terms.php	[L]
+RewriteRule ^welcome/?$ 	welcome.php [L]
+
 
 # Redirect Pages
-RewriteRule ^account$ account.php [L]
-RewriteRule ^brewer$ brewer-list.php [L]
-RewriteRule ^brewer/add$ brewer-add.php [L]
+RewriteRule ^beer/add/([-0-9a-f]{36})$ beer-add.php?brewerID=$1 [L]
+RewriteRule ^beer/([-0-9a-f]{36})$ beer.php?beerID=$1 [L]
+RewriteRule ^beer/?$ beer-list.php [L]
+
 RewriteRule ^brewer/([-0-9a-f]{36})/add-location$ location-add.php?brewerID=$1 [L]
+RewriteRule ^brewer/([-0-9a-f]{36})$ brewer.php?brewerID=$1 [L]
+RewriteRule ^brewer/add$ brewer-add.php [L]
+RewriteRule ^brewer/?$ brewer-list.php [L]
+
 RewriteRule ^location/([-0-9a-f]{36})/add-address$ address-add.php?locationID=$1 [L]
 RewriteRule ^location/([-0-9a-f]{36})/?$ brewer-list.php [L]
 RewriteRule ^location/?$ brewer-list.php [L]
-RewriteRule ^brewer/([-0-9a-f]{36})$ brewer.php?brewerID=$1 [L]
-RewriteRule ^beer$ beer-list.php [L]
-RewriteRule ^beer/add/([-0-9a-f]{36})$ beer-add.php?brewerID=$1 [L]
-RewriteRule ^beer/([-0-9a-f]{36})$ beer.php?beerID=$1 [L]
-RewriteRule ^signup/?$ create-account.php [L]
-RewriteRule ^login/?$ login.php [L]
-RewriteRule ^logout/?$ logout.php [L]
+
 RewriteRule ^verify-email(\/[-0-9a-f]{36})?$ verify-email.php?emailAuth=$1 [L]
-RewriteRule ^welcome$ welcome.php [L]
+
