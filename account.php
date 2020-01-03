@@ -16,7 +16,7 @@ if(isset($_POST['api-key'])){
 }
 
 // HTML Head
-$htmlHead = new htmlHead('My Account - Catalog.beer');
+$htmlHead = new htmlHead('My Account');
 echo $htmlHead->html;
 
 // API Call
@@ -38,7 +38,7 @@ $userData = json_decode($userResp);
 				$text = new Text(false, true, true);
 				
 				// Name
-				echo '<p><strong>Name:</strong> ' . $text->get($userData->name) . '</p>';
+				$accountInfoTable = '<table class="table"><tr><td><strong>Name</strong></td><td>' . $text->get($userData->name) . '</td></tr>';
 				
 				// Email
 				if($userData->emailVerified){
@@ -48,7 +48,11 @@ $userData = json_decode($userResp);
 					// Get API Key
 					$apiKeyResp = $api->request('GET', '/users/' . $_SESSION['userID'] . '/api-key', '');
 					$apiKeyData = json_decode($apiKeyResp);
-					$apiKey = '<p><strong>Secret key:</strong> <code>' . $apiKeyData->api_key . '</code></p>';
+					
+					// Get API Usage
+					$currentUsageResp = $api->request('GET', '/usage/currentMonth/' . $apiKeyData->api_key, '');
+					$currentUsageData = json_decode($currentUsageResp);
+					$apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr><tr><td><strong>Requests this month</strong></td><td>' . number_format($currentUsageData->count) . '</td></tr></table><p>Learn more about <a href="/api-usage">API usage</a> and about the <a href="/api-docs">Catalog.beer API</a>.</p>';
 				}else{
 					// Unverified
 					$pillAdd = ' <span class="badge badge-pill badge-warning">Unverified</span>';
@@ -63,10 +67,11 @@ $userData = json_decode($userResp);
 					}
 					$helpText = '<div class="card"><div class="card-header bg-warning">Verification Required</div><div class="card-body"><p class="card-text">Before you will be able to add data to the Catalog.beer database or obtain an API key, you will need to verify your email address. This helps us reduce spam on the site. Check your email; we sent you a message <strong>' . $dateString . '</strong> with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>.</p></div></div>';
 				}
-				echo '<p><strong>Email:</strong> ' . $text->get($userData->email) . $pillAdd . '</p>';
+				$accountInfoTable .= '<tr><td><strong>Email</strong></td><td>' . $text->get($userData->email) . $pillAdd . '</td></tr></table>';
+				echo $accountInfoTable;
 				
 				// API Key
-				echo '<h2>API Key</h2>';
+				echo '<h2>API</h2>';
 				if(isset($helpText)){echo $helpText;}
 				elseif(isset($apiKey)){echo $apiKey;}
 				?>
