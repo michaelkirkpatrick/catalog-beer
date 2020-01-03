@@ -71,7 +71,7 @@ echo $htmlHead->html;
 
 				<p class="lead"><strong>tl;dr - It&#8217;s free.</strong></p>
 				
-				<p class="lead">If you make more than 1,000 API request per month, at some point in the future we&#8217;ll charge you $0.50 per additional 1,000 requests. Right now we&#8217;re only monitoring usage.</p>
+				<p class="lead">If you make more than 1,000 API requests per month, at some point in the future we&#8217;ll charge you $0.50 per additional 1,000 requests. Right now we&#8217;re only monitoring usage.</p>
 
 				<p>Catalog.beer was created to enable anyone to access brewery and beer information. To that end, our mission is to give anyone who wants it API access so they can poke around and contribute to the database. If you&#8217;re someone who enjoys beer and wants to build themselves a little application using the Catalog.beer API, we want it to be free for you to use. To that end, everyone with a Catalog.beer API key has 1,000 requests per month that are free.</p>
 
