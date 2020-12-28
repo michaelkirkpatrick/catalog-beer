@@ -140,7 +140,7 @@ for($i=1; $i<=$totalPages; $i++){
 	// Loop through results
 	for($j=0; $j<count($apiData->data); $j++){
 		// Get Last Mod
-		$apiResp2 = request('/brewer/last-modified/' . $apiData->data[$j]->id);
+		$apiResp2 = request('/brewer/' . $apiData->data[$j]->id . '/last-modified');
 		$apiData2 = json_decode($apiResp2);
 		$brewerLastMod = $apiData2->last_modified;
 		
@@ -209,7 +209,7 @@ for($i=1; $i<=$totalPages; $i++){
 	// Loop through results
 	for($j=0; $j<count($apiData->data); $j++){
 		// Get Last Mod
-		$apiResp2 = request('/beer/last-modified/' . $apiData->data[$j]->id);
+		$apiResp2 = request('/beer/' . $apiData->data[$j]->id . '/last-modified');
 		$apiData2 = json_decode($apiResp2);
 		$brewerLastMod = $apiData2->last_modified;
 		

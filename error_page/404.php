@@ -6,6 +6,14 @@ http_response_code(404);
 $guest = true;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
+// Log Error
+$errorLog = new LogError();
+$errorLog->errorNumber = 'C404';
+$errorLog->errorMsg = 'Page not found';
+$errorLog->badData = $_SERVER['REQUEST_URI'];
+$errorLog->filename = '/error_page/404.php';
+$errorLog->write();
+
 // HTML Head
 $htmlHead = new htmlHead('Page Not Found on Catalog.beer');
 echo $htmlHead->html;
