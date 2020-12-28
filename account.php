@@ -6,23 +6,9 @@ include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 // Alert
 $alert = new Alert();
 
-// Generate API Key?
-if(isset($_POST['api-key'])){
-	$apiResp = $api->request('POST', '/users/' . $_SESSION['userID'] . '/api-key', '');
-	$apiData = json_decode($apiResp);
-	if(isset($apiData->error)){
-		$alert->msg = $apiData->error_msg;
-	}
-}
-
 // HTML Head
 $htmlHead = new htmlHead('My Account');
 echo $htmlHead->html;
-
-// API Call
-$api = new API();
-$userResp = $api->request('GET', '/users/' . $_SESSION['userID'], '');
-$userData = json_decode($userResp);
 ?>
 <body>
 	<?php echo $nav->navbar(''); ?>
@@ -38,14 +24,15 @@ $userData = json_decode($userResp);
 				$text = new Text(false, true, true);
 				
 				// Name
-				$accountInfoTable = '<table class="table"><tr><td><strong>Name</strong></td><td>' . $text->get($userData->name) . '</td></tr>';
+				$accountInfoTable = '<table class="table"><tr><td><strong>Name</strong></td><td>' . $text->get($userInfo->name) . '</td></tr>';
 				
 				// Email
-				if($userData->emailVerified){
+				if($userInfo->email_verified){
 					// Verified
 					$pillAdd = ' <span class="badge badge-pill badge-success">Verified</span>';
 					
 					// Get API Key
+					$api = new API();
 					$apiKeyResp = $api->request('GET', '/users/' . $_SESSION['userID'] . '/api-key', '');
 					$apiKeyData = json_decode($apiKeyResp);
 					
@@ -59,15 +46,15 @@ $userData = json_decode($userResp);
 					
 					// Sent Date
 					$today = date('l, F jS', time());
-					$sent = date('l, F jS', $userData->emailAuthSent);
+					$sent = date('l, F jS', $userInfo->email_auth_sent);
 					if($sent == $today){
-						$dateString = 'today at ' . date('g:i A', $userData->emailAuthSent);
+						$dateString = 'today at ' . date('g:i A', $userInfo->email_auth_sent);
 					}else{
-						$dateString = $sent . ' at ' . date('g:i A', $userData->emailAuthSent);
+						$dateString = $sent . ' at ' . date('g:i A', $userInfo->email_auth_sent);
 					}
 					$helpText = '<div class="card"><div class="card-header bg-warning">Verification Required</div><div class="card-body"><p class="card-text">Before you will be able to add data to the Catalog.beer database or obtain an API key, you will need to verify your email address. This helps us reduce spam on the site. Check your email; we sent you a message <strong>' . $dateString . '</strong> with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>.</p></div></div>';
 				}
-				$accountInfoTable .= '<tr><td><strong>Email</strong></td><td>' . $text->get($userData->email) . $pillAdd . '</td></tr></table>';
+				$accountInfoTable .= '<tr><td><strong>Email</strong></td><td>' . $text->get($userInfo->email) . $pillAdd . '</td></tr></table>';
 				echo $accountInfoTable;
 				
 				// API Key

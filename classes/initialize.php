@@ -44,7 +44,7 @@ if($guest == false){
 		if($api->httpcode == 200){
 			// Valid User
 			$userInfo = json_decode($jsonResponse);
-			if(!$userInfo->emailVerified){
+			if(!$userInfo->email_verified){
 				// Unverified Email
 				if($URI == '/verify-email' || $URI == '/account'){
 					// Page Okay

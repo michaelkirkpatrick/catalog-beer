@@ -32,11 +32,11 @@ $emailAuth = substr($_GET['emailAuth'], 1, 36);
 				if(isset($_SESSION['userID'])){
 					// Email Verification Required Message
 					$today = date('l, F jS', time());
-					$sent = date('l, F jS', $userInfo->emailAuthSent);
+					$sent = date('l, F jS', $userInfo->email_auth_sent);
 					if($sent == $today){
-						$dateString = 'today at ' . date('g:i A', $userInfo->emailAuthSent);
+						$dateString = 'today at ' . date('g:i A', $userInfo->email_auth_sent);
 					}else{
-						$dateString = $sent . ' at ' . date('g:i A', $userInfo->emailAuthSent);
+						$dateString = $sent . ' at ' . date('g:i A', $userInfo->email_auth_sent);
 					}
 					
 					// Show Message

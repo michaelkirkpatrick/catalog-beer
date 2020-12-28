@@ -8,7 +8,7 @@ $beerID = $_GET['beerID'];
 $api = new API();
 $beerResp = $api->request('GET', '/beer/' . $beerID, '');
 $beerData = json_decode($beerResp);
-if(isset($beerData->error) || empty($beerData->name)){
+if(isset($beerData->error)){
 	// Invalid beerID
 	// Log Error
 	$errorLog = new LogError();
