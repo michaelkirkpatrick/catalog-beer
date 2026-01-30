@@ -26,7 +26,7 @@ if(isset($_POST['signupFormHidden'])){
 	$captcha = $_POST['g-recaptcha-response'];
 	
 	// Verify Captcha
-	$captchaSecretKey = '';
+	$captchaSecretKey = '6Le1WMUUAAAAAEPIAyNW6dFiISUWg3i3AEob2YVv';
 	$captchaResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $captchaSecretKey . '&response=' . $captcha . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
 	$captchaJSON = json_decode($captchaResponse, true);
 	if($captchaJSON['success'] == false){
@@ -222,8 +222,8 @@ echo $htmlHead->html;
 					$textarea->rows = 8;
 					echo $textarea->display();
 					?>
-					<button class="btn btn-primary" data-callback="onSubmit" >Send Message</button>
 					<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
+					<input type="submit" class="btn btn-primary" value="Send Message" />
 				</form>
 			</div>
 			<div class="col-md-2">
@@ -240,8 +240,5 @@ echo $htmlHead->html;
 			document.getElementById("g-recaptcha-response").value = token;
 		});
 	});
-	function onSubmit(token) {	
-		document.getElementById("contact-form").submit();
-	}
 </script>
 </html>	

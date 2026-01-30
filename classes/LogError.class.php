@@ -45,7 +45,7 @@ class LogError {
 			$dbFilename = $db->escape($this->filename);
 
 			// Add to Database
-			$query = "INSERT INTO error_log (id, errorNumber, errorMessage, badData, URI, ipAddress, timestamp, filename, resolved) VALUES('$dbErrorID', '$dbErrorNumber', '$dbErrorMessage', '$dbBadData', '$dbURI', '$dbIPAddress', '$dbTimestamp', '$dbFilename', '0')";
+			$query = "INSERT INTO error_log (id, errorNumber, errorMessage, badData, URI, ipAddress, timestamp, filename, resolved) VALUES('$dbErrorID', '$dbErrorNumber', '$dbErrorMessage', '$dbBadData', '$dbURI', '$dbIPAddress', '$dbTimestamp', '$dbFilename', b'0')";
 			$db->query($query);
 		}
 	}

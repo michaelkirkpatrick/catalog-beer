@@ -68,11 +68,6 @@ $api = new API();
 			</div>
 			<div class="col"></div>
 		</div>
-		<div class="row">
-			<div class="col">
-				<p class="text-center" style="margin-top:1rem;"><a href="/blog" class="btn btn-primary" role="button">Blog</a></p>
-			</div>
-		</div>
   </div>
   <?php echo $nav->footer(); ?> 
 </body>

@@ -82,7 +82,22 @@ echo $htmlHead->html;
 
 				<p>Authenticate your account when using the API by including your secret API key in the request. You can find your API key on your <a href="/account">Account</a> page. Your API key carries many privileges, so be sure to keep it secret! Do not share your secret API key in publicly accessible areas such GitHub, client-side code, and so forth.</p>
 
-				<p>Authentication to the API is performed via <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">HTTP Basic Auth</a>. Provide your API key as the basic auth username value. You do not need to provide a password.</p>
+				<p>Authentication to the API is performed via the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">'Basic' HTTP authentication</a> scheme. <strong>Provide your API key as the username value.</strong> You do not need to provide a password.</p>
+				
+				<p>When making a request using basic HTTP authentication, your request should contain a header field in the form of <code>Authorization: Basic &lt;credentials&gt;</code>, where <code>&lt;credentials&gt;</code> is the <code>base64_encode('username:password')</code> (Recall that your username in this case is your API Key and the password field should be left blank).</p>
+				
+				<p>For example, if your API Key is: <code>cadcbe6f-a80d-4e33-9f20-b53c2ed83845</code></p>
+				
+				<pre class="api-code">base64_encode('cadcbe6f-a80d&#8211;4e33&#8211;9f20-b53c2ed83845:')</pre>
+				
+				<p>Returning: <code>Y2FkY2JlNmYtYTgwZC00ZTMzLTlmMjAtYjUzYzJlZDgzODQ1Og==</code></p>
+				
+				<p>Then your cURL request will look something like:</p>
+				
+<pre class="api-code">curl --location --request GET 'https://api.catalog.beer/brewer'
+--header 'Accept: application/json'
+--header 'Authorization: Basic Y2FkY2JlNmYtYTgwZC00ZTMzLTlmMjAtYjUzYzJlZDgzODQ1Og=='
+</pre>
 
 				<p>All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.</p>
 			

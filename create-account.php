@@ -28,14 +28,18 @@ if(isset($_POST['signupFormHidden'])){
 	$email = $_POST['email'];
 	$password = $_POST['password'];
 	if(isset($_POST['terms_agreement'])){
-		$termsAgreement = $_POST['terms_agreement'];
+		if($_POST['terms_agreement'] === "1"){
+			$termsAgreement = true;
+		}else{
+			$termsAgreement = false;
+		}
 	}else{
 		$termsAgreement = false;
 	}
 	$captcha = $_POST['g-recaptcha-response'];
 	
 	// Verify Captcha
-	$captchaSecretKey = '';
+	$captchaSecretKey = '6Le1WMUUAAAAAEPIAyNW6dFiISUWg3i3AEob2YVv';
 	$captchaResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $captchaSecretKey . '&response=' . $captcha . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
 	$captchaJSON = json_decode($captchaResponse, true);
 	if($captchaJSON['success'] == false){
@@ -82,8 +86,9 @@ if(isset($_POST['signupFormHidden'])){
 				if(!empty($array['error_msg'])){
 					$alert->msg = $array['error_msg'];
 				}
-				$validState = $array['valid_state'];
-				$validMsg = $array['valid_msg'];
+				if(isset($array['valid_state'])){$validState = $array['valid_state'];}
+				if(isset($array['valid_state'])){$validState = $array['valid_state'];}
+				if(isset($array['valid_msg'])){$validMsg = $array['valid_msg'];}
 			}
 		}else{
 			// Didn't Pass Captcha

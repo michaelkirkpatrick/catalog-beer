@@ -39,7 +39,7 @@ echo $htmlHead->html;
 					// Get API Usage
 					$currentUsageResp = $api->request('GET', '/usage/currentMonth/' . $apiKeyData->api_key, '');
 					$currentUsageData = json_decode($currentUsageResp);
-					$apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr><tr><td><strong>Requests this month</strong></td><td>' . number_format($currentUsageData->count) . '</td></tr></table><p>Learn more about <a href="/api-usage">API usage</a> and about the <a href="/api-docs">Catalog.beer API</a>.</p>';
+					$apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr></table><p>Learn more about the <a href="/api-docs">Catalog.beer API</a>.</p>';
 				}else{
 					// Unverified
 					$pillAdd = ' <span class="badge badge-pill badge-warning">Unverified</span>';

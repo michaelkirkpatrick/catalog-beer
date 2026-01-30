@@ -29,12 +29,13 @@ if(isset($_GET['locationID'])){
 	$locationResp = $api->request('GET', '/location/' . $locationID, '');
 	$locationData = json_decode($locationResp);
 	if(!isset($locationData->error)){
+		
 		// Save Location Info
 		$text1 = new Text(false, true, true);
 		$locationName = $text1->get($locationData->name);
 		
 		$text2 = new Text(false, false, true);
-		$brewerID = $text2->get($locationData->brewer_id);
+		$brewerID = $text2->get($locationData->brewer->id);
 		
 		// Get Brewer Name
 		$brewerResp = $api->request('GET', '/brewer/' . $brewerID, '');
@@ -67,7 +68,7 @@ if(isset($_GET['locationID'])){
 			}
 			
 			$addressPOST = array('address1'=>$address1, 'address2'=>$address2, 'city'=>$city, 'sub_code'=>$sub_code, 'zip5'=>$zip5, 'zip4'=>$zip4, 'telephone'=>$telephone);
-			$addressResponse = $api->request('POST', '/location/' . $locationID, $addressPOST);
+			$addressResponse = $api->request('POST', '/address/' . $locationID, $addressPOST);
 			$locationData = json_decode($addressResponse, true);
 			if(isset($locationData['error'])){
 				// Error Adding Beer
