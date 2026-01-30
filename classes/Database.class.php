@@ -13,14 +13,14 @@ class Database {
 	function __construct(){
 		// Establish Environment
 		if(defined('ENVIRONMENT')){
-			if(ENVIRONMENT == 'staging'){
-				$password = '';
-			}elseif(ENVIRONMENT == 'production'){
-				$password = '';
+			if(ENVIRONMENT === 'staging'){
+				$password = DB_PASSWORD_STAGING;
+			}elseif(ENVIRONMENT === 'production'){
+				$password = DB_PASSWORD_PRODUCTION;
 			}
-			
+
 			// Connect to Server
-			$this->mysqli = new mysqli('', '', $password, '');
+			$this->mysqli = new mysqli(DB_HOST, DB_USER, $password, DB_NAME);
 			if($this->mysqli->connect_error){
 				//die('Connect Error (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error);
 				exit();
@@ -57,7 +57,7 @@ class Database {
 				// True False Query
 				if($this->mysqli->query($query) === true){
 					// Successful Query
-					if($exploded[0] == 'INSERT'){
+					if($exploded[0] === 'INSERT'){
 						$this->insertID = $this->mysqli->insert_id;	
 					}
 				}else{

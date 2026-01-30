@@ -13,11 +13,15 @@ class SendEmail {
 	public $subject = '';
 	public $plainText = '';
 	private $postmarkServerToken = '';
-	
+
 	// Validation
 	public $error = false;
 	public $errorMsg = '';
-		
+
+	function __construct(){
+		$this->postmarkServerToken = POSTMARK_SERVER_TOKEN;
+	}
+
 	public function validateEmail($email){
 		// Initial State
 		$validEmail = false;
@@ -201,7 +205,7 @@ class SendEmail {
 			}else{
 				// Response Received
 				$decodedReponse = json_decode($response);
-				if($decodedReponse->ErrorCode != 0){
+				if($decodedReponse->ErrorCode !== 0){
 					// Error Sending Email
 					$this->error = true;
 					$this->errorMsg = 'Sorry, there was an error sending your email. We\'ve logged the issue and our support team will look into it.';

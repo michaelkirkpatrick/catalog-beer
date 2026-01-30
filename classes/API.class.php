@@ -1,20 +1,24 @@
 <?php
 class API {
-	
+
 	// Variables
 	private $masterAPIKey = '';
+	private $usersAPIKey = '';
 	private $apiKey = '';
 	private $url = 'https://api.catalog.beer';
-	
+
 	public $error = false;
 	public $errorMsg = '';
 	public $httpCode = 0;
-	
+
 	function __construct(){
 		// Establish Environment
 		if(defined('ENVIRONMENT')){
-			if(ENVIRONMENT == 'staging'){
+			if(ENVIRONMENT === 'staging'){
 				$this->url = 'https://api-staging.catalog.beer';
+				$this->masterAPIKey = API_KEY_STAGING;
+			}else{
+				$this->masterAPIKey = API_KEY_PRODUCTION;
 			}
 		}
 		
@@ -35,6 +39,7 @@ class API {
 						if(!empty($apiKeyJSON->api_key)){
 							// Save API Key
 							$this->apiKey = $apiKeyJSON->api_key;
+							$this->usersAPIKey = $apiKeyJSON->api_key;
 						}
 					}
 				}
@@ -43,18 +48,25 @@ class API {
 	}
 	
 	public function request($type, $endpoint, $data){
-		
 		// Admin Endpoint?
 		// /login and /users
-		if(substr($endpoint, 0, 6) == '/login' || substr($endpoint, 0, 6) == '/users' || substr($endpoint, 0, 21) == '/brewer/last-modified'){
+		if(substr($endpoint, 0, 6) === '/login' || substr($endpoint, 0, 6) === '/users' || substr($endpoint, 0, 21) === '/brewer/last-modified'){
 			$this->apiKey = $this->masterAPIKey;
+		}else{
+			if(!empty($this->usersAPIKey)){
+				// Use the User's API Key
+				$this->apiKey = $this->usersAPIKey;
+			}
 		}
-		
+				
 		// Headers & Options
 		$headerArray = array(
 			"accept: application/json",
 			"authorization: Basic " . base64_encode($this->apiKey . ":"),
 		);
+		if($type === 'POST' || $type === 'PUT'){
+			$headerArray[] = "content-type: application/json";
+		}
 		
 		$optionsArray = array(
 			CURLOPT_URL => $this->url . $endpoint,
@@ -69,15 +81,13 @@ class API {
 		switch($type){
 			case 'POST':
 				$json = json_encode($data);
-				$headerArray[] = "content-type: application/json";
 				$optionsArray[CURLOPT_POSTFIELDS] = $json;
 				break;
 			case 'PUT':
 				$json = json_encode($data);
-				$headerArray[] = "content-type: application/json";
 				$optionsArray[CURLOPT_POSTFIELDS] = $json;
 				break;
-		}	
+		}
 				
 		// Create cURL Request
 		$curl = curl_init();
