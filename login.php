@@ -24,19 +24,19 @@ if(isset($_GET['request'])){
 	// Detailed Messages
 	switch($exploded[0]){
 		case 'brewer':
-			if($exploded[1] == 'add'){
+			if($exploded[1] === 'add'){
 				$message = 'Hello! Before you can add a new brewer to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
-			}elseif($exploded[2] == 'add-location'){
+			}elseif($exploded[2] === 'add-location'){
 				$message = 'Hello! Before you can add new location for this brewer to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
 			}
 			break;
 		case 'beer':
-			if($exploded[1] == 'add'){
+			if($exploded[1] === 'add'){
 				$message = 'Hello! Before you can add a new beer to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
 			}
 			break;
 		case 'location':
-			if($exploded[1] == 'add-address'){
+			if($exploded[1] === 'add-address'){
 				$message = 'Hello! Before you can add an address for this location to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
 			}
 			break;

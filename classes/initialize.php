@@ -8,9 +8,9 @@ define("SERVER_NAME", $_SERVER['SERVER_NAME']);
 
 // Establish Environment
 $serverName = explode('.', $_SERVER['SERVER_NAME']);
-if($serverName[0] == 'staging'){
+if($serverName[0] === 'staging'){
 	define('ENVIRONMENT', 'staging');
-}elseif($serverName[0] == 'catalog'){
+}elseif($serverName[0] === 'catalog'){
 	define('ENVIRONMENT', 'production');
 }
 

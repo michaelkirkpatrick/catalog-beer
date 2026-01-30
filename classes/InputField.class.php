@@ -69,17 +69,17 @@ class InputField {
 		// Input Field
 		$validInputClass = '';
 		if(!empty($this->validState)){
-			if($this->validState == 'valid'){
+			if($this->validState === 'valid'){
 				$validInputClass = ' is-valid';
-			}elseif($this->validState == 'invalid'){
+			}elseif($this->validState === 'invalid'){
 				$validInputClass = ' is-invalid';
 			}
 		}
 		$return .= '<input type="' . $this->type . '" class="form-control' . $validInputClass . '" id="' . $text->get($this->name) . 'Field" placeholder="' . $text->get($this->placeholder) . '" name="' . $text->get($this->name) . '"';
-		if($this->maxLength != 0){
+		if($this->maxLength !== 0){
 			$return .= 'maxlength="' . $this->maxLength . '"';
 		}
-		if(!empty($this->value) || $this->value == 0){
+		if(!empty($this->value) || $this->value === 0 || $this->value === '0'){
 			$return .= ' value="' . $text->get($this->value) . '"';
 		}
 		if(!empty($this->validState)){
@@ -102,7 +102,7 @@ class InputField {
 		}
 
 		// Validation State
-		if($this->validState == 'invalid'){
+		if($this->validState === 'invalid'){
 			// Message
 			$text2 = new Text(true, true, true);
 			$message = $text2->get($this->validMsg);
