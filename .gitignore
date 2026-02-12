@@ -1,11 +1,14 @@
 
+# OS
+.DS_Store
+
 # Credentials
 classes/config.php
 
-classes/_notes/dwsync.xml
-_notes/dwsync.xml
-blog/.DS_Store
-.nova/Configuration.json
+# IDE
 .nova/Configuration.json
 .nova/Publishing/Staging 22.04.json
-.nova/Configuration.json
+
+# Legacy
+classes/_notes/dwsync.xml
+_notes/dwsync.xml
