@@ -63,23 +63,21 @@ class uuid {
 	private function checkUnique($table){
 		// Default Return
 		$unique = false;
-		
+
 		// Connect to database
 		$db = new Database();
-		$dbTable = $db->escape($table);
-		$dbUUID = $db->escape($this->uuid);
-		
+
 		// Query
-		$db->query("SELECT id FROM $table WHERE id='$dbUUID'");
+		$result = $db->query("SELECT id FROM $table WHERE id = ?", [$this->uuid]);
 		if(!$db->error){
-			if($db->result->num_rows == 0){
+			if($result->num_rows == 0){
 				$unique = true;
 			}
 		}else{
 			$this->error = true;
 			$this->errorMsg = $db->errorMsg;
 		}
-		
+
 		// Return
 		return $unique;
 	}

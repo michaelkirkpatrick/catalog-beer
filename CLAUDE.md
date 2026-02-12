@@ -57,7 +57,7 @@ Key details:
 ### Key Classes (`classes/`)
 
 - **`API.class.php`** — REST API client using cURL. Constructor auto-fetches the user's API key if `$_SESSION['userID']` is set. Use: `$api->request('GET'|'POST'|'PUT', '/endpoint', $data)`. Check `$api->error` and `$api->httpcode` after calls.
-- **`Database.class.php`** — Direct MySQLi wrapper for local DB queries (error logging, etc). Use `$db->escape()` for all user input, `$db->query()`, `$db->resultArray()`, `$db->singleResult($key)`.
+- **`Database.class.php`** — MySQLi wrapper using prepared statements for local DB queries (error logging, etc). Use `$db->query($sql, $params)` with `?` placeholders and a params array. Check `$db->error` / `$db->errorMsg` after calls. SELECT queries return `mysqli_result` (use `->fetch_assoc()`, `->num_rows`); INSERT/UPDATE/DELETE return `null`. Also: `$db->getInsertId()`, `$db->getNumRows($result)`, `$db->close()`. Has built-in recursion guard for error logging.
 - **`Text.class.php`** — Text processing pipeline: `new Text($markdown, $smartyPants, $htmlPurifier)`. All three params are booleans. Call `$text->get($string)` to process. HTMLPurifier always runs for XSS prevention. Common patterns:
   - `new Text(false, true, true)` — SmartyPants quotes + purify (for display names)
   - `new Text(true, true, false)` — Markdown + SmartyPants (for descriptions with `<p>` tags kept)
