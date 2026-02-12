@@ -13,23 +13,23 @@ Catalog.beer is a traditional PHP web application serving as the frontend for "T
 **No build/test/lint commands exist.** This is a traditional PHP application with no automated testing.
 
 **Environments:**
-- Production: `catalog.beer`
-- Staging: `staging.catalog.beer`
+- Production: `catalog.beer` → API at `api.catalog.beer`
+- Staging: `staging.catalog.beer` → API at `api-staging.catalog.beer`
 
-Environment is detected via subdomain in `classes/initialize.php`.
+Environment is detected via subdomain in `classes/initialize.php`. Credentials live in `classes/config.php` (not committed; copy `config.example.php` to create it).
 
 ## Architecture
 
 ### Page Structure Pattern
 
-All pages follow this structure:
+Every page follows this exact structure:
 
 ```php
 <?php
-$guest = true;  // false for protected pages requiring login
+$guest = true;  // false for pages requiring login
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
-// Page logic here
+// Page logic: API calls, form processing, etc.
 
 $htmlHead = new htmlHead('Page Title');
 echo $htmlHead->html;
@@ -44,36 +44,56 @@ echo $htmlHead->html;
 </html>
 ```
 
+Key details:
+- `$guest` must be set **before** the `initialize.php` include — it controls the auth gate
+- `$nav` is a global `Navigation` instance created by `initialize.php`
+- The `navbar('Section')` argument highlights the active nav section (use `'Brewers'` or `'Beer'`)
+- HTML templates for head/navbar/footer live in `classes/resources/*.html` with `##PLACEHOLDER##` tokens
+
+### Class Autoloading
+
+`initialize.php` registers an autoloader: `require_once ROOT . '/classes/' . $class_name . '.class.php'`. Classes must be named `ClassName.class.php` and the class name must match the filename.
+
 ### Key Classes (`classes/`)
 
-- **`initialize.php`** - Bootstrap: session start, environment detection, class autoloader, authentication gate
-- **`API.class.php`** - REST API client for Catalog.beer API (handles auth, GET/POST/PUT)
-- **`Navigation.class.php`** - Navbar, breadcrumbs, pagination
-- **`Text.class.php`** - Text processing: optional Markdown, SmartyPants, HTMLPurifier (XSS prevention)
-- **`Alert.class.php`** - Bootstrap alert component
-- **`htmlHead.class.php`** - HTML `<head>` generator
-- **Form classes:** `InputField`, `Textarea`, `Checkbox`, `DropDown` - Bootstrap-styled form fields
+- **`API.class.php`** — REST API client using cURL. Constructor auto-fetches the user's API key if `$_SESSION['userID']` is set. Use: `$api->request('GET'|'POST'|'PUT', '/endpoint', $data)`. Check `$api->error` and `$api->httpcode` after calls.
+- **`Database.class.php`** — Direct MySQLi wrapper for local DB queries (error logging, etc). Use `$db->escape()` for all user input, `$db->query()`, `$db->resultArray()`, `$db->singleResult($key)`.
+- **`Text.class.php`** — Text processing pipeline: `new Text($markdown, $smartyPants, $htmlPurifier)`. All three params are booleans. Call `$text->get($string)` to process. HTMLPurifier always runs for XSS prevention. Common patterns:
+  - `new Text(false, true, true)` — SmartyPants quotes + purify (for display names)
+  - `new Text(true, true, false)` — Markdown + SmartyPants (for descriptions with `<p>` tags kept)
+  - `new Text(false, false, true)` — Purify only (for IDs, numbers)
+- **`Alert.class.php`** — Bootstrap alert. Set `$alert->msg` (supports Markdown), `$alert->type` (`'success'`/`'info'`/`'warning'`/`'error'`), `$alert->dismissible`. Call `$alert->display()`.
+- **`LogError.class.php`** — Logs errors to the `error_log` DB table. Set `errorNumber`, `errorMsg`, `badData`, `filename`, then call `$errorLog->write()`.
+- **`Navigation.class.php`** — Navbar, breadcrumbs (`$nav->breadcrumbText` / `$nav->breadcrumbLink` arrays), pagination.
+- **Form classes** (`InputField`, `Textarea`, `Checkbox`, `DropDown`) — Bootstrap-styled form components. Set properties then call `->display()`.
 
 ### URL Routing
 
-Apache `.htaccess` handles clean URLs. Pattern: `/resource/UUID` → `resource.php?resourceID=UUID`
-
-Key routes:
-- `/beer`, `/beer/{uuid}`, `/beer/add/{brewerID}`
-- `/brewer`, `/brewer/{uuid}`, `/brewer/add`
-- `/location/{uuid}/add-address`
+Apache `.htaccess` handles clean URLs. Pattern: `/resource/UUID` → `resource.php?resourceID=UUID`. UUIDs are 36-char hyphenated format (`[-0-9a-f]{36}`).
 
 ### Authentication
 
 - Session-based: `$_SESSION['userID']`
-- Set `$guest = false` at page start to require login
-- Protected pages redirect to `/login` with return URL
-- Email verification enforced for authenticated users
+- Set `$guest = false` at page top to require login
+- Protected pages redirect to `/login?request=<URI>` with return URL
+- Email verification enforced — unverified users are redirected to `/verify-email`
+
+### Form Processing Pattern
+
+Forms use POST to the same page. The pattern:
+1. Initialize default values and validation state arrays
+2. Check `isset($_POST['submit'])`
+3. POST to the API via `$api->request('POST', ...)`
+4. On success: set a session flash variable, redirect with `header('location: ...')`, `exit()`
+5. On error: populate `$validState` and `$validMsg` arrays from API response, display form with errors
+
+### Error Logging Convention
+
+Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15`). Each error is logged with a filename reference to the originating file.
 
 ### External Integrations
 
-- **Catalog.beer API** - Primary data source (production: `api.catalog.beer`, staging: `api-staging.catalog.beer`)
-- **Postmark** - Transactional email
-- **Google reCAPTCHA v3** - Form protection
-- **Apple MapKit JS** - Map functionality (JWT tokens via `JWT.class.php`)
-- **Fathom Analytics** - Privacy-focused analytics
+- **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
+- **Google reCAPTCHA v3** — Form protection (`recaptcha.php`)
+- **Apple MapKit JS** — Map functionality, JWT tokens via `JWT.class.php` (key in `classes/resources/`)
+- **Fathom Analytics** — Privacy-focused analytics (in head template)
