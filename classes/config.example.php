@@ -14,4 +14,12 @@ define('API_KEY_PRODUCTION', 'your_production_api_key');
 
 // Postmark Email
 define('POSTMARK_SERVER_TOKEN', 'your_postmark_token');
+
+// Google reCAPTCHA v3
+define('RECAPTCHA_SECRET_KEY', 'your_recaptcha_secret_key');
+define('RECAPTCHA_SITE_KEY', 'your_recaptcha_site_key');
+
+// Apple MapKit JS
+define('MAPKIT_KEY_ID', 'your_mapkit_key_id');
+define('MAPKIT_TEAM_ID', 'your_mapkit_team_id');
 ?>

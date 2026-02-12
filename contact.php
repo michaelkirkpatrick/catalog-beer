@@ -26,7 +26,7 @@ if(isset($_POST['signupFormHidden'])){
 	$captcha = $_POST['g-recaptcha-response'];
 	
 	// Verify Captcha
-	$captchaSecretKey = '6Le1WMUUAAAAAEPIAyNW6dFiISUWg3i3AEob2YVv';
+	$captchaSecretKey = RECAPTCHA_SECRET_KEY;
 	$captchaResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $captchaSecretKey . '&response=' . $captcha . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
 	$captchaJSON = json_decode($captchaResponse, true);
 	if($captchaJSON['success'] == false){
@@ -233,10 +233,10 @@ echo $htmlHead->html;
   </div>
   <?php echo $nav->footer(); ?> 
 </body>
-<script src='https://www.google.com/recaptcha/api.js?render=6Le1WMUUAAAAANAfdjxqXAo2OpkfmkxH7RSD-sLK'></script>
+<script src='https://www.google.com/recaptcha/api.js?render=<?php echo RECAPTCHA_SITE_KEY; ?>'></script>
 <script type="application/javascript">
 	grecaptcha.ready(function() {
-		grecaptcha.execute('6Le1WMUUAAAAANAfdjxqXAo2OpkfmkxH7RSD-sLK', {action: 'contact_form'}).then(function(token) {
+		grecaptcha.execute('<?php echo RECAPTCHA_SITE_KEY; ?>', {action: 'contact_form'}).then(function(token) {
 			document.getElementById("g-recaptcha-response").value = token;
 		});
 	});
