@@ -51,7 +51,7 @@ class Navigation {
 		$html = '';
 		if($numItems > 0){
 			// Start HTML
-			$html .= '<ol class="breadcrumb">';
+			$html .= '<nav aria-label="breadcrumb"><ol class="breadcrumb">';
 
 			// Loop through crumbs
 			for($i=0; $i<=$numItems-1; $i++){
@@ -66,7 +66,7 @@ class Navigation {
 				}
 
 				// Breadcrumb Text
-				$text = htmlspecialchars($this->breadcrumbText[$i]);
+				$text = htmlspecialchars($this->breadcrumbText[$i] ?? '');
 				$html .= $message = SmartyPants::defaultTransform($text);
 
 				// Close Link
@@ -79,7 +79,7 @@ class Navigation {
 			}
 
 			// End HTML
-			$html .= '</ol>';
+			$html .= '</ol></nav>';
 
 			// Update Public Variable
 			$this->breadcrumbHTML = $html;
@@ -116,12 +116,12 @@ class Navigation {
 		
 		// Sign In / Sign Out
 		if(isset($_SESSION['userID'])){
-			$signIn = '<a  class="dropdown-item" href="/account">My Account</a>' . "\n";
-			$signIn .= '<div class="dropdown-divider"></div>' . "\n";
-			$signIn .= '<a class="dropdown-item" href="/logout">Log out</a>' . "\n";
+			$signIn = '<li><a class="dropdown-item" href="/account">My Account</a></li>' . "\n";
+			$signIn .= '<li><hr class="dropdown-divider"></li>' . "\n";
+			$signIn .= '<li><a class="dropdown-item" href="/logout">Log out</a></li>' . "\n";
 		}else{
-			$signIn = '<a class="dropdown-item" href="/signup">Create an Account</a>' . "\n";
-			$signIn .= '<a class="dropdown-item" href="/login">Log in</a>' . "\n";
+			$signIn = '<li><a class="dropdown-item" href="/signup">Create an Account</a></li>' . "\n";
+			$signIn .= '<li><a class="dropdown-item" href="/login">Log in</a></li>' . "\n";
 		}
 		$html = str_replace('##ACCOUNT##', $signIn, $html);
 			
@@ -135,7 +135,7 @@ class Navigation {
 		$srAdd = '';
 		if($section == $title){
 			$classAdd = ' active';
-			$srAdd = ' <span class="sr-only">(current)</span>';
+			$srAdd = ' <span class="visually-hidden">(current)</span>';
 		}
 		
 		// Create HTML
@@ -153,13 +153,13 @@ class Navigation {
 		if($page > 1){
 			// Previous
 			$previous = $page - 1;
-			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $previous . '" aria-label="Previous" title="Previous Page"><span aria-hidden="true">&lt;</span><span class="sr-only">Previous</span></a></li>';
+			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $previous . '" aria-label="Previous" title="Previous Page"><span aria-hidden="true">&lt;</span><span class="visually-hidden">Previous</span></a></li>';
 		}
 		
 		if($page >= 15){
 			// Jump 10 back
 			$minusTen = $page - 10;
-			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $minusTen . '" aria-label="Jump Back 10" title="Jump Back 10"><span aria-hidden="true">-10</span><span class="sr-only">Jump Back 10</span></a></li>';
+			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $minusTen . '" aria-label="Jump Back 10" title="Jump Back 10"><span aria-hidden="true">-10</span><span class="visually-hidden">Jump Back 10</span></a></li>';
 		}
 		
 		// Starting Page Number
@@ -179,13 +179,13 @@ class Navigation {
 		if($page+14 < $totalPages){
 			// Jump forward 10
 			$plusTen = $page + 10;
-			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $plusTen . '" aria-label="Jump Forward 10" title="Jump Forward 10"><span aria-hidden="true">+10</span><span class="sr-only">Jump Forward 10</span></a></li>';
+			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $plusTen . '" aria-label="Jump Forward 10" title="Jump Forward 10"><span aria-hidden="true">+10</span><span class="visually-hidden">Jump Forward 10</span></a></li>';
 		}
 		
 		if($page < $totalPages){
 			// Next
 			$next = $page + 1;
-			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $next . '" aria-label="Next" title="Next Page"><span aria-hidden="true">&gt;</span><span class="sr-only">Next</span></a></li>';
+			$pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $next . '" aria-label="Next" title="Next Page"><span aria-hidden="true">&gt;</span><span class="visually-hidden">Next</span></a></li>';
 		}
 		
 		$pageNav .= '</ul>';		// Close pagination

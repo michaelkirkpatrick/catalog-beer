@@ -8,7 +8,7 @@ class Text {
 	public $text = '';
 	public $markdown = true;
 	public $smartyPants = true;
-	public $paragraphs = true;
+	public $removeParagraphs = false;
 	
 	function __construct($markdown, $smartyPants, $removeParagraphs){
 		// Save to Class

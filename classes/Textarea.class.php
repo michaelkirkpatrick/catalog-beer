@@ -43,10 +43,10 @@ class Textarea {
 		}
 
 		// Start Div
-		$return = '<div class="form-group">';
+		$return = '<div class="mb-3">';
 
 		// Label
-		$return .= '<label for="' . htmlspecialchars($this->name) . 'Field" class="control-label">' . $this->description;
+		$return .= '<label for="' . htmlspecialchars($this->name) . 'Field" class="form-label">' . $this->description;
 		if(!$this->required){
 			$return .= ' <span class="text-muted" style="font-weight:400">(optional)</span>';
 		}

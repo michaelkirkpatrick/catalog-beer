@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Catalog.beer is a traditional PHP web application serving as the frontend for "The Internet's Beer Database." This is **not** a full-stack application—it consumes the [Catalog.beer REST API](https://github.com/michaelkirkpatrick/catalog-beer-api) for all data operations. See also the [MySQL Schema](https://github.com/michaelkirkpatrick/catalog-beer-mysql).
 
-**Stack:** PHP 7.x+, Bootstrap 4.3.1, Apache (mod_rewrite), no build system or package manager.
+**Stack:** PHP 8.3, Bootstrap 5.3.3, Apache (mod_rewrite), no build system or package manager.
 
 ## Development
 

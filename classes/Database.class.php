@@ -70,7 +70,7 @@ class Database {
 				// Log Error
 				$errorLog = new LogError();
 				$errorLog->errorNumber = 'C5';
-				$errorLog->fileName = 'Database.class.php';
+				$errorLog->filename = 'Database.class.php';
 				$errorLog->errorMsg = 'Query Error';
 				$errorLog->badData = 'Query: ' . $query . ' MySQL Error: ' . $this->mysqli->error;
 				$errorLog->write();
@@ -95,7 +95,7 @@ class Database {
 	
 	// ----- Escape -----
 	public function escape($string){
-		$escaped = $this->mysqli->real_escape_string($string);
+		$escaped = $this->mysqli->real_escape_string($string ?? '');
 		$escaped = str_replace("%", "\%", $escaped);
 		$escaped = str_replace("_", "\_", $escaped);
 		return $escaped;

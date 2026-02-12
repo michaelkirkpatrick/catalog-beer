@@ -9,7 +9,7 @@ class API {
 
 	public $error = false;
 	public $errorMsg = '';
-	public $httpCode = 0;
+	public $httpcode = 0;
 
 	function __construct(){
 		// Establish Environment

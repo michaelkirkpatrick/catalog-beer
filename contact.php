@@ -53,7 +53,7 @@ if(isset($_POST['signupFormHidden'])){
 
 			// Validate Name
 			if(!empty($name)){
-				if(strlen($name <= 255)){
+				if(strlen($name) <= 255){
 					// Valid Name
 					$validState['name'] = 'success';
 					$sendEmail->name = $name;
@@ -72,7 +72,7 @@ if(isset($_POST['signupFormHidden'])){
 
 			// Validate Subject
 			if(!empty($subject)){
-				if(strlen($subject <= 255)){
+				if(strlen($subject) <= 255){
 					// Valid Subject
 					$validState['subject'] = 'success';
 					$sendEmail->subject = $subject;

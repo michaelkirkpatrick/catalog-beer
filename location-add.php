@@ -132,10 +132,10 @@ echo $htmlHead->html;
 					echo $inputURL->display();
 
 					// Country
-					echo '<div class="form-group">' . "\n";
-					echo '<label for="CountryCodeField" class="control-label">Country</label>' . "\n";
+					echo '<div class="mb-3">' . "\n";
+					echo '<label for="CountryCodeField" class="form-label">Country</label>' . "\n";
 					echo '<fieldset disabled>' . "\n";
-					echo '<select name="country_code" class="form-control" id="CountryCodeField">' . "\n";
+					echo '<select name="country_code" class="form-select" id="CountryCodeField">' . "\n";
 					echo '<option value="US">United States of America</option>' . "\n";
 					echo '</select>' . "\n";
 					echo '</fieldset>' . "\n";

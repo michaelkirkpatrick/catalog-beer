@@ -4,7 +4,7 @@ $guest = true;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
 // Get Brewer Information
-$brewerID = $_GET['brewerID'];
+$brewerID = $_GET['brewerID'] ?? '';
 $api = new API();
 $brewerResp = $api->request('GET', '/brewer/' . $brewerID . '/beer', '');
 $brewerData = json_decode($brewerResp);
@@ -70,7 +70,7 @@ echo $htmlHead->html;
 		if($brewerData->brewer->cb_verified){
 			echo '<img src="/images/cb-verified.svg" width="20" height="20" class="d-inline-block align-baseline" alt="Catalog.beer Verified"  title="Verified by Catalog.beer" style="margin-left:2px;">';
 		}elseif($brewerData->brewer->brewer_verified){
-			echo '<img src="/images/brewer-verified.svg" width="20" height="20" class="d-inline-block align-baseline" alt="Brewer Verified" data-toggle="tooltip" data-placement="right" title="Verified by the brewer" style="margin-left:2px;">';
+			echo '<img src="/images/brewer-verified.svg" width="20" height="20" class="d-inline-block align-baseline" alt="Brewer Verified" data-bs-toggle="tooltip" data-bs-placement="right" title="Verified by the brewer" style="margin-left:2px;">';
 		}
 		echo '</h1>' . "\n";
 

@@ -49,10 +49,10 @@ class InputField {
 		$classAdd = '';
 
 		// Start Div
-		$return = '<div class="form-group">';
+		$return = '<div class="mb-3">';
 
 		// Label
-		$return .= '<label for="' . $text->get($this->name) . 'Field">' . $text->get($this->description);
+		$return .= '<label class="form-label" for="' . $text->get($this->name) . 'Field">' . $text->get($this->description);
 		if(!$this->required){
 			$return .= ' <span class="text-muted" style="font-weight:400">(optional)</span>';
 		}
@@ -63,7 +63,7 @@ class InputField {
 			$return .= '<div class="input-group">';
 		}
 		if(!empty($this->addBefore)){
-			$return .= '<span class="input-group-addon">' . $text->get($this->addBefore) . '</span>';
+			$return .= '<span class="input-group-text">' . $text->get($this->addBefore) . '</span>';
 		}
 
 		// Input Field
@@ -95,7 +95,7 @@ class InputField {
 
 		// Close Add On
 		if(!empty($this->addAfter)){
-			$return .= '<span class="input-group-addon">' . $text->get($this->addAfter) . '</span>';
+			$return .= '<span class="input-group-text">' . $text->get($this->addAfter) . '</span>';
 		}
 		if(!empty($this->addBefore) || !empty($this->addAfter)){
 			$return .= '</div>';

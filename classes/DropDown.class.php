@@ -26,14 +26,14 @@ echo $dropDown->display();
 class DropDown {
 
 	// Public
-	public $name;
+	public $name = '';
 	public $values = array();
 	public $descriptions = array();
 	public $label = '';
 	public $showLabel = false;
-	public $currentValue;
-	public $validState;
-	public $validMsg;
+	public $currentValue = '';
+	public $validState = '';
+	public $validMsg = '';
 	public $disabled = false;
 	public $required = false;
 
@@ -48,20 +48,19 @@ class DropDown {
 		}
 
 		// Error Class
-		$classAdd = '';
+		// Validation class for select element
+		$selectClassAdd = '';
 		if(!empty($this->validState)){
-			$classAdd = ' has-feedback';
-			if($this->validState == 'success'){$classAdd .= ' has-success';}
-			if($this->validState == 'warning'){$classAdd .= ' has-warning';}
-			if($this->validState == 'error'){$classAdd .= ' has-error';}
+			if($this->validState === 'success' || $this->validState === 'valid'){$selectClassAdd = ' is-valid';}
+			if($this->validState === 'warning' || $this->validState === 'error' || $this->validState === 'invalid'){$selectClassAdd = ' is-invalid';}
 		}
 
 		// Start Div
-		$return = '<div class="form-group' . $classAdd . '">' . "\n";
+		$return = '<div class="mb-3">' . "\n";
 
 		// Label
 		if($this->showLabel){
-			$return .= '<label for="' . htmlspecialchars($this->name) . 'Field" class="control-label">' . htmlspecialchars($this->label);	
+			$return .= '<label for="' . htmlspecialchars($this->name) . 'Field" class="form-label">' . htmlspecialchars($this->label);	
 			if(!$this->required){
 				$return .= ' <span class="text-muted" style="font-weight:400">(optional)</span>';
 			}
@@ -69,7 +68,7 @@ class DropDown {
 		}
 
 		// Select
-		$return .= '<select class="form-control" name="' . htmlspecialchars($this->name) . '" id="' . htmlspecialchars($this->name) . 'Field"';
+		$return .= '<select class="form-select' . $selectClassAdd . '" name="' . htmlspecialchars($this->name) . '" id="' . htmlspecialchars($this->name) . 'Field"';
 		if(!empty($this->validState)){
 			$return .= ' aria-describedby="helpMsg' . htmlspecialchars($this->name) . '"';
 		}
@@ -101,13 +100,13 @@ class DropDown {
 		if(!empty($this->validState)){
 
 			// Validation Message
-			if($this->validState == 'success'){
+			if($this->validState === 'success' || $this->validState === 'valid'){
 				$this->validMsg = '(success)';
-				$validation_class = 'sr-only';
+				$validation_class = 'valid-feedback';
 			}else{
-				$validation_class = 'help-block';
+				$validation_class = 'invalid-feedback';
 			}
-			$return .= '<span class="' . $validation_class . '" id="helpMsg' . htmlspecialchars($this->name) . '">' . htmlspecialchars($this->validMsg) . '</span>' . "\n";
+			$return .= '<div class="' . $validation_class . '" id="helpMsg' . htmlspecialchars($this->name) . '">' . htmlspecialchars($this->validMsg) . '</div>' . "\n";
 		}
 
 		// Close Div

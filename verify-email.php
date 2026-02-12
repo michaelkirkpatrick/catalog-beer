@@ -8,12 +8,12 @@ $htmlHead = new htmlHead('Verify Email');
 echo $htmlHead->html;
 
 // Email Auth Code
-$emailAuth = substr($_GET['emailAuth'], 1, 36);
+$emailAuth = isset($_GET['emailAuth']) ? substr($_GET['emailAuth'], 1, 36) : '';
 ?>
 <body>
 	<?php echo $nav->navbar(''); ?>
 	<div class="container">
-		<div class="jumbotron">
+		<div class="p-5 mb-4 bg-light rounded-3">
 			<?php
 			if(!empty($emailAuth)){
 				$api = new API();

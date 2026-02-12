@@ -33,7 +33,7 @@ class Alert {
 			$return .= '" role="alert" style="margin-bottom:1em;">';
 			$return .= $text->get($this->msg);
 			if($this->dismissible){
-				$return .= "\n" . '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';	
+				$return .= "\n" . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';	
 			}
 			$return .= '</div>';
 		}else{

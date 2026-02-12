@@ -29,11 +29,11 @@ class Checkbox{
 		$classAdd = '';
 
 		// Error Class
+		$inputClassAdd = '';
 		$feedbackStates = array('valid', 'invalid');
 		if(in_array($this->validState, $feedbackStates)){
-			$classAdd = ' has-feedback';
-			if($this->validState == 'valid'){$classAdd .= ' text-success';}
-			if($this->validState == 'invalid'){$classAdd .= ' text-danger';}
+			if($this->validState === 'valid'){$inputClassAdd = ' is-valid';}
+			if($this->validState === 'invalid'){$inputClassAdd = ' is-invalid';}
 		}
 
 		// Start Div
@@ -41,7 +41,7 @@ class Checkbox{
 
 		// Begin Checkbox
 		$text1 = new Text(false, false, true);
-		$html .= '<input class="form-check-input" type="checkbox" value="' . $text1->get($this->value) . '" name="' . $text1->get($this->name) . '" id="check' . $text1->get($this->name) . '"';
+		$html .= '<input class="form-check-input' . $inputClassAdd . '" type="checkbox" value="' . $text1->get($this->value) . '" name="' . $text1->get($this->name) . '" id="check' . $text1->get($this->name) . '"';
 		
 		// Checked?
 		if(is_array($this->variable)){

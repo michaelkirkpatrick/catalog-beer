@@ -68,7 +68,7 @@ echo $htmlHead->html;
 		echo '<p class="text-muted"><small>Page ' . $page . ' of ' . $totalPages . '</small></p>';
 		echo '</div>';
 		echo '<div class="col">';
-		echo '<p class="text-right"><a class="btn btn-primary" href="/brewer/add" role="button" title="Add a brewer"><strong>+</strong> Add</a></p>';
+		echo '<p class="text-end"><a class="btn btn-primary" href="/brewer/add" role="button" title="Add a brewer"><strong>+</strong> Add</a></p>';
 		echo '</div>';
 		echo '</div>';
 		echo '<div class="row">';
