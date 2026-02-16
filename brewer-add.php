@@ -17,6 +17,10 @@ $instagramURL = '';
 
 // Process Form
 if(isset($_POST['submit'])){
+	if(!csrf_verify()){
+		$alert->msg = 'Invalid form submission. Please try again.';
+		$alert->type = 'error';
+	}else{
 	// Get Posted Variables
 	$name = $_POST['name'];
 	$description = $_POST['description'];
@@ -38,6 +42,7 @@ if(isset($_POST['submit'])){
 		// Success
 		header('location: /brewer/' . $brewerArray['id']);
 		exit();
+	}
 	}
 }
 
@@ -61,6 +66,7 @@ echo $htmlHead->html;
 				
 				?>
         <form method="post">
+					<?php echo csrf_field(); ?>
 					<?php
 					// Name
 					$inputName = new InputField();

@@ -48,40 +48,45 @@ if(isset($_GET['locationID'])){
 		
 		// Process Form
 		if(isset($_POST['submit'])){
-			// Remove Autofocus
-			$autofocus = false;
-			
-			// Get Posted Variables
-			$address1 = $_POST['address1'];
-			$address2 = $_POST['address2'];
-			$city = $_POST['city'];
-			$sub_code = $_POST['sub_code'];
-			$zip = $_POST['zip'];
-			$telephone = $_POST['telephone'];
-			
-			// Process ZIP Code
-			if(!empty($zip)){
-				$zip5 = substr($zip, 0, 5);
-				if(strlen($zip) > 5){
-					$zip4 = substr($zip, 6, 4);
-				}
-			}
-			
-			$addressPOST = array('address1'=>$address1, 'address2'=>$address2, 'city'=>$city, 'sub_code'=>$sub_code, 'zip5'=>$zip5, 'zip4'=>$zip4, 'telephone'=>$telephone);
-			$addressResponse = $api->request('POST', '/address/' . $locationID, $addressPOST);
-			$locationData = json_decode($addressResponse, true);
-			if(isset($locationData['error'])){
-				// Error Adding Beer
-				$alert->msg = $locationData['error_msg'];
-				$validState = $locationData['valid_state'];
-				$validMsg = $locationData['valid_msg'];
-				
-				$validState['zip'] = $locationData['valid_state']['zip5'];
-				$validMsg['zip'] = $locationData['valid_msg']['zip5'];
+			if(!csrf_verify()){
+				$alert->msg = 'Invalid form submission. Please try again.';
+				$alert->type = 'error';
 			}else{
-				// Successfully Added
-				header('location: /brewer/' . $brewerID);
-				exit();
+				// Remove Autofocus
+				$autofocus = false;
+
+				// Get Posted Variables
+				$address1 = $_POST['address1'];
+				$address2 = $_POST['address2'];
+				$city = $_POST['city'];
+				$sub_code = $_POST['sub_code'];
+				$zip = $_POST['zip'];
+				$telephone = $_POST['telephone'];
+
+				// Process ZIP Code
+				if(!empty($zip)){
+					$zip5 = substr($zip, 0, 5);
+					if(strlen($zip) > 5){
+						$zip4 = substr($zip, 6, 4);
+					}
+				}
+
+				$addressPOST = array('address1'=>$address1, 'address2'=>$address2, 'city'=>$city, 'sub_code'=>$sub_code, 'zip5'=>$zip5, 'zip4'=>$zip4, 'telephone'=>$telephone);
+				$addressResponse = $api->request('POST', '/address/' . $locationID, $addressPOST);
+				$locationData = json_decode($addressResponse, true);
+				if(isset($locationData['error'])){
+					// Error Adding Beer
+					$alert->msg = $locationData['error_msg'];
+					$validState = $locationData['valid_state'];
+					$validMsg = $locationData['valid_msg'];
+
+					$validState['zip'] = $locationData['valid_state']['zip5'];
+					$validMsg['zip'] = $locationData['valid_msg']['zip5'];
+				}else{
+					// Successfully Added
+					header('location: /brewer/' . $brewerID);
+					exit();
+				}
 			}
 		}
 	}else{
@@ -114,6 +119,7 @@ echo $htmlHead->html;
 				echo $alert->display();
 				?>
         <form method="post">
+					<?php echo csrf_field(); ?>
 					<?php
 					if($disabled){
 						echo '<fieldset disabled>' . "\n";

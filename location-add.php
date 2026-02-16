@@ -33,25 +33,30 @@ if(isset($_GET['brewerID'])){
 		
 		// Process Form
 		if(isset($_POST['submit'])){
-			// Remove Input Field Autofocus
-			$autofocus = false;
-			
-			// Get Posted Variables
-			$name = $_POST['name'];
-			$url = $_POST['url'];
-
-			$locationPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'url'=>$url, 'country_code'=>$country_code);
-			$locationResponse = $api->request('POST', '/location', $locationPOST);
-			$locationData = json_decode($locationResponse, true);
-			if(!isset($locationData['error'])){
-				// Successfully Added
-				header('location: /location/' . $locationData['id'] . '/add-address');
-				exit();
+			if(!csrf_verify()){
+				$alert->msg = 'Invalid form submission. Please try again.';
+				$alert->type = 'error';
 			}else{
-				// Error Adding Beer
-				$alert->msg = $locationData['error_msg'];
-				$validState = $locationData['valid_state'];
-				$validMsg = $locationData['valid_msg'];
+				// Remove Input Field Autofocus
+				$autofocus = false;
+
+				// Get Posted Variables
+				$name = $_POST['name'];
+				$url = $_POST['url'];
+
+				$locationPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'url'=>$url, 'country_code'=>$country_code);
+				$locationResponse = $api->request('POST', '/location', $locationPOST);
+				$locationData = json_decode($locationResponse, true);
+				if(!isset($locationData['error'])){
+					// Successfully Added
+					header('location: /location/' . $locationData['id'] . '/add-address');
+					exit();
+				}else{
+					// Error Adding Beer
+					$alert->msg = $locationData['error_msg'];
+					$validState = $locationData['valid_state'];
+					$validMsg = $locationData['valid_msg'];
+				}
 			}
 		}
 	}else{
@@ -90,6 +95,7 @@ echo $htmlHead->html;
 				echo $alert->display();
 				?>
         <form method="post">
+					<?php echo csrf_field(); ?>
 					<?php
 					// Brewery
 					echo '<fieldset disabled>' . "\n";

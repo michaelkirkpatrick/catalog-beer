@@ -33,26 +33,31 @@ if(isset($_GET['brewerID'])){
 		
 		// Process Form
 		if(isset($_POST['submit'])){
-			// Get Posted Variables
-			$name = $_POST['name'];
-			$style = $_POST['style'];
-			$description = $_POST['description'];
-			$abv = $_POST['abv'];
-			$ibu = $_POST['ibu'];
-
-			$beerPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'style'=>$style, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
-			$beerResponse = $api->request('POST', '/beer', $beerPOST);
-			$beerData = json_decode($beerResponse, true);
-			if(!isset($beerData['error'])){
-				// Successfully Added
-				$_SESSION['add_beer_success'] = true;
-				header('location: /beer/' . $beerData['id']);
-				exit();
+			if(!csrf_verify()){
+				$alert->msg = 'Invalid form submission. Please try again.';
+				$alert->type = 'error';
 			}else{
-				// Error Adding Beer
-				$alert->msg = $beerData['error_msg'];
-				$validState = $beerData['valid_state'];
-				$validMsg = $beerData['valid_msg'];
+				// Get Posted Variables
+				$name = $_POST['name'];
+				$style = $_POST['style'];
+				$description = $_POST['description'];
+				$abv = $_POST['abv'];
+				$ibu = $_POST['ibu'];
+
+				$beerPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'style'=>$style, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
+				$beerResponse = $api->request('POST', '/beer', $beerPOST);
+				$beerData = json_decode($beerResponse, true);
+				if(!isset($beerData['error'])){
+					// Successfully Added
+					$_SESSION['add_beer_success'] = true;
+					header('location: /beer/' . $beerData['id']);
+					exit();
+				}else{
+					// Error Adding Beer
+					$alert->msg = $beerData['error_msg'];
+					$validState = $beerData['valid_state'];
+					$validMsg = $beerData['valid_msg'];
+				}
 			}
 		}
 	}else{
@@ -91,6 +96,7 @@ echo $htmlHead->html;
 				echo $alert->display();
 				?>
         <form method="post">
+					<?php echo csrf_field(); ?>
 					<?php
 					// Brewery
 					echo '<fieldset disabled>' . "\n";
