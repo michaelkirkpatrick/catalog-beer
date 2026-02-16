@@ -7,13 +7,13 @@ require_once __DIR__ . '/passwords.php';
 
 // Database Configuration
 define('DB_HOST', 'localhost');
-define('DB_USER', 'your_db_user');
-define('DB_NAME', 'your_db_name');
+define('DB_USER', 'catalogadmin');
+define('DB_NAME', 'catalogbeer');
 
 // Google reCAPTCHA v3 (public site key)
-define('RECAPTCHA_SITE_KEY', 'your_recaptcha_site_key');
+define('RECAPTCHA_SITE_KEY', '6Le1WMUUAAAAANAfdjxqXAo2OpkfmkxH7RSD-sLK');
 
 // Apple MapKit JS
-define('MAPKIT_KEY_ID', 'your_mapkit_key_id');
-define('MAPKIT_TEAM_ID', 'your_mapkit_team_id');
+define('MAPKIT_KEY_ID', 'KY3482YPC5');
+define('MAPKIT_TEAM_ID', 'WJL53F635R');
 ?>

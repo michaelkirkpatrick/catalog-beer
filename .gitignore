@@ -3,7 +3,10 @@
 .DS_Store
 
 # Credentials
-classes/config.php
+classes/passwords.php
+
+# Private keys
+*.p8
 
 # IDE
 .nova/Configuration.json
