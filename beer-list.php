@@ -11,6 +11,13 @@ $alert = new Alert();
 $api = new API();
 $beerCountResp = $api->request('GET', '/beer/count', '');
 $beerCountData = json_decode($beerCountResp);
+if(!isset($beerCountData->value)){
+	http_response_code(503);
+	$htmlHead = new htmlHead('Beer');
+	echo $htmlHead->html;
+	echo '<body>' . $nav->navbar('Beer') . '<div class="container"><h1>Beer</h1><p>Sorry, we are unable to connect to our database right now. Please try again later.</p></div>' . $nav->footer() . '</body></html>';
+	exit();
+}
 $numBeers = $beerCountData->value;
 $perPage = 500;
 $totalPages = round($numBeers/$perPage, 0, PHP_ROUND_HALF_UP);
@@ -66,9 +73,18 @@ echo $htmlHead->html;
 		echo '</div>';	// Close Col
 		echo '</div>';	// Close Row
 
-		// Get Brewer IDs
+		// Get Beer List
 		$beerResp = $api->request('GET', '/beer?limit=' . $perPage . '&cursor=' . $cursor, '');
 		$beerData = json_decode($beerResp);
+		if(!isset($beerData->data)){
+			$alert->msg = 'Sorry, we were unable to load the beer list. Please try again later.';
+			$alert->type = 'warning';
+			echo $alert->display();
+			echo '</div>';
+			echo $nav->footer();
+			echo '</body></html>';
+			exit();
+		}
 
 		// Setup Columns
 		echo '<div class="row">';

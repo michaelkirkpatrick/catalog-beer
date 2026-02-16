@@ -69,19 +69,23 @@ if(isset($_POST['submit'])){
 	$loginArray = json_decode($apiResponse, true);
 	if(isset($loginArray['id'])){
 		// Successful Log In
-		// Set userID
+		session_regenerate_id(true);
 		$_SESSION['userID'] = $loginArray['id'];
 		
 		// Go to $nextPage
 		header('location: ' . $nextPage);
 		exit();
-	}else{
+	}elseif(is_array($loginArray) && isset($loginArray['valid_state'])){
 		// Error Logging In
 		$validState = $loginArray['valid_state'];
 		$validMsg = $loginArray['valid_msg'];
 		if(!empty($loginArray['error_msg'])){
 			$alert->msg = $loginArray['error_msg'];
 		}
+	}else{
+		// API unreachable or unexpected response
+		$alert->msg = 'Sorry, we are unable to process your login right now. Please try again later.';
+		$alert->type = 'warning';
 	}
 }
 

@@ -35,11 +35,15 @@ echo $htmlHead->html;
 					$api = new API();
 					$apiKeyResp = $api->request('GET', '/users/' . $_SESSION['userID'] . '/api-key', '');
 					$apiKeyData = json_decode($apiKeyResp);
-					
-					// Get API Usage
-					$currentUsageResp = $api->request('GET', '/usage/currentMonth/' . $apiKeyData->api_key, '');
-					$currentUsageData = json_decode($currentUsageResp);
-					$apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr></table><p>Learn more about the <a href="/api-docs">Catalog.beer API</a>.</p>';
+
+					if(isset($apiKeyData->api_key)){
+						// Get API Usage
+						$currentUsageResp = $api->request('GET', '/usage/currentMonth/' . $apiKeyData->api_key, '');
+						$currentUsageData = json_decode($currentUsageResp);
+						$apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr></table><p>Learn more about the <a href="/api-docs">Catalog.beer API</a>.</p>';
+					}else{
+						$apiKey = '<p>Unable to load your API key. Please try again later.</p>';
+					}
 				}else{
 					// Unverified
 					$pillAdd = ' <span class="badge badge-pill badge-warning">Unverified</span>';

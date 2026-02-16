@@ -1,34 +1,19 @@
 <?php
+// Initialize (set DOCUMENT_ROOT for CLI context)
+if(empty($_SERVER["DOCUMENT_ROOT"])){
+	$_SERVER["DOCUMENT_ROOT"] = dirname(__FILE__);
+}
+if(empty($_SERVER['SERVER_NAME'])){
+	$_SERVER['SERVER_NAME'] = 'catalog.beer';
+}
+$guest = true;
+include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
+
+$api = new API();
+
 function request($endpoint){
-		
-	$url = 'https://api.catalog.beer';
-	$apiKey = '';
-
-	// Headers & Options
-	$headerArray = array(
-		"accept: application/json",
-		"authorization: Basic " . base64_encode($apiKey . ":"),
-	);
-
-	$optionsArray = array(
-		CURLOPT_URL => $url . $endpoint,
-		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_TIMEOUT => 30,
-		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-		CURLOPT_CUSTOMREQUEST => 'GET',
-		CURLOPT_HTTPHEADER => $headerArray
-	);
-
-	// Create cURL Request
-	$curl = curl_init();
-	curl_setopt_array($curl, $optionsArray);
-	$response = curl_exec($curl);
-	$err = curl_error($curl);
-	curl_close($curl);
-
-	if(empty($err)){			
-		return $response;
-	}
+	global $api;
+	return $api->request('GET', $endpoint, '');
 }
 
 echo "Starting sitemap generation...\n";

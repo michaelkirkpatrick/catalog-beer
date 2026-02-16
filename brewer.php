@@ -147,7 +147,7 @@ echo $htmlHead->html;
 		$locationResp = $api->request('GET', '/brewer/' . $brewerID . '/locations', '');
 		$locationData = json_decode($locationResp);
 		$locationH2 = 'Location';
-		if(count($locationData->data) > 1){$locationH2 .= 's';}
+		if(isset($locationData->data) && count($locationData->data) > 1){$locationH2 .= 's';}
 
 		// Add Second Column & Close Row
 		echo '</div>' . "\n";
@@ -163,7 +163,7 @@ echo $htmlHead->html;
 		echo '</div>' . "\n";
 
 		// ----- Location(s) ------
-		if(count($locationData->data) > 0){
+		if(isset($locationData->data) && count($locationData->data) > 0){
 			
 			// Section Heading
 			echo '<div class="row">' . "\n";

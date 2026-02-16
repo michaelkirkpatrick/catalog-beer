@@ -66,6 +66,7 @@ if(isset($_POST['signupFormHidden'])){
 			$response = $api->request('POST', '/users', $data);
 			if($api->httpcode == 200){
 				// Successfully Created Account
+				session_regenerate_id(true);
 				$array = json_decode($response);
 				$_SESSION['userID'] = $array->id;
 				$alert->type = 'success';

@@ -1,4 +1,7 @@
 <?php
+$guest = true;
+include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
+
 // Get Token from Javascript Call
 $captcha = $_GET['token'] ?? '';
 

@@ -11,6 +11,13 @@ $alert = new Alert();
 $api = new API();
 $brewerCountResp = $api->request('GET', '/brewer/count', '');
 $brewerCountData = json_decode($brewerCountResp);
+if(!isset($brewerCountData->value)){
+	http_response_code(503);
+	$htmlHead = new htmlHead('Brewers');
+	echo $htmlHead->html;
+	echo '<body>' . $nav->navbar('Brewers') . '<div class="container"><h1>Brewers</h1><p>Sorry, we are unable to connect to our database right now. Please try again later.</p></div>' . $nav->footer() . '</body></html>';
+	exit();
+}
 $numBrewers = $brewerCountData->value;
 $perPage = 500;
 $totalPages = round($numBrewers/$perPage, 0, PHP_ROUND_HALF_UP);
@@ -77,10 +84,19 @@ echo $htmlHead->html;
 		echo '</div>';
 		echo '</div>';
 		
-		// Get Brewer IDs
+		// Get Brewer List
 		$api = new API();
 		$brewerResp = $api->request('GET', '/brewer?limit=' . $perPage . '&cursor=' . $cursor, '');
 		$brewerData = json_decode($brewerResp);
+		if(!isset($brewerData->data)){
+			$alert->msg = 'Sorry, we were unable to load the brewer list. Please try again later.';
+			$alert->type = 'warning';
+			echo $alert->display();
+			echo '</div>';
+			echo $nav->footer();
+			echo '</body></html>';
+			exit();
+		}
 
 		// Setup Columns
 		echo '<div class="row">';
