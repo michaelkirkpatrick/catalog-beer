@@ -80,7 +80,7 @@ class InputField {
 			$return .= 'maxlength="' . $this->maxLength . '"';
 		}
 		if(!empty($this->value) || $this->value === 0 || $this->value === '0'){
-			$return .= ' value="' . $text->get($this->value) . '"';
+			$return .= ' value="' . htmlspecialchars($this->value, ENT_QUOTES, 'UTF-8') . '"';
 		}
 		if(!empty($this->validState)){
 			$return .= ' aria-describedby="helpMsg' . $text->get($this->name) . '"';

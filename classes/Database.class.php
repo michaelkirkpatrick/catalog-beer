@@ -26,7 +26,7 @@ class Database {
 				exit();
 			}else{
 				// Set Character Set
-				if(!$this->mysqli->set_charset("utf8")){
+				if(!$this->mysqli->set_charset("utf8mb4")){
 					exit();
 				}
 			}
