@@ -40,7 +40,7 @@ if(isset($_GET['locationID'])){
 		// Get Brewer Name
 		$brewerResp = $api->request('GET', '/brewer/' . $brewerID, '');
 		$brewerData = json_decode($brewerResp);
-		if(isset($brewerResp->error)){
+		if(isset($brewerData->error)){
 			$brewerName = 'Brewer';
 		}else{
 			$brewerName = $text2->get($brewerData->name);

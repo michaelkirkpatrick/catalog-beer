@@ -14,8 +14,13 @@ $password = '';
 
 // Requested Page
 if(isset($_GET['request'])){
-	// Save Next Page
-	$nextPage = substr($_GET['request'], 1);
+	// Save Next Page — validate it's a local path
+	$requestedPage = $_GET['request'];
+	if(strpos($requestedPage, '://') !== false || strpos($requestedPage, '//') === 0){
+		$nextPage = '/';
+	}else{
+		$nextPage = substr($requestedPage, 1);
+	}
 	$exploded = explode('/', $nextPage);
 	
 	// Default Message

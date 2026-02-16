@@ -25,7 +25,7 @@ if(isset($_GET['brewerID'])){
 	$brewerID = $_GET['brewerID'];
 	$brewerResp = $api->request('GET', '/brewer/' . $brewerID, '');
 	$brewerData = json_decode($brewerResp);
-	if(!isset($brewerResp->error)){
+	if(!isset($brewerData->error)){
 		// Save Brewer Info
 		$text1 = new Text(false, true, true);
 		$brewerName = $text1->get($brewerData->name);
