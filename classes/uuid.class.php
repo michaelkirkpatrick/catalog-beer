@@ -4,7 +4,7 @@ String Length: 36
 
 // Generate UUID
 $uuid = new uuid();
-$var = $uuid->generate('db_table_name');
+$var = $uuid->generate();
 if(!$uuid->error){
 	// Save to Class
 	$this->ID = $var;
@@ -24,23 +24,9 @@ class uuid {
 	
 	
 	// ----- Generate Unique UUID -----
-	public function generate($table){
-		// Default State
-		$continue = true;
-		
-		// While Loop
-		while($continue){
-			// Create Code
-			$this->createCode();
-			
-			// Check Unique
-			$unique = $this->checkUnique($table);
-			if($unique || $this->error){
-				$continue = false;
-			}
-		}
-		
-		// Return UUID
+	public function generate(){
+		// 128-bit random UUID — collision probability is ~1 in 2^122
+		$this->createCode();
 		return $this->uuid;
 	}
 	
@@ -57,29 +43,6 @@ class uuid {
 		$this->uuid = substr($hex, 0, 8) . '-' . substr($hex, 8, 4) . '-' . substr($hex, 12, 4) . '-' . substr($hex, 16, 4) . '-' .  substr($hex, 20, 12);
 		
 		return $this->uuid;
-	}
-	
-	// ----- Check Unique -----
-	private function checkUnique($table){
-		// Default Return
-		$unique = false;
-
-		// Connect to database
-		$db = new Database();
-
-		// Query
-		$result = $db->query("SELECT id FROM $table WHERE id = ?", [$this->uuid]);
-		if(!$db->error){
-			if($result->num_rows == 0){
-				$unique = true;
-			}
-		}else{
-			$this->error = true;
-			$this->errorMsg = $db->errorMsg;
-		}
-
-		// Return
-		return $unique;
 	}
 	
 	// ----- Generate Alphanumeric String -----

@@ -24,12 +24,21 @@ class LogError {
 	public $filename = '';
 	public $resolved = false;
 
+	// Recursion Guard
+	private static bool $writing = false;
+
 	// Write Error
 	public function write(){
 
+		// Prevent infinite recursion: LogError → Database → LogError → ...
+		if(self::$writing){
+			return;
+		}
+		self::$writing = true;
+
 		// Generate UUID
 		$uuid = new uuid();
-		$errorID = $uuid->generate('error_log');
+		$errorID = $uuid->generate();
 		if(!$uuid->error){
 			// Connect to Database
 			$db = new Database();
@@ -46,6 +55,8 @@ class LogError {
 				$this->filename
 			]);
 		}
+
+		self::$writing = false;
 	}
 
 	public function validate($errorID, $saveToClass){
