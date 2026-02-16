@@ -65,7 +65,7 @@ Key details:
   - `new Text(true, true, false)` — Markdown + SmartyPants (for descriptions with `<p>` tags kept)
   - `new Text(false, false, true)` — Purify only (for IDs, numbers)
 - **`Alert.class.php`** — Bootstrap alert. Set `$alert->msg` (supports Markdown), `$alert->type` (`'success'`/`'info'`/`'warning'`/`'error'`), `$alert->dismissible`. Call `$alert->display()`.
-- **`LogError.class.php`** — Logs errors to the `error_log` DB table. Set `errorNumber`, `errorMsg`, `badData`, `filename`, then call `$errorLog->write()`.
+- **`LogError.class.php`** — Logs errors to the `error_log` DB table. Set `errorNumber`, `errorMsg`, `badData`, `filename`, then call `$errorLog->write()`. Has a static recursion guard to prevent infinite loops when the DB is down.
 - **`Navigation.class.php`** — Navbar, breadcrumbs (`$nav->breadcrumbText` / `$nav->breadcrumbLink` arrays), pagination.
 - **Form classes** (`InputField`, `Textarea`, `Checkbox`, `DropDown`) — Bootstrap-styled form components. Set properties then call `->display()`.
 
@@ -73,21 +73,27 @@ Key details:
 
 Apache `.htaccess` handles clean URLs. Pattern: `/resource/UUID` → `resource.php?resourceID=UUID`. UUIDs are 36-char hyphenated format (`[-0-9a-f]{36}`).
 
-### Authentication
+### Authentication & Security
 
 - Session-based: `$_SESSION['userID']`
 - Set `$guest = false` at page top to require login
-- Protected pages redirect to `/login?request=<URI>` with return URL
+- Protected pages redirect to `/login?request=<URI>` with return URL (validated to prevent open redirects)
 - Email verification enforced — unverified users are redirected to `/verify-email`
+- Session cookies: `httponly`, `secure`, `samesite=Lax`
+- `session_regenerate_id(true)` after login and account creation
+- CSRF tokens on all authenticated forms via `csrf_field()` / `csrf_verify()`
 
 ### Form Processing Pattern
 
 Forms use POST to the same page. The pattern:
 1. Initialize default values and validation state arrays
 2. Check `isset($_POST['submit'])`
-3. POST to the API via `$api->request('POST', ...)`
-4. On success: set a session flash variable, redirect with `header('location: ...')`, `exit()`
-5. On error: populate `$validState` and `$validMsg` arrays from API response, display form with errors
+3. Verify CSRF token with `csrf_verify()` — reject if invalid
+4. POST to the API via `$api->request('POST', ...)`
+5. On success: set a session flash variable, redirect with `header('location: ...')`, `exit()`
+6. On error: populate `$validState` and `$validMsg` arrays from API response, display form with errors
+
+Forms must include `<?php echo csrf_field(); ?>` inside the `<form>` tag. The token is generated per-session in `initialize.php`.
 
 ### Error Logging Convention
 
