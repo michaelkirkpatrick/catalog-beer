@@ -59,10 +59,6 @@ echo $htmlHead->html;
 				// Display Alerts
 				echo $alert->display();
 				
-				// Echo Contents
-				if(isset($jsonPOST)){
-					echo '<code>' . $jsonPOST . '</code>';
-				}
 				?>
         <form method="post">
 					<?php

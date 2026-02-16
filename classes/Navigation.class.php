@@ -67,7 +67,7 @@ class Navigation {
 
 				// Breadcrumb Text
 				$text = htmlspecialchars($this->breadcrumbText[$i] ?? '');
-				$html .= $message = SmartyPants::defaultTransform($text);
+				$html .= SmartyPants::defaultTransform($text);
 
 				// Close Link
 				if($i != $numItems-1 && !empty($this->breadcrumbLink[$i])){

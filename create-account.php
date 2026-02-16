@@ -88,7 +88,6 @@ if(isset($_POST['signupFormHidden'])){
 					$alert->msg = $array['error_msg'];
 				}
 				if(isset($array['valid_state'])){$validState = $array['valid_state'];}
-				if(isset($array['valid_state'])){$validState = $array['valid_state'];}
 				if(isset($array['valid_msg'])){$validMsg = $array['valid_msg'];}
 			}
 		}else{
@@ -102,7 +101,7 @@ if(isset($_POST['signupFormHidden'])){
 			// Log Error
 			$errorLog = new LogError();
 			$errorLog->errorNumber = 'C21';
-			$errorLog->errorMsg = 'reCAPTCHA: Likley Bot';
+			$errorLog->errorMsg = 'reCAPTCHA: Likely Bot';
 			$errorLog->badData = $captchaJSON;
 			$errorLog->filename = 'create-account.php';
 			$errorLog->write();

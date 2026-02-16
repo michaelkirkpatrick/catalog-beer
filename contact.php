@@ -147,7 +147,7 @@ if(isset($_POST['signupFormHidden'])){
 			// Log Error
 			$errorLog = new LogError();
 			$errorLog->errorNumber = 'C18';
-			$errorLog->errorMsg = 'reCAPTCHA: Likley Bot';
+			$errorLog->errorMsg = 'reCAPTCHA: Likely Bot';
 			$errorLog->badData = $captchaJSON;
 			$errorLog->filename = 'contact.php';
 			$errorLog->write();

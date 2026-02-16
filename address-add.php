@@ -9,7 +9,7 @@ $alert = new Alert();
 
 // Default Values
 $disabled = false;
-$validState = array('location_id'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'zip'=>'', 'telephone'=>'');
+$validState = array('location_id'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
 $validMsg = array('location_id'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
 $locationID = '';
 $address1 = '';
