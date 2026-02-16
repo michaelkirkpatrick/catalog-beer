@@ -16,7 +16,9 @@ Catalog.beer is a traditional PHP web application serving as the frontend for "T
 - Production: `catalog.beer` → API at `api.catalog.beer`
 - Staging: `staging.catalog.beer` → API at `api-staging.catalog.beer`
 
-Environment is detected via subdomain in `classes/initialize.php`. Credentials live in `classes/config.php` (not committed; copy `config.example.php` to create it).
+Environment is detected via subdomain in `classes/initialize.php`. Configuration is split across two files:
+- **`classes/config.php`** — Non-secret configuration (DB host/user/name, public keys, identifiers). Committed and deployed. Copy `config.example.php` to create it.
+- **`classes/passwords.php`** — Secrets (DB passwords, API keys, tokens). **Never committed or deployed** — lives on each server, managed manually. Copy `passwords.example.php` to create it.
 
 ## Architecture
 
@@ -95,5 +97,5 @@ Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15
 
 - **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
 - **Google reCAPTCHA v3** — Form protection (`recaptcha.php`)
-- **Apple MapKit JS** — Map functionality, JWT tokens via `JWT.class.php` (key in `classes/resources/`)
+- **Apple MapKit JS** — Map functionality, JWT tokens via `JWT.class.php` (`.p8` private key in `classes/resources/`, excluded from git)
 - **Fathom Analytics** — Privacy-focused analytics (in head template)
