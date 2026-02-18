@@ -36,9 +36,13 @@ echo $htmlHead->html;
 					<a class="list-group-item list-group-item-action" href="#url"><strong>API Basics</strong></a>
 					<a class="list-group-item list-group-item-action" href="#authentication"><strong>Authentication</strong></a>
 					<a class="list-group-item list-group-item-action" href="#errors"><strong>Errors</strong></a>
+					<a class="list-group-item list-group-item-action" href="#http-methods"><strong>HTTP Methods</strong></a>
 					<a class="list-group-item list-group-item-action" href="#brewer"><strong>Brewer</strong></a>
 					<a class="list-group-item list-group-item-action" href="#brewer-object">&gt; Brewer Object</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-create">&gt; Add a Brewer</a>
+					<a class="list-group-item list-group-item-action" href="#brewer-update">&gt; Update a Brewer (PUT)</a>
+					<a class="list-group-item list-group-item-action" href="#brewer-patch">&gt; Update a Brewer (PATCH)</a>
+					<a class="list-group-item list-group-item-action" href="#brewer-delete">&gt; Delete a Brewer</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-retrieve">&gt; Retrieve a Brewer</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-list-all">&gt; List all Brewers</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-count">&gt; Number of Brewers</a>
@@ -47,13 +51,20 @@ echo $htmlHead->html;
 					<a class="list-group-item list-group-item-action" href="#beer"><strong>Beer</strong></a>
 					<a class="list-group-item list-group-item-action" href="#beer-object">&gt; Beer Object</a>
 					<a class="list-group-item list-group-item-action" href="#beer-create">&gt; Add a Beer</a>
+					<a class="list-group-item list-group-item-action" href="#beer-update">&gt; Update a Beer (PUT)</a>
+					<a class="list-group-item list-group-item-action" href="#beer-patch">&gt; Update a Beer (PATCH)</a>
+					<a class="list-group-item list-group-item-action" href="#beer-delete">&gt; Delete a Beer</a>
 					<a class="list-group-item list-group-item-action" href="#beer-retrieve">&gt; Retrieve a Beer</a>
 					<a class="list-group-item list-group-item-action" href="#beer-list-all">&gt; List all Beer</a>
 					<a class="list-group-item list-group-item-action" href="#beer-count">&gt; Number of Beers</a>
 					<a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
 					<a class="list-group-item list-group-item-action" href="#location-object">&gt; The Location Object</a>
 					<a class="list-group-item list-group-item-action" href="#location-add">&gt; Add a Location</a>
+					<a class="list-group-item list-group-item-action" href="#location-update">&gt; Update a Location (PUT)</a>
+					<a class="list-group-item list-group-item-action" href="#location-patch">&gt; Update a Location (PATCH)</a>
+					<a class="list-group-item list-group-item-action" href="#location-delete">&gt; Delete a Location</a>
 					<a class="list-group-item list-group-item-action" href="#location-add-address">&gt; Add an Address to a Location</a>
+					<a class="list-group-item list-group-item-action" href="#location-replace-address">&gt; Replace an Address (PUT)</a>
 					<a class="list-group-item list-group-item-action" href="#location-retrieve">&gt; Retrieve a Location</a>
 					<a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
 					<a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
@@ -62,7 +73,7 @@ echo $htmlHead->html;
 			</div>
 			<div class="col-md-8">
 				<h1 id="top">API Reference</h1>
-				<p>Last Updated: October 10, 2018</p>
+				<p>Last Updated: February 18, 2026</p>
 				
 				<h2 id="url">API Basics</h2>
 				<hr>
@@ -148,24 +159,58 @@ echo $htmlHead->html;
     "name": "invalid",
     "url": "valid",
     "description": "valid",
-    "short_description": "valid",
-    "facebook_url": "valid",
-    "twitter_url": "",
-    "instagram_url": "valid"
+    "short_description": "valid"
   },
   "valid_msg": {
     "name": "Please give us the name of the brewery you'd like to add.",
     "url": "",
     "description": "",
-    "short_description": "",
-    "facebook_url": "",
-    "twitter_url": "",
-    "instagram_url": ""
+    "short_description": ""
   }
 }
 </pre>
 				<p><a href="#top">^ Return to top</a></p>
-				
+
+				<h2 id="http-methods">HTTP Methods</h2>
+				<hr>
+
+				<p>The Catalog.beer API supports the following HTTP methods for creating, reading, updating, and deleting resources.</p>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Method</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><strong>GET</strong></td>
+							<td>Retrieve a resource or list of resources.</td>
+						</tr>
+						<tr>
+							<td><strong>POST</strong></td>
+							<td>Create a new resource.</td>
+						</tr>
+						<tr>
+							<td><strong>PUT</strong></td>
+							<td>Full replacement of a resource. All required fields must be present. Omitted optional fields are <strong>cleared to null</strong>. If the resource does not exist, it will be created (returns <var>201 Created</var>). If the resource already exists, it will be replaced (returns <var>200 OK</var>).</td>
+						</tr>
+						<tr>
+							<td><strong>PATCH</strong></td>
+							<td>Partial update of a resource. Only the fields you provide will be modified; all other fields remain unchanged. The resource must already exist (returns <var>404 Not Found</var> otherwise).</td>
+						</tr>
+						<tr>
+							<td><strong>DELETE</strong></td>
+							<td>Remove a resource. Returns <var>204 No Content</var> with no response body on success.</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p>If you send a request using an HTTP method that is not supported by the endpoint, the API will return a <var>405 Method Not Allowed</var> response. The <code>Allow</code> header on the response will list the methods that the endpoint does support.</p>
+
+				<p><a href="#top">^ Return to top</a></p>
+
 				<h2 id="brewer">Brewer</h2>
 				<hr>
 
@@ -225,19 +270,9 @@ echo $htmlHead->html;
 							<td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
 						</tr>
 						<tr>
-							<td><var>facebook_url</var></td>
+							<td><var>last_modified</var></td>
 							<td>string</td>
-							<td>The URL of the brewer&#8217;s Facebook page.</td>
-						</tr>
-						<tr>
-							<td><var>twitter_url</var></td>
-							<td>string</td>
-							<td>The URL of the brewer&#8217;s Twitter profile.</td>
-						</tr>
-						<tr>
-							<td><var>instagram_url</var></td>
-							<td>string</td>
-							<td>The URL of the brewer&#8217;s Instagram profile.</td>
+							<td>A timestamp indicating when the brewer was last modified.</td>
 						</tr>
 					</tbody>
 				</table>
@@ -249,14 +284,12 @@ echo $htmlHead->html;
   "id": "65911cdd-52e6-6305-3420-b9bbf6ea958d",
   "object": "brewer",
   "name": "HopSaint",
-  "description": "HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn’t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That’s at the heart of HopSaint - a community that fosters lasting relationships & enriches our hometown through the production of honest, real beer. A community built on craft beer.",
+  "description": "HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn't be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That's at the heart of HopSaint - a community that fosters lasting relationships & enriches our hometown through the production of honest, real beer. A community built on craft beer.",
   "short_description": "A brewery in Torrance, CA.",
   "url": "https://www.hopsaint.com/",
   "cb_verified": true,
   "brewer_verified": false,
-  "facebook_url": "https://www.facebook.com/hopsaintbrewingco",
-  "twitter_url": "",
-  "instagram_url": "https://www.instagram.com/hopsaintbrewco/"
+  "last_modified": "2025-01-15 10:30:00"
 }
 </pre>
 				<p><a href="#top">^ Return to top</a></p>
@@ -289,27 +322,12 @@ echo $htmlHead->html;
 						<tr>
 							<td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
 							<td>string</td>
-							<td>A short description of the brewer; max 160 characters. TDescribe the brewer as you might in a tweet. Short and sweet.</td>
+							<td>A short description of the brewer; max 160 characters. Describe the brewer as you might in a tweet. Short and sweet.</td>
 						</tr>
 						<tr>
 							<td><var>url</var><br><small class="text-muted">(optional)</small></td>
 							<td>string</td>
 							<td>The URL of the brewer&#8217;s website.</td>
-						</tr>
-						<tr>
-							<td><var>facebook_url</var><br><small class="text-muted">(optional)</small></td>
-							<td>string</td>
-							<td>The URL of the brewer&#8217;s Facebook page.</td>
-						</tr>
-						<tr>
-							<td><var>twitter_url</var><br><small class="text-muted">(optional)</small></td>
-							<td>string</td>
-							<td>The URL of the brewer&#8217;s Twitter profile.</td>
-						</tr>
-						<tr>
-							<td><var>instagram_url</var><br><small class="text-muted">(optional)</small></td>
-							<td>string</td>
-							<td>The URL of the brewer&#8217;s Instagram profile.</td>
 						</tr>
 					</tbody>
 				</table>
@@ -322,7 +340,123 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"name":"","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u2019t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u2019s at the heart of HopSaint - a community that fosters lasting relationships & enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/","facebook_url":"http:\/\/www.facebook.com\/hopsaintbrewingco","twitter_url":"","instagram_url":"http:\/\/instagram.com\/hopsaintbrewco"}'
+  -d '{"name":"HopSaint","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u2019t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u2019s at the heart of HopSaint - a community that fosters lasting relationships & enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/"}'
+</pre>
+				<p><a href="#top">^ Return to top</a></p>
+
+				<h3 id="brewer-update">Update a Brewer (PUT)</h3>
+
+				<p>To replace a brewer&#8217;s data, send a <strong>PUT</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the brewer does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#brewer-object">brewer object</a>.</p>
+
+				<pre class="api-code">PUT https://api.catalog.beer/brewer/{brewer_id}</pre>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Parameter</th>
+							<th scope="col">Type</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><var>name</var></td>
+							<td>string</td>
+							<td>The name of the brewer.</td>
+						</tr>
+						<tr>
+							<td><var>description</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>A description of the brewer. Cleared if omitted.</td>
+						</tr>
+						<tr>
+							<td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>A short description of the brewer; max 160 characters. Cleared if omitted.</td>
+						</tr>
+						<tr>
+							<td><var>url</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>The URL of the brewer&#8217;s website. Cleared if omitted.</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PUT \
+  https://api.catalog.beer/brewer/65911cdd-52e6-6305-3420-b9bbf6ea958d \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"name":"HopSaint","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/"}'
+</pre>
+				<p><a href="#top">^ Return to top</a></p>
+
+				<h3 id="brewer-patch">Update a Brewer (PATCH)</h3>
+
+				<p>To partially update a brewer, send a <strong>PATCH</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#brewer-object">brewer object</a>.</p>
+
+				<pre class="api-code">PATCH https://api.catalog.beer/brewer/{brewer_id}</pre>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Parameter</th>
+							<th scope="col">Type</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><var>name</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>The name of the brewer.</td>
+						</tr>
+						<tr>
+							<td><var>description</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>A description of the brewer.</td>
+						</tr>
+						<tr>
+							<td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>A short description of the brewer; max 160 characters.</td>
+						</tr>
+						<tr>
+							<td><var>url</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>The URL of the brewer&#8217;s website.</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PATCH \
+  https://api.catalog.beer/brewer/65911cdd-52e6-6305-3420-b9bbf6ea958d \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"short_description":"A craft brewery in Torrance, CA."}'
+</pre>
+				<p><a href="#top">^ Return to top</a></p>
+
+				<h3 id="brewer-delete">Delete a Brewer</h3>
+
+				<p>To delete a brewer, send a <strong>DELETE</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body.</p>
+
+				<pre class="api-code">DELETE https://api.catalog.beer/brewer/{brewer_id}</pre>
+
+				<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X DELETE \
+  https://api.catalog.beer/brewer/65911cdd-52e6-6305-3420-b9bbf6ea958d \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
 </pre>
 				<p><a href="#top">^ Return to top</a></p>
 
@@ -377,7 +511,7 @@ curl -X GET \
 				
 				<pre class="api-code">GET https://api.catalog.beer/brewer?count=5&amp;cursor=NQ%3D%3D</pre>
 				
-				<h4>Reponse</h4>
+				<h4>Response</h4>
 				
 				<p>This request returns a list object with the following parameters.</p>
 				
@@ -588,14 +722,12 @@ curl -X GET \
     "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
     "object": "brewer",
     "name": "Ballast Point",
-    "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we’re just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there’s a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn’t share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
+    "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we're just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there's a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn't share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
     "short_description": "Award wining brewery built in San Diego, California. Dedicated to the craft.",
     "url": "https://www.ballastpoint.com/",
     "cb_verified": true,
     "brewer_verified": false,
-    "facebook_url": "https://www.facebook.com/BallastPoint",
-    "twitter_url": "https://twitter.com/BallastPoint",
-    "instagram_url": "https://www.instagram.com/ballastpointbrewing/"
+    "last_modified": "2025-01-08 09:15:00"
   },
   "data": [
     {
@@ -718,47 +850,52 @@ curl -X GET \
 							<td>The beer_id; a unique identifier for the beer.</td>
 						</tr>
 						<tr>
-							<td><var>object<var></td>
+							<td><var>object</var></td>
 							<td>string</td>
 							<td>The name of the object; in this case: &#8220;beer&#8221;.</td>
 						</tr>
 						<tr>
-							<td><var>name<var></td>
+							<td><var>name</var></td>
 							<td>string</td>
 							<td>The name of the beer.</td>
 						</tr>
 						<tr>
-							<td><var>style<var></td>
+							<td><var>style</var></td>
 							<td>string</td>
 							<td>The style of the beer.</td>
 						</tr>
 						<tr>
-							<td><var>description<var></td>
+							<td><var>description</var></td>
 							<td>string</td>
 							<td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a> or new line characters.</td>
 						</tr>
 						<tr>
-							<td><var>abv<var></td>
+							<td><var>abv</var></td>
 							<td>float</td>
 							<td>The Alcohol by Volume (ABV) percentage of the beer.</td>
 						</tr>
 						<tr>
-							<td><var>ibu<var></td>
+							<td><var>ibu</var></td>
 							<td>integer</td>
 							<td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
 						</tr>
 						<tr>
-							<td><var>cb_verified<var></td>
+							<td><var>cb_verified</var></td>
 							<td>Boolean</td>
-							<td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer’s information.</td>
+							<td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer's information.</td>
 						</tr>
 						<tr>
-							<td><var>brewer_verified<var></td>
+							<td><var>brewer_verified</var></td>
 							<td>Boolean</td>
 							<td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
 						</tr>
 						<tr>
-							<td><var>brewer<var></td>
+							<td><var>last_modified</var></td>
+							<td>string</td>
+							<td>A timestamp indicating when the beer was last modified.</td>
+						</tr>
+						<tr>
+							<td><var>brewer</var></td>
 							<td>object</td>
 							<td>A <a href="#brewer-object">brewer object</a> containing information on the brewer.</td>
 						</tr>
@@ -778,18 +915,17 @@ curl -X GET \
     "ibu": 25,
     "cb_verified": true,
     "brewer_verified": false,
+    "last_modified": "2025-01-10 14:22:00",
     "brewer": {
         "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
         "object": "brewer",
         "name": "Ballast Point",
-        "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we’re just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there’s a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn’t share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
+        "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we're just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there's a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn't share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
         "short_description": "Award wining brewery built in San Diego, California. Dedicated to the craft.",
         "url": "https://www.ballastpoint.com/",
         "cb_verified": true,
         "brewer_verified": false,
-        "facebook_url": "https://www.facebook.com/BallastPoint",
-        "twitter_url": "https://twitter.com/BallastPoint",
-        "instagram_url": "https://www.instagram.com/ballastpointbrewing/"
+        "last_modified": "2025-01-08 09:15:00"
     }
 }
 </pre>
@@ -845,12 +981,153 @@ curl -X GET \
 
 <h4>Sample Request</h4>
 
-<pre class="api-code">curl -X POST
- https://api.catalog.beer/brewer
- -H &#8216;accept: application/json&#8217;
- -H &#8216;authorization: Basic {secret_key}&#8217;
- -H &#8216;content-type: application/json&#8217;
- -d &#8216;{&#8220;brewer_id&#8221;:&#8220;e7fa4e64-a39e-fd06-f82a&#8211;37de2a7dfbda&#8221;,&#8220;name&#8221;:&#8220;Schooner Wet Hop&#8221;,&#8220;style&#8221;:&#8220;Ale with Wet Hops&#8221;,&#8220;description&#8221;:&#8220;Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal. To brew this beer we get Cascade Hops from Yakima, Washington. They are picked, shipped and put into the brew within 36 hours. The Wet Hops have a grassy, vegetal, chlorophyll flavor that is reminiscent of fresh cut Greens. We showcase this 100% Cascade Hop Beer with a very light and crisp grain bill including a small portion of rice. This allows the aroma and flavor from such a rare, very seasonal ingredient, to shine.&#8221;,&#8220;abv&#8221;:&#8220;5.5&#8221;,&#8220;ibu&#8221;:&#8220;25&#8221;}&#8217;</pre>
+<pre class="api-code">
+curl -X POST \
+  https://api.catalog.beer/beer \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"Ale with Wet Hops","description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","abv":"5.5","ibu":"25"}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="beer-update">Update a Beer (PUT)</h3>
+
+<p>To replace a beer&#8217;s data, send a <strong>PUT</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the beer does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#beer-object">beer object</a>.</p>
+
+<pre class="api-code">PUT https://api.catalog.beer/beer/{beer_id}</pre>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>brewer_id</var></td>
+			<td>string</td>
+			<td>The brewer_id for the brewer who makes the beer.</td>
+		</tr>
+		<tr>
+			<td><var>name</var></td>
+			<td>string</td>
+			<td>The name of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>style</var></td>
+			<td>string</td>
+			<td>The style of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>abv</var></td>
+			<td>float</td>
+			<td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>description</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>A description of the beer. Cleared if omitted.</td>
+		</tr>
+		<tr>
+			<td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The International Bitterness/Bittering Units (IBU) value of the beer. Cleared if omitted.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PUT \
+  https://api.catalog.beer/beer/bc2170df-eef7-8f6b-205b-63cbfeb4a901 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"Ale with Wet Hops","abv":5.5,"description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","ibu":25}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="beer-patch">Update a Beer (PATCH)</h3>
+
+<p>To partially update a beer, send a <strong>PATCH</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#beer-object">beer object</a>.</p>
+
+<pre class="api-code">PATCH https://api.catalog.beer/beer/{beer_id}</pre>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>brewer_id</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The brewer_id for the brewer who makes the beer.</td>
+		</tr>
+		<tr>
+			<td><var>name</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The name of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>style</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The style of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>description</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>A description of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>abv</var><br><small class="text-muted">(optional)</small></td>
+			<td>float</td>
+			<td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PATCH \
+  https://api.catalog.beer/beer/bc2170df-eef7-8f6b-205b-63cbfeb4a901 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"abv":5.8,"ibu":30}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="beer-delete">Delete a Beer</h3>
+
+<p>To delete a beer, send a <strong>DELETE</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body.</p>
+
+<pre class="api-code">DELETE https://api.catalog.beer/beer/{beer_id}</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X DELETE \
+  https://api.catalog.beer/beer/bc2170df-eef7-8f6b-205b-63cbfeb4a901 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -1049,11 +1326,6 @@ curl -X GET \
 			<td>The name of the location.</td>
 		</tr>
 		<tr>
-			<td><var>brewer_id</var></td>
-			<td>string</td>
-			<td>The unique identifier for the brewer the location is associated with.</td>
-		</tr>
-		<tr>
 			<td><var>url</var></td>
 			<td>string</td>
 			<td>A URL that is specific to the location.</td>
@@ -1079,14 +1351,29 @@ curl -X GET \
 			<td>The longitude of the location.</td>
 		</tr>
 		<tr>
-			<td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
-			<td>integer</td>
-			<td>An unformatted integer string representing the telephone number of the location. Does not include the country code. For example, a US telephone number written in the international format as +1 (555) 444&#8211;3333 is stored as 5554443333 in our database. Country codes, if required, can be mapped from the <var>country_code</var> field.</td>
+			<td><var>cb_verified</var></td>
+			<td>Boolean</td>
+			<td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the location&#8217;s information.</td>
+		</tr>
+		<tr>
+			<td><var>brewer_verified</var></td>
+			<td>Boolean</td>
+			<td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified the location&#8217;s information.</td>
+		</tr>
+		<tr>
+			<td><var>last_modified</var></td>
+			<td>string</td>
+			<td>A timestamp indicating when the location was last modified.</td>
 		</tr>
 		<tr>
 			<td><var>address</var><br><small class="text-muted">(optional)</small></td>
 			<td>object</td>
-			<td>At this time, the database supports addresses for locations in the United States. See the <a href="#us-address-object">US Addresses</a> object.</td>
+			<td>At this time, the database supports addresses for locations in the United States. See the <a href="#us-address-object">US Addresses</a> object. The <var>telephone</var> field is included within this object.</td>
+		</tr>
+		<tr>
+			<td><var>brewer</var></td>
+			<td>object</td>
+			<td>A <a href="#brewer-object">brewer object</a> containing information on the brewer associated with this location.</td>
 		</tr>
 	</tbody>
 </table>
@@ -1100,13 +1387,14 @@ curl -X GET \
     "id": "4920c879-76a6-4bb7-dccf-5f2642e28c08",
     "object": "location",
     "name": "San Diego",
-    "brewer_id": "634996c1-5ffb-9099-b015-11cbfe8bb53f",
     "url": "",
     "country_code": "US",
     "country_short_name": "United States of America",
     "latitude": 32.8882179,
     "longitude": -117.1498184,
-    "telephone": 8585499888,
+    "cb_verified": true,
+    "brewer_verified": false,
+    "last_modified": "2025-01-12 16:45:00",
     "address": {
         "address1": "",
         "address2": "9990 Alesmith Ct",
@@ -1115,7 +1403,19 @@ curl -X GET \
         "state_short": "CA",
         "state_long": "California",
         "zip5": 92126,
-        "zip4": 4200
+        "zip4": 4200,
+        "telephone": 8585499888
+    },
+    "brewer": {
+        "id": "634996c1-5ffb-9099-b015-11cbfe8bb53f",
+        "object": "brewer",
+        "name": "AleSmith Brewing Company",
+        "description": "",
+        "short_description": "",
+        "url": "https://alesmith.com/",
+        "cb_verified": true,
+        "brewer_verified": false,
+        "last_modified": "2025-01-05 11:00:00"
     }
 }
 </pre>
@@ -1172,28 +1472,162 @@ curl -X POST \
 
 <h4>Sample Response</h4>
  <pre class="api-code">
- {
- &#8220;id&#8221;: &#8220;e00c24d6-de81&#8211;2ea4-dfd8-cd6f2cb5f1e7&#8221;,
- &#8220;object&#8221;: &#8220;location&#8221;,
- &#8220;name&#8221;: &#8220;Wrigley&#8221;,
- &#8220;brewer_id&#8221;: &#8220;050a11d3&#8211;0364&#8211;1eef&#8211;442f&#8211;82909ecadb1b&#8221;,
- &#8220;url&#8221;: &#8220;&#8221;,
- &#8220;country_code&#8221;: &#8220;US&#8221;,
- &#8220;country_short_name&#8221;: &#8220;United States of America&#8221;
+{
+  "id": "e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7",
+  "object": "location",
+  "name": "Wrigley",
+  "url": "",
+  "country_code": "US",
+  "country_short_name": "United States of America",
+  "latitude": null,
+  "longitude": null,
+  "cb_verified": false,
+  "brewer_verified": false,
+  "last_modified": "2025-02-01 10:00:00",
+  "brewer": {
+    "id": "050a11d3-0364-1eef-442f-82909ecadb1b",
+    "object": "brewer",
+    "name": "Brouwerij West",
+    "description": "",
+    "short_description": "",
+    "url": "",
+    "cb_verified": false,
+    "brewer_verified": false,
+    "last_modified": "2025-01-28 14:30:00"
+  }
 }
 </pre>
-								
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="location-update">Update a Location (PUT)</h3>
+
+<p>To replace a location&#8217;s data, send a <strong>PUT</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the location does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#location-object">location object</a>.</p>
+
+<pre class="api-code">PUT https://api.catalog.beer/location/{location_id}</pre>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>brewer_id</var></td>
+			<td>string</td>
+			<td>The brewer_id for the brewer you would like to associate the location with.</td>
+		</tr>
+		<tr>
+			<td><var>name</var></td>
+			<td>string</td>
+			<td>The name of the location.</td>
+		</tr>
+		<tr>
+			<td><var>country_code</var></td>
+			<td>string</td>
+			<td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
+		</tr>
+		<tr>
+			<td><var>url</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>A URL specific to the location. Cleared if omitted.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PUT \
+  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"brewer_id":"050a11d3-0364-1eef-442f-82909ecadb1b","name":"Wrigley","country_code":"US","url":"https://www.brouwerijwest.com/wrigley"}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="location-patch">Update a Location (PATCH)</h3>
+
+<p>To partially update a location, send a <strong>PATCH</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#location-object">location object</a>.</p>
+
+<pre class="api-code">PATCH https://api.catalog.beer/location/{location_id}</pre>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>brewer_id</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The brewer_id for the brewer you would like to associate the location with.</td>
+		</tr>
+		<tr>
+			<td><var>name</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The name of the location.</td>
+		</tr>
+		<tr>
+			<td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
+		</tr>
+		<tr>
+			<td><var>url</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>A URL specific to the location.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PATCH \
+  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"name":"Wrigley Taproom"}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="location-delete">Delete a Location</h3>
+
+<p>To delete a location, send a <strong>DELETE</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body.</p>
+
+<pre class="api-code">DELETE https://api.catalog.beer/location/{location_id}</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X DELETE \
+  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="location-add-address">Add an Address to a Location</h3>
 
 <p>Addresses and telephone numbers are stored separately from locations to allow for country specific addressing schemes and telephone numbers. Hence the need to make a second request to add an address to a location.</p>
 
-								<p>To add an address or telephone number for a location, send a <strong>POST</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path and following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>.</p>
+								<p>To add an address or telephone number for a location, send a <strong>POST</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path and the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>.</p>
 
 <p>Currently, only US addresses are supported. This documentation will be updated once support for other countries has been added.</p>
 
-<pre class="api-code">POST https://api.catalog.beer/location/{location_id}</pre>
+<pre class="api-code">POST https://api.catalog.beer/address/{location_id}</pre>
 								
 <table class="table">
 	<thead>
@@ -1246,7 +1680,7 @@ curl -X POST \
 
 <pre class="api-code">
 curl -X POST \
-  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  https://api.catalog.beer/address/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
   -H 'accept: application/json' \
   -H 'content-type: application/json' \
   -d '{"address1":"","address2":"518 W Willow St","city":"Long Beach","sub_code":"US-CA","zip5":"","zip4":"","telephone":""}'
@@ -1259,11 +1693,14 @@ curl -X POST \
   "id": "e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7",
   "object": "location",
   "name": "Wrigley",
-  "brewer_id": "050a11d3-0364-1eef-442f-82909ecadb1b",
   "url": "",
   "country_code": "US",
   "country_short_name": "United States of America",
-  "telephone": 0,
+  "latitude": 33.7946519,
+  "longitude": -118.1891897,
+  "cb_verified": false,
+  "brewer_verified": false,
+  "last_modified": "2025-02-01 10:05:00",
   "address": {
     "address1": "",
     "address2": "518 W Willow St",
@@ -1272,11 +1709,89 @@ curl -X POST \
     "state_short": "CA",
     "state_long": "California",
     "zip5": 90806,
-    "zip4": 0
+    "zip4": null,
+    "telephone": null
+  },
+  "brewer": {
+    "id": "050a11d3-0364-1eef-442f-82909ecadb1b",
+    "object": "brewer",
+    "name": "Brouwerij West",
+    "description": "",
+    "short_description": "",
+    "url": "",
+    "cb_verified": false,
+    "brewer_verified": false,
+    "last_modified": "2025-01-28 14:30:00"
   }
 }
 </pre>
 								
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="location-replace-address">Replace an Address</h3>
+
+<p>To create or replace an address for a location, send a <strong>PUT</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path. This will completely replace any existing address data for the location. Omitted optional fields will be cleared to null. Successful requests will return a <a href="#location-object">location object</a>.</p>
+
+<pre class="api-code">PUT https://api.catalog.beer/address/{location_id}</pre>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>address1</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The suite or unit number of the location (if applicable - e.g. Suite 101). Cleared if omitted.</td>
+		</tr>
+		<tr>
+			<td><var>address2</var></td>
+			<td>string</td>
+			<td>The street address of the location.</td>
+		</tr>
+		<tr>
+			<td><var>city</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+			<td>string</td>
+			<td>The name of the city.</td>
+		</tr>
+		<tr>
+			<td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+			<td>string</td>
+			<td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
+		</tr>
+		<tr>
+			<td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+			<td>string</td>
+			<td>The traditional 5-digit ZIP Code for the location.</td>
+		</tr>
+		<tr>
+			<td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The additional ZIP+4 Code used by the US Postal Service. Cleared if omitted.</td>
+		</tr>
+		<tr>
+			<td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The 10-digit telephone number for the location. Cleared if omitted.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PUT \
+  https://api.catalog.beer/address/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"address2":"518 W Willow St","city":"Long Beach","sub_code":"US-CA"}'
+</pre>
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="location-retrieve">Retrieve a Location</h3>
@@ -1334,7 +1849,7 @@ curl -X GET \
 		<tr>
 			<td><var>metric</var><br><small class="text-muted">(optional)</small></td>
 			<td>boolean</td>
-			<td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a searh radius and results measured in miles, though you can state it explicitly.</td>
+			<td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles, though you can state it explicitly.</td>
 		</tr>
 		<tr>
 			<td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
@@ -1433,13 +1948,14 @@ curl -X GET \
                 "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
                 "object": "location",
                 "name": "North Park",
-                "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
                 "url": "",
                 "country_code": "US",
                 "country_short_name": "United States of America",
                 "latitude": "32.7476883",
                 "longitude": "-117.1285400",
-                "telephone": 6192557136,
+                "cb_verified": true,
+                "brewer_verified": false,
+                "last_modified": "2025-01-20 08:30:00",
                 "address": {
                     "address1": "",
                     "address2": "3812 Grim Ave",
@@ -1448,25 +1964,24 @@ curl -X GET \
                     "state_short": "CA",
                     "state_long": "California",
                     "zip5": 92104,
-                    "zip4": 3602
+                    "zip4": 3602,
+                    "telephone": 6192557136
+                },
+                "brewer": {
+                    "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+                    "object": "brewer",
+                    "name": "Mike Hess Brewing Co.",
+                    "description": "",
+                    "short_description": "",
+                    "url": "https://www.mikehessbrewing.com/",
+                    "cb_verified": true,
+                    "brewer_verified": false,
+                    "last_modified": "2025-01-18 12:00:00"
                 }
             },
             "distance": {
                 "distance": 0.1,
                 "units": "miles"
-            },
-            "brewer": {
-                "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
-                "object": "brewer",
-                "name": "Mike Hess Brewing Co.",
-                "description": "",
-                "short_description": "",
-                "url": "https://www.mikehessbrewing.com/",
-                "cb_verified": true,
-                "brewer_verified": false,
-                "facebook_url": "https://www.facebook.com/MikeHessBrewingCoNorthPark/",
-                "twitter_url": "https://twitter.com/mikehessbrewing",
-                "instagram_url": "https://www.instagram.com/mikehessbrewing/?hl=en"
             }
         }
     ]
@@ -1535,6 +2050,11 @@ curl -X GET \
 			<td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
 			<td>integer</td>
 			<td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://about.usps.com/publications/pub100/pub100_044.htm">ZIP+4 Code</a>.</td>
+		</tr>
+		<tr>
+			<td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>An unformatted integer representing the telephone number of the location. Does not include the country code. For example, a US telephone number written in the international format as +1 (555) 444&#8211;3333 is stored as 5554443333 in our database.</td>
 		</tr>
 	</tbody>
 </table>
