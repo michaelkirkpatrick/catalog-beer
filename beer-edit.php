@@ -2,85 +2,67 @@
 // Initialize
 $guest = false;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
-
-// Get BeerID
-
-// Required Classes
-$api = new API();
 $alert = new Alert();
 
-// Default Values
-$disabled = false;
+// Get Beer ID
+$beerID = $_GET['beerID'] ?? '';
+
+// Fetch Existing Beer Data
+$api = new API();
+$beerResp = $api->request('GET', '/beer/' . $beerID, '');
+$beerData = json_decode($beerResp);
+if(isset($beerData->error) || !isset($beerData->id)){
+	http_response_code(404);
+	header('location: /error_page/404.php');
+	exit();
+}
+
+// Brewer Info
+$text1 = new Text(false, true, true);
+$text2 = new Text(false, false, true);
+$brewerName = $text1->get($beerData->brewer->name);
+$brewerURL = $text2->get($beerData->brewer->id);
+
+// Default Values from Existing Data
 $validState = array('brewer_id'=>'', 'name'=>'', 'style'=>'', 'description'=>'', 'abv'=>'', 'ibu'=>'');
 $validMsg = array('brewer_id'=>'', 'name'=>'', 'style'=>'', 'description'=>'', 'abv'=>'', 'ibu'=>'');
-$brewerID = '';
-$name = '';
-$style = '';
-$description = '';
-$abv = '';
-$ibu = '';
+$name = $beerData->name;
+$style = $beerData->style;
+$description = $beerData->description ?? '';
+$abv = $beerData->abv ?? '';
+$ibu = $beerData->ibu ?? '';
 
-// Get Brewery Info
-if(isset($_GET['brewerID'])){
-	$brewerID = $_GET['brewerID'];
-	$brewerResp = $api->request('GET', '/brewer/' . $brewerID, '');
-	$brewerData = json_decode($brewerResp);
-	if(!isset($brewerData->error)){
-		// Save Brewer Info
-		$text1 = new Text(false, true, true);
-		$brewerName = $text1->get($brewerData->name);
-		
-		$text2 = new Text(false, false, true);
-		$brewerURL = $text2->get($brewerData->id);
-		
-		// Process Form
-		if(isset($_POST['submit'])){
-			if(!csrf_verify()){
-				$alert->msg = 'Invalid form submission. Please try again.';
-				$alert->type = 'error';
-			}else{
-				// Get Posted Variables
-				$name = $_POST['name'];
-				$style = $_POST['style'];
-				$description = $_POST['description'];
-				$abv = $_POST['abv'];
-				$ibu = $_POST['ibu'];
-
-				$beerPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'style'=>$style, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
-				$beerResponse = $api->request('POST', '/beer', $beerPOST);
-				$beerData = json_decode($beerResponse, true);
-				if(!isset($beerData['error'])){
-					// Successfully Added
-					$_SESSION['add_beer_success'] = true;
-					header('location: /beer/' . $beerData['id']);
-					exit();
-				}else{
-					// Error Adding Beer
-					$alert->msg = $beerData['error_msg'];
-					$validState = $beerData['valid_state'];
-					$validMsg = $beerData['valid_msg'];
-				}
-			}
-		}
+// Process Form
+if(isset($_POST['submit'])){
+	if(!csrf_verify()){
+		$alert->msg = 'Invalid form submission. Please try again.';
+		$alert->type = 'error';
 	}else{
-		// Invalid Brewer
-		$disabled = true;
-		$alert->msg = 'Sorry, this looks like an invalid brewery. Try navigating back to this page from the [list of brewers](/brewer).';
-		$validState['brewer_id'] = 'invalid';
-		$validMsg['brewer_id'] = 'Invalid brewer';
-		$brewerName = '';
+		// Get Posted Variables
+		$name = $_POST['name'];
+		$style = $_POST['style'];
+		$description = $_POST['description'];
+		$abv = $_POST['abv'];
+		$ibu = $_POST['ibu'];
+
+		$patchData = array('name'=>$name, 'style'=>$style, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
+		$patchResponse = $api->request('PATCH', '/beer/' . $beerID, $patchData);
+		$patchArray = json_decode($patchResponse, true);
+		if(isset($patchArray['error'])){
+			$alert->msg = $patchArray['error_msg'];
+			$validState = $patchArray['valid_state'];
+			$validMsg = $patchArray['valid_msg'];
+		}else{
+			// Success
+			header('location: /beer/' . $patchArray['id']);
+			exit();
+		}
 	}
-}else{
-	// Missing Brewer ID
-	$disabled = true;
-	$alert->msg = 'We seem to be missing the brewery this new beer would be associated with. Try navigating back to this page from the [list of brewers](/brewer).';
-	$validState['brewer_id'] = 'invalid';
-	$validMsg['brewer_id'] = 'Invalid brewer';
-	$brewerName = '';
 }
 
 // HTML Head
-$htmlHead = new htmlHead('Add a Beer');
+$beerName = $text1->get($beerData->name);
+$htmlHead = new htmlHead('Edit ' . $beerName);
 echo $htmlHead->html;
 ?>
 <body>
@@ -90,17 +72,17 @@ echo $htmlHead->html;
     	<div class="col">
         <?php
 				// Breadcrumbs
-				$nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Add Beer');
-				$nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerURL);
+				$nav->breadcrumbText = array('Home', 'Brewers', $brewerName, $beerName, 'Edit');
+				$nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerURL, '/beer/' . $beerID);
 				echo $nav->breadcrumbs();
-				
+
 				// Display Alerts
 				echo $alert->display();
 				?>
         <form method="post">
 					<?php echo csrf_field(); ?>
 					<?php
-					// Brewery
+					// Brewery (disabled, display only)
 					echo '<fieldset disabled>' . "\n";
 					$inputBrewerID = new InputField();
 					$inputBrewerID->name = 'brewer_id';
@@ -112,11 +94,7 @@ echo $htmlHead->html;
 					$inputBrewerID->validMsg = $validMsg['brewer_id'];
 					echo $inputBrewerID->display();
 					echo '</fieldset>' . "\n";
-					
-					if($disabled){
-						echo '<fieldset disabled>' . "\n";
-					}
-					
+
 					// Name
 					$inputName = new InputField();
 					$inputName->name = 'name';
@@ -128,7 +106,7 @@ echo $htmlHead->html;
 					$inputName->validState = $validState['name'];
 					$inputName->validMsg = $validMsg['name'];
 					echo $inputName->display();
-					
+
 					// Style
 					$inputStyle = new InputField();
 					$inputStyle->name = 'style';
@@ -139,7 +117,7 @@ echo $htmlHead->html;
 					$inputStyle->validState = $validState['style'];
 					$inputStyle->validMsg = $validMsg['style'];
 					echo $inputStyle->display();
-					
+
 					// Description
 					$textarea = new Textarea();
 					$textarea->name = 'description';
@@ -148,7 +126,7 @@ echo $htmlHead->html;
 					$textarea->validState = $validState['description'];
 					$textarea->validMsg = $validMsg['description'];
 					echo $textarea->display();
-					
+
 					// ABV
 					$inputAbv = new InputField();
 					$inputAbv->name = 'abv';
@@ -170,16 +148,12 @@ echo $htmlHead->html;
 					$inputIbu->validState = $validState['ibu'];
 					$inputIbu->validMsg = $validMsg['ibu'];
 					echo $inputIbu->display();
-					
-					// Close Disabled
-					if($disabled){
-						echo '</fieldset>' . "\n";
-					}
 					?>
-					<button type="submit" class="btn btn-primary" name="submit">Add Beer</button>
+					<button type="submit" class="btn btn-primary" name="submit">Save Changes</button>
+					<a href="/beer/<?php echo htmlspecialchars($beerID); ?>" class="btn btn-outline-secondary">Cancel</a>
         </form>
       </div>
-    </div>  
+    </div>
   </div>
   <?php echo $nav->footer(); ?>
 </body>

@@ -2,121 +2,119 @@
 // Initialize
 $guest = false;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
-
-// Required Classes
-$api = new API();
 $alert = new Alert();
 
-// Default Values
-$disabled = false;
-$validState = array('location_id'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
-$validMsg = array('location_id'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
-$locationID = '';
-$address1 = '';
-$address2 = '';
-$city = '';
-$sub_code = '';
+// Get Location ID
+$locationID = $_GET['locationID'] ?? '';
+
+// Fetch Existing Location Data
+$api = new API();
+$locationResp = $api->request('GET', '/location/' . $locationID, '');
+$locationData = json_decode($locationResp);
+if(isset($locationData->error) || !isset($locationData->id)){
+	http_response_code(404);
+	header('location: /error_page/404.php');
+	exit();
+}
+
+// Must have an existing address to edit
+if(!isset($locationData->address)){
+	// No address yet — redirect to add-address instead
+	header('location: /location/' . $locationID . '/add-address');
+	exit();
+}
+
+// Location & Brewer Info
+$text1 = new Text(false, true, true);
+$text2 = new Text(false, false, true);
+$locationName = $text1->get($locationData->name);
+$brewerName = $text1->get($locationData->brewer->name);
+$brewerID = $text2->get($locationData->brewer->id);
+
+// Default Values from Existing Address
+$validState = array('address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
+$validMsg = array('address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
+$address1 = $locationData->address->address1 ?? '';
+$address2 = $locationData->address->address2 ?? '';
+$city = $locationData->address->city ?? '';
+$sub_code = $locationData->address->sub_code ?? '';
 $zip = '';
 $zip5 = '';
 $zip4 = '';
+if(!empty($locationData->address->zip5)){
+	$zip = $locationData->address->zip5;
+	if(!empty($locationData->address->zip4)){
+		$zip .= '-' . $locationData->address->zip4;
+	}
+}
 $telephone = '';
-$autofocus = true;
+if(!empty($locationData->address->telephone)){
+	$telephone = $locationData->address->telephone;
+}
 
-// Get Brewery Info
-if(isset($_GET['locationID'])){
-	// Get LocationID from URL
-	$locationID = $_GET['locationID'];
-	$locationResp = $api->request('GET', '/location/' . $locationID, '');
-	$locationData = json_decode($locationResp);
-	if(!isset($locationData->error)){
-		
-		// Save Location Info
-		$text1 = new Text(false, true, true);
-		$locationName = $text1->get($locationData->name);
-		
-		$text2 = new Text(false, false, true);
-		$brewerID = $text2->get($locationData->brewer->id);
-		$brewerName = $text1->get($locationData->brewer->name);
-		
-		// Process Form
-		if(isset($_POST['submit'])){
-			if(!csrf_verify()){
-				$alert->msg = 'Invalid form submission. Please try again.';
-				$alert->type = 'error';
-			}else{
-				// Remove Autofocus
-				$autofocus = false;
+// Process Form
+if(isset($_POST['submit'])){
+	if(!csrf_verify()){
+		$alert->msg = 'Invalid form submission. Please try again.';
+		$alert->type = 'error';
+	}else{
+		// Get Posted Variables
+		$address1 = $_POST['address1'];
+		$address2 = $_POST['address2'];
+		$city = $_POST['city'];
+		$sub_code = $_POST['sub_code'];
+		$zip = $_POST['zip'];
+		$telephone = $_POST['telephone'];
 
-				// Get Posted Variables
-				$address1 = $_POST['address1'];
-				$address2 = $_POST['address2'];
-				$city = $_POST['city'];
-				$sub_code = $_POST['sub_code'];
-				$zip = $_POST['zip'];
-				$telephone = $_POST['telephone'];
-
-				// Process ZIP Code
-				if(!empty($zip)){
-					$zip5 = substr($zip, 0, 5);
-					if(strlen($zip) > 5){
-						$zip4 = substr($zip, 6, 4);
-					}
-				}
-
-				$addressPOST = array('address1'=>$address1, 'address2'=>$address2, 'city'=>$city, 'sub_code'=>$sub_code, 'zip5'=>$zip5, 'zip4'=>$zip4, 'telephone'=>$telephone);
-				$addressResponse = $api->request('POST', '/address/' . $locationID, $addressPOST);
-				$locationData = json_decode($addressResponse, true);
-				if(isset($locationData['error'])){
-					// Error Adding Beer
-					$alert->msg = $locationData['error_msg'];
-					$validState = $locationData['valid_state'];
-					$validMsg = $locationData['valid_msg'];
-
-					$validState['zip'] = $locationData['valid_state']['zip5'];
-					$validMsg['zip'] = $locationData['valid_msg']['zip5'];
-				}else{
-					// Successfully Added
-					header('location: /brewer/' . $brewerID);
-					exit();
-				}
+		// Process ZIP Code
+		$zip5 = '';
+		$zip4 = '';
+		if(!empty($zip)){
+			$zip5 = substr($zip, 0, 5);
+			if(strlen($zip) > 5){
+				$zip4 = substr($zip, 6, 4);
 			}
 		}
-	}else{
-		// Invalid Location
-		$disabled = true;
-		$alert->msg = 'Sorry, this looks like an invalid location. Try navigating back to this page from the [brewery page](/brewer/' . $brewerID . ')';
+
+		$patchData = array('address1'=>$address1, 'address2'=>$address2, 'city'=>$city, 'sub_code'=>$sub_code, 'zip5'=>$zip5, 'zip4'=>$zip4, 'telephone'=>$telephone);
+		$patchResponse = $api->request('PUT', '/address/' . $locationID, $patchData);
+		$patchArray = json_decode($patchResponse, true);
+		if(isset($patchArray['error'])){
+			$alert->msg = $patchArray['error_msg'];
+			$validState = $patchArray['valid_state'];
+			$validMsg = $patchArray['valid_msg'];
+
+			$validState['zip'] = $patchArray['valid_state']['zip5'] ?? '';
+			$validMsg['zip'] = $patchArray['valid_msg']['zip5'] ?? '';
+		}else{
+			// Success
+			header('location: /brewer/' . $brewerID);
+			exit();
+		}
 	}
-}else{
-	// Missing Location ID
-	$disabled = true;
-	$alert->msg = 'We seem to be missing the location_id for this location. Try navigating back to this page from the [list of brewers](/brewer).';
 }
 
 // HTML Head
-$htmlHead = new htmlHead('Add Location Address');
+$htmlHead = new htmlHead('Edit Address for ' . $locationName);
 echo $htmlHead->html;
 ?>
 <body>
-	<?php echo $nav->navbar('Brewer'); ?>
+	<?php echo $nav->navbar('Brewers'); ?>
 	<div class="container">
     <div class="row">
     	<div class="col">
         <?php
 				// Breadcrumbs
-				$nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Add Address for ' . $locationName);
+				$nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Edit Address for ' . $locationName);
 				$nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerID);
 				echo $nav->breadcrumbs();
-				
+
 				// Display Alerts
 				echo $alert->display();
 				?>
         <form method="post">
 					<?php echo csrf_field(); ?>
 					<?php
-					if($disabled){
-						echo '<fieldset disabled>' . "\n";
-					}
-					
 					// Street Address - Address2
 					$inputAddress2 = new InputField();
 					$inputAddress2->name = 'address2';
@@ -124,11 +122,11 @@ echo $htmlHead->html;
 					$inputAddress2->type = 'text';
 					$inputAddress2->required = true;
 					$inputAddress2->value = $address2;
-					$inputAddress2->autofocus = $autofocus;
+					$inputAddress2->autofocus = true;
 					$inputAddress2->validState = $validState['address2'];
 					$inputAddress2->validMsg = $validMsg['address2'];
 					echo $inputAddress2->display();
-					
+
 					// Unit/Suite - Address1
 					$inputAddress1 = new InputField();
 					$inputAddress1->name = 'address1';
@@ -139,7 +137,7 @@ echo $htmlHead->html;
 					$inputAddress1->validState = $validState['address1'];
 					$inputAddress1->validMsg = $validMsg['address1'];
 					echo $inputAddress1->display();
-					
+
 					// City
 					$inputCity = new InputField();
 					$inputCity->name = 'city';
@@ -163,7 +161,7 @@ echo $htmlHead->html;
 					$dropDown->validState = $validState['sub_code'];
 					$dropDown->validMsg = $validMsg['sub_code'];
 					echo $dropDown->display();
-					
+
 					// ZIP
 					$inputZIP = new InputField();
 					$inputZIP->name = 'zip';
@@ -174,7 +172,7 @@ echo $htmlHead->html;
 					$inputZIP->validState = $validState['zip'];
 					$inputZIP->validMsg = $validMsg['zip'];
 					echo $inputZIP->display();
-					
+
 					// Telephone
 					$inputTelephone = new InputField();
 					$inputTelephone->name = 'telephone';
@@ -185,16 +183,12 @@ echo $htmlHead->html;
 					$inputTelephone->validState = $validState['telephone'];
 					$inputTelephone->validMsg = $validMsg['telephone'];
 					echo $inputTelephone->display();
-					
-					// Close Disabled
-					if($disabled){
-						echo '</fieldset>' . "\n";
-					}
 					?>
-					<button type="submit" class="btn btn-primary" name="submit">Add Address</button>
+					<button type="submit" class="btn btn-primary" name="submit">Save Changes</button>
+					<a href="/brewer/<?php echo htmlspecialchars($brewerID); ?>" class="btn btn-outline-secondary">Cancel</a>
         </form>
       </div>
-    </div>  
+    </div>
   </div>
   <?php echo $nav->footer(); ?>
 </body>

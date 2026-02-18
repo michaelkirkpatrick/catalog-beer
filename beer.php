@@ -86,6 +86,12 @@ echo $htmlHead->html;
 				
 				// Brewer
 				echo '<p><strong>Brewer:</strong> <a href="/brewer/' . $brewerURL . '">' . $brewerName . '</a></p>' . "\n";
+
+				// Edit Button
+				$beerIDString = $text3->get($beerData->id);
+				if(isset($_SESSION['userID'])){
+					echo '<p style="margin-top:1rem;"><a href="/beer/' . $beerIDString . '/edit" class="btn btn-outline-secondary btn-sm">Edit Beer</a></p>';
+				}
 				?>
 			</div>
 			<div class="col-lg-3 col-xl-5"></div>

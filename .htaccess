@@ -30,15 +30,19 @@ RewriteRule ^welcome/?$ 	welcome.php [L]
 
 # Redirect Pages
 RewriteRule ^beer/add/([-0-9a-f]{36})$ beer-add.php?brewerID=$1 [L]
+RewriteRule ^beer/([-0-9a-f]{36})/edit$ beer-edit.php?beerID=$1 [L]
 RewriteRule ^beer/([-0-9a-f]{36})$ beer.php?beerID=$1 [L]
 RewriteRule ^beer/?$ beer-list.php [L]
 
 RewriteRule ^brewer/([-0-9a-f]{36})/add-location$ location-add.php?brewerID=$1 [L]
+RewriteRule ^brewer/([-0-9a-f]{36})/edit$ brewer-edit.php?brewerID=$1 [L]
 RewriteRule ^brewer/([-0-9a-f]{36})$ brewer.php?brewerID=$1 [L]
 RewriteRule ^brewer/add$ brewer-add.php [L]
 RewriteRule ^brewer/?$ brewer-list.php [L]
 
 RewriteRule ^location/([-0-9a-f]{36})/add-address$ address-add.php?locationID=$1 [L]
+RewriteRule ^location/([-0-9a-f]{36})/edit$ location-edit.php?locationID=$1 [L]
+RewriteRule ^location/([-0-9a-f]{36})/edit-address$ address-edit.php?locationID=$1 [L]
 RewriteRule ^location/([-0-9a-f]{36})/?$ brewer-list.php [L]
 RewriteRule ^location/?$ brewer-list.php [L]
 

@@ -17,7 +17,7 @@ if(isset($brewerData->error)){
 	$errorLog->badData = "brewerID: $brewerID\n" . $brewerData->error_msg;
 	$errorLog->filename = 'brewer.php';
 	$errorLog->write();
-	
+
 	http_response_code(404);
 	header('location: /error_page/404.php');
 	exit();
@@ -90,59 +90,19 @@ echo $htmlHead->html;
 		if(!empty($brewerData->brewer->url)){
 			// Prep Text
 			$urlString = $text3->get($brewerData->brewer->url);
-			
+
 			// Show HTML
 			echo '<a href="' . $urlString . '" itemprop="url"><img src="/images/internet-icon.svg" width="' . $dimension . '" height="' . $dimension . '" alt="Website Icon"  title="Visit ' . $brewerName . ' on the web"></a>';
-			
+
 			// Add Margin
 			$addMargin = true;
 		}
-		if(!empty($brewerData->brewer->twitter_url)){
-			// Prep Text
-			$TurlString = $text3->get($brewerData->brewer->twitter_url);
-			
-			// Margin
-			if($addMargin){
-				$margin = ' style="margin-left:15px;"';
-			}else{
-				$margin = '';
-				$addMargin = true;
-			}
-			
-			// Show HTML
-			echo '<a href="' . $TurlString . '"><img src="/images/twitter-icon.svg" width="' . $dimension . '" height="' . $dimension . '" alt="Twitter Icon"  title="Visit ' . $brewerName . ' on Twitter"' . $margin . '></a>';
-		}
-		if(!empty($brewerData->brewer->instagram_url)){
-			// Prep Text
-			$IurlString = $text3->get($brewerData->brewer->instagram_url);
-			
-			// Margin
-			if($addMargin){
-				$margin = ' style="margin-left:15px;"';
-			}else{
-				$margin = '';
-				$addMargin = true;
-			}
-			
-			// Show HTML
-			echo '<a href="' . $IurlString . '"><img src="/images/instagram-icon.svg" width="' . $dimension . '" height="' . $dimension . '" alt="Instagram Icon"  title="Visit ' . $brewerName . ' on Instagram"' . $margin . '></a>';
-		}
-		if(!empty($brewerData->brewer->facebook_url)){
-			// Prep Text
-			$FurlString = $text3->get($brewerData->brewer->facebook_url);
-			
-			// Margin
-			if($addMargin){
-				$margin = ' style="margin-left:15px;"';
-			}else{
-				$margin = '';
-			}
-			
-			// Show HTML
-			echo '<a href="' . $FurlString . '"><img src="/images/facebook-icon.svg" width="' . $dimension . '" height="' . $dimension . '" alt="Facebook Icon"  title="Visit ' . $brewerName . ' on Facebook"' . $margin . '></a>';
-		}
 		echo '</div>';
-		
+		$brewerIDString = $text3->get($brewerData->brewer->id);
+		if(isset($_SESSION['userID'])){
+			echo '<p style="margin-top:1rem;"><a href="/brewer/' . $brewerIDString . '/edit" class="btn btn-outline-secondary btn-sm">Edit Brewer</a></p>';
+		}
+
 		// Locations Info
 		$locationResp = $api->request('GET', '/brewer/' . $brewerID . '/locations', '');
 		$locationData = json_decode($locationResp);
@@ -164,14 +124,14 @@ echo $htmlHead->html;
 
 		// ----- Location(s) ------
 		if(isset($locationData->data) && count($locationData->data) > 0){
-			
+
 			// Section Heading
 			echo '<div class="row">' . "\n";
 			echo '<div class="col">' . "\n";
 			echo '<h2 style="margin-top:1em;" id="locations">' . $locationH2 . '<hr>' . "\n";
 			echo '</div>' . "\n";
 			echo '</div>' . "\n";
-			
+
 			// Loop Through Locations
 			$i=1;
 			foreach($locationData->data as &$locationInfo){
@@ -182,7 +142,7 @@ echo $htmlHead->html;
 				}
 				// New Column
 				echo '<div class="col-md-4" itemprop="location" itemscope itemtype="http://schema.org/Place"><meta itemprop="publicAccess" content="true" />' . "\n";
-				
+
 				// Get Location Info
 				$locationDetailResp = $api->request('GET', '/location/' . $locationInfo->id, '');
 				$locationDetailData = json_decode($locationDetailResp);
@@ -212,18 +172,28 @@ echo $htmlHead->html;
 						$streetAddress .= ' ' . $text1->get($locationDetailData->address->address1);
 					}
 					$streetAddress .= '</span>';
-					
+
 					// ZIP Code
 					if(!empty($locationDetailData->address->zip4)){
 						$zipCode = $text1->get($locationDetailData->address->zip5) . '-' . $text1->get($locationDetailData->address->zip4);
 					}else{
 						$zipCode = $text1->get($locationDetailData->address->zip5);
 					}
-					
+
 					$streetAddress .= '<br><span itemprop="addressLocality">' . $text1->get($locationDetailData->address->city) . '</span>, <span itemprop="addressRegion">' . $text1->get($locationDetailData->address->state_short) . '</span> <span itemprop="postalCode">' . $zipCode . '</span><br>' . $text1->get($locationDetailData->country_short_name) . '</p></div>';
 					echo $streetAddress;
 				}
-				
+
+				// Edit Links
+				if(isset($_SESSION['userID'])){
+					$locationIDString = $text3->get($locationInfo->id);
+					echo '<p><a href="/location/' . $locationIDString . '/edit" class="btn btn-outline-secondary btn-sm">Edit Location</a>';
+					if(isset($locationDetailData->address)){
+						echo ' <a href="/location/' . $locationIDString . '/edit-address" class="btn btn-outline-secondary btn-sm">Edit Address</a>';
+					}
+					echo '</p>' . "\n";
+				}
+
 				// Close Row/Column
 				echo '</div>' . "\n";
 				if($i == 3){
@@ -234,7 +204,7 @@ echo $htmlHead->html;
 					$i++;
 				}
 			}
-			
+
 			// Close Div
 			switch($i){
 				case 1:
@@ -254,14 +224,14 @@ echo $htmlHead->html;
 						echo '<script>mapkit.init({authorizationCallback:function(done){var xhr=new XMLHttpRequest();xhr.open("GET","/jwt-token.php");xhr.addEventListener("load",function(){done(this.responseText)});xhr.send()}});var map=new mapkit.Map("map");var brewery=new mapkit.Coordinate(' . $locationDetailData->latitude . ',' . $locationDetailData->longitude . ');var breweryAnnotation=new mapkit.MarkerAnnotation(brewery,{title:"' . $brewerName . '"});map.showItems(breweryAnnotation);var BreweryLocation=new mapkit.CoordinateRegion(new mapkit.Coordinate(' . $locationDetailData->latitude . ',' . $locationDetailData->longitude . '),new mapkit.CoordinateSpan(0.01,0.01));map.region=BreweryLocation;</script>' . "\n";
 						echo '</div>' . "\n";
 					}
-					
+
 					// Close Row
 					echo '</div>';
 					break;
 				case 3:
 					// Add One Blank Column
 					echo '<div class="col-md-4"></div>' . "\n";
-					
+
 					// Close Row
 					echo '</div>';
 					break;
@@ -292,22 +262,22 @@ echo $htmlHead->html;
 		echo '<h2 style="margin-top:1em;" id="beer">Beer</h2><hr>' . "\n";
 		echo '</div>' . "\n";
 		echo '</div>' . "\n";
-		
+
 		if(count($brewerData->data) > 0){
 			// Column Sizing
 			$perColumn = ceil(count($brewerData->data)/3);
 			$i = 1;
-						
+
 			// First column
 			echo '<div class="row">' . "\n";
 			echo '<div class="col-md-4">' . "\n";
-			
+
 			foreach($brewerData->data as &$beerInfo){
 				$beerName = $text1->get($beerInfo->name);
 				$beerStyle = $text1->get($beerInfo->style);
 				$beerID = $text3->get($beerInfo->id);
 				echo '<p><a href="/beer/' . $beerID . '"><span class="lead">' . $beerName . '</span></a><br>' . $beerStyle . '</p>' . "\n";
-				
+
 				if($i == $perColumn){
 					// New Column
 					echo '</div>' . "\n";
@@ -317,7 +287,7 @@ echo $htmlHead->html;
 					$i++;
 				}
 			}
-			
+
 			// Close Row and Column
 			echo '</div>' . "\n";
 			echo '</div>' . "\n";

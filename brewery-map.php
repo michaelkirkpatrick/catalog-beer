@@ -71,8 +71,8 @@ echo $htmlHead->html;
 					echo 'var BreweryLocation=new mapkit.CoordinateRegion(new mapkit.Coordinate(' . $latitude . ',' . $longitude . '),new mapkit.CoordinateSpan(0.01,0.01));' . "\n" . 'map.region=BreweryLocation;' . "\n";
 					echo '</script>' . "\n";	
 				}else{
-					// Error Adding Beer
-					$alert->msg = $mapResponse['error_msg'];
+					// Error Loading Map
+					$alert->msg = $mapResponse->error_msg;
 					echo $alert->display();
 				}
 				?>

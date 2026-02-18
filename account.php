@@ -29,7 +29,7 @@ echo $htmlHead->html;
 				// Email
 				if($userInfo->email_verified){
 					// Verified
-					$pillAdd = ' <span class="badge badge-pill badge-success">Verified</span>';
+					$pillAdd = ' <span class="badge rounded-pill bg-success">Verified</span>';
 					
 					// Get API Key
 					$api = new API();
@@ -37,16 +37,13 @@ echo $htmlHead->html;
 					$apiKeyData = json_decode($apiKeyResp);
 
 					if(isset($apiKeyData->api_key)){
-						// Get API Usage
-						$currentUsageResp = $api->request('GET', '/usage/currentMonth/' . $apiKeyData->api_key, '');
-						$currentUsageData = json_decode($currentUsageResp);
 						$apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr></table><p>Learn more about the <a href="/api-docs">Catalog.beer API</a>.</p>';
 					}else{
 						$apiKey = '<p>Unable to load your API key. Please try again later.</p>';
 					}
 				}else{
 					// Unverified
-					$pillAdd = ' <span class="badge badge-pill badge-warning">Unverified</span>';
+					$pillAdd = ' <span class="badge rounded-pill bg-warning text-dark">Unverified</span>';
 					
 					// Sent Date
 					$today = date('l, F jS', time());

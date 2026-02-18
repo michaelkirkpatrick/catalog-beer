@@ -64,7 +64,7 @@ if(isset($_POST['signupFormHidden'])){
 			$data = array('name'=>$name, 'email'=>$email, 'password'=>$password, 'terms_agreement'=>$termsAgreement);
 			$api = new API();
 			$response = $api->request('POST', '/users', $data);
-			if($api->httpcode == 200){
+			if($api->httpcode == 201){
 				// Successfully Created Account
 				session_regenerate_id(true);
 				$array = json_decode($response);
@@ -93,7 +93,7 @@ if(isset($_POST['signupFormHidden'])){
 		}else{
 			// Didn't Pass Captcha
 			$error = true;
-			$errorMsg = 'Sorry, Google\'s reCAPTCHA algorithm thinks you are a bot. As such, we are not going to allow you to create an account using this form. We have logged this incident. Try reaching us on [Twitter](https://twitter.com/CatalogBeer) for support.';
+			$errorMsg = 'Sorry, Google\'s reCAPTCHA algorithm thinks you are a bot. As such, we are not going to allow you to create an account using this form. We have logged this incident. Try [contacting us](/contact) for support.';
 
 			// Update Alert
 			$alert->msg = $errorMsg;

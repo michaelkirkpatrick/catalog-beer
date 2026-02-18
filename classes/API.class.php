@@ -64,7 +64,7 @@ class API {
 			"accept: application/json",
 			"authorization: Basic " . base64_encode($this->apiKey . ":"),
 		);
-		if($type === 'POST' || $type === 'PUT'){
+		if($type === 'POST' || $type === 'PUT' || $type === 'PATCH'){
 			$headerArray[] = "content-type: application/json";
 		}
 		
@@ -80,10 +80,8 @@ class API {
 		// Request Type
 		switch($type){
 			case 'POST':
-				$json = json_encode($data);
-				$optionsArray[CURLOPT_POSTFIELDS] = $json;
-				break;
 			case 'PUT':
+			case 'PATCH':
 				$json = json_encode($data);
 				$optionsArray[CURLOPT_POSTFIELDS] = $json;
 				break;
