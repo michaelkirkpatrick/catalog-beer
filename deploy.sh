@@ -93,6 +93,7 @@ rsync -avzO --no-perms --delete \
 	--exclude 'classes/config.example.php' \
 	--exclude 'maintenance.html' \
 	--exclude 'README.md' \
+	--exclude 'classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/' \
 	./ "$REMOTE:$REMOTE_PATH/"
 
 # Set ownership and permissions so Apache can read/serve and michael can deploy
