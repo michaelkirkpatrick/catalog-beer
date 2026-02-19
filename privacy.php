@@ -71,7 +71,7 @@ echo $htmlHead->html;
 
 				<p>Catalog.beer does not track its customers over time and across third party websites to provide targeted advertising and therefore does not respond to Do Not Track (DNT) signals. However, some third party sites do keep track of your browsing activities when they serve you content, which enables them to tailor what they present to you.</p>
 
-				<p>Third parties that have content embedded on Catalog.beer’s websites, such as Google&#8217;s reCAPTCHA, set cookies on a user’s browser and/or obtain information about the fact that a web browser visited a specific Catalog.beer webpage from a certain IP address. Third parties cannot collect any other personally identifiable information from Catalog.beer’s websites unless you provide it to them directly.</p>
+				<p>Third parties that have content embedded on Catalog.beer’s websites, such as Google&#8217;s reCAPTCHA and Maps, set cookies on a user’s browser and/or obtain information about the fact that a web browser visited a specific Catalog.beer webpage from a certain IP address. Third parties cannot collect any other personally identifiable information from Catalog.beer’s websites unless you provide it to them directly.</p>
 
 				<h2>Cookies and Other Technologies</h2>
 				<hr>
@@ -87,7 +87,7 @@ echo $htmlHead->html;
 
 				<h3>Google</h3>
 
-				<p>Catalog.beer uses Google&#8217;s <a href="https://www.google.com/recaptcha/intro/invisible.html">invisible reCAPTCHA</a> on our account creation and contact pages to help prevent robots from creating accounts and sending us spam email respectively. You can find Google&#8217;s <a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a> and <a href="https://www.google.com/intl/en/policies/terms/">Terms of Service</a> at the aforementioned links.</p>
+				<p>Catalog.beer uses Google&#8217;s <a href="https://www.google.com/recaptcha/intro/invisible.html">invisible reCAPTCHA</a> on our account creation and contact pages to help prevent robots from creating accounts and sending us spam email respectively. We also display Google powered maps on Brewery pages. You can find Google&#8217;s <a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a> and <a href="https://www.google.com/intl/en/policies/terms/">Terms of Service</a> at the aforementioned links.</p>
 
 				<h2>Others</h2>
 				<hr>

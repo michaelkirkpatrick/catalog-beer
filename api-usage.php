@@ -71,13 +71,13 @@ echo $htmlHead->html;
 
 				<p class="lead"><strong>tl;dr - It&#8217;s free.</strong></p>
 				
-				<p class="lead">If you make more than 1,000 API requests per month, at some point in the future we&#8217;ll charge you $0.50 per additional 1,000 requests. Right now we&#8217;re only monitoring usage.</p>
+				<p class="lead">Right now we&#8217;re only monitoring usage.</p>
 
-				<p>Catalog.beer was created to enable anyone to access brewery and beer information. To that end, our mission is to give anyone who wants it API access so they can poke around and contribute to the database. If you&#8217;re someone who enjoys beer and wants to build themselves a little application using the Catalog.beer API, we want it to be free for you to use. To that end, everyone with a Catalog.beer API key has 1,000 requests per month that are free.</p>
+				<p>Catalog.beer was created to enable anyone to access brewery and beer information. To that end, our mission is to give anyone who wants it API access so they can poke around and contribute to the database. If you&#8217;re someone who enjoys beer and wants to build themselves a little application using the Catalog.beer API, we want it to be free for you to use.</p>
 
-				<p>If you&#8217;re someone who&#8217;s making more than 1,000 API request per month, odds are you&#8217;re leveraging our database as part of another application that people are using. That&#8217;s great! We want you to do that! At some point, we will start charging you for the number of API requests you make over 1,000 each month. Right now we&#8217;re only monitoring usage and not charging for it.</p>
+				<p>If you&#8217;re someone who&#8217;s making hundreds or thousands of API request per month, odds are you&#8217;re leveraging our database as part of another application that people are using. That&#8217;s great! We want you to do that! At some point, we will start charging you for the number of API requests you make. Right now we&#8217;re only monitoring usage and not charging for it.</p>
 
-				<p>How much will it cost? $0.50 per additional 1,000 requests. We think that&#8217;s the cheapest rate out there for access to beer data. Our goal is cover our operating costs. If you have questions about pricing or just want to talk about it, <a href="/contact">send us a message</a>; we&#8217;d love to hear from you.</p>
+				<p>How much will it cost? TBD. Our goal is cover our operating costs. If you have questions about pricing or just want to talk about it, <a href="/contact">send us a message</a>; we&#8217;d love to hear from you.</p>
 			</div>
 			<div class="col-md-2"></div>
 		</div>
