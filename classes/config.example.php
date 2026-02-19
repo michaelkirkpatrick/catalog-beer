@@ -13,7 +13,4 @@ define('DB_NAME', 'your_db_name');
 // Google reCAPTCHA v3 (public site key)
 define('RECAPTCHA_SITE_KEY', 'your_recaptcha_site_key');
 
-// Apple MapKit JS
-define('MAPKIT_KEY_ID', 'your_mapkit_key_id');
-define('MAPKIT_TEAM_ID', 'your_mapkit_team_id');
 ?>

@@ -87,7 +87,6 @@ rsync -avzO --no-perms --delete \
 	--exclude 'CLAUDE.md' \
 	--exclude 'deploy.sh' \
 	--exclude '*.sql' \
-	--exclude '*.p8' \
 	--exclude 'classes/passwords.php' \
 	--exclude 'classes/passwords.example.php' \
 	--exclude 'classes/config.example.php' \

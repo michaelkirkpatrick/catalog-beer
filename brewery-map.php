@@ -12,7 +12,7 @@ echo $htmlHead->html;
 		@media only screen and (max-width: 991px) {
 			/* Mobile */
 			#map {
-				height: 200px;
+				height: 400px;
 				margin-bottom: 2rem;
 			}
 		}
@@ -32,44 +32,42 @@ echo $htmlHead->html;
 				// Required Classes
 				$api = new API();
 				$alert = new Alert();
-				
-				// Latitude Longitude
-				$latitude = 32.748482;
-				$longitude = -117.130094;
-				
+
 				// Query Map
-				$mapResponse = $api->request('GET', '/location/nearby?latitude=' . $latitude . '&longitude=' . $longitude, '');
+				$mapResponse = $api->request('GET', '/location/nearby?latitude=32.748482&longitude=-117.130094', '');
 				$mapResponse = json_decode($mapResponse);
 				if(!isset($mapResponse->error)){
-					// Display Breweries
-					// Successfully Added
-					echo '<script src="https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js"></script>';
+					// Build locations array
+					$locations = [];
+					for($i=0; $i<count($mapResponse->data); $i++){
+						$locations[] = [
+							'lat' => (float)$mapResponse->data[$i]->location->latitude,
+							'lng' => (float)$mapResponse->data[$i]->location->longitude,
+							'name' => $mapResponse->data[$i]->brewer->name
+						];
+					}
 					echo '<div id="map"></div>' . "\n";
-					// Initalize Map
 					?>
 				<script>
-					mapkit.init({
-							authorizationCallback: function (done) {
-									var xhr = new XMLHttpRequest();
-									xhr.open("GET", "/jwt-token.php");
-									xhr.addEventListener("load", function () {
-											done(this.responseText)
-									});
-									xhr.send()
-							}
+				function initMap() {
+					var locations = <?php echo json_encode($locations); ?>;
+					var map = new google.maps.Map(document.getElementById('map'), { zoom: 4 });
+					var bounds = new google.maps.LatLngBounds();
+					var markers = locations.map(function(loc) {
+						var marker = new google.maps.Marker({
+							position: { lat: loc.lat, lng: loc.lng },
+							title: loc.name
+						});
+						bounds.extend(marker.getPosition());
+						return marker;
 					});
-					var map = new mapkit.Map("map");
-					var showsUserLocation=true;
-					<?php
-					// Display Breweries
-					for($i=0; $i<count($mapResponse->data); $i++){
-						echo 'var brewery' . $i . '=new mapkit.Coordinate(' . $mapResponse->data[$i]->location->latitude . ',' . $mapResponse->data[$i]->location->longitude . ');' . "\n";
-						echo 'var breweryAnnotation' . $i . '=new mapkit.MarkerAnnotation(brewery' . $i . ',{title:"' . $mapResponse->data[$i]->brewer->name . '",clusteringIdentifier:"Brewery"});' . "\n" . 'map.showItems(breweryAnnotation' . $i . ');' . "\n";
-					}
-					
-					// Close Map
-					echo 'var BreweryLocation=new mapkit.CoordinateRegion(new mapkit.Coordinate(' . $latitude . ',' . $longitude . '),new mapkit.CoordinateSpan(0.01,0.01));' . "\n" . 'map.region=BreweryLocation;' . "\n";
-					echo '</script>' . "\n";	
+					new markerClusterer.MarkerClusterer({ map: map, markers: markers });
+					map.fitBounds(bounds);
+				}
+				</script>
+				<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+				<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_KEY; ?>&callback=initMap" async defer></script>
+				<?php
 				}else{
 					// Error Loading Map
 					$alert->msg = $mapResponse->error_msg;
@@ -77,7 +75,7 @@ echo $htmlHead->html;
 				}
 				?>
 			</div>
-    </div>  
+    </div>
   </div>
   <?php echo $nav->footer(); ?>
 </body>

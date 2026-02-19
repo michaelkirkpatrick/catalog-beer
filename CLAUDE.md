@@ -103,5 +103,5 @@ Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15
 
 - **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
 - **Google reCAPTCHA v3** — Form protection (`recaptcha.php`)
-- **Apple MapKit JS** — Map functionality, JWT tokens via `JWT.class.php` (`.p8` private key in `classes/resources/`, excluded from git)
+- **Google Maps JavaScript API** — Map functionality, API key in `config.php` (domain-restricted, safe for client-side)
 - **Fathom Analytics** — Privacy-focused analytics (in head template)

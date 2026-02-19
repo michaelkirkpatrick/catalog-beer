@@ -41,8 +41,7 @@ echo $htmlHead->html;
 			margin-top: 2rem;
 		}
 		#map {
-			height: 200px;
-			margin-bottom: 2rem;
+			height: 250px;
 		}
 	}
 	@media only screen and (min-width: 992px) {
@@ -52,8 +51,7 @@ echo $htmlHead->html;
 			width: 10rem;
 		}
 		#map {
-			height: 100%;
-			width: 100%;
+			height: 300px;
 		}
 	}
 </style>
@@ -128,6 +126,7 @@ echo $htmlHead->html;
 			echo '</div>' . "\n";
 
 			// Loop Through Locations
+			$mapLocations = [];
 			$i=1;
 			foreach($locationData->data as &$locationInfo){
 				// Column Info
@@ -141,6 +140,15 @@ echo $htmlHead->html;
 				// Get Location Info
 				$locationDetailResp = $api->request('GET', '/location/' . $locationInfo->id, '');
 				$locationDetailData = json_decode($locationDetailResp);
+
+				// Collect coordinates for map
+				if(!empty($locationDetailData->latitude) && !empty($locationDetailData->longitude)){
+					$mapLocations[] = [
+						'lat' => (float)$locationDetailData->latitude,
+						'lng' => (float)$locationDetailData->longitude,
+						'name' => $locationDetailData->name
+					];
+				}
 
 				$locationName = $text1->get($locationDetailData->name);
 				echo '<h3 itemprop="name">' . $locationName . '</h3>' . "\n";
@@ -206,19 +214,9 @@ echo $htmlHead->html;
 					// No Action Needed
 					break;
 				case 2:
-					if(count($locationData->data) > 1 || empty($locationDetailData->latitude)){
-						// Multiple Locations or No Latitude/Longitude
-						// Add Two Blank Columns
-						echo '<div class="col-md-4"></div>' . "\n";
-						echo '<div class="col-md-4"></div>' . "\n";
-					}else{
-						// Add Map to Right Two Columns
-						echo '<div class="col-md-8">' . "\n";
-						echo '<script src="https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js"></script>';
-						echo '<div id="map"></div>' . "\n";
-						echo '<script>mapkit.init({authorizationCallback:function(done){var xhr=new XMLHttpRequest();xhr.open("GET","/jwt-token.php");xhr.addEventListener("load",function(){done(this.responseText)});xhr.send()}});var map=new mapkit.Map("map");var brewery=new mapkit.Coordinate(' . $locationDetailData->latitude . ',' . $locationDetailData->longitude . ');var breweryAnnotation=new mapkit.MarkerAnnotation(brewery,{title:"' . $brewerName . '"});map.showItems(breweryAnnotation);var BreweryLocation=new mapkit.CoordinateRegion(new mapkit.Coordinate(' . $locationDetailData->latitude . ',' . $locationDetailData->longitude . '),new mapkit.CoordinateSpan(0.01,0.01));map.region=BreweryLocation;</script>' . "\n";
-						echo '</div>' . "\n";
-					}
+					// Add Two Blank Columns
+					echo '<div class="col-md-4"></div>' . "\n";
+					echo '<div class="col-md-4"></div>' . "\n";
 
 					// Close Row
 					echo '</div>';
@@ -230,6 +228,41 @@ echo $htmlHead->html;
 					// Close Row
 					echo '</div>';
 					break;
+			}
+
+			// Map
+			if(!empty($mapLocations)){
+				echo '<div class="row" style="margin-top:1rem; margin-bottom:1rem;">' . "\n";
+				echo '<div class="col">' . "\n";
+				echo '<div id="map"></div>' . "\n";
+				echo '</div>' . "\n";
+				echo '</div>' . "\n";
+				?>
+				<script>
+				function initMap() {
+					var locations = <?php echo json_encode($mapLocations); ?>;
+					var map = new google.maps.Map(document.getElementById('map'), { zoom: 14 });
+					var bounds = new google.maps.LatLngBounds();
+					locations.forEach(function(loc) {
+						var marker = new google.maps.Marker({
+							position: { lat: loc.lat, lng: loc.lng },
+							map: map,
+							title: loc.name
+						});
+						var infoWindow = new google.maps.InfoWindow({ content: '<strong>' + loc.name + '</strong>' });
+						marker.addListener('click', function() { infoWindow.open(map, marker); });
+						bounds.extend(marker.getPosition());
+					});
+					map.fitBounds(bounds);
+					if (locations.length === 1) {
+						google.maps.event.addListenerOnce(map, 'bounds_changed', function() {
+							map.setZoom(14);
+						});
+					}
+				}
+				</script>
+				<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_KEY; ?>&callback=initMap" async defer></script>
+				<?php
 			}
 
 			// Add Location Button

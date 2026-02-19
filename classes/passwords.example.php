@@ -15,4 +15,7 @@ define('POSTMARK_SERVER_TOKEN', 'your_postmark_token');
 
 // Google reCAPTCHA v3
 define('RECAPTCHA_SECRET_KEY', 'your_recaptcha_secret_key');
+
+// Google Maps JavaScript API
+define('GOOGLE_MAPS_KEY', 'your_google_maps_key');
 ?>
