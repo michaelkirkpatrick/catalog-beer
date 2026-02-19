@@ -63,8 +63,15 @@ echo $htmlHead->html;
 		echo '<div class="col-md-12 col-sm-12 col-lg-9 col-xl-7">' . "\n";
 
 		$text1 = new Text(false, true, true);
+		$text3 = new Text(false, false, true);
 		$brewerName = $text1->get($brewerData->brewer->name);
-		echo '<h1 itemprop="name">' . $brewerName;
+		echo '<h1 itemprop="name">';
+		if(!empty($brewerData->brewer->url)){
+			$brewerURL = $text3->get($brewerData->brewer->url);
+			echo '<a href="' . $brewerURL . '" target="_blank" rel="noopener" itemprop="url" class="text-decoration-none text-primary">' . $brewerName . '</a>';
+		}else{
+			echo $brewerName;
+		}
 		if($brewerData->brewer->cb_verified){
 			echo '<img src="/images/cb-verified.svg" width="20" height="20" class="d-inline-block align-baseline" alt="Catalog.beer Verified"  title="Verified by Catalog.beer" style="margin-left:2px;">';
 		}elseif($brewerData->brewer->brewer_verified){
@@ -80,17 +87,6 @@ echo $htmlHead->html;
 			echo '</div>';
 		}
 
-		// Link(s)
-		$text3 = new Text(false, false, true);
-		echo '<div>';
-		if(!empty($brewerData->brewer->url)){
-			// Prep Text
-			$urlString = $text3->get($brewerData->brewer->url);
-
-			// Show HTML
-			echo '<a href="' . $urlString . '" itemprop="url">Brewer&#8217;s Website <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/></svg></a>';
-		}
-		echo '</div>';
 		$brewerIDString = $text3->get($brewerData->brewer->id);
 		if(isset($_SESSION['userID'])){
 			echo '<p style="margin-top:1rem;"><a href="/brewer/' . $brewerIDString . '/edit" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg> Edit Brewer</a></p>';
@@ -151,14 +147,18 @@ echo $htmlHead->html;
 				}
 
 				$locationName = $text1->get($locationDetailData->name);
-				echo '<h3 itemprop="name">' . $locationName . '</h3>' . "\n";
-
-				// Website
+				$locationIDString = $text3->get($locationInfo->id);
+				echo '<h3 itemprop="name">';
 				if(!empty($locationDetailData->url)){
 					$locationURL = $text3->get($locationDetailData->url);
-					$locationWebsite = '<p><a href="' . $locationURL . '" itemprop="url">Location&#8217;s Webpage <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/></svg></a></p>';
-					echo $locationWebsite;
+					echo '<a href="' . $locationURL . '" target="_blank" rel="noopener" itemprop="url" class="text-decoration-none text-primary">' . $locationName . '</a>';
+				}else{
+					echo $locationName;
 				}
+				if(isset($_SESSION['userID'])){
+					echo ' <a href="/location/' . $locationIDString . '/edit" title="Edit Location"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
+				}
+				echo '</h3>' . "\n";
 
 				// Telephone
 				if(!empty($locationDetailData->telephone)){
@@ -183,18 +183,12 @@ echo $htmlHead->html;
 						$zipCode = $text1->get($locationDetailData->address->zip5);
 					}
 
-					$streetAddress .= '<br><span itemprop="addressLocality">' . $text1->get($locationDetailData->address->city) . '</span>, <span itemprop="addressRegion">' . $text1->get($locationDetailData->address->state_short) . '</span> <span itemprop="postalCode">' . $zipCode . '</span><br>' . $text1->get($locationDetailData->country_short_name) . '</p></div>';
-					echo $streetAddress;
-				}
-
-				// Edit Links
-				if(isset($_SESSION['userID'])){
-					$locationIDString = $text3->get($locationInfo->id);
-					echo '<p><a href="/location/' . $locationIDString . '/edit" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg> Edit Location</a>';
-					if(isset($locationDetailData->address)){
-						echo ' <a href="/location/' . $locationIDString . '/edit-address" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg> Edit Address</a>';
+					$streetAddress .= '<br><span itemprop="addressLocality">' . $text1->get($locationDetailData->address->city) . '</span>, <span itemprop="addressRegion">' . $text1->get($locationDetailData->address->state_short) . '</span> <span itemprop="postalCode">' . $zipCode . '</span><br>' . $text1->get($locationDetailData->country_short_name);
+					if(isset($_SESSION['userID'])){
+						$streetAddress .= ' <a href="/location/' . $locationIDString . '/edit-address" title="Edit Address"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
 					}
-					echo '</p>' . "\n";
+					$streetAddress .= '</p></div>';
+					echo $streetAddress;
 				}
 
 				// Close Row/Column
