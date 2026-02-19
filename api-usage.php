@@ -30,7 +30,7 @@ echo $htmlHead->html;
 			<div class="col-md-8">
 				<h1>API Usage</h1>
 
-				<p class="lead">The Catalog.beer Application Programming Interface (API) has been designed to make it easy for you to access information about Brewers and beers and tasting rooms.</p>
+				<p class="lead">The Catalog.beer Application Programming Interface (API) has been designed to make it easy for you to access information about brewers, beers, and tasting rooms.</p>
 
 				<p>When it comes to using the API, anyone is welcome to use it; all you have to do is <a href="/signup">create an account</a> and verify your email address. If you have questions about how to use the API, refer to our <a href="/api-docs">API Documentation</a> or <a href="/contact">drop us a line</a>.</p>
 
@@ -59,7 +59,7 @@ echo $htmlHead->html;
 
 				<h3>Use the API responsibly</h3>
 
-				<p>We&#8217;re new, so there aren&#8217;t any hard and fast rules or people who have burned us in the past that have required us to make some rules. A few guidelines and notes:</p>
+				<p>A few guidelines and notes:</p>
 
 				<ul>
 				<li>We may delete old accounts (more than a year old) without notice if we see that you haven&#8217;t used Catalog.beer in more than a year.</li>

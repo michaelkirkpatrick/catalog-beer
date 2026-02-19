@@ -32,7 +32,7 @@ echo $htmlHead->html;
 			<div class="col-md-8">
     			<h1>Privacy Policy</h1>
 
-				<p>Updated on January 2, 2020</p>
+				<p>Updated on February 19, 2026</p>
 
 				<p>Your privacy is important to us here at Catalog.beer. So we’ve developed a Privacy Policy that covers how we collect, use, disclose, and store your information. Please <a href="/contact">let us know</a> if you have any questions.</p>
 
@@ -47,14 +47,14 @@ echo $htmlHead->html;
 
 				<h3>What personal information we collect</h3>
 
-				<p>When you create a Catalog.beer account, pay API fees, or contact us, we may collect a variety of information, including your name, credit card information, and email address.</p>
+				<p>When you create a Catalog.beer account or contact us, we may collect a variety of information, including your name and email address.</p>
 
 				<h3>How we use your personal information</h3>
 
 				<ul>
 				<li>The personal information we collect allows us to keep you posted on Catalog.beer’s latest announcements.</li>
 				<li>We also use personal information to help us create, develop, deliver, and improve our services and content.</li>
-				<li>From time to time, we may use your personal information to send important notices, such as communications about purchases and changes to our terms, conditions, and policies. Because this information is important to your interaction with Catalog.beer, you may not opt out of receiving these communications.</li>
+				<li>From time to time, we may use your personal information to send important notices, such as changes to our terms, conditions, and policies. Because this information is important to your interaction with Catalog.beer, you may not opt out of receiving these communications.</li>
 				<li>We may also use personal information for internal purposes such as auditing, data analysis, and research to improve Catalog.beer’s services and customer communications.</li>
 				</ul>
 
@@ -99,7 +99,7 @@ echo $htmlHead->html;
 				<h2>Protection of Personal Information</h2>
 				<hr>
 
-				<p>Catalog.beer takes the security of your personal information very seriously. Catalog.beer&#8217;s online services protect your personal information during transit using encryption such as Transport Layer Security (TLS). When your personal data is stored by Catalog.beer, we use computer systems with limited access housed in facilities using physical security measures, operated by our service provider <a href="https://www.linode.com/security">Linode</a>. Your password is encrypted both when you enter and send it to access our services, and when it is stored in our database.</p>
+				<p>Catalog.beer takes the security of your personal information very seriously. Catalog.beer&#8217;s online services protect your personal information during transit using encryption such as Transport Layer Security (TLS). When your personal data is stored by Catalog.beer, we use computer systems with limited access housed in facilities using physical security measures, operated by our service provider <a href="https://www.linode.com/security">Akamai</a>. Your password is encrypted both when you enter and send it to access our services, and when it is stored in our database.</p>
 
 				<h2>Integrity and Retention of Personal Information</h2>
 				<hr>
@@ -142,9 +142,9 @@ echo $htmlHead->html;
 				<h2>State Specific Laws</h2>
 				<hr>
 				<h3>California</h3>
-				<p></p>The California Consumer Privacy Act provides California consumers with the right to obtain from Catalog.beer information about the personal information about you that we collect, use, and disclose. You can exercise your rights by <a href="/contact">contacting us</a>.</p>
+				<p>The California Consumer Privacy Act provides California consumers with the right to obtain from Catalog.beer information about the personal information about you that we collect, use, and disclose. You can exercise your rights by <a href="/contact">contacting us</a>.</p>
 
-				<p>If you choose to exercise your privacy rights, you have the right to not to receive discriminatory treatment or a lesser degree of service from Catalog.beer.</p>
+				<p>If you choose to exercise your privacy rights, you have the right not to receive discriminatory treatment or a lesser degree of service from Catalog.beer.</p>
 
 				<h3>Nevada</h3>
 				<p>You have the right to opt-out of the sale of your personal information. Catalog.beer does not sell your personal information.</p>
