@@ -282,7 +282,7 @@ echo $htmlHead->html;
 						<tr>
 							<td><var>last_modified</var></td>
 							<td>string</td>
-							<td>A timestamp indicating when the brewer was last modified.</td>
+							<td>An RFC 2822 formatted date indicating when the brewer was last modified.</td>
 						</tr>
 					</tbody>
 				</table>
@@ -299,7 +299,7 @@ echo $htmlHead->html;
   "url": "https://www.hopsaint.com/",
   "cb_verified": true,
   "brewer_verified": false,
-  "last_modified": "2025-01-15 10:30:00"
+  "last_modified": "Wed, 15 Jan 2025 10:30:00 -0800"
 }
 </pre>
 				<p><a href="#top">^ Return to top</a></p>
@@ -766,7 +766,7 @@ curl -X GET \
       "url": "https://www.stonebrewing.com/",
       "cb_verified": true,
       "brewer_verified": false,
-      "last_modified": 1737216000
+      "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800"
     }
   ]
 }
@@ -855,7 +855,7 @@ curl -X GET \
     "url": "https://www.ballastpoint.com/",
     "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": "2025-01-08 09:15:00"
+    "last_modified": "Wed, 08 Jan 2025 09:15:00 -0800"
   },
   "data": [
     {
@@ -909,6 +909,11 @@ curl -X GET \
 							<td>As of this writing, this will always return <var>false</var>. In the future, if pagination of results is required, this value may become <var>true</var>.</td>
 						</tr>
 						<tr>
+							<td><var>brewer</var></td>
+							<td>object</td>
+							<td>A <a href="#brewer-object">brewer object</a> for the requested brewer.</td>
+						</tr>
+						<tr>
 							<td><var>data</var></td>
 							<td>array</td>
 							<td>An array containing all the locations associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var> and <var>name</var> described below.</td>
@@ -940,6 +945,17 @@ curl -X GET \
   "object": "list",
   "url": "/brewer/e7fa4e64-a39e-fd06-f82a-37de2a7dfbda/locations",
   "has_more": false,
+  "brewer": {
+    "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
+    "object": "brewer",
+    "name": "Ballast Point",
+    "description": null,
+    "short_description": null,
+    "url": "https://www.ballastpoint.com/",
+    "cb_verified": true,
+    "brewer_verified": false,
+    "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800"
+  },
   "data": [
     {
       "id": "d94cdece-0b9f-cab6-9d6e-5fb3ba41d37c",
@@ -1020,7 +1036,7 @@ curl -X GET \
 						<tr>
 							<td><var>last_modified</var></td>
 							<td>string</td>
-							<td>A timestamp indicating when the beer was last modified.</td>
+							<td>An RFC 2822 formatted date indicating when the beer was last modified.</td>
 						</tr>
 						<tr>
 							<td><var>brewer</var></td>
@@ -1043,7 +1059,7 @@ curl -X GET \
     "ibu": 25,
     "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": "2025-01-10 14:22:00",
+    "last_modified": "Fri, 10 Jan 2025 14:22:00 -0800",
     "brewer": {
         "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
         "object": "brewer",
@@ -1053,7 +1069,7 @@ curl -X GET \
         "url": "https://www.ballastpoint.com/",
         "cb_verified": true,
         "brewer_verified": false,
-        "last_modified": "2025-01-08 09:15:00"
+        "last_modified": "Wed, 08 Jan 2025 09:15:00 -0800"
     }
 }
 </pre>
@@ -1534,7 +1550,7 @@ curl -X GET \
       "ibu": 77,
       "cb_verified": true,
       "brewer_verified": false,
-      "last_modified": 1737216000,
+      "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800",
       "brewer": {
         "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         "object": "brewer",
@@ -1544,7 +1560,7 @@ curl -X GET \
         "url": "https://www.stonebrewing.com/",
         "cb_verified": true,
         "brewer_verified": false,
-        "last_modified": 1737216000
+        "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800"
       }
     }
   ]
@@ -1623,7 +1639,7 @@ curl -X GET \
 		<tr>
 			<td><var>last_modified</var></td>
 			<td>string</td>
-			<td>A timestamp indicating when the location was last modified.</td>
+			<td>An RFC 2822 formatted date indicating when the location was last modified.</td>
 		</tr>
 		<tr>
 			<td><var>address</var><br><small class="text-muted">(optional)</small></td>
@@ -1654,7 +1670,7 @@ curl -X GET \
     "longitude": -117.1498184,
     "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": "2025-01-12 16:45:00",
+    "last_modified": "Sun, 12 Jan 2025 16:45:00 -0800",
     "address": {
         "address1": "",
         "address2": "9990 Alesmith Ct",
@@ -1675,11 +1691,11 @@ curl -X GET \
         "url": "https://alesmith.com/",
         "cb_verified": true,
         "brewer_verified": false,
-        "last_modified": "2025-01-05 11:00:00"
+        "last_modified": "Sun, 05 Jan 2025 11:00:00 -0800"
     }
 }
 </pre>
-								
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="location-add">Add a Location</h3>
@@ -1743,7 +1759,7 @@ curl -X POST \
   "longitude": null,
   "cb_verified": false,
   "brewer_verified": false,
-  "last_modified": "2025-02-01 10:00:00",
+  "last_modified": "Sat, 01 Feb 2025 10:00:00 -0800",
   "brewer": {
     "id": "050a11d3-0364-1eef-442f-82909ecadb1b",
     "object": "brewer",
@@ -1753,7 +1769,7 @@ curl -X POST \
     "url": "",
     "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": "2025-01-28 14:30:00"
+    "last_modified": "Tue, 28 Jan 2025 14:30:00 -0800"
   }
 }
 </pre>
@@ -1960,7 +1976,7 @@ curl -X POST \
   "longitude": -118.1891897,
   "cb_verified": false,
   "brewer_verified": false,
-  "last_modified": "2025-02-01 10:05:00",
+  "last_modified": "Sat, 01 Feb 2025 10:05:00 -0800",
   "address": {
     "address1": "",
     "address2": "518 W Willow St",
@@ -1981,11 +1997,11 @@ curl -X POST \
     "url": "",
     "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": "2025-01-28 14:30:00"
+    "last_modified": "Tue, 28 Jan 2025 14:30:00 -0800"
   }
 }
 </pre>
-								
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="location-replace-address">Replace an Address</h3>
@@ -2156,19 +2172,19 @@ curl -X GET \
 			<td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
 		</tr>
 		<tr>
-			<td><var>next_cursor</var></td>
+			<td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
 			<td>string</td>
-			<td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
+			<td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
 		</tr>
 		<tr>
 			<td><var>data</var></td>
 			<td>array</td>
 			<td>
-				<p>An array containing all the locations that match your query parameters. The array contains the following for each result:</p>
+				<p>An array containing all the locations that match your query parameters. Each result contains three objects:</p>
 				<ul>
-					<li>A <a href="#location-object">location object</a></li>
-					<li>A distance object containing <var>distance</var> and the <var>units</var> of that measurement. These are described below</li>
-					<li>A <a href="#brewer-object">brewer object</a></li>
+					<li>A <var>location</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var>, <var>telephone</var>, and a nested <var>address</var> object</li>
+					<li>A <var>distance</var> object described below</li>
+					<li>A <var>brewer</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
 				</ul>
 			</td>
 		</tr>
@@ -2186,65 +2202,62 @@ curl -X GET \
 </table>
 								
 <h4>Sample Request</h4>
-								
+
 <pre class="api-code">
 curl -X GET \
-  'https://api-staging.catalog.beer/location/nearby?latitude=32.748482&longitude=-117.130094&search_radius=10&count=1 \
-  -H 'Accept: application/json' \
+  'https://api.catalog.beer/location/nearby?latitude=32.748482&longitude=-117.130094&search_radius=10&count=1' \
+  -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
-								
+
 <h4>Sample Response</h4>
-								
+
 <pre class="api-code">
 {
-    "object": "list",
-    "url": "/location/nearby",
-    "has_more": true,
-    "next_cursor": "MQ==",
-    "data": [
-        {
-            "location": {
-                "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
-                "object": "location",
-                "name": "North Park",
-                "url": "",
-                "country_code": "US",
-                "country_short_name": "United States of America",
-                "latitude": "32.7476883",
-                "longitude": "-117.1285400",
-                "cb_verified": true,
-                "brewer_verified": false,
-                "last_modified": "2025-01-20 08:30:00",
-                "address": {
-                    "address1": "",
-                    "address2": "3812 Grim Ave",
-                    "city": "San Diego",
-                    "sub_code": "US-CA",
-                    "state_short": "CA",
-                    "state_long": "California",
-                    "zip5": 92104,
-                    "zip4": 3602,
-                    "telephone": 6192557136
-                },
-                "brewer": {
-                    "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
-                    "object": "brewer",
-                    "name": "Mike Hess Brewing Co.",
-                    "description": "",
-                    "short_description": "",
-                    "url": "https://www.mikehessbrewing.com/",
-                    "cb_verified": true,
-                    "brewer_verified": false,
-                    "last_modified": "2025-01-18 12:00:00"
-                }
-            },
-            "distance": {
-                "distance": 0.1,
-                "units": "miles"
-            }
+  "object": "list",
+  "url": "/location/nearby",
+  "has_more": true,
+  "next_cursor": "MQ==",
+  "data": [
+    {
+      "location": {
+        "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
+        "object": "location",
+        "name": "North Park",
+        "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "url": "",
+        "country_code": "US",
+        "country_short_name": "United States of America",
+        "latitude": 32.7476883,
+        "longitude": -117.12854,
+        "telephone": "6192557136",
+        "address": {
+          "address1": "",
+          "address2": "3812 Grim Ave",
+          "city": "San Diego",
+          "sub_code": "US-CA",
+          "state_short": "CA",
+          "state_long": "California",
+          "zip5": "92104",
+          "zip4": "3602"
         }
-    ]
+      },
+      "distance": {
+        "distance": 0.1,
+        "units": "miles"
+      },
+      "brewer": {
+        "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "object": "brewer",
+        "name": "Mike Hess Brewing Co.",
+        "description": null,
+        "short_description": null,
+        "url": "https://www.mikehessbrewing.com/",
+        "cb_verified": true,
+        "brewer_verified": false
+      }
+    }
+  ]
 }
 </pre>
 					

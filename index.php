@@ -25,6 +25,7 @@ $api = new API();
     	<div class="col">
     		<img src="/images/logo-black.svg" class="img-fluid" style="width: 100% \9; margin:0 auto; display: block; padding-top:3rem; padding-bottom:3rem; width:150px;">
 				<h1 class="text-center" style="margin-bottom:2rem;"><small>Catalog.beer</small><br/>The Internet&#8217;s Beer Database</h1>
+				<div id="search"></div>
 			</div>
 		</div>
 		<div class="row">
@@ -69,6 +70,7 @@ $api = new API();
 			<div class="col"></div>
 		</div>
   </div>
-  <?php echo $nav->footer(); ?> 
+  <?php echo $nav->footer(); ?>
+  <?php include ROOT . '/algolia/search-init.php'; ?>
 </body>
 </html>
