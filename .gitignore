@@ -3,7 +3,10 @@
 .DS_Store
 
 # Credentials
-classes/passwords.php
+config/passwords.php
+
+# Generated at deploy time
+config/version.php
 
 # Private keys
 *.p8

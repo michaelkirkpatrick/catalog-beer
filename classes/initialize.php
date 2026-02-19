@@ -12,7 +12,7 @@ define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
 define("SERVER_NAME", $_SERVER['SERVER_NAME']);
 
 // Load Configuration
-require_once ROOT . '/classes/config.php';
+require_once ROOT . '/config/config.php';
 
 // Establish Environment
 $serverName = explode('.', $_SERVER['SERVER_NAME']);
