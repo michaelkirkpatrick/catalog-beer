@@ -125,9 +125,6 @@ class Navigation {
 		}
 		$html = str_replace('##ACCOUNT##', $signIn, $html);
 
-		// Site-wide banner
-		$html .= '<div class="container"><div class="alert alert-info alert-dismissible fade show mt-3" role="alert">Catalog.beer has been upgraded and moved to a new server. If you see issues, please <a href="/contact" class="alert-link">contact us</a> and we&#8217;ll get it fixed up!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div></div>';
-
 		// Return
 		return $html;
 	}

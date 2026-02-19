@@ -171,7 +171,7 @@ echo $htmlHead->html;
 					$checkbox->validState = $validState['terms_agreement'];
 					echo $checkbox->display('terms_agreement', 'I agree to the [Terms & Conditions](/terms) for using this site.', true, $termsAgreement);
 					?>
-					<button class="btn btn-primary" data-callback="onSubmit" >Sign Up</button>
+					<button class="btn btn-primary" style="margin-top:1rem;" data-callback="onSubmit" >Sign Up</button>
 					<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
 					<p class="text-center"><a href="/login">Sign in</a></p>
         </form>
