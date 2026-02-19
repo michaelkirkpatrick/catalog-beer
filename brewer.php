@@ -84,18 +84,13 @@ echo $htmlHead->html;
 
 		// Link(s)
 		$text3 = new Text(false, false, true);
-		$addMargin = false;
-		$dimension = 24;
 		echo '<div>';
 		if(!empty($brewerData->brewer->url)){
 			// Prep Text
 			$urlString = $text3->get($brewerData->brewer->url);
 
 			// Show HTML
-			echo '<a href="' . $urlString . '" itemprop="url"><img src="/images/internet-icon.svg" width="' . $dimension . '" height="' . $dimension . '" alt="Website Icon"  title="Visit ' . $brewerName . ' on the web"></a>';
-
-			// Add Margin
-			$addMargin = true;
+			echo '<a href="' . $urlString . '" itemprop="url">Brewer&#8217;s Website <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/></svg></a>';
 		}
 		echo '</div>';
 		$brewerIDString = $text3->get($brewerData->brewer->id);
@@ -153,7 +148,7 @@ echo $htmlHead->html;
 				// Website
 				if(!empty($locationDetailData->url)){
 					$locationURL = $text3->get($locationDetailData->url);
-					$locationWebsite = '<p><a href="' . $locationURL . '" itemprop="url">Website</a></p>';
+					$locationWebsite = '<p><a href="' . $locationURL . '" itemprop="url">Location&#8217;s Webpage <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/></svg></a></p>';
 					echo $locationWebsite;
 				}
 
