@@ -67,6 +67,14 @@ echo $htmlHead->html;
 					<a class="list-group-item list-group-item-action" href="#location-replace-address">&gt; Replace an Address (PUT)</a>
 					<a class="list-group-item list-group-item-action" href="#location-retrieve">&gt; Retrieve a Location</a>
 					<a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
+					<a class="list-group-item list-group-item-action" href="#users"><strong>Users</strong></a>
+					<a class="list-group-item list-group-item-action" href="#users-object">&gt; The User Object</a>
+					<a class="list-group-item list-group-item-action" href="#users-retrieve">&gt; Retrieve a User</a>
+					<a class="list-group-item list-group-item-action" href="#users-api-key">&gt; Get API Key</a>
+					<a class="list-group-item list-group-item-action" href="#users-patch">&gt; Update a User (PATCH)</a>
+					<a class="list-group-item list-group-item-action" href="#users-delete">&gt; Delete a User</a>
+					<a class="list-group-item list-group-item-action" href="#users-reset-password">&gt; Request Password Reset</a>
+					<a class="list-group-item list-group-item-action" href="#users-password-reset">&gt; Reset Password</a>
 					<a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
 					<a class="list-group-item list-group-item-action" href="#us-address-object">&gt; The US Address Object</a>
 				</div>
@@ -2060,7 +2068,291 @@ curl -X GET \
 </table>
 
 <p><a href="#top">^ Return to top</a></p>
-								
+
+<!---------- USERS ---------->
+
+<h2 id="users">Users</h2>
+<hr>
+
+<p>The users endpoints allow you to manage your own account. User accounts are created through the <a href="https://catalog.beer">Catalog.beer</a> website, not directly via the API.</p>
+
+<!----- USERS: OBJECT ----->
+
+<h3 id="users-object">The User Object</h3>
+
+<p>Successful requests to user endpoints will return the user object in JSON format. That object has the following parameters.</p>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>id</var></td>
+			<td>string</td>
+			<td>The user_id; a unique identifier for the user.</td>
+		</tr>
+		<tr>
+			<td><var>object</var></td>
+			<td>string</td>
+			<td>The name of the object. In this case: &#8220;users&#8221;.</td>
+		</tr>
+		<tr>
+			<td><var>name</var></td>
+			<td>string</td>
+			<td>The user&#8217;s name.</td>
+		</tr>
+		<tr>
+			<td><var>email</var></td>
+			<td>string</td>
+			<td>The user&#8217;s email address.</td>
+		</tr>
+		<tr>
+			<td><var>email_verified</var></td>
+			<td>Boolean</td>
+			<td>A <var>true</var> or <var>false</var> value denoting whether the user&#8217;s email address has been verified.</td>
+		</tr>
+		<tr>
+			<td><var>email_auth</var></td>
+			<td>string/null</td>
+			<td>The email verification code, or <var>null</var> if the email has already been verified.</td>
+		</tr>
+		<tr>
+			<td><var>email_auth_sent</var></td>
+			<td>integer/null</td>
+			<td>A Unix timestamp indicating when the email verification was sent, or <var>null</var>.</td>
+		</tr>
+		<tr>
+			<td><var>admin</var></td>
+			<td>Boolean</td>
+			<td>A <var>true</var> or <var>false</var> value denoting whether the user has administrator privileges.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample</h4>
+
+<pre class="api-code">
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "object": "users",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "email_verified": true,
+  "email_auth": null,
+  "email_auth_sent": null,
+  "admin": false
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- USERS: RETRIEVE ----->
+
+<h3 id="users-retrieve">Retrieve a User</h3>
+
+<p>To retrieve your user information, send a <strong>GET</strong> request to the <code>/users</code> endpoint with your <var>{user_id}</var> appended to the path. You can only retrieve your own user information.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/users/{user_id}</pre>
+
+<p>A <a href="#users-object">user object</a> will be returned for successful requests.</p>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/users/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- USERS: API KEY ----->
+
+<h3 id="users-api-key">Get API Key</h3>
+
+<p>To retrieve your API key, send a <strong>GET</strong> request to the <code>/users/{user_id}/api-key</code> endpoint. You can only retrieve your own API key. The API key will be <var>null</var> if your email address has not yet been verified.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/users/{user_id}/api-key</pre>
+
+<h4>Response</h4>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>object</var></td>
+			<td>string</td>
+			<td>The name of the object. In this case: &#8220;api_key&#8221;.</td>
+		</tr>
+		<tr>
+			<td><var>user_id</var></td>
+			<td>string</td>
+			<td>The user_id associated with the API key.</td>
+		</tr>
+		<tr>
+			<td><var>api_key</var></td>
+			<td>string/null</td>
+			<td>The API key, or <var>null</var> if the user&#8217;s email has not been verified.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/users/a1b2c3d4-e5f6-7890-abcd-ef1234567890/api-key \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "api_key",
+  "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "api_key": "cadcbe6f-a80d-4e33-9f20-b53c2ed83845"
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- USERS: PATCH ----->
+
+<h3 id="users-patch">Update a User (PATCH)</h3>
+
+<p>To update your account, send a <strong>PATCH</strong> request to the <code>/users</code> endpoint with your <var>user_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#users-object">user object</a>.</p>
+
+<pre class="api-code">PATCH https://api.catalog.beer/users/{user_id}</pre>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>name</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The user&#8217;s name. Max 255 characters.</td>
+		</tr>
+		<tr>
+			<td><var>email</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>The user&#8217;s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain.</td>
+		</tr>
+		<tr>
+			<td><var>password</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>A new password for the account. Must be at least 8 characters.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PATCH \
+  https://api.catalog.beer/users/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"name":"Jane Smith"}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- USERS: DELETE ----->
+
+<h3 id="users-delete">Delete a User</h3>
+
+<p>To delete your account, send a <strong>DELETE</strong> request to the <code>/users</code> endpoint with your <var>user_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. This action permanently deletes your account and associated data.</p>
+
+<pre class="api-code">DELETE https://api.catalog.beer/users/{user_id}</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X DELETE \
+  https://api.catalog.beer/users/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- USERS: REQUEST PASSWORD RESET ----->
+
+<h3 id="users-reset-password">Request Password Reset</h3>
+
+<p>To request a password reset, send a <strong>POST</strong> request to the <code>/users/{user_id}/reset-password</code> endpoint. The user&#8217;s email must be verified. A password reset email will be sent to the email address on file. This endpoint is rate limited to one request per 15 minutes. Successful requests return a <var>204 No Content</var> response.</p>
+
+<pre class="api-code">POST https://api.catalog.beer/users/{user_id}/reset-password</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X POST \
+  https://api.catalog.beer/users/a1b2c3d4-e5f6-7890-abcd-ef1234567890/reset-password \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- USERS: RESET PASSWORD ----->
+
+<h3 id="users-password-reset">Reset Password</h3>
+
+<p>To reset your password using a password reset key (received via email), send a <strong>POST</strong> request to the <code>/users/password-reset/{password_reset_key}</code> endpoint with your new password in the request body. Successful requests return a <var>204 No Content</var> response.</p>
+
+<pre class="api-code">POST https://api.catalog.beer/users/password-reset/{password_reset_key}</pre>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>password</var></td>
+			<td>string</td>
+			<td>The new password. Must be at least 8 characters.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X POST \
+  https://api.catalog.beer/users/password-reset/e5f67890-abcd-1234-5678-90abcdef1234 \
+  -H 'accept: application/json' \
+  -H 'content-type: application/json' \
+  -d '{"password":"mynewpassword123"}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
 			</div>
 		</div>
   </div>
