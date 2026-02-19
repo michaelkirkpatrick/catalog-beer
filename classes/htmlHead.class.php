@@ -13,7 +13,14 @@ class htmlHead {
 		$html = file_get_contents(ROOT . '/classes/resources/head.html');
 		$text = new Text(false, false, true);
 		$pageTitle = $text->get($pageTitle);
-		$this->html = str_replace('##PAGETITLE##', $pageTitle, $html);
+		$html = str_replace('##PAGETITLE##', $pageTitle, $html);
+
+		// Fathom Analytics (production only)
+		$fathom = '';
+		if(defined('ENVIRONMENT') && ENVIRONMENT === 'production'){
+			$fathom = "<!-- Fathom Analytics -->\n\t" . '<script src="https://cdn.usefathom.com/script.js" data-site="YRZMNYXM" defer></script>';
+		}
+		$this->html = str_replace('##FATHOM##', $fathom, $html);
 	}
 	
 	function addDescription($description){
