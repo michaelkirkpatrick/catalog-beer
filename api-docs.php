@@ -46,6 +46,7 @@ echo $htmlHead->html;
 					<a class="list-group-item list-group-item-action" href="#brewer-retrieve">&gt; Retrieve a Brewer</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-list-all">&gt; List all Brewers</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-count">&gt; Number of Brewers</a>
+					<a class="list-group-item list-group-item-action" href="#brewer-search">&gt; Search Brewers</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-beers">&gt; List all Beers made by a Brewer</a>
 					<a class="list-group-item list-group-item-action" href="#brewer-locations">&gt; List all the Locations for a Brewer</a>
 					<a class="list-group-item list-group-item-action" href="#beer"><strong>Beer</strong></a>
@@ -57,6 +58,7 @@ echo $htmlHead->html;
 					<a class="list-group-item list-group-item-action" href="#beer-retrieve">&gt; Retrieve a Beer</a>
 					<a class="list-group-item list-group-item-action" href="#beer-list-all">&gt; List all Beer</a>
 					<a class="list-group-item list-group-item-action" href="#beer-count">&gt; Number of Beers</a>
+					<a class="list-group-item list-group-item-action" href="#beer-search">&gt; Search Beer</a>
 					<a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
 					<a class="list-group-item list-group-item-action" href="#location-object">&gt; The Location Object</a>
 					<a class="list-group-item list-group-item-action" href="#location-add">&gt; Add a Location</a>
@@ -81,7 +83,7 @@ echo $htmlHead->html;
 			</div>
 			<div class="col-md-8">
 				<h1 id="top">API Reference</h1>
-				<p>Last Updated: February 18, 2026</p>
+				<p>Last Updated: February 19, 2026</p>
 				
 				<h2 id="url">API Basics</h2>
 				<hr>
@@ -649,6 +651,124 @@ curl -X GET \
   "object": "count",
   "url": "/brewer/count",
   "value": 3
+}
+</pre>
+				<p><a href="#top">^ Return to top</a></p>
+
+				<h3 id="brewer-search">Search Brewers</h3>
+
+				<p>Search for brewers by name or description using full-text search. To search, send a <strong>GET</strong> request to the <code>/brewer/search</code> endpoint with a <var>q</var> query parameter.</p>
+
+				<pre class="api-code">GET https://api.catalog.beer/brewer/search?q={query}</pre>
+
+				<h4>Query Parameters</h4>
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col">Type</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><var>q</var></td>
+							<td>string</td>
+							<td>The search query string. Maximum 255 characters.</td>
+						</tr>
+						<tr>
+							<td><var>count</var><br><small class="text-muted">(optional)</small></td>
+							<td>integer</td>
+							<td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+						</tr>
+						<tr>
+							<td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
+
+				<pre class="api-code">GET https://api.catalog.beer/brewer/search?q=stone+brewing&amp;count=5</pre>
+
+				<h4>Response</h4>
+
+				<p>This request returns a list object with the following parameters. Results are sorted by relevance to the search query.</p>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Parameter</th>
+							<th scope="col">Type</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><var>object</var></td>
+							<td>string</td>
+							<td>The name of the object. In this case: &#8220;list&#8221;.</td>
+						</tr>
+						<tr>
+							<td><var>url</var></td>
+							<td>string</td>
+							<td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/search</code>.</td>
+						</tr>
+						<tr>
+							<td><var>query</var></td>
+							<td>string</td>
+							<td>The search query that was submitted.</td>
+						</tr>
+						<tr>
+							<td><var>has_more</var></td>
+							<td>Boolean</td>
+							<td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+						</tr>
+						<tr>
+							<td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+							<td>string</td>
+							<td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+						</tr>
+						<tr>
+							<td><var>data</var></td>
+							<td>array</td>
+							<td>An array of <a href="#brewer-object">brewer objects</a> matching the search query, sorted by relevance.</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/brewer/search?q=stone' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+				<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/brewer/search",
+  "query": "stone",
+  "has_more": false,
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "object": "brewer",
+      "name": "Stone Brewing",
+      "description": "Stone Brewing, founded in 1996 in San Diego...",
+      "short_description": "San Diego craft brewery",
+      "url": "https://www.stonebrewing.com/",
+      "cb_verified": true,
+      "brewer_verified": false,
+      "last_modified": 1737216000
+    }
+  ]
 }
 </pre>
 				<p><a href="#top">^ Return to top</a></p>
@@ -1300,7 +1420,139 @@ curl -X GET \
 </pre>
 								
 <p><a href="#top">^ Return to top</a></p>
-								
+
+<h3 id="beer-search">Search Beer</h3>
+
+<p>Search for beer by name, style, or description using full-text search. To search, send a <strong>GET</strong> request to the <code>/beer/search</code> endpoint with a <var>q</var> query parameter.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/beer/search?q={query}</pre>
+
+<h4>Query Parameters</h4>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>q</var></td>
+			<td>string</td>
+			<td>The search query string. Maximum 255 characters.</td>
+		</tr>
+		<tr>
+			<td><var>count</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+		</tr>
+		<tr>
+			<td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/beer/search?q=ipa&amp;count=5</pre>
+
+<h4>Response</h4>
+
+<p>This request returns a list object with the following parameters. Results are sorted by relevance to the search query. Each result is a full <a href="#beer-object">beer object</a> including the nested <a href="#brewer-object">brewer object</a>, so you can display results without making additional API calls.</p>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Parameter</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>object</var></td>
+			<td>string</td>
+			<td>The name of the object. In this case: &#8220;list&#8221;.</td>
+		</tr>
+		<tr>
+			<td><var>url</var></td>
+			<td>string</td>
+			<td>The API endpoint accessed to retrieve this object. In this case: <code>/beer/search</code>.</td>
+		</tr>
+		<tr>
+			<td><var>query</var></td>
+			<td>string</td>
+			<td>The search query that was submitted.</td>
+		</tr>
+		<tr>
+			<td><var>has_more</var></td>
+			<td>Boolean</td>
+			<td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+		</tr>
+		<tr>
+			<td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+		</tr>
+		<tr>
+			<td><var>data</var></td>
+			<td>array</td>
+			<td>An array of <a href="#beer-object">beer objects</a> matching the search query, sorted by relevance. Each beer object includes a nested <a href="#brewer-object">brewer object</a>.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/beer/search?q=ipa&count=2' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/beer/search",
+  "query": "ipa",
+  "has_more": true,
+  "next_cursor": "Mg==",
+  "data": [
+    {
+      "id": "e9a9936e-332c-aa6c-8dcf-70309b483db7",
+      "object": "beer",
+      "name": "Stone IPA",
+      "style": "India Pale Ale",
+      "description": "A well-hopped West Coast IPA...",
+      "abv": 6.9,
+      "ibu": 77,
+      "cb_verified": true,
+      "brewer_verified": false,
+      "last_modified": 1737216000,
+      "brewer": {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "object": "brewer",
+        "name": "Stone Brewing",
+        "description": "Stone Brewing, founded in 1996...",
+        "short_description": "San Diego craft brewery",
+        "url": "https://www.stonebrewing.com/",
+        "cb_verified": true,
+        "brewer_verified": false,
+        "last_modified": 1737216000
+      }
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
 <h2 id="location">Location</h2>
 
 <p>Brewers can have multiple locations associated with them. These should be public locations at which beer is served as opposed to a production or office space that does not offer beer tasting.</p>
