@@ -69,6 +69,8 @@ echo $htmlHead->html;
 					<a class="list-group-item list-group-item-action" href="#location-replace-address">&gt; Replace an Address (PUT)</a>
 					<a class="list-group-item list-group-item-action" href="#location-retrieve">&gt; Retrieve a Location</a>
 					<a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
+					<a class="list-group-item list-group-item-action" href="#location-zip">&gt; Find Locations by ZIP Code</a>
+					<a class="list-group-item list-group-item-action" href="#location-city">&gt; Find Locations by City</a>
 					<a class="list-group-item list-group-item-action" href="#users"><strong>Users</strong></a>
 					<a class="list-group-item list-group-item-action" href="#users-object">&gt; The User Object</a>
 					<a class="list-group-item list-group-item-action" href="#users-retrieve">&gt; Retrieve a User</a>
@@ -2262,7 +2264,234 @@ curl -X GET \
 </pre>
 					
 <p><a href="#top">^ Return to top</a></p>
-								
+
+<!----- LOCATION: ZIP CODE ----->
+
+<h3 id="location-zip">Find Locations by ZIP Code</h3>
+
+<p>Find nearby brewery locations by providing a US ZIP code. This endpoint geocodes the ZIP code and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
+
+<p>Send a <strong>GET</strong> request to the <code>/location/zip</code> endpoint with the <var>zip_code</var> query parameter.</p>
+
+<h4>Query Parameters</h4>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>zip_code</var></td>
+			<td>string</td>
+			<td>A 5-digit US ZIP code (e.g., <var>92104</var>).</td>
+		</tr>
+		<tr>
+			<td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The radius of the search circle, centered at the provided ZIP code. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+		</tr>
+		<tr>
+			<td><var>metric</var><br><small class="text-muted">(optional)</small></td>
+			<td>boolean</td>
+			<td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
+		</tr>
+		<tr>
+			<td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+		</tr>
+		<tr>
+			<td><var>count</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The number of results you would like returned from your request. The default value is 100.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Response</h4>
+<p>The response format is identical to the <a href="#nearby-locations">Find Nearby Locations</a> endpoint, returning a list object with <var>location</var>, <var>distance</var>, and <var>brewer</var> objects for each result. The <var>url</var> field will be <code>/location/zip</code>.</p>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/location/zip?zip_code=92104&search_radius=10&count=1' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/location/zip",
+  "has_more": true,
+  "next_cursor": "MQ==",
+  "data": [
+    {
+      "location": {
+        "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
+        "object": "location",
+        "name": "North Park",
+        "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "url": "",
+        "country_code": "US",
+        "country_short_name": "United States of America",
+        "latitude": 32.7476883,
+        "longitude": -117.12854,
+        "telephone": "6192557136",
+        "address": {
+          "address1": "",
+          "address2": "3812 Grim Ave",
+          "city": "San Diego",
+          "sub_code": "US-CA",
+          "state_short": "CA",
+          "state_long": "California",
+          "zip5": "92104",
+          "zip4": "3602"
+        }
+      },
+      "distance": {
+        "distance": 0.1,
+        "units": "miles"
+      },
+      "brewer": {
+        "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "object": "brewer",
+        "name": "Mike Hess Brewing Co.",
+        "description": null,
+        "short_description": null,
+        "url": "https://www.mikehessbrewing.com/",
+        "cb_verified": true,
+        "brewer_verified": false
+      }
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- LOCATION: CITY ----->
+
+<h3 id="location-city">Find Locations by City</h3>
+
+<p>Find nearby brewery locations by providing a city and state. This endpoint geocodes the city and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
+
+<p>Send a <strong>GET</strong> request to the <code>/location/city</code> endpoint with the <var>city</var> and <var>state</var> query parameters.</p>
+
+<h4>Query Parameters</h4>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><var>city</var></td>
+			<td>string</td>
+			<td>The name of the city to search around (e.g., <var>San Diego</var>).</td>
+		</tr>
+		<tr>
+			<td><var>state</var></td>
+			<td>string</td>
+			<td>The state name or abbreviation (e.g., <var>California</var> or <var>CA</var>).</td>
+		</tr>
+		<tr>
+			<td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The radius of the search circle, centered at the provided city. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+		</tr>
+		<tr>
+			<td><var>metric</var><br><small class="text-muted">(optional)</small></td>
+			<td>boolean</td>
+			<td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
+		</tr>
+		<tr>
+			<td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+			<td>string</td>
+			<td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+		</tr>
+		<tr>
+			<td><var>count</var><br><small class="text-muted">(optional)</small></td>
+			<td>integer</td>
+			<td>The number of results you would like returned from your request. The default value is 100.</td>
+		</tr>
+	</tbody>
+</table>
+
+<h4>Response</h4>
+<p>The response format is identical to the <a href="#nearby-locations">Find Nearby Locations</a> endpoint, returning a list object with <var>location</var>, <var>distance</var>, and <var>brewer</var> objects for each result. The <var>url</var> field will be <code>/location/city</code>.</p>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/location/city?city=San%20Diego&state=CA&search_radius=10&count=1' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/location/city",
+  "has_more": true,
+  "next_cursor": "MQ==",
+  "data": [
+    {
+      "location": {
+        "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
+        "object": "location",
+        "name": "North Park",
+        "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "url": "",
+        "country_code": "US",
+        "country_short_name": "United States of America",
+        "latitude": 32.7476883,
+        "longitude": -117.12854,
+        "telephone": "6192557136",
+        "address": {
+          "address1": "",
+          "address2": "3812 Grim Ave",
+          "city": "San Diego",
+          "sub_code": "US-CA",
+          "state_short": "CA",
+          "state_long": "California",
+          "zip5": "92104",
+          "zip4": "3602"
+        }
+      },
+      "distance": {
+        "distance": 2.3,
+        "units": "miles"
+      },
+      "brewer": {
+        "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "object": "brewer",
+        "name": "Mike Hess Brewing Co.",
+        "description": null,
+        "short_description": null,
+        "url": "https://www.mikehessbrewing.com/",
+        "cb_verified": true,
+        "brewer_verified": false
+      }
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
 <!---------- US ADDRESSES ---------->
 								
 <h2 id="us-address">US Address</h2>
