@@ -78,7 +78,11 @@ echo $htmlHead->html;
 					// Build rows
 					foreach($users as $user){
 						echo '<tr>';
-						echo '<td><a href="mailto:' . htmlspecialchars($user['email']) . '">' . htmlspecialchars($user['name']) . '</a></td>';
+						if(!empty($user['email'])){
+							echo '<td><a href="mailto:' . htmlspecialchars($user['email']) . '">' . htmlspecialchars($user['name']) . '</a></td>';
+						}else{
+							echo '<td>' . htmlspecialchars($user['name']) . '</td>';
+						}
 						echo '<td><code>' . htmlspecialchars($user['api_key']) . '</code></td>';
 						$total = 0;
 						foreach($months as $m){
