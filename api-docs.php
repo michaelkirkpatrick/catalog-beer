@@ -281,8 +281,8 @@ echo $htmlHead->html;
 						</tr>
 						<tr>
 							<td><var>last_modified</var></td>
-							<td>string</td>
-							<td>An RFC 2822 formatted date indicating when the brewer was last modified.</td>
+							<td>integer</td>
+							<td>A Unix timestamp indicating when the brewer was last modified.</td>
 						</tr>
 					</tbody>
 				</table>
@@ -299,7 +299,7 @@ echo $htmlHead->html;
   "url": "https://www.hopsaint.com/",
   "cb_verified": true,
   "brewer_verified": false,
-  "last_modified": "Wed, 15 Jan 2025 10:30:00 -0800"
+  "last_modified": 1736966600
 }
 </pre>
 				<p><a href="#top">^ Return to top</a></p>
@@ -766,7 +766,7 @@ curl -X GET \
       "url": "https://www.stonebrewing.com/",
       "cb_verified": true,
       "brewer_verified": false,
-      "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800"
+      "last_modified": 1737234000
     }
   ]
 }
@@ -855,7 +855,7 @@ curl -X GET \
     "url": "https://www.ballastpoint.com/",
     "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": "Wed, 08 Jan 2025 09:15:00 -0800"
+    "last_modified": 1736356500
   },
   "data": [
     {
@@ -954,7 +954,7 @@ curl -X GET \
     "url": "https://www.ballastpoint.com/",
     "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800"
+    "last_modified": 1737234000
   },
   "data": [
     {
@@ -1035,8 +1035,8 @@ curl -X GET \
 						</tr>
 						<tr>
 							<td><var>last_modified</var></td>
-							<td>string</td>
-							<td>An RFC 2822 formatted date indicating when the beer was last modified.</td>
+							<td>integer</td>
+							<td>A Unix timestamp indicating when the beer was last modified.</td>
 						</tr>
 						<tr>
 							<td><var>brewer</var></td>
@@ -1059,7 +1059,7 @@ curl -X GET \
     "ibu": 25,
     "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": "Fri, 10 Jan 2025 14:22:00 -0800",
+    "last_modified": 1736547720,
     "brewer": {
         "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
         "object": "brewer",
@@ -1069,7 +1069,7 @@ curl -X GET \
         "url": "https://www.ballastpoint.com/",
         "cb_verified": true,
         "brewer_verified": false,
-        "last_modified": "Wed, 08 Jan 2025 09:15:00 -0800"
+        "last_modified": 1736356500
     }
 }
 </pre>
@@ -1550,7 +1550,7 @@ curl -X GET \
       "ibu": 77,
       "cb_verified": true,
       "brewer_verified": false,
-      "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800",
+      "last_modified": 1737234000,
       "brewer": {
         "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         "object": "brewer",
@@ -1560,7 +1560,7 @@ curl -X GET \
         "url": "https://www.stonebrewing.com/",
         "cb_verified": true,
         "brewer_verified": false,
-        "last_modified": "Sat, 18 Jan 2025 12:00:00 -0800"
+        "last_modified": 1737234000
       }
     }
   ]
@@ -1638,8 +1638,8 @@ curl -X GET \
 		</tr>
 		<tr>
 			<td><var>last_modified</var></td>
-			<td>string</td>
-			<td>An RFC 2822 formatted date indicating when the location was last modified.</td>
+			<td>integer</td>
+			<td>A Unix timestamp indicating when the location was last modified.</td>
 		</tr>
 		<tr>
 			<td><var>address</var><br><small class="text-muted">(optional)</small></td>
@@ -1670,7 +1670,7 @@ curl -X GET \
     "longitude": -117.1498184,
     "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": "Sun, 12 Jan 2025 16:45:00 -0800",
+    "last_modified": 1736729100,
     "address": {
         "address1": "",
         "address2": "9990 Alesmith Ct",
@@ -1691,7 +1691,7 @@ curl -X GET \
         "url": "https://alesmith.com/",
         "cb_verified": true,
         "brewer_verified": false,
-        "last_modified": "Sun, 05 Jan 2025 11:00:00 -0800"
+        "last_modified": 1736103600
     }
 }
 </pre>
@@ -1759,7 +1759,7 @@ curl -X POST \
   "longitude": null,
   "cb_verified": false,
   "brewer_verified": false,
-  "last_modified": "Sat, 01 Feb 2025 10:00:00 -0800",
+  "last_modified": 1738429200,
   "brewer": {
     "id": "050a11d3-0364-1eef-442f-82909ecadb1b",
     "object": "brewer",
@@ -1769,7 +1769,7 @@ curl -X POST \
     "url": "",
     "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": "Tue, 28 Jan 2025 14:30:00 -0800"
+    "last_modified": 1738103400
   }
 }
 </pre>
@@ -1976,7 +1976,7 @@ curl -X POST \
   "longitude": -118.1891897,
   "cb_verified": false,
   "brewer_verified": false,
-  "last_modified": "Sat, 01 Feb 2025 10:05:00 -0800",
+  "last_modified": 1738429500,
   "address": {
     "address1": "",
     "address2": "518 W Willow St",
@@ -1997,7 +1997,7 @@ curl -X POST \
     "url": "",
     "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": "Tue, 28 Jan 2025 14:30:00 -0800"
+    "last_modified": 1738103400
   }
 }
 </pre>
