@@ -17,6 +17,9 @@ $api = new API();
 					margin-top:1rem;
 			}
 	}
+	#search .sitesearch-button {
+		width: 100%;
+	}
 </style>
 	
 	<?php echo $nav->navbar(''); ?>
@@ -25,7 +28,9 @@ $api = new API();
     	<div class="col">
     		<img src="/images/logo-black.svg" class="img-fluid" style="width: 100% \9; margin:0 auto; display: block; padding-top:3rem; padding-bottom:3rem; width:150px;">
 				<h1 class="text-center" style="margin-bottom:2rem;"><small>Catalog.beer</small><br/>The Internet&#8217;s Beer Database</h1>
-				<div id="search"></div>
+				<div class="mx-auto" style="max-width:600px; margin-bottom:2rem;">
+					<div id="search"></div>
+				</div>
 			</div>
 		</div>
 		<div class="row">
