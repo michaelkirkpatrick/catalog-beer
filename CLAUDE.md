@@ -102,6 +102,7 @@ Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15
 
 ### External Integrations
 
+- **Algolia SiteSearch** — Homepage search (`algolia/search-init.php`). CSS/JS loaded from CDN. Secrets (`ALGOLIA_APPLICATION_ID`, `ALGOLIA_SEARCH_API_KEY`) in `passwords.php`. Indexing managed in the API repo via `generateSearchObject()` methods and `algolia/batch-upload.php`.
 - **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
 - **Google reCAPTCHA v3** — Form protection (`recaptcha.php`)
 - **Google Maps JavaScript API** — Map functionality, API key in `config.php` (domain-restricted, safe for client-side)
