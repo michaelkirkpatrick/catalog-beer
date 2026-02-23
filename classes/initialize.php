@@ -18,7 +18,7 @@ require_once ROOT . '/config/config.php';
 $serverName = explode('.', $_SERVER['SERVER_NAME']);
 if($serverName[0] === 'staging'){
 	define('ENVIRONMENT', 'staging');
-}elseif($serverName[0] === 'catalog'){
+}else{
 	define('ENVIRONMENT', 'production');
 }
 
