@@ -27,6 +27,9 @@ RewriteRule ^signup/?$		create-account.php [L]
 RewriteRule ^terms/?$		terms.php	[L]
 RewriteRule ^build-info/?$	build-info.php	[L]
 
+# Admin
+RewriteRule ^admin/error-log/?$	admin/error-log.php	[L]
+
 
 # Redirect Pages
 RewriteRule ^beer/add/([-0-9a-f]{36})$ beer-add.php?brewerID=$1 [L]
