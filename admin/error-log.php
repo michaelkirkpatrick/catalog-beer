@@ -9,6 +9,19 @@ if(!$userInfo->admin){
 	exit;
 }
 
+// Handle Resolve All
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resolve_all'])){
+	$api = new API();
+	$response = $api->request('PATCH', '/error-log', ['resolve_all' => true]);
+	$result = json_decode($response);
+	if(isset($result->error) && $result->error){
+		header('location: /admin/error-log.php?error=' . urlencode($result->error_msg));
+	}else{
+		header('location: /admin/error-log.php?resolved=' . $result->resolved_count);
+	}
+	exit;
+}
+
 // HTML Head
 $htmlHead = new htmlHead('Error Log');
 echo $htmlHead->html;
@@ -20,6 +33,14 @@ echo $htmlHead->html;
 			<div class="col-12">
 				<h1>Error Log</h1>
 				<?php
+				// Flash messages
+				if(isset($_GET['resolved'])){
+					echo '<div class="alert alert-success">Resolved ' . number_format(intval($_GET['resolved'])) . ' errors.</div>';
+				}
+				if(isset($_GET['error'])){
+					echo '<div class="alert alert-danger">' . htmlspecialchars($_GET['error']) . '</div>';
+				}
+
 				// Fetch error report data
 				$api = new API();
 				$response = $api->request('GET', '/error-log', '');
@@ -34,6 +55,13 @@ echo $htmlHead->html;
 					echo '<div class="col-md-4"><div class="card"><div class="card-body text-center"><h5 class="card-title">Last 24 Hours</h5><p class="card-text display-6">' . number_format($report->summary->last_24h) . '</p></div></div></div>';
 					echo '<div class="col-md-4"><div class="card"><div class="card-body text-center"><h5 class="card-title">Last 7 Days</h5><p class="card-text display-6">' . number_format($report->summary->last_7d) . '</p></div></div></div>';
 					echo '</div>';
+
+					// Resolve All button
+					if($report->summary->total_unresolved > 0){
+						echo '<form method="POST" class="mb-4">';
+						echo '<button type="submit" name="resolve_all" value="1" class="btn btn-primary" onclick="return confirm(\'Resolve all ' . number_format($report->summary->total_unresolved) . ' unresolved errors?\')">Resolve All Errors</button>';
+						echo '</form>';
+					}
 
 					// Top Errors table
 					if(!empty($report->by_error_number)){
