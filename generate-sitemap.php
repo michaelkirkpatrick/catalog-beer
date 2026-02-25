@@ -39,6 +39,8 @@ $api = new API();
 
 function request($endpoint){
 	global $api;
+	$api->error = false;
+	$api->errorMsg = '';
 	$response = $api->request('GET', $endpoint, '');
 	if($api->error){
 		return false;
