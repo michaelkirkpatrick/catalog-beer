@@ -32,8 +32,6 @@ if(ENVIRONMENT === 'staging'){
 	$prefix = 'https://catalog.beer/';
 }
 
-$sitemap_path = ROOT . '/sitemap.xml';
-
 // --- API Helper ---
 $api = new API();
 
@@ -52,21 +50,6 @@ function request($endpoint){
 	return $data;
 }
 
-// --- Open File ---
-$file = fopen($sitemap_path, 'w');
-if(!$file){
-	exit("Error: Could not open $sitemap_path for writing.\n");
-}
-
-echo "Starting sitemap generation ($environment)...\n";
-
-$urlCount = 0;
-$sitemapCount = 1;
-
-// Preamble
-fwrite($file, '<?xml version="1.0" encoding="UTF-8"?>' . "\n");
-fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
-
 // --- Helper: write a <url> entry ---
 function writeUrl($file, $loc, $lastmod, $changefreq, $priority){
 	fwrite($file, '<url>' . "\n");
@@ -77,25 +60,41 @@ function writeUrl($file, $loc, $lastmod, $changefreq, $priority){
 	fwrite($file, '</url>' . "\n");
 }
 
+// --- Helper: start a new numbered sitemap file ---
+function openSitemapFile($number){
+	$path = ROOT . '/sitemap' . $number . '.xml';
+	$file = fopen($path, 'w');
+	if(!$file){
+		exit("Error: Could not open $path for writing.\n");
+	}
+	fwrite($file, '<?xml version="1.0" encoding="UTF-8"?>' . "\n");
+	fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
+	return $file;
+}
+
+// --- Helper: close a sitemap file ---
+function closeSitemapFile($file){
+	fwrite($file, '</urlset>' . "\n");
+	fclose($file);
+}
+
 // --- Helper: split sitemap at 50,000 URL limit ---
-function checkSitemapLimit(&$file, &$urlCount, &$sitemapCount, $sitemap_base){
+function checkSitemapLimit(&$file, &$urlCount, &$sitemapNumber){
 	if($urlCount >= 50000){
-		fwrite($file, '</urlset>' . "\n");
-		fclose($file);
-
-		$new_path = $sitemap_base . '/sitemap' . $sitemapCount . '.xml';
-		$file = fopen($new_path, 'w');
-		if(!$file){
-			exit("Error: Could not open $new_path for writing.\n");
-		}
-		$sitemapCount++;
+		closeSitemapFile($file);
+		$sitemapNumber++;
+		$file = openSitemapFile($sitemapNumber);
 		$urlCount = 0;
-
-		fwrite($file, '<?xml version="1.0" encoding="UTF-8"?>' . "\n");
-		fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
-		echo "-- Created new sitemap file --\n";
+		echo "-- Started sitemap$sitemapNumber.xml --\n";
 	}
 }
+
+// --- Start ---
+echo "Starting sitemap generation ($environment)...\n";
+
+$sitemapNumber = 0;
+$urlCount = 0;
+$file = openSitemapFile($sitemapNumber);
 
 // --- (1) Top-Level Pages ---
 
@@ -147,7 +146,7 @@ while(true){
 
 		writeUrl($file, $prefix . 'brewer/' . $brewer->id, $brewer->last_modified, 'monthly', 0.5);
 		$urlCount++;
-		checkSitemapLimit($file, $urlCount, $sitemapCount, ROOT);
+		checkSitemapLimit($file, $urlCount, $sitemapNumber);
 	}
 
 	if(!empty($apiData->next_cursor)){
@@ -185,7 +184,7 @@ while(true){
 
 		writeUrl($file, $prefix . 'beer/' . $beer->id, $beer->last_modified, 'yearly', 0.4);
 		$urlCount++;
-		checkSitemapLimit($file, $urlCount, $sitemapCount, ROOT);
+		checkSitemapLimit($file, $urlCount, $sitemapNumber);
 	}
 
 	if(!empty($apiData->next_cursor)){
@@ -197,9 +196,31 @@ while(true){
 
 echo "Beers complete\n";
 
-// --- Close ---
-fwrite($file, '</urlset>' . "\n");
-fclose($file);
+// --- Close final sitemap file ---
+closeSitemapFile($file);
 
-echo "Sitemap generation complete. File: $sitemap_path\n";
+// --- Generate sitemap.xml ---
+$totalFiles = $sitemapNumber + 1;
+
+if($totalFiles === 1){
+	// Single file — just rename to sitemap.xml
+	rename(ROOT . '/sitemap0.xml', ROOT . '/sitemap.xml');
+	echo "Sitemap generation complete: sitemap.xml\n";
+}else{
+	// Multiple files — write a sitemap index
+	$index = fopen(ROOT . '/sitemap.xml', 'w');
+	if(!$index){
+		exit("Error: Could not open sitemap.xml for writing.\n");
+	}
+	fwrite($index, '<?xml version="1.0" encoding="UTF-8"?>' . "\n");
+	fwrite($index, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
+	for($i = 0; $i < $totalFiles; $i++){
+		fwrite($index, '  <sitemap>' . "\n");
+		fwrite($index, '    <loc>' . $prefix . 'sitemap' . $i . '.xml</loc>' . "\n");
+		fwrite($index, '  </sitemap>' . "\n");
+	}
+	fwrite($index, '</sitemapindex>' . "\n");
+	fclose($index);
+	echo "Sitemap generation complete: sitemap index with $totalFiles sitemap files\n";
+}
 ?>
