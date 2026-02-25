@@ -11,6 +11,16 @@ Comments, issues and pull requests welcome.
 Michael Kirkpatrick  
 Founder, Catalog.beer
 
+## Cron Jobs
+
+**Sitemap generation** — Regenerates `sitemap.xml` from the API. Run weekly or as needed:
+
+```
+0 4 * * 1 php /var/www/html/catalog.beer/public_html/generate-sitemap.php production
+```
+
+For staging: `php /var/www/html/staging.catalog.beer/public_html/generate-sitemap.php staging`
+
 ## See Also
 
 * [Catalog.beer API - GitHub](https://github.com/michaelkirkpatrick/catalog-beer-api)
