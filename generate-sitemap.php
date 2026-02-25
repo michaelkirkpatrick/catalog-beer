@@ -112,43 +112,8 @@ $pages = [
 	'login'    => ['file' => 'login.php',           'priority' => 0.3],
 ];
 
-// Fetch collection last-modified timestamps (used for homepage, /brewer, /beer)
-$brewerListLastMod = null;
-$beerListLastMod = null;
-
-$data = request('/brewer/last-modified');
-if($data && isset($data->last_modified)){
-	$brewerListLastMod = $data->last_modified;
-}else{
-	echo "Warning: Could not fetch /brewer/last-modified\n";
-}
-
-$data = request('/beer/last-modified');
-if($data && isset($data->last_modified)){
-	$beerListLastMod = $data->last_modified;
-}else{
-	echo "Warning: Could not fetch /beer/last-modified\n";
-}
-
 foreach($pages as $slug => $info){
-	switch($slug){
-		case '':
-			if($brewerListLastMod !== null && $beerListLastMod !== null){
-				$lastMod = max($brewerListLastMod, $beerListLastMod);
-			}else{
-				$lastMod = filemtime(ROOT . '/' . $info['file']);
-			}
-			break;
-		case 'brewer':
-			$lastMod = $brewerListLastMod ?? filemtime(ROOT . '/' . $info['file']);
-			break;
-		case 'beer':
-			$lastMod = $beerListLastMod ?? filemtime(ROOT . '/' . $info['file']);
-			break;
-		default:
-			$lastMod = filemtime(ROOT . '/' . $info['file']);
-	}
-
+	$lastMod = filemtime(ROOT . '/' . $info['file']);
 	writeUrl($file, $prefix . $slug, $lastMod, 'monthly', $info['priority']);
 	$urlCount++;
 }
