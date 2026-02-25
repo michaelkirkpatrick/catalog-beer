@@ -559,7 +559,7 @@ curl -X GET \
 						<tr>
 							<td><var>data</var></td>
 							<td>array</td>
-							<td>An array containing all the brewers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var> and <var>name</var>, described below.</td>
+							<td>An array containing all the brewers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
 						</tr>
 						<tr>
 							<td><var>id</var></td>
@@ -570,6 +570,11 @@ curl -X GET \
 							<td><var>name</var></td>
 							<td>string</td>
 							<td>The name of the brewer.</td>
+						</tr>
+						<tr>
+							<td><var>last_modified</var></td>
+							<td>integer</td>
+							<td>A Unix timestamp representing the date and time the brewer was last modified.</td>
 						</tr>
 					</tbody>
 				</table>
@@ -593,11 +598,13 @@ curl -X GET \
   "data": [
     {
       "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
-      "name": "Ballast Point"
+      "name": "Ballast Point",
+      "last_modified": 1708905600
     },
     {
       "id": "65911cdd-52e6-6305-3420-b9bbf6ea958d",
-      "name": "HopSaint"
+      "name": "HopSaint",
+      "last_modified": 1706313600
     }
   ]
 }
@@ -1362,7 +1369,7 @@ curl -X GET \
 		<tr>
 			<td><var>data</var></td>
 			<td>array</td>
-			<td>An array containing all the beers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var> and <var>name</var>, described below.</td>
+			<td>An array containing all the beers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
 		</tr>
 		<tr>
 			<td><var>id</var></td>
@@ -1373,6 +1380,11 @@ curl -X GET \
 			<td><var>name</var></td>
 			<td>string</td>
 			<td>The name of the beer.</td>
+		</tr>
+		<tr>
+			<td><var>last_modified</var></td>
+			<td>integer</td>
+			<td>A Unix timestamp representing the date and time the beer was last modified.</td>
 		</tr>
 	</tbody>
 </table>
@@ -1396,20 +1408,23 @@ curl -X GET \
   "data": [
     {
       "id": "01fd323a-5984-a1c5-51a1-9b8abde3afb4",
-      "name": "12 Year Old Elijah Craig Ballast Point Victory at Sea"
+      "name": "12 Year Old Elijah Craig Ballast Point Victory at Sea",
+      "last_modified": 1708905600
      },
      {
       "id": "e9a9936e-332c-aa6c-8dcf-70309b483db7",
-      "name": "Abandon Ship"
+      "name": "Abandon Ship",
+      "last_modified": 1706313600
     },
     {
       "id": "b4d1c9f3-cb4a-c364-f1f0-a71a94295ead",
-      "name": "Abandon Ship with Chipotle"
+      "name": "Abandon Ship with Chipotle",
+      "last_modified": 1706313600
     }
   ]
 }
 </pre>
-								
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="beer-count">Number of Beers</h3>
