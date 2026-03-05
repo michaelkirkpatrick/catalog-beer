@@ -85,7 +85,7 @@ echo $htmlHead->html;
 			</div>
 			<div class="col-md-8">
 				<h1 id="top">API Reference</h1>
-				<p>Last Updated: February 19, 2026</p>
+				<p>Last Updated: February 25, 2026</p>
 				
 				<h2 id="url">API Basics</h2>
 				<hr>
