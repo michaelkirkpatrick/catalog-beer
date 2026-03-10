@@ -16,7 +16,7 @@ $validMsg = array('name'=>'', 'email'=>'', 'password'=>'');
 // Classes
 $alert = new Alert();
 
-if(isset($_SESSION['userID'])){
+if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
 	// Destroy Session
 	session_destroy();
 	session_start();
@@ -66,6 +66,7 @@ if(isset($_POST['signupFormHidden'])){
 			$response = $api->request('POST', '/users', $data);
 			if($api->httpcode == 201){
 				// Successfully Created Account
+				ensureSession();
 				session_regenerate_id(true);
 				$array = json_decode($response);
 				$_SESSION['userID'] = $array->id;

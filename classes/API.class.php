@@ -26,7 +26,7 @@ class API {
 		$this->apiKey = $this->masterAPIKey;
 		
 		// Get API Key
-		if(isset($_SESSION['userID'])){
+		if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
 			$apiKeyResp = $this->request('GET', '/users/' . $_SESSION['userID'] . '/api-key', '');
 			if(!$this->error){
 				$apiKeyJSON = json_decode($apiKeyResp);

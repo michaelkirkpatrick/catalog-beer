@@ -29,7 +29,7 @@ $emailAuth = isset($_GET['emailAuth']) ? substr($_GET['emailAuth'], 1, 36) : '';
 					echo '<h1>Email Verified!</h1><p class="lead">Thank you for jumping through those hoops to setup an account. It helps us combat spam on our site.</p><hr><p>You&#8217;re ready to get started! You can start by <a href="/brewer/add">adding a brewer</a> or by adding a beer that&#8217;s not currently listed under your favorite brewer. As always, if you have questions, <a href="mailto:michael@catalog.beer">let us know</a>.</p><p><a class="btn btn-primary btn-lg" href="/" role="button">Get Started</a></p>';
 				}
 			}else{
-				if(isset($_SESSION['userID'])){
+				if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
 					// Email Verification Required Message
 					$today = date('l, F jS', time());
 					$sent = date('l, F jS', $userInfo->email_auth_sent);

@@ -115,7 +115,7 @@ class Navigation {
 		$html = str_replace('##ITEMS##', $links, $html);
 		
 		// Sign In / Sign Out
-		if(isset($_SESSION['userID'])){
+		if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
 			$signIn = '<li><a class="dropdown-item" href="/account">My Account</a></li>' . "\n";
 			$signIn .= '<li><hr class="dropdown-divider"></li>' . "\n";
 			$signIn .= '<li><a class="dropdown-item" href="/logout">Log out</a></li>' . "\n";

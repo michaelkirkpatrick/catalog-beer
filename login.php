@@ -69,6 +69,7 @@ if(isset($_POST['submit'])){
 	$loginArray = json_decode($apiResponse, true);
 	if(isset($loginArray['id'])){
 		// Successful Log In
+		ensureSession();
 		session_regenerate_id(true);
 		$_SESSION['userID'] = $loginArray['id'];
 		

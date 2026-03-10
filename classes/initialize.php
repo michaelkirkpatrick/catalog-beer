@@ -1,11 +1,27 @@
 <?php
-// Session Security
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1);
-ini_set('session.cookie_samesite', 'Lax');
+// Session Configuration (30-day lifetime)
+ini_set('session.gc_maxlifetime', 2592000);
+session_set_cookie_params([
+	'lifetime' => 2592000,
+	'path' => '/',
+	'secure' => true,
+	'httponly' => true,
+	'samesite' => 'Lax'
+]);
 
-// Start Session
-session_start();
+// Start session only if client already has a session cookie.
+// Pages that create new sessions (login, account creation)
+// must call ensureSession() before writing to $_SESSION.
+function ensureSession(): void {
+	if (session_status() === PHP_SESSION_ACTIVE) {
+		return;
+	}
+	session_start();
+}
+
+if (isset($_COOKIE[session_name()])) {
+	session_start();
+}
 
 // Define Root
 define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
@@ -34,16 +50,19 @@ spl_autoload_register(function ($class_name) {
 require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
 
 // CSRF Protection
-if(empty($_SESSION['csrf_token'])){
-	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
 function csrf_field(){
+	ensureSession();
+	if(empty($_SESSION['csrf_token'])){
+		$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+	}
 	return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
 }
 
 function csrf_verify(){
-	return isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+	if(session_status() !== PHP_SESSION_ACTIVE){
+		return false;
+	}
+	return isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token']);
 }
 
 // Navigation
@@ -58,7 +77,7 @@ if($guest == false){
 		$request = '?request=' . $URI;
 	}
 	
-	if(!empty($_SESSION['userID'])){
+	if(session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['userID'])){
 		$api = new API();
 		$jsonResponse = $api->request('GET', '/users/' . $_SESSION['userID'], '');
 
