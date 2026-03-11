@@ -31,6 +31,12 @@ echo $htmlHead->html;
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
+				<?php
+				// Breadcrumbs
+				$nav->breadcrumbText = array('Admin', 'Error Log');
+				$nav->breadcrumbLink = array('/admin/');
+				echo $nav->breadcrumbs();
+				?>
 				<h1>Error Log</h1>
 				<?php
 				// Flash messages

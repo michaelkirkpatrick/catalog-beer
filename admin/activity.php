@@ -18,6 +18,12 @@ echo $htmlHead->html;
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
+				<?php
+				// Breadcrumbs
+				$nav->breadcrumbText = array('Admin', 'Activity');
+				$nav->breadcrumbLink = array('/admin/');
+				echo $nav->breadcrumbs();
+				?>
 				<h1>Activity</h1>
 				<?php
 				// Fetch activity data
@@ -128,7 +134,13 @@ echo $htmlHead->html;
 							echo '<td>' . date('M j, g:ia', $entry->timestamp) . '</td>';
 							echo '<td>' . htmlspecialchars($entry->user_name) . '</td>';
 							echo '<td>' . htmlspecialchars($actionLabel) . '</td>';
-							echo '<td><code>' . htmlspecialchars($entry->uri) . '</code></td>';
+							// Linkable URI for beer and brewer resources with an ID
+							$uriClean = strtok($entry->uri, '?');
+							if(preg_match('#^/(beer|brewer)/[-0-9a-f]{36}#', $uriClean)){
+								echo '<td><a href="' . htmlspecialchars($uriClean) . '"><code>' . htmlspecialchars($uriClean) . '</code></a></td>';
+							}else{
+								echo '<td><code>' . htmlspecialchars($uriClean) . '</code></td>';
+							}
 							echo '<td>' . $badge . '</td>';
 							echo '</tr>' . "\n";
 						}
