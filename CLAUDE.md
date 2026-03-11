@@ -96,6 +96,14 @@ Forms use POST to the same page. The pattern:
 
 Forms must include `<?php echo csrf_field(); ?>` inside the `<form>` tag. The token is generated per-session in `initialize.php`.
 
+### Admin Pages (`admin/`)
+
+Admin landing page at `/admin/` with cards linking to sub-pages. All require `$guest = false` and `$userInfo->admin` check. Sub-pages have breadcrumbs back to `/admin/`. No mod_rewrite rules — link directly to `.php` files.
+
+- **`admin/activity.php`** — Activity dashboard: write summary by resource, top contributors, recent activity feed (with resource names and clickable links), GET traffic by endpoint. Consumes `GET /activity` from the API.
+- **`admin/usage.php`** — Monthly API call counts per user (last 13 months). Consumes `GET /usage`.
+- **`admin/error-log.php`** — Error summary, trends, recent errors, resolve-all. Consumes `GET /error-log`.
+
 ### Error Logging Convention
 
 Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15`). Each error is logged with a filename reference to the originating file.
