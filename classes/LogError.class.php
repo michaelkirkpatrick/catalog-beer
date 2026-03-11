@@ -13,117 +13,117 @@ $errorLog->write();
 
 class LogError {
 
-	// Public Variables
-	public $errorID = '';
-	public $errorNumber = '';
-	public $errorMsg = '';
-	public $badData = '';
-	public $URI = '';
-	public $ipAddress = '';
-	public $timestamp = 0;
-	public $filename = '';
-	public $resolved = false;
+    // Public Variables
+    public $errorID = '';
+    public $errorNumber = '';
+    public $errorMsg = '';
+    public $badData = '';
+    public $URI = '';
+    public $ipAddress = '';
+    public $timestamp = 0;
+    public $filename = '';
+    public $resolved = false;
 
-	// Recursion Guard
-	private static bool $writing = false;
+    // Recursion Guard
+    private static bool $writing = false;
 
-	// Write Error
-	public function write(){
+    // Write Error
+    public function write(){
 
-		// Prevent infinite recursion: LogError → Database → LogError → ...
-		if(self::$writing){
-			return;
-		}
-		self::$writing = true;
+        // Prevent infinite recursion: LogError → Database → LogError → ...
+        if(self::$writing){
+            return;
+        }
+        self::$writing = true;
 
-		// Generate UUID
-		$uuid = new uuid();
-		$errorID = $uuid->generate();
-		if(!$uuid->error){
-			// Connect to Database
-			$db = new Database();
+        // Generate UUID
+        $uuid = new uuid();
+        $errorID = $uuid->generate();
+        if(!$uuid->error){
+            // Connect to Database
+            $db = new Database();
 
-			// Add to Database
-			$db->query("INSERT INTO error_log (id, errorNumber, errorMessage, badData, URI, ipAddress, timestamp, filename, resolved) VALUES(?, ?, ?, ?, ?, ?, ?, ?, 0)", [
-				$errorID,
-				$this->errorNumber,
-				$this->errorMsg,
-				serialize($this->badData),
-				$_SERVER['REQUEST_URI'],
-				$_SERVER['REMOTE_ADDR'],
-				time(),
-				$this->filename
-			]);
-		}
+            // Add to Database
+            $db->query("INSERT INTO error_log (id, errorNumber, errorMessage, badData, URI, ipAddress, timestamp, filename, resolved) VALUES(?, ?, ?, ?, ?, ?, ?, ?, 0)", [
+                $errorID,
+                $this->errorNumber,
+                $this->errorMsg,
+                serialize($this->badData),
+                $_SERVER['REQUEST_URI'],
+                $_SERVER['REMOTE_ADDR'],
+                time(),
+                $this->filename
+            ]);
+        }
 
-		self::$writing = false;
-	}
+        self::$writing = false;
+    }
 
-	public function validate($errorID, $saveToClass){
-		// Valid
-		$valid = false;
+    public function validate($errorID, $saveToClass){
+        // Valid
+        $valid = false;
 
-		if(!empty($errorID)){
-			// Query
-			$db = new Database();
-			$result = $db->query("SELECT errorNumber, errorMessage, badData, URI, ipAddress, timestamp, filename, resolved FROM error_log WHERE id = ?", [$errorID]);
-			if(!$db->error){
-				if($result->num_rows == 1){
-					// Valid errorID
-					$valid = true;
+        if(!empty($errorID)){
+            // Query
+            $db = new Database();
+            $result = $db->query("SELECT errorNumber, errorMessage, badData, URI, ipAddress, timestamp, filename, resolved FROM error_log WHERE id = ?", [$errorID]);
+            if(!$db->error){
+                if($result->num_rows == 1){
+                    // Valid errorID
+                    $valid = true;
 
-					// Save to Class?
-					if($saveToClass){
-						$array = $result->fetch_assoc();
-						$this->errorID = $errorID;
-						$this->errorNumber = $array['errorNumber'];
-						$this->errorMsg = $array['errorMessage'];
-						$this->badData = $array['badData'];
-						$this->URI = $array['URI'];
-						$this->ipAddress = $array['ipAddress'];
-						$this->timestamp = $array['timestamp'];
-						$this->filename = $array['filename'];
-						$this->resolved = $array['resolved'];
-					}
-				}
-			}
-		}
+                    // Save to Class?
+                    if($saveToClass){
+                        $array = $result->fetch_assoc();
+                        $this->errorID = $errorID;
+                        $this->errorNumber = $array['errorNumber'];
+                        $this->errorMsg = $array['errorMessage'];
+                        $this->badData = $array['badData'];
+                        $this->URI = $array['URI'];
+                        $this->ipAddress = $array['ipAddress'];
+                        $this->timestamp = $array['timestamp'];
+                        $this->filename = $array['filename'];
+                        $this->resolved = $array['resolved'];
+                    }
+                }
+            }
+        }
 
-		// Return
-		return $valid;
-	}
+        // Return
+        return $valid;
+    }
 
-	public function getErrorIDs(){
-		// Error IDs
-		$errorIDs = array();
+    public function getErrorIDs(){
+        // Error IDs
+        $errorIDs = array();
 
-		// Query
-		$db = new Database();
-		$result = $db->query("SELECT id FROM error_log WHERE resolved = 0 ORDER BY timestamp DESC");
-		if(!$db->error){
-			if($result->num_rows > 0){
-				while($array = $result->fetch_assoc()){
-					$errorIDs[] = $array['id'];
-				}
-			}
-		}
+        // Query
+        $db = new Database();
+        $result = $db->query("SELECT id FROM error_log WHERE resolved = 0 ORDER BY timestamp DESC");
+        if(!$db->error){
+            if($result->num_rows > 0){
+                while($array = $result->fetch_assoc()){
+                    $errorIDs[] = $array['id'];
+                }
+            }
+        }
 
-		// Return
-		return $errorIDs;
-	}
+        // Return
+        return $errorIDs;
+    }
 
-	public function resolved($errorID){
-		if(!empty($errorID)){
-			// Query
-			$db = new Database();
-			$db->query("UPDATE error_log SET resolved = 1 WHERE id = ?", [$errorID]);
-		}else{
-			$this->errorNumber = 'C4';
-			$this->errorMsg = 'Missing errorID';
-			$this->badData = '';
-			$this->filename = 'LogError.class.php';
-			$this->write();
-		}
-	}
+    public function resolved($errorID){
+        if(!empty($errorID)){
+            // Query
+            $db = new Database();
+            $db->query("UPDATE error_log SET resolved = 1 WHERE id = ?", [$errorID]);
+        }else{
+            $this->errorNumber = 'C4';
+            $this->errorMsg = 'Missing errorID';
+            $this->badData = '';
+            $this->filename = 'LogError.class.php';
+            $this->write();
+        }
+    }
 }
 ?>

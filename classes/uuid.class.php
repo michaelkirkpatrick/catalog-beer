@@ -6,85 +6,85 @@ String Length: 36
 $uuid = new uuid();
 $var = $uuid->generate();
 if(!$uuid->error){
-	// Save to Class
-	$this->ID = $var;
+    // Save to Class
+    $this->ID = $var;
 }else{
-	// UUID Generation Error
-	$this->error = true;
-	$this->errorMsg = $uuid->errorMsg;
+    // UUID Generation Error
+    $this->error = true;
+    $this->errorMsg = $uuid->errorMsg;
 }
 --- */
 
 class uuid {
-	
-	public $uuid = '';
-	
-	public $error = false;
-	public $errorMsg = '';
-	
-	
-	// ----- Generate Unique UUID -----
-	public function generate(){
-		// 128-bit random UUID — collision probability is ~1 in 2^122
-		$this->createCode();
-		return $this->uuid;
-	}
-	
-	// ----- Generate Code -----
-	public function createCode(){
-		// 16 bytes = 128 bits
-		// Generate random string
-		$bytes = random_bytes(16);
+    
+    public $uuid = '';
+    
+    public $error = false;
+    public $errorMsg = '';
+    
+    
+    // ----- Generate Unique UUID -----
+    public function generate(){
+        // 128-bit random UUID — collision probability is ~1 in 2^122
+        $this->createCode();
+        return $this->uuid;
+    }
+    
+    // ----- Generate Code -----
+    public function createCode(){
+        // 16 bytes = 128 bits
+        // Generate random string
+        $bytes = random_bytes(16);
 
-		// Convert to hexadecimal
-		$hex = bin2hex($bytes);
+        // Convert to hexadecimal
+        $hex = bin2hex($bytes);
 
-		// Add in dashes for UUID 8-4-4-4-12
-		$this->uuid = substr($hex, 0, 8) . '-' . substr($hex, 8, 4) . '-' . substr($hex, 12, 4) . '-' . substr($hex, 16, 4) . '-' .  substr($hex, 20, 12);
-		
-		return $this->uuid;
-	}
-	
-	// ----- Generate Alphanumeric String -----
-	public function createAlpha($characters, $allCaps){
-	
-		// Setup Array
-		$array = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+        // Add in dashes for UUID 8-4-4-4-12
+        $this->uuid = substr($hex, 0, 8) . '-' . substr($hex, 8, 4) . '-' . substr($hex, 12, 4) . '-' . substr($hex, 16, 4) . '-' .  substr($hex, 20, 12);
+        
+        return $this->uuid;
+    }
+    
+    // ----- Generate Alphanumeric String -----
+    public function createAlpha($characters, $allCaps){
+    
+        // Setup Array
+        $array = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
 
-		if(!$allCaps){
-			array_push($array, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
-		}
+        if(!$allCaps){
+            array_push($array, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+        }
 
-		$badWords = array_map('str_getcsv', file(ROOT . '/classes/resources/badwords.csv'));
-		$continue = true;
-		$badWordFlag = false;
+        $badWords = array_map('str_getcsv', file(ROOT . '/classes/resources/badwords.csv'));
+        $continue = true;
+        $badWordFlag = false;
 
-		while($continue){
+        while($continue){
 
-			// Generate Code
-			$this->uuid = '';
-			$arraySize = count($array);
-			for($i=1;$i<=$characters;$i++){
-				$rand = random_int(0,$arraySize-1);
-				$this->uuid .= $array[$rand];
-			}
+            // Generate Code
+            $this->uuid = '';
+            $arraySize = count($array);
+            for($i=1;$i<=$characters;$i++){
+                $rand = random_int(0,$arraySize-1);
+                $this->uuid .= $array[$rand];
+            }
 
-			// Ensure no bad words
-			foreach($badWords[0] as &$badWord){
-				if(!empty($badWord)){
-					if(strpos($this->uuid, $badWord) !== false) {
-						$badWordFlag = true;
-					}	
-				}
-			}
+            // Ensure no bad words
+            foreach($badWords[0] as &$badWord){
+                if(!empty($badWord)){
+                    if(strpos($this->uuid, $badWord) !== false) {
+                        $badWordFlag = true;
+                    }   
+                }
+            }
 
-			// Check $badWordFlag
-			if(!$badWordFlag){
-				// Stop
-				$continue = false;
-			}
-		}
+            // Check $badWordFlag
+            if(!$badWordFlag){
+                // Stop
+                $continue = false;
+            }
+        }
 
-		return $this->uuid;
-	}
+        return $this->uuid;
+    }
 }
