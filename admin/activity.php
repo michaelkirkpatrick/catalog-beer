@@ -133,9 +133,14 @@ echo $htmlHead->html;
 							// Build "What" column — resource name with link if available
 							$resourceName = isset($entry->resource_name) ? $entry->resource_name : null;
 							$resourceId = isset($entry->resource_id) ? $entry->resource_id : null;
-							$linkableResources = array('beer', 'brewer');
+							$brewerName = isset($entry->brewer_name) ? $entry->brewer_name : null;
+							$brewerId = isset($entry->brewer_id) ? $entry->brewer_id : null;
 
-							if($resourceName && $resourceId && in_array($parts[0], $linkableResources)){
+							if($resourceName && $brewerName && $brewerId && in_array($parts[0], array('location', 'address'))){
+								// Location/Address: "Location Name, Brewer Name" (brewer linked)
+								$whatHtml = htmlspecialchars($resourceName) . ', <a href="/brewer/' . htmlspecialchars($brewerId) . '">' . htmlspecialchars($brewerName) . '</a>';
+							}elseif($resourceName && $resourceId && in_array($parts[0], array('beer', 'brewer'))){
+								// Beer/Brewer: name linked to detail page
 								$whatHtml = '<a href="/' . htmlspecialchars($parts[0]) . '/' . htmlspecialchars($resourceId) . '">' . htmlspecialchars($resourceName) . '</a>';
 							}elseif($resourceName){
 								$whatHtml = htmlspecialchars($resourceName);
