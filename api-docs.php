@@ -79,13 +79,16 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#users-delete">&gt; Delete a User</a>
                     <a class="list-group-item list-group-item-action" href="#users-reset-password">&gt; Request Password Reset</a>
                     <a class="list-group-item list-group-item-action" href="#users-password-reset">&gt; Reset Password</a>
+                    <a class="list-group-item list-group-item-action" href="#usage"><strong>Usage</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#usage-object">&gt; The Usage Object</a>
+                    <a class="list-group-item list-group-item-action" href="#usage-my-usage">&gt; Get My Usage</a>
                     <a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
                     <a class="list-group-item list-group-item-action" href="#us-address-object">&gt; The US Address Object</a>
                 </div>
             </div>
             <div class="col-md-8">
                 <h1 id="top">API Reference</h1>
-                <p>Last Updated: February 25, 2026</p>
+                <p>Last Updated: March 11, 2026</p>
                 
                 <h2 id="url">API Basics</h2>
                 <hr>
@@ -2507,8 +2510,118 @@ curl -X GET \
 
 <p><a href="#top">^ Return to top</a></p>
 
+<!---------- USAGE ---------->
+
+<h2 id="usage">Usage</h2>
+
+<p>The usage endpoints allow you to check your API usage for the current billing period. Each API key has a monthly request limit (default: 1,000 requests). Requests to the <code>/usage</code> endpoints are not counted against your limit.</p>
+
+<!----- USAGE: OBJECT ----->
+
+<h3 id="usage-object">The Usage Object</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Parameter</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><var>object</var></td>
+            <td>string</td>
+            <td>The name of the object. In this case: &#8220;usage&#8221;.</td>
+        </tr>
+        <tr>
+            <td><var>api_key</var></td>
+            <td>string</td>
+            <td>The API key associated with this usage record.</td>
+        </tr>
+        <tr>
+            <td><var>year</var></td>
+            <td>integer</td>
+            <td>The year of the current billing period (e.g. 2026).</td>
+        </tr>
+        <tr>
+            <td><var>month</var></td>
+            <td>integer</td>
+            <td>The month of the current billing period (1&#8211;12).</td>
+        </tr>
+        <tr>
+            <td><var>count</var></td>
+            <td>integer</td>
+            <td>The number of API requests made during the current billing period.</td>
+        </tr>
+        <tr>
+            <td><var>request_limit</var></td>
+            <td>integer</td>
+            <td>The maximum number of requests allowed per month for this API key.</td>
+        </tr>
+        <tr>
+            <td><var>request_buffer</var></td>
+            <td>integer</td>
+            <td>A grace zone beyond the request limit. Requests will not be blocked until <var>count</var> exceeds <var>request_limit</var> + <var>request_buffer</var>.</td>
+        </tr>
+        <tr>
+            <td><var>resets_on</var></td>
+            <td>string</td>
+            <td>The date your usage count resets, formatted as <var>YYYY-MM-DD</var> (always the first of the next month).</td>
+        </tr>
+        <tr>
+            <td><var>last_updated</var></td>
+            <td>integer</td>
+            <td>Unix timestamp of the last time the usage counter was updated. Returns <var>0</var> if no requests have been made this month.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- USAGE: MY USAGE ----->
+
+<h3 id="usage-my-usage">Get My Usage</h3>
+
+<p>To retrieve your current API usage and limits, send a <strong>GET</strong> request to the <code>/usage/my-usage</code> endpoint. This returns your usage for the current billing period. No special permissions are required&#8212;the endpoint returns data for the authenticated API key.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/usage/my-usage</pre>
+
+<p>A <a href="#usage-object">usage object</a> will be returned for successful requests.</p>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/usage/my-usage \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}'
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "usage",
+  "api_key": "cadcbe6f-a80d-4e33-9f20-b53c2ed83845",
+  "year": 2026,
+  "month": 3,
+  "count": 142,
+  "request_limit": 1000,
+  "request_buffer": 50,
+  "resets_on": "2026-04-01",
+  "last_updated": 1741723456
+}
+</pre>
+
+<h4>Rate Limiting</h4>
+
+<p>When your usage exceeds your <var>request_limit</var> + <var>request_buffer</var>, the API will return a <var>429 Too Many Requests</var> response for all non-usage endpoints. Your count resets on the first of each month. To request a higher limit, <a href="/contact">contact us</a>.</p>
+
+<p><a href="#top">^ Return to top</a></p>
+
 <!---------- US ADDRESSES ---------->
-                                
+
 <h2 id="us-address">US Address</h2>
 
 <p>For locations in the United States, data is stored and captured using the US Addresses data structure.</p>

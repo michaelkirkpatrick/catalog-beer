@@ -37,7 +37,33 @@ echo $htmlHead->html;
                     $apiKeyData = json_decode($apiKeyResp);
 
                     if(isset($apiKeyData->api_key)){
-                        $apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr></table><p>Learn more about the <a href="/api-docs">Catalog.beer API</a>.</p>';
+                        $apiKey = '<table class="table"><tr><td><strong>Secret key</strong></td><td><code>' . $apiKeyData->api_key . '</code></td></tr></table>';
+
+                        // Fetch usage data
+                        $usageResp = $api->request('GET', '/usage/my-usage', '');
+                        $usageData = json_decode($usageResp);
+
+                        if(isset($usageData->count) && isset($usageData->request_limit)){
+                            $usageCount = intval($usageData->count);
+                            $usageLimit = intval($usageData->request_limit);
+                            $usagePercent = $usageLimit > 0 ? min(round(($usageCount / $usageLimit) * 100), 100) : 0;
+                            $usageMonth = date('F Y', mktime(0, 0, 0, intval($usageData->month), 1, intval($usageData->year)));
+
+                            // Progress bar color
+                            if($usagePercent >= 90){
+                                $barColor = 'bg-danger';
+                            }elseif($usagePercent >= 75){
+                                $barColor = 'bg-warning';
+                            }else{
+                                $barColor = 'bg-success';
+                            }
+
+                            $apiKey .= '<p>' . number_format($usageCount) . ' of ' . number_format($usageLimit) . ' requests used in ' . $usageMonth . '</p>';
+                            $apiKey .= '<div class="progress mb-3"><div class="progress-bar ' . $barColor . '" role="progressbar" style="width: ' . $usagePercent . '%;" aria-valuenow="' . $usagePercent . '" aria-valuemin="0" aria-valuemax="100">' . $usagePercent . '%</div></div>';
+                            $apiKey .= '<p class="text-muted">Usage resets on the first of each month. <a href="/api-usage">Learn more.</a></p>';
+                        }
+
+                        $apiKey .= '<p>Learn more about the <a href="/api-docs">Catalog.beer API</a>.</p>';
                     }else{
                         $apiKey = '<p>Unable to load your API key. Please try again later.</p>';
                     }

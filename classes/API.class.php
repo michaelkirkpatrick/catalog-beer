@@ -50,7 +50,7 @@ class API {
     public function request($type, $endpoint, $data){
         // Admin Endpoint?
         // /login and /users
-        if(substr($endpoint, 0, 6) === '/login' || substr($endpoint, 0, 6) === '/users' || substr($endpoint, 0, 6) === '/usage' || substr($endpoint, 0, 10) === '/error-log'){
+        if(substr($endpoint, 0, 6) === '/login' || substr($endpoint, 0, 6) === '/users' || substr($endpoint, 0, 10) === '/error-log'){
             $this->apiKey = $this->masterAPIKey;
         }else{
             if(!empty($this->usersAPIKey)){
