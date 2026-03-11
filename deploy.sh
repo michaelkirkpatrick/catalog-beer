@@ -5,8 +5,6 @@
 #   ./deploy.sh              Interactive mode (prompts for environment)
 #   ./deploy.sh staging      Deploy to staging
 #   ./deploy.sh production   Deploy to production
-set -e
-
 # Warn if there are uncommitted changes
 if ! git diff --quiet HEAD 2>/dev/null; then
 	echo "WARNING: You have uncommitted changes."
