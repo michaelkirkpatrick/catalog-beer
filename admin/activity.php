@@ -96,7 +96,7 @@ echo $htmlHead->html;
 					echo '<h2>Recent Activity</h2>';
 					if(!empty($report->write_activity->recent)){
 						$table = new Table();
-						echo $table->startTable(array('When', 'Who', 'Action', 'URI', 'Status'));
+						echo $table->startTable(array('When', 'Who', 'Action', 'What', 'Status'));
 						foreach($report->write_activity->recent as $entry){
 							// Determine action label
 							switch($entry->method){
@@ -130,17 +130,24 @@ echo $htmlHead->html;
 								$badge = '<span class="badge bg-secondary">' . $statusCode . '</span>';
 							}
 
+							// Build "What" column — resource name with link if available
+							$resourceName = isset($entry->resource_name) ? $entry->resource_name : null;
+							$resourceId = isset($entry->resource_id) ? $entry->resource_id : null;
+							$linkableResources = array('beer', 'brewer');
+
+							if($resourceName && $resourceId && in_array($parts[0], $linkableResources)){
+								$whatHtml = '<a href="/' . htmlspecialchars($parts[0]) . '/' . htmlspecialchars($resourceId) . '">' . htmlspecialchars($resourceName) . '</a>';
+							}elseif($resourceName){
+								$whatHtml = htmlspecialchars($resourceName);
+							}else{
+								$whatHtml = '<code>' . htmlspecialchars($uriPath) . '</code>';
+							}
+
 							echo '<tr>';
 							echo '<td>' . date('M j, g:ia', $entry->timestamp) . '</td>';
 							echo '<td>' . htmlspecialchars($entry->user_name) . '</td>';
 							echo '<td>' . htmlspecialchars($actionLabel) . '</td>';
-							// Linkable URI for beer and brewer resources with an ID
-							$uriClean = strtok($entry->uri, '?');
-							if(preg_match('#^/(beer|brewer)/[-0-9a-f]{36}#', $uriClean)){
-								echo '<td><a href="' . htmlspecialchars($uriClean) . '"><code>' . htmlspecialchars($uriClean) . '</code></a></td>';
-							}else{
-								echo '<td><code>' . htmlspecialchars($uriClean) . '</code></td>';
-							}
+							echo '<td>' . $whatHtml . '</td>';
 							echo '<td>' . $badge . '</td>';
 							echo '</tr>' . "\n";
 						}
