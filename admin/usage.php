@@ -34,20 +34,6 @@ echo $htmlHead->html;
                 if(isset($usageData->error) && $usageData->error){
                     echo '<div class="alert alert-danger">' . htmlspecialchars($usageData->error_msg) . '</div>';
                 }elseif(isset($usageData->data)){
-                    // Build month columns: current month + 12 prior
-                    $months = array();
-                    $currentMonth = (int)date('n');
-                    $currentYear = (int)date('Y');
-                    for($i = 0; $i < 13; $i++){
-                        $m = $currentMonth - $i;
-                        $y = $currentYear;
-                        if($m <= 0){
-                            $m += 12;
-                            $y--;
-                        }
-                        $months[] = array('month' => $m, 'year' => $y, 'label' => date('M Y', mktime(0, 0, 0, $m, 1, $y)));
-                    }
-
                     // Pivot data: group by api_key
                     $users = array();
                     foreach($usageData->data as $row){
@@ -61,6 +47,31 @@ echo $htmlHead->html;
                             );
                         }
                         $users[$key]['months'][$row->year . '-' . $row->month] = $row->count;
+                    }
+
+                    // Build month columns from earliest data to current month (max 12)
+                    $currentMonth = (int)date('n');
+                    $currentYear = (int)date('Y');
+                    $earliestYear = $currentYear;
+                    $earliestMonth = $currentMonth;
+                    foreach($usageData->data as $row){
+                        if($row->year < $earliestYear || ($row->year == $earliestYear && $row->month < $earliestMonth)){
+                            $earliestYear = (int)$row->year;
+                            $earliestMonth = (int)$row->month;
+                        }
+                    }
+                    // Cap at 12 months back
+                    $maxMonthsBack = (($currentYear - $earliestYear) * 12) + ($currentMonth - $earliestMonth);
+                    if($maxMonthsBack > 11) $maxMonthsBack = 11;
+                    $months = array();
+                    for($i = 0; $i <= $maxMonthsBack; $i++){
+                        $m = $currentMonth - $i;
+                        $y = $currentYear;
+                        if($m <= 0){
+                            $m += 12;
+                            $y--;
+                        }
+                        $months[] = array('month' => $m, 'year' => $y, 'label' => date('M Y', mktime(0, 0, 0, $m, 1, $y)));
                     }
 
                     // Sort by current month usage descending
