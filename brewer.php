@@ -58,6 +58,18 @@ echo $htmlHead->html;
     <?php echo $nav->navbar('Brewers'); ?>
     <div class="container" itemscope itemtype="http://schema.org/Brewery">
         <?php
+        // ----- Flash Messages -----
+        if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['delete_location_success'])){
+            if($_SESSION['delete_location_success']){
+                $alert = new Alert();
+                $alert->msg = 'Location has been deleted.';
+                $alert->type = 'success';
+                $alert->dismissible = true;
+                echo $alert->display();
+                $_SESSION['delete_location_success'] = false;
+            }
+        }
+
         // ----- Brewery Info -----
         echo '<div class="row">' . "\n";
         echo '<div class="col-md-12 col-sm-12 col-lg-9 col-xl-7">' . "\n";
@@ -115,11 +127,15 @@ echo $htmlHead->html;
         if(isset($locationData->data) && count($locationData->data) > 0){
 
             // Section Heading
-            echo '<div class="row">' . "\n";
+            echo '<div class="row align-items-center" style="margin-top:1em;">' . "\n";
             echo '<div class="col">' . "\n";
-            echo '<h2 style="margin-top:1em;" id="locations">' . $locationH2 . '<hr>' . "\n";
+            echo '<h2 id="locations">' . $locationH2 . '</h2>' . "\n";
+            echo '</div>' . "\n";
+            echo '<div class="col-auto">' . "\n";
+            echo '<a href="/brewer/' . $brewerIDString . '/add-location" class="btn btn-primary btn-sm"><strong>+</strong> Add Location</a>';
             echo '</div>' . "\n";
             echo '</div>' . "\n";
+            echo '<hr>' . "\n";
 
             // Loop Through Locations
             $mapLocations = [];
@@ -157,6 +173,7 @@ echo $htmlHead->html;
                 }
                 if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
                     echo ' <a href="/location/' . $locationIDString . '/edit" title="Edit Location"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
+                    echo ' <a href="/location/' . $locationIDString . '/delete" title="Delete Location"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash text-danger" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg></a>';
                 }
                 echo '</h3>' . "\n";
 
@@ -259,31 +276,35 @@ echo $htmlHead->html;
                 <?php
             }
 
-            // Add Location Button
-            $brewerIDString = $text3->get($brewerData->brewer->id);
-            echo '<div class="row">' . "\n";
-            echo '<div class="col">' . "\n";
-            echo '<p><a href="/brewer/' . $brewerIDString . '/add-location" class="btn btn-primary btn-sm"><strong>+</strong> Add Location</a></p>';
-            echo '</div>' . "\n";
-            echo '</div>' . "\n";
         }else{
             $brewerIDString = $text3->get($brewerData->brewer->id);
+            echo '<div class="row align-items-center" style="margin-top:1em;">' . "\n";
+            echo '<div class="col">' . "\n";
+            echo '<h2>Location</h2>' . "\n";
+            echo '</div>' . "\n";
+            echo '<div class="col-auto">' . "\n";
+            echo '<a href="/brewer/' . $brewerIDString . '/add-location" class="btn btn-primary btn-sm"><strong>+</strong> Add Location</a>';
+            echo '</div>' . "\n";
+            echo '</div>' . "\n";
+            echo '<hr>' . "\n";
             echo '<div class="row">' . "\n";
             echo '<div class="col">' . "\n";
-            echo '<h2 style="margin-top:1em;">Location</h2><hr>' . "\n";
             echo '<p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <a href="/brewer/' . $brewerIDString . '/add-location">add it</a>.</p>';
-            echo '<p><a href="/brewer/' . $brewerIDString . '/add-location" class="btn btn-primary btn-sm"><strong>+</strong> Add Location</a></p>';
             echo '</div>' . "\n";
             echo '</div>' . "\n";
         }
 
         // ----- Beer -----
         // Heading
-        echo '<div class="row">' . "\n";
+        echo '<div class="row align-items-center" style="margin-top:1em;">' . "\n";
         echo '<div class="col">' . "\n";
-        echo '<h2 style="margin-top:1em;" id="beer">Beer</h2><hr>' . "\n";
+        echo '<h2 id="beer">Beer</h2>' . "\n";
+        echo '</div>' . "\n";
+        echo '<div class="col-auto">' . "\n";
+        echo '<a href="/beer/add/' . $brewerIDString  . '" class="btn btn-primary btn-sm"><strong>+</strong> Add beer</a>';
         echo '</div>' . "\n";
         echo '</div>' . "\n";
+        echo '<hr>' . "\n";
 
         if(count($brewerData->data) > 0){
             // Column Sizing
@@ -314,19 +335,11 @@ echo $htmlHead->html;
             echo '</div>' . "\n";
             echo '</div>' . "\n";
 
-            // Add Button
-            $brewerIDString = $text3->get($brewerData->brewer->id);
-            echo '<div class="row">' . "\n";
-            echo '<div class="col">' . "\n";
-            echo '<p><a href="/beer/add/' . $brewerIDString  . '" class="btn btn-primary btn-sm"><strong>+</strong> Add beer</a></p>';
-            echo '</div>' . "\n";
-            echo '</div>' . "\n";
         }else{
             $brewerIDString = $text3->get($brewerData->brewer->id);
             echo '<div class="row">' . "\n";
             echo '<div class="col">' . "\n";
             echo '<p class="lead">Well shucks, we have information about the brewer but nothing about what they brew. Can you help? <a href="/beer/add/' . $brewerIDString   . '">Add a beer</a></p>';
-            echo '<p><a href="/beer/add/' . $brewerIDString  . '" class="btn btn-primary btn-sm"><strong>+</strong> Add beer</a></p>';
             echo '</div>' . "\n";
             echo '</div>' . "\n";
         }
