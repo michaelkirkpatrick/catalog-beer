@@ -44,7 +44,7 @@ echo $htmlHead->html;
 
                 <h3>Need More?</h3>
 
-                <p>If you&#8217;re building something that requires more than 1,000 requests per month, we&#8217;d love to hear about it. Reach out to us via our <a href="/contact">contact form</a> or email us at michael@catalog.beer and we&#8217;ll work something out. Our goal is to cover our operating costs while keeping the API accessible.</p>
+                <p>If you&#8217;re building something that requires more than 1,000 requests per month, we&#8217;d love to hear about it. Reach out to us via our <a href="/contact">contact form</a> or email us at <a href="mailto:michael@catalog.beer">michael@catalog.beer</a> and we&#8217;ll work something out. Our goal is to cover our operating costs while keeping the API accessible.</p>
 
                 <h2>Basic Rules</h2>
 

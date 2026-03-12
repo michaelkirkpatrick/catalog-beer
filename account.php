@@ -19,18 +19,18 @@ echo $htmlHead->html;
                 <?php
                 // Alert
                 echo $alert->display();
-                
+
                 // Text Prep
                 $text = new Text(false, true, true);
-                
+
                 // Name
                 $accountInfoTable = '<table class="table"><tr><td><strong>Name</strong></td><td>' . $text->get($userInfo->name) . '</td></tr>';
-                
+
                 // Email
                 if($userInfo->email_verified){
                     // Verified
                     $pillAdd = ' <span class="badge rounded-pill bg-success">Verified</span>';
-                    
+
                     // Get API Key
                     $api = new API();
                     $apiKeyResp = $api->request('GET', '/users/' . $_SESSION['userID'] . '/api-key', '');
@@ -58,19 +58,20 @@ echo $htmlHead->html;
                                 $barColor = 'bg-success';
                             }
 
-                            $apiKey .= '<p>' . number_format($usageCount) . ' of ' . number_format($usageLimit) . ' requests used in ' . $usageMonth . '</p>';
+                            $apiKey .= '<p>' . number_format($usageCount) . ' of ' . number_format($usageLimit) . ' requests used this month.</p>';
                             $apiKey .= '<div class="progress mb-3"><div class="progress-bar ' . $barColor . '" role="progressbar" style="width: ' . $usagePercent . '%;" aria-valuenow="' . $usagePercent . '" aria-valuemin="0" aria-valuemax="100">' . $usagePercent . '%</div></div>';
                             $apiKey .= '<p class="text-muted">Usage resets on the first of each month. <a href="/api-usage">Learn more.</a></p>';
                         }
 
-                        $apiKey .= '<p>Learn more about the <a href="/api-docs">Catalog.beer API</a>.</p>';
+                        $apiKey .= '<p>Want to use the Catalog.beer API? Check out our <a href="/api-docs">API
+                        Documentation</a>.</p>';
                     }else{
                         $apiKey = '<p>Unable to load your API key. Please try again later.</p>';
                     }
                 }else{
                     // Unverified
                     $pillAdd = ' <span class="badge rounded-pill bg-warning text-dark">Unverified</span>';
-                    
+
                     // Sent Date
                     $today = date('l, F jS', time());
                     $sent = date('l, F jS', $userInfo->email_auth_sent);
@@ -83,7 +84,7 @@ echo $htmlHead->html;
                 }
                 $accountInfoTable .= '<tr><td><strong>Email</strong></td><td>' . $text->get($userInfo->email) . $pillAdd . '</td></tr></table>';
                 echo $accountInfoTable;
-                
+
                 // API Key
                 echo '<h2>API</h2>';
                 if(isset($helpText)){echo $helpText;}
@@ -93,6 +94,6 @@ echo $htmlHead->html;
             <div class="col-lg-3 col-xl-5"></div>
         </div>
   </div>
-  <?php echo $nav->footer(); ?> 
+  <?php echo $nav->footer(); ?>
 </body>
 </html>
