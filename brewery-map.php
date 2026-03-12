@@ -24,7 +24,7 @@ echo $htmlHead->html;
             }
         }
     </style>
-    <?php echo $nav->navbar('Brewer'); ?>
+    <?php echo $nav->navbar('Map'); ?>
     <div class="container-fluid">
     <div class="row">
         <div class="col">
@@ -34,16 +34,18 @@ echo $htmlHead->html;
                 $alert = new Alert();
 
                 // Query Map
-                $mapResponse = $api->request('GET', '/location/nearby?latitude=32.748482&longitude=-117.130094', '');
+                $mapResponse = $api->request('GET', '/location/map', '');
                 $mapResponse = json_decode($mapResponse);
                 if(!isset($mapResponse->error)){
                     // Build locations array
                     $locations = [];
-                    for($i=0; $i<count($mapResponse->data); $i++){
+                    foreach($mapResponse->data as $loc){
                         $locations[] = [
-                            'lat' => (float)$mapResponse->data[$i]->location->latitude,
-                            'lng' => (float)$mapResponse->data[$i]->location->longitude,
-                            'name' => $mapResponse->data[$i]->brewer->name
+                            'lat' => (float)$loc->latitude,
+                            'lng' => (float)$loc->longitude,
+                            'name' => $loc->name,
+                            'brewerName' => $loc->brewer->name,
+                            'brewerID' => $loc->brewer->id
                         ];
                     }
                     echo '<div id="map"></div>' . "\n";
@@ -53,10 +55,20 @@ echo $htmlHead->html;
                     var locations = <?php echo json_encode($locations); ?>;
                     var map = new google.maps.Map(document.getElementById('map'), { zoom: 4 });
                     var bounds = new google.maps.LatLngBounds();
+                    var activeInfoWindow = null;
                     var markers = locations.map(function(loc) {
                         var marker = new google.maps.Marker({
                             position: { lat: loc.lat, lng: loc.lng },
-                            title: loc.name
+                            title: loc.brewerName
+                        });
+                        var infoWindow = new google.maps.InfoWindow({
+                            content: '<strong><a href="/brewer/' + loc.brewerID + '">' + loc.brewerName + '</a></strong>' +
+                                (loc.name !== loc.brewerName ? '<br>' + loc.name : '')
+                        });
+                        marker.addListener('click', function() {
+                            if (activeInfoWindow) activeInfoWindow.close();
+                            infoWindow.open(map, marker);
+                            activeInfoWindow = infoWindow;
                         });
                         bounds.extend(marker.getPosition());
                         return marker;

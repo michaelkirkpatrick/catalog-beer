@@ -110,6 +110,7 @@ class Navigation {
         // Generate Links
         $links = $this->activeNav($section, '/brewer', 'Brewers');
         $links .= $this->activeNav($section, '/beer', 'Beer');
+        $links .= $this->activeNav($section, '/map', 'Map');
         
         // Add in Links
         $html = str_replace('##ITEMS##', $links, $html);

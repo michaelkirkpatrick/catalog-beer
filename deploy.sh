@@ -96,6 +96,7 @@ RSYNC_OUTPUT=$(rsync -azO --no-perms --delete \
 	-e "ssh -S '$SOCKET'" \
 	--exclude '.git' \
 	--exclude '.claude' \
+    --exclude '.editorconfig' \
 	--exclude '.nova' \
 	--exclude '.gitignore' \
 	--exclude '.gitattributes' \

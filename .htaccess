@@ -42,6 +42,7 @@ RewriteRule ^brewer/([-0-9a-f]{36})/edit$ brewer-edit.php?brewerID=$1 [L]
 RewriteRule ^brewer/([-0-9a-f]{36})$ brewer.php?brewerID=$1 [L]
 RewriteRule ^brewer/add$ brewer-add.php [L]
 RewriteRule ^brewer/?$ brewer-list.php [L]
+RewriteRule ^map/?$ brewery-map.php [L]
 
 RewriteRule ^location/([-0-9a-f]{36})/add-address$ address-add.php?locationID=$1 [L]
 RewriteRule ^location/([-0-9a-f]{36})/edit$ location-edit.php?locationID=$1 [L]
