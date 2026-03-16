@@ -12,8 +12,8 @@ config/version.php
 *.p8
 
 # IDE
-.nova/Configuration.json
-.nova/Publishing/Staging 22.04.json
+.nova/
+.editorconfig
 
 # Legacy
 classes/_notes/dwsync.xml
