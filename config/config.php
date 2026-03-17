@@ -11,6 +11,6 @@ define('DB_USER', 'catalogadmin');
 define('DB_NAME', 'catalogbeer');
 
 // Google reCAPTCHA v3 (public site key)
-define('RECAPTCHA_SITE_KEY', '6Le1WMUUAAAAANAfdjxqXAo2OpkfmkxH7RSD-sLK');
+define('RECAPTCHA_SITE_KEY', '6LfLYo0sAAAAAMXwORFEsq5yuDW-a62k5FBc-yp2');
 
 ?>
