@@ -8,8 +8,8 @@ $beerID = $_GET['beerID'] ?? '';
 $api = new API();
 $beerResp = $api->request('GET', '/beer/' . $beerID, '');
 $beerData = json_decode($beerResp);
-if(isset($beerData->error)){
-    // Invalid beerID
+if(!isset($beerData->name) || isset($beerData->error)){
+    // Invalid beerID or bad API response
     http_response_code(404);
     header('location: /error_page/404.php');
     exit();

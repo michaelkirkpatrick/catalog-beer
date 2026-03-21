@@ -19,11 +19,11 @@ if(isset($_POST['signupFormHidden'])){
     $error = FALSE;
     
     // Get Variables
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
-    $subject = trim($_POST['subject']);
-    $message = trim($_POST['message']);
-    $captcha = $_POST['g-recaptcha-response'];
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+    $captcha = $_POST['g-recaptcha-response'] ?? '';
     
     // Verify Captcha
     $captchaSecretKey = RECAPTCHA_SECRET_KEY;

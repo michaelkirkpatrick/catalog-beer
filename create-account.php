@@ -24,9 +24,9 @@ if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
 
 if(isset($_POST['signupFormHidden'])){
     // Get Posted Variables
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $name = $_POST['name'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
     if(isset($_POST['terms_agreement'])){
         if($_POST['terms_agreement'] === "1"){
             $termsAgreement = true;
@@ -36,7 +36,7 @@ if(isset($_POST['signupFormHidden'])){
     }else{
         $termsAgreement = false;
     }
-    $captcha = $_POST['g-recaptcha-response'];
+    $captcha = $_POST['g-recaptcha-response'] ?? '';
     
     // Verify Captcha
     $captchaSecretKey = RECAPTCHA_SECRET_KEY;
