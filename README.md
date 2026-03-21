@@ -11,6 +11,18 @@ Comments, issues and pull requests welcome.
 Michael Kirkpatrick  
 Founder, Catalog.beer
 
+## Server Setup
+
+### PHP Session Directory
+
+PHP sessions are stored in an isolated directory to prevent other apps' garbage collection from clearing them. Create the directory on each server:
+
+```bash
+sudo mkdir -p /var/lib/php/sessions/catalogbeer
+sudo chown www-data:www-data /var/lib/php/sessions/catalogbeer
+sudo chmod 700 /var/lib/php/sessions/catalogbeer
+```
+
 ## Cron Jobs
 
 **Sitemap generation** — Regenerates `sitemap.xml` from the API. Run weekly or as needed:

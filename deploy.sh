@@ -104,9 +104,6 @@ RSYNC_OUTPUT=$(rsync -azO --no-perms --delete \
 	--exclude 'CLAUDE.md' \
 	--exclude 'deploy.sh' \
 	--exclude '*.sql' \
-	--exclude 'config/passwords.php' \
-	--exclude 'config/passwords.example.php' \
-	--exclude 'config/config.example.php' \
 	--exclude 'maintenance.html' \
 	--exclude 'README.md' \
 	--exclude 'classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/' \

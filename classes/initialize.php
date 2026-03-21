@@ -1,5 +1,6 @@
 <?php
-// Session Configuration (30-day lifetime)
+// Session Configuration (30-day lifetime, isolated save path)
+ini_set('session.save_path', '/var/lib/php/sessions/catalogbeer');
 ini_set('session.gc_maxlifetime', 2592000);
 session_set_cookie_params([
     'lifetime' => 2592000,
