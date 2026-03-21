@@ -37,13 +37,6 @@ if(isset($_POST['signupFormHidden'])){
         // Update Alert
         $alert->msg = $errorMsg;
 
-        // Log Error
-        $errorLog = new LogError();
-        $errorLog->errorNumber = 'C17';
-        $errorLog->errorMsg = 'CAPTCHA Error';
-        $errorLog->badData = $captchaJSON;
-        $errorLog->filename = 'contact.php';
-        $errorLog->write();
     }else{
         // Successful Captcha, check score
         if($captchaJSON['score'] >= 0.5){
@@ -144,13 +137,6 @@ if(isset($_POST['signupFormHidden'])){
             // Update Alert
             $alert->msg = $errorMsg;
 
-            // Log Error
-            $errorLog = new LogError();
-            $errorLog->errorNumber = 'C18';
-            $errorLog->errorMsg = 'reCAPTCHA: Likely Bot';
-            $errorLog->badData = $captchaJSON;
-            $errorLog->filename = 'contact.php';
-            $errorLog->write();
         }
     }
 }

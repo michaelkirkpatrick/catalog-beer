@@ -10,14 +10,6 @@ $beerResp = $api->request('GET', '/beer/' . $beerID, '');
 $beerData = json_decode($beerResp);
 if(isset($beerData->error)){
     // Invalid beerID
-    // Log Error
-    $errorLog = new LogError();
-    $errorLog->errorNumber = 'C15';
-    $errorLog->errorMsg = 'Invalid beerID';
-    $errorLog->badData = "beerID: $beerID\n" . $beerData->error_msg;
-    $errorLog->filename = 'beer.php';
-    $errorLog->write();
-    
     http_response_code(404);
     header('location: /error_page/404.php');
     exit();
