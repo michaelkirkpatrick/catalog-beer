@@ -12,38 +12,53 @@ class Database {
     private static bool $loggingError = false;
 
     function __construct(){
-        // Establish Environment
-        if(defined('ENVIRONMENT')){
-            if(ENVIRONMENT === 'staging'){
-                $password = DB_PASSWORD_STAGING;
-            }elseif(ENVIRONMENT === 'production'){
-                $password = DB_PASSWORD_PRODUCTION;
-            }
+        // Use exception-based error handling so transient MySQL failures
+        // (server gone away, connection refused, greeting packet errors)
+        // surface as catchable mysqli_sql_exception instead of uncaught
+        // fatal errors. PHP 8.1+ default; set explicitly for clarity.
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-            // Connect to Server
-            $this->mysqli = new mysqli(DB_HOST, DB_USER, $password, DB_NAME);
-            if($this->mysqli->connect_error){
-                exit();
-            }else{
-                // Set Character Set
-                if(!$this->mysqli->set_charset("utf8mb4")){
-                    exit();
-                }
-            }
+        // Establish Environment
+        if(!defined('ENVIRONMENT')){
+            $this->error = true;
+            $this->errorMsg = 'Environment not set.';
+            return;
+        }
+
+        if(ENVIRONMENT === 'staging'){
+            $password = DB_PASSWORD_STAGING;
+        }elseif(ENVIRONMENT === 'production'){
+            $password = DB_PASSWORD_PRODUCTION;
         }else{
-            // Environment Not Set
-            exit();
+            $this->error = true;
+            $this->errorMsg = 'Unknown environment.';
+            return;
+        }
+
+        // Connect to Server
+        try {
+            $this->mysqli = new mysqli(DB_HOST, DB_USER, $password, DB_NAME);
+            $this->mysqli->set_charset("utf8mb4");
+        } catch (mysqli_sql_exception $e) {
+            $this->error = true;
+            $this->errorMsg = 'Database connection error.';
+            $this->logQueryError('Database Connection Error: ' . $e->getCode() . ': ' . $e->getMessage(), '');
         }
     }
 
     // ----- Query -----
     public function query(string $sql, array $params = []): ?mysqli_result {
+        if($this->error){
+            return null;
+        }
+
         // Prepare Statement
-        $stmt = $this->mysqli->prepare($sql);
-        if(!$stmt){
+        try {
+            $stmt = $this->mysqli->prepare($sql);
+        } catch (mysqli_sql_exception $e) {
             $this->error = true;
             $this->errorMsg = 'Sorry, there was an internal error querying our database. I\'ve logged the error for our support team so they can diagnose and fix the issue.';
-            $this->logQueryError('SQL Prepare Error: ' . $this->mysqli->error, $sql);
+            $this->logQueryError('SQL Prepare Error: ' . $e->getMessage(), $sql);
             return null;
         }
 
@@ -65,10 +80,12 @@ class Database {
         }
 
         // Execute
-        if(!$stmt->execute()){
+        try {
+            $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
             $this->error = true;
             $this->errorMsg = 'Sorry, there was an internal error querying our database. I\'ve logged the error for our support team so they can diagnose and fix the issue.';
-            $this->logQueryError('SQL Execution Error: ' . $stmt->error, $sql);
+            $this->logQueryError('SQL Execution Error: ' . $e->getMessage(), $sql);
             $stmt->close();
             return null;
         }
@@ -93,7 +110,15 @@ class Database {
 
     // ----- Close -----
     public function close(): void {
-        $this->mysqli->close();
+        // Skip if connection never succeeded — $this->mysqli may be unusable
+        if($this->error){
+            return;
+        }
+        try {
+            $this->mysqli->close();
+        } catch (mysqli_sql_exception $e) {
+            // Silently swallow close errors; nothing to recover here
+        }
     }
 
     // ----- Log Query Error -----
