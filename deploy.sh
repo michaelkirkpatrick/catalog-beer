@@ -106,7 +106,7 @@ RSYNC_OUTPUT=$(rsync -azO --no-perms --delete \
 	--exclude '*.sql' \
 	--exclude 'maintenance.html' \
 	--exclude 'README.md' \
-	--exclude 'classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/' \
+	--filter 'P classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/***' \
 	./ "$REMOTE:$REMOTE_PATH/" 2>&1)
 
 # Count and display transferred files (exclude directories ending with /)
@@ -119,7 +119,8 @@ else
 	echo "No files changed."
 fi
 
-# Set ownership and permissions so Apache can read/serve and michael can deploy
-ssh -S "$SOCKET" -t "$REMOTE" "sudo chown -R www-data:developers $REMOTE_PATH/ && sudo find $REMOTE_PATH/ -type d -exec chmod 2775 {} + && sudo find $REMOTE_PATH/ -type f -exec chmod 664 {} +"
+# Set ownership and permissions so Apache can read/serve and michael can deploy.
+# config/passwords.php is locked down to 600 (owner-only) since it holds secrets.
+ssh -S "$SOCKET" -t "$REMOTE" "sudo chown -R www-data:developers $REMOTE_PATH/ && sudo find $REMOTE_PATH/ -type d -exec chmod 2775 {} + && sudo find $REMOTE_PATH/ -type f -exec chmod 664 {} + && sudo chmod 600 $REMOTE_PATH/config/passwords.php"
 
 echo "Deploy to $DEST complete."
