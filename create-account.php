@@ -8,6 +8,7 @@ $name = '';
 $email = '';
 $password = '';
 $termsAgreement = false;
+$success = false;
 $error = false;
 $errorMsg = '';
 $validState = array('name'=>'', 'email'=>'', 'password'=>'', 'terms_agreement'=>'');
@@ -37,7 +38,7 @@ if(isset($_POST['signupFormHidden'])){
         $termsAgreement = false;
     }
     $captcha = $_POST['g-recaptcha-response'] ?? '';
-    
+
     // Verify Captcha
     $captchaSecretKey = RECAPTCHA_SECRET_KEY;
     $captchaResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $captchaSecretKey . '&response=' . $captcha . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
@@ -46,7 +47,7 @@ if(isset($_POST['signupFormHidden'])){
         // Didn't Pass Captcha
         $error = true;
         $errorMsg = 'Sorry, there was an error processing the Captcha.';
-        
+
         // Update Alert
         $alert->msg = $errorMsg;
 
@@ -63,18 +64,7 @@ if(isset($_POST['signupFormHidden'])){
                 session_regenerate_id(true);
                 $array = json_decode($response);
                 $_SESSION['userID'] = $array->id;
-                $alert->type = 'success';
-                $alert->msg = 'Success! We\'ve created your account. Please verify your account by clicking on the link in the email we just sent you. Once you do that, you\'ll be all set!';
-
-                // Clear Variables
-                $name = '';
-                $email = '';
-                $password = '';
-                $termsAgreement = false;
-                $error = false;
-                $errorMsg = '';
-                $validState = array('name'=>'', 'email'=>'', 'password'=>'', 'terms_agreement'=>'');
-                $validMsg = array('name'=>'', 'email'=>'', 'password'=>'');
+                $success = true;
             }else{
                 // Error
                 $array = json_decode($response, true);
@@ -118,7 +108,16 @@ echo $htmlHead->html;
                 $nav->breadcrumbText = array('Home', 'Create an account');
                 $nav->breadcrumbLink = array('/');
                 echo $nav->breadcrumbs();
-                
+
+                if($success){ ?>
+                <div class="p-5 mb-4 bg-light rounded-3">
+                    <h1>Account Created!</h1>
+                    <p class="lead">Before you can contribute to the database, or obtain an API key, you&#8217;ll need to verify your email address.</p>
+                    <hr>
+                    <p>Check your inbox for an email with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Click the link in that email and you&#8217;ll be all set!</p>
+                    <a class="btn btn-primary btn-lg" href="/" role="button">Go to Homepage</a>
+                </div>
+                <?php }else{
                 // Display Alerts
                 echo $alert->display();
                 ?>
@@ -159,7 +158,7 @@ echo $htmlHead->html;
                     $inputPassword->validState = $validState['password'];
                     $inputPassword->validMsg = $validMsg['password'];
                     echo $inputPassword->display();
-                    
+
                     // Terms and conditions
                     $checkbox = new Checkbox();
                     $checkbox->validState = $validState['terms_agreement'];
@@ -169,12 +168,14 @@ echo $htmlHead->html;
                     <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
                     <p class="text-center"><a href="/login">Sign in</a></p>
         </form>
+        <?php } ?>
       </div>
       <div class="col"></div>
-    </div> 
+    </div>
   </div>
-  <?php echo $nav->footer(); ?> 
+  <?php echo $nav->footer(); ?>
 </body>
+<?php if(!$success){ ?>
 <script src='https://www.google.com/recaptcha/api.js?render=<?php echo RECAPTCHA_SITE_KEY; ?>'></script>
 <script type="application/javascript">
     grecaptcha.ready(function() {
@@ -182,8 +183,9 @@ echo $htmlHead->html;
             document.getElementById("g-recaptcha-response").value = token;
         });
     });
-    function onSubmit(token) {  
+    function onSubmit(token) {
         document.getElementById("signup-form").submit();
     }
 </script>
+<?php } ?>
 </html>
