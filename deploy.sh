@@ -91,8 +91,7 @@ echo "Generated config/version.php ($(git rev-parse --short HEAD))"
 ssh -fNM -S "$SOCKET" "$REMOTE"
 trap 'ssh -S "$SOCKET" -O exit "$REMOTE" 2>/dev/null' EXIT
 
-RSYNC_OUTPUT=$(rsync -azO --no-perms --delete \
-	--out-format='%n' \
+RSYNC_OUTPUT=$(rsync -azOi --no-perms --delete \
 	-e "ssh -S '$SOCKET'" \
 	--exclude '.git' \
 	--exclude '.claude' \
@@ -109,14 +108,46 @@ RSYNC_OUTPUT=$(rsync -azO --no-perms --delete \
 	--filter 'P classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/***' \
 	./ "$REMOTE:$REMOTE_PATH/" 2>&1)
 
-# Count and display transferred files (exclude directories ending with /)
-TRANSFERRED_FILES=$(echo "$RSYNC_OUTPUT" | grep -v -E '(^$|/$)')
-FILE_COUNT=$(echo "$TRANSFERRED_FILES" | grep -c . || true)
-if [ "$FILE_COUNT" -gt 0 ]; then
-	echo "Transferred $FILE_COUNT files:"
-	echo "$TRANSFERRED_FILES"
-else
-	echo "No files changed."
+RSYNC_STATUS=$?
+
+if [ "$RSYNC_STATUS" -ne 0 ]; then
+	echo "rsync FAILED (exit $RSYNC_STATUS):"
+	echo "$RSYNC_OUTPUT"
+	exit "$RSYNC_STATUS"
+fi
+
+# Parse rsync --itemize-changes output. Works on GPL rsync 3+, rsync 2.6.9, and
+# Apple's openrsync. Each interesting line begins with an 11-char itemize string:
+#   >f.......... filename   (file being transferred to remote)
+#   *deleting    filename   (file being deleted on remote)
+#   .d..t...... ./          (unchanged directory — skip)
+TRANSFERRED=$(echo "$RSYNC_OUTPUT" | awk '
+	/^[<>]f/ { sub(/^[^ ]+ +/, ""); if ($0 !~ /\/$/) print }
+')
+DELETED=$(echo "$RSYNC_OUTPUT" | awk '
+	/^\*deleting/ { sub(/^\*deleting +/, ""); if ($0 !~ /\/$/) print }
+')
+
+TRANSFER_COUNT=$(echo -n "$TRANSFERRED" | grep -c . || true)
+DELETE_COUNT=$(echo -n "$DELETED" | grep -c . || true)
+
+if [ "$TRANSFER_COUNT" -gt 0 ]; then
+	echo "Transferred $TRANSFER_COUNT files:"
+	echo "$TRANSFERRED"
+fi
+if [ "$DELETE_COUNT" -gt 0 ]; then
+	echo "Deleted $DELETE_COUNT files:"
+	echo "$DELETED"
+fi
+if [ "$TRANSFER_COUNT" -eq 0 ] && [ "$DELETE_COUNT" -eq 0 ]; then
+	# Parser found nothing. If rsync produced any output beyond the headers,
+	# surface it so silent reporting bugs don't lie about what happened.
+	if [ -n "$RSYNC_OUTPUT" ]; then
+		echo "No transfers/deletions parsed. Raw rsync output:"
+		echo "$RSYNC_OUTPUT"
+	else
+		echo "No files changed."
+	fi
 fi
 
 # Set ownership and permissions so Apache can read/serve and michael can deploy.
