@@ -200,3 +200,28 @@ a { text-underline-offset: 0.12em; }
 
 /* ---- badges/pills use amber accent ---- */
 .badge.text-bg-primary { color: #1B1A17 !important; background-color: var(--cb-amber) !important; }
+
+/* ============================ chrome: navbar + footer ============================
+   Used by navbar.html (cream) and plain-footer.html (redesigned). */
+
+/* wordmark — serif "Catalog" + mono ".beer"; ink on light surfaces, no background */
+.cb-wordmark { font-family: var(--cb-serif); font-size: 1.4rem; line-height: 1; letter-spacing: -.01em; color: var(--cb-ink); text-decoration: none; }
+.cb-wordmark .tld { font-family: var(--cb-mono); font-size: .8rem; color: var(--cb-muted); }
+
+/* cream navbar */
+.navbar.cb-nav { background: var(--cb-paper); border-bottom: 1px solid var(--cb-line); }
+.cb-nav .nav-link { color: var(--cb-ink-2); }
+.cb-nav .nav-link.active { color: var(--cb-ink); font-weight: 600; }
+.cb-nav .nav-link:hover, .cb-nav .nav-link:focus { color: var(--cb-amber-deep); }
+.cb-nav .navbar-toggler { border-color: var(--cb-line-2); }
+.navbar-nav .nav-link { white-space: nowrap; }
+.cb-count { font-family: var(--cb-mono); font-size: .62rem; background: var(--cb-paper-3); color: var(--cb-muted); border-radius: 99px; padding: .05rem .45rem; margin-left: .3rem; vertical-align: 1px; }
+
+/* footer */
+.cb-footer { background: var(--cb-paper-2); }
+.cb-foot-h { font-family: var(--cb-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--cb-muted); margin-bottom: 10px; }
+.cb-foot-links { list-style: none; padding: 0; margin: 0; }
+.cb-foot-links li { margin-bottom: 5px; }
+.cb-foot-links a { text-decoration: none; }
+.cb-cc svg { fill: var(--cb-ink-2); }
+.cb-foot-lead { font-family: var(--cb-serif); font-size: 1.05rem; color: var(--cb-ink); }

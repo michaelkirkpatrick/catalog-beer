@@ -34,6 +34,7 @@ if(isset($_POST['submit'])){
         $validMsg = $brewerArray['valid_msg'];
     }else{
         // Success
+        unset($_SESSION['cb_counts']);  // bust navbar count cache so the new brewer shows immediately
         header('location: /brewer/' . $brewerArray['id']);
         exit();
     }

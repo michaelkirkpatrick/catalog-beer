@@ -1,23 +1,21 @@
-<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark" style="margin-bottom:1rem;">
+<nav class="navbar navbar-expand-lg cb-nav" style="margin-bottom:1rem;">
     <div class="container-fluid">
-    <a class="navbar-brand" href="/">
-        <img src="/images/logo.svg" width="30" height="30" class="d-inline-block align-top" alt="Catalog.beer">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <div class="navbar-nav">
-            ##ITEMS##
-            <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Account
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-          ##ACCOUNT##
-        </ul>
-      </li>
+        <a class="navbar-brand cb-wordmark" href="/">Catalog<span class="tld">.beer</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="navbar-nav me-auto">
+                ##ITEMS##
+            </div>
+            <div class="navbar-nav">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        ##ACCOUNT##
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
     </div>
 </nav>

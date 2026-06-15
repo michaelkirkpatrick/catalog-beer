@@ -107,9 +107,10 @@ class Navigation {
         // Get Navbar
         $html = file_get_contents(ROOT . '/classes/resources/navbar.html');
         
-        // Generate Links
-        $links = $this->activeNav($section, '/brewer', 'Brewers');
-        $links .= $this->activeNav($section, '/beer', 'Beer');
+        // Generate Links (with cached counts for Brewers + Beer)
+        $counts = $this->counts();
+        $links = $this->activeNav($section, '/brewer', 'Brewers', $counts['brewers']);
+        $links .= $this->activeNav($section, '/beer', 'Beer', $counts['beers']);
         $links .= $this->activeNav($section, '/map', 'Map');
         
         // Add in Links
@@ -130,7 +131,7 @@ class Navigation {
         return $html;
     }
     
-    private function activeNav($section, $url, $title){
+    private function activeNav($section, $url, $title, $count = null){
         // Add Active?
         $classAdd = '';
         $srAdd = '';
@@ -138,12 +139,41 @@ class Navigation {
             $classAdd = ' active';
             $srAdd = ' <span class="visually-hidden">(current)</span>';
         }
-        
+
+        // Optional count badge
+        $badge = '';
+        if($count !== null){
+            $badge = ' <span class="cb-count">' . number_format($count) . '</span>';
+        }
+
         // Create HTML
-        $html = '<a class="nav-item nav-link' . $classAdd . '" href="'. $url . '">' . $title . '</a>';
-        
+        $html = '<a class="nav-item nav-link' . $classAdd . '" href="'. $url . '">' . $title . $badge . $srAdd . '</a>';
+
         // Return
         return $html;
+    }
+
+    // Brewer + beer counts for the navbar. Cached per-session (short TTL) because
+    // the navbar renders on every page; each count is a blocking API call.
+    // Cache is busted on add (see beer-add.php / brewer-add.php) for instant freshness.
+    private function counts(){
+        if(isset($_SESSION['cb_counts']['ts']) && (time() - $_SESSION['cb_counts']['ts']) < 600){
+            return $_SESSION['cb_counts'];
+        }
+
+        $out = array('brewers' => null, 'beers' => null, 'ts' => time());
+        $api = new API();
+        $b = json_decode($api->request('GET', '/brewer/count', ''));
+        if(isset($b->value)){ $out['brewers'] = intval($b->value); }
+        $r = json_decode($api->request('GET', '/beer/count', ''));
+        if(isset($r->value)){ $out['beers'] = intval($r->value); }
+
+        // Cache only on at least one success, so a transient API blip retries next page
+        if($out['brewers'] !== null || $out['beers'] !== null){
+            $_SESSION['cb_counts'] = $out;
+        }
+
+        return $out;
     }
     
     // ----- Pagination -----
