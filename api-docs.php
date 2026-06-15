@@ -59,6 +59,11 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#beer-list-all">&gt; List all Beer</a>
                     <a class="list-group-item list-group-item-action" href="#beer-count">&gt; Number of Beers</a>
                     <a class="list-group-item list-group-item-action" href="#beer-search">&gt; Search Beer</a>
+                    <a class="list-group-item list-group-item-action" href="#styles"><strong>Styles</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
+                    <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
+                    <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
+                    <a class="list-group-item list-group-item-action" href="#style-classes">&gt; List Classes</a>
                     <a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
                     <a class="list-group-item list-group-item-action" href="#location-object">&gt; The Location Object</a>
                     <a class="list-group-item list-group-item-action" href="#location-add">&gt; Add a Location</a>
@@ -823,7 +828,7 @@ curl -X GET \
                         <tr>
                             <td><var>data</var></td>
                             <td>array</td>
-                            <td>An array containing all the beers associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>style</var> described below.</td>
+                            <td>An array containing all the beers associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, <var>style</var>, <var>style_id</var>, <var>parent</var>, <var>class</var>, and <var>beverage_type</var> described below.</td>
                         </tr>
                         <tr>
                             <td><var>id</var></td>
@@ -838,7 +843,27 @@ curl -X GET \
                         <tr>
                             <td><var>style</var></td>
                             <td>string</td>
-                            <td>The style of the beer.</td>
+                            <td>The style of the beer (human-readable label).</td>
+                        </tr>
+                        <tr>
+                            <td><var>style_id</var></td>
+                            <td>string</td>
+                            <td>The canonical <a href="#styles">style</a> id, or <var>null</var> if filed at the family/class level.</td>
+                        </tr>
+                        <tr>
+                            <td><var>parent</var></td>
+                            <td>string</td>
+                            <td>The canonical family id (e.g. <var>porter</var>).</td>
+                        </tr>
+                        <tr>
+                            <td><var>class</var></td>
+                            <td>string</td>
+                            <td>The super-class (<var>ale</var>/<var>lager</var>), or <var>null</var>.</td>
+                        </tr>
+                        <tr>
+                            <td><var>beverage_type</var></td>
+                            <td>string</td>
+                            <td><var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -873,17 +898,29 @@ curl -X GET \
     {
       "id": "01fd323a-5984-a1c5-51a1-9b8abde3afb4",
       "name": "12 Year Old Elijah Craig Ballast Point Victory at Sea",
-      "style": "Imperial Porter"
+      "style": "Imperial Porter",
+      "style_id": "american-imperial-porter",
+      "parent": "porter",
+      "class": "ale",
+      "beverage_type": "beer"
     },
     {
       "id": "e9a9936e-332c-aa6c-8dcf-70309b483db7",
       "name": "Abandon Ship",
-      "style": "Smoked Lager"
+      "style": "Smoked Beer",
+      "style_id": null,
+      "parent": "smoked-beer",
+      "class": null,
+      "beverage_type": "beer"
     },
     {
       "id": "b4d1c9f3-cb4a-c364-f1f0-a71a94295ead",
       "name": "Abandon Ship with Chipotle",
-      "style": "Smoked Lager"
+      "style": "Smoked Beer",
+      "style_id": null,
+      "parent": "smoked-beer",
+      "class": null,
+      "beverage_type": "beer"
     }
   ]
 }
@@ -1018,7 +1055,27 @@ curl -X GET \
                         <tr>
                             <td><var>style</var></td>
                             <td>string</td>
-                            <td>The style of the beer.</td>
+                            <td>The style of the beer as a human-readable label &#8212; the brewer&#8217;s own wording, preserved exactly (e.g. &#8220;West Coast IPA&#8221;).</td>
+                        </tr>
+                        <tr>
+                            <td><var>style_id</var></td>
+                            <td>string</td>
+                            <td>The canonical <a href="#styles">style</a> the label resolved to (e.g. <var>american-ipa</var>), or <var>null</var> when the beer is filed at the family or class level rather than a specific style.</td>
+                        </tr>
+                        <tr>
+                            <td><var>parent</var></td>
+                            <td>string</td>
+                            <td>The canonical family (e.g. <var>ipa</var>) the beer belongs to. Derived from <var>style_id</var>, or set directly when filed at the family level.</td>
+                        </tr>
+                        <tr>
+                            <td><var>class</var></td>
+                            <td>string</td>
+                            <td>The super-class the beer rolls up to: <var>ale</var> or <var>lager</var>, or <var>null</var> for families that do not roll up to one (wheat, sour, cider, mead, etc.).</td>
+                        </tr>
+                        <tr>
+                            <td><var>beverage_type</var></td>
+                            <td>string</td>
+                            <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>. Derived from the resolved style; never trusted from client input.</td>
                         </tr>
                         <tr>
                             <td><var>description</var></td>
@@ -1065,7 +1122,11 @@ curl -X GET \
     "id": "bc2170df-eef7-8f6b-205b-63cbfeb4a901",
     "object": "beer",
     "name": "Schooner Wet Hop",
-    "style": "Ale with Wet Hops",
+    "style": "West Coast IPA",
+    "style_id": "west-coast-ipa",
+    "parent": "ipa",
+    "class": "ale",
+    "beverage_type": "beer",
     "description": "Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal. To brew this beer we get Cascade Hops from Yakima, Washington. They are picked, shipped and put into the brew within 36 hours. The Wet Hops have a grassy, vegetal, chlorophyll flavor that is reminiscent of fresh cut Greens. We showcase this 100% Cascade Hop Beer with a very light and crisp grain bill including a small portion of rice. This allows the aroma and flavor from such a rare, very seasonal ingredient, to shine.",
     "abv": 5.5,
     "ibu": 25,
@@ -1090,9 +1151,12 @@ curl -X GET \
                 <h3 id="beer-create">Add a Beer</h3>
 
                 <p>To add a beer to the database, send a <strong>POST</strong> request to the <code>/beer</code> endpoint with the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#beer-object">beer object</a>.</p>
-                                
+
                                 <pre class="api-code">POST https://api.catalog.beer/beer</pre>
-                                
+
+                <div class="alert alert-info" role="alert">
+                    <strong>Styles are resolved to a canonical value.</strong> Send the brewer&#8217;s wording as <var>style</var> and the API resolves it to a canonical <a href="#styles">style</a>, family, or class &#8212; for example <code>"West Coast IPA"</code> &#8594; <var>west-coast-ipa</var>, <code>"IPA"</code> &#8594; the <var>ipa</var> family, <code>"Lager"</code> &#8594; the <var>lager</var> class. Your exact wording is preserved in the returned <var>style</var>. You may instead (or additionally) pass <var>style_id</var>, <var>parent</var>, or <var>class</var> to file at a specific tier; the most specific wins. If nothing resolves and no tier is given, the request returns <var>400</var> with a list of valid choices &#8212; pick a closer match or a catch-all (e.g. <code>specialty-beer</code>).</div>
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -1115,7 +1179,22 @@ curl -X GET \
                         <tr>
                             <td><var>style</var></td>
                             <td>string</td>
-                            <td>The style of the beer.</td>
+                            <td>The brewer&#8217;s style label, resolved to a canonical style/family/class (see note above). Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
+                        </tr>
+                        <tr>
+                            <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
+                            <td>string</td>
+                            <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
+                        </tr>
+                        <tr>
+                            <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
+                            <td>string</td>
+                            <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
+                        </tr>
+                        <tr>
+                            <td><var>class</var><br><small class="text-muted">(optional)</small></td>
+                            <td>string</td>
+                            <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
                         </tr>
                         <tr>
                             <td><var>description<br><small class="text-muted">(optional)</small></var></td>
@@ -1143,7 +1222,7 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"Ale with Wet Hops","description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","abv":"5.5","ibu":"25"}'
+  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"West Coast IPA","description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","abv":"5.5","ibu":"25"}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -1153,6 +1232,8 @@ curl -X POST \
 <p>To replace a beer&#8217;s data, send a <strong>PUT</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the beer does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#beer-object">beer object</a>.</p>
 
 <pre class="api-code">PUT https://api.catalog.beer/beer/{beer_id}</pre>
+
+<div class="alert alert-info" role="alert"><strong>Styles are resolved to a canonical value</strong> &#8212; see <a href="#styles">Styles</a>. Send the brewer&#8217;s wording as <var>style</var>, or file at a tier with <var>style_id</var> / <var>parent</var> / <var>class</var>. Unresolvable input with no tier returns <var>400</var>.</div>
 
 <table class="table">
     <thead>
@@ -1176,7 +1257,22 @@ curl -X POST \
         <tr>
             <td><var>style</var></td>
             <td>string</td>
-            <td>The style of the beer.</td>
+            <td>The brewer&#8217;s style label, resolved to a canonical style/family/class. Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
+        </tr>
+        <tr>
+            <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
+        </tr>
+        <tr>
+            <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
+        </tr>
+        <tr>
+            <td><var>class</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
         </tr>
         <tr>
             <td><var>abv</var></td>
@@ -1204,7 +1300,7 @@ curl -X PUT \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"Ale with Wet Hops","abv":5.5,"description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","ibu":25}'
+  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"West Coast IPA","abv":5.5,"description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","ibu":25}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -1214,6 +1310,8 @@ curl -X PUT \
 <p>To partially update a beer, send a <strong>PATCH</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#beer-object">beer object</a>.</p>
 
 <pre class="api-code">PATCH https://api.catalog.beer/beer/{beer_id}</pre>
+
+<div class="alert alert-info" role="alert">Changing the style? Send any of <var>style</var> (label), <var>style_id</var>, <var>parent</var>, or <var>class</var> &#8212; the beer is re-resolved and its tier fields updated together. See <a href="#styles">Styles</a>.</div>
 
 <table class="table">
     <thead>
@@ -1237,7 +1335,22 @@ curl -X PUT \
         <tr>
             <td><var>style</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
-            <td>The style of the beer.</td>
+            <td>The brewer&#8217;s style label, re-resolved to a canonical style/family/class.</td>
+        </tr>
+        <tr>
+            <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>).</td>
+        </tr>
+        <tr>
+            <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>File at a family (e.g. <var>ipa</var>).</td>
+        </tr>
+        <tr>
+            <td><var>class</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
         </tr>
         <tr>
             <td><var>description</var><br><small class="text-muted">(optional)</small></td>
@@ -1564,7 +1677,11 @@ curl -X GET \
       "id": "e9a9936e-332c-aa6c-8dcf-70309b483db7",
       "object": "beer",
       "name": "Stone IPA",
-      "style": "India Pale Ale",
+      "style": "West Coast IPA",
+      "style_id": "west-coast-ipa",
+      "parent": "ipa",
+      "class": "ale",
+      "beverage_type": "beer",
       "description": "A well-hopped West Coast IPA...",
       "abv": 6.9,
       "ibu": 77,
@@ -1582,6 +1699,147 @@ curl -X GET \
         "brewer_verified": false,
         "last_modified": 1737234000
       }
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h2 id="styles">Styles</h2>
+
+<p>Catalog.beer uses a canonical style vocabulary so beers can be classified consistently and queried reliably. The vocabulary is sourced primarily from the Brewers Association 2026 guidelines (with BJCP 2021 for cider, perry, and mead) and is organized into three tiers, from broadest to most specific:</p>
+
+<ul>
+    <li><strong>Class</strong> &#8212; the coarse fermentation super-family: <var>ale</var> or <var>lager</var>. (Not every family rolls up to a class &#8212; wheat, sour, smoked, cider, mead, etc. sit on their own.)</li>
+    <li><strong>Family</strong> &#8212; a character-based grouping such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var> (the <var>parent</var>).</li>
+    <li><strong>Style</strong> &#8212; a specific canonical style such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</li>
+</ul>
+
+<p>A beer may be filed at <em>any</em> tier. When you submit a beer, the <var>style</var> text you send is resolved to the most specific tier it matches, and the coarser tiers are derived automatically (a style implies its family and class). The beer object therefore carries <var>style</var> (your label), <var>style_id</var>, <var>parent</var>, <var>class</var>, and <var>beverage_type</var>. A separate <var>beverage_type</var> &#8212; <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var> &#8212; is always derived from the resolved style.</p>
+
+<p>The <code>/style</code> endpoints are read-only and let you fetch the vocabulary (e.g. to build a picker or validate input client-side). They return the same JSON for all callers and require authentication like every other endpoint.</p>
+
+<h3 id="style-list">List Styles</h3>
+
+<p>Returns every canonical style. The <var>version</var> field reflects the seeded vocabulary version &#8212; watch it to know when to refresh a cached copy.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style",
+  "version": "2.1.0",
+  "has_more": false,
+  "data": [
+    {
+      "id": "american-ipa",
+      "object": "style",
+      "name": "American-Style India Pale Ale",
+      "beverage_type": "beer",
+      "parent": "ipa",
+      "category": "IPA",
+      "catch_all": false,
+      "aliases": ["American IPA", "IPA"]
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-detail">Retrieve a Style</h3>
+
+<p>Returns one style with its full detail, including style guideline specs (ABV, IBU, SRM, OG, FG). The <var>{style_id}</var> is a slug, not a UUID.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/{style_id}</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "id": "american-ipa",
+  "object": "style",
+  "name": "American-Style India Pale Ale",
+  "beverage_type": "beer",
+  "parent": "ipa",
+  "parent_name": "India Pale Ale",
+  "category": "IPA",
+  "family": "Pale Ale",
+  "yeast_type": "Ale",
+  "source": "BA-2026",
+  "catch_all": false,
+  "aliases": ["American IPA", "IPA"],
+  "specs": {
+    "abv": { "min": 6.3, "max": 7.5 },
+    "ibu": { "min": 50, "max": 70 },
+    "srm": { "min": 6, "max": 14 },
+    "og":  { "min": 1.06, "max": 1.07 },
+    "fg":  { "min": 1.01, "max": 1.018 }
+  }
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-parents">List Families</h3>
+
+<p>Returns the family tier (the <var>parent</var> groupings), each with its <var>class</var> rollup and the aliases that resolve to it.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/parent</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/parent",
+  "has_more": false,
+  "data": [
+    {
+      "slug": "ipa",
+      "object": "style_parent",
+      "name": "India Pale Ale",
+      "beverage_type": "beer",
+      "class": "ale",
+      "description": "The hop showcase of brewing...",
+      "sort_order": 2,
+      "aliases": ["IPA", "India Pale Ale", "IPAs"]
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-classes">List Classes</h3>
+
+<p>Returns the super-class tier &#8212; currently <var>ale</var> and <var>lager</var> &#8212; with the aliases that resolve to each.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/class</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/class",
+  "has_more": false,
+  "data": [
+    {
+      "slug": "ale",
+      "object": "style_class",
+      "name": "Ale",
+      "beverage_type": "beer",
+      "sort_order": 1,
+      "aliases": ["Ale", "Ales"]
+    },
+    {
+      "slug": "lager",
+      "object": "style_class",
+      "name": "Lager",
+      "beverage_type": "beer",
+      "sort_order": 2,
+      "aliases": ["Lager", "Lagers"]
     }
   ]
 }
