@@ -29,6 +29,8 @@ $validMsg = array('brewer_id'=>'', 'name'=>'', 'style'=>'', 'description'=>'', '
 $name = $beerData->name;
 $styleLabel = $beerData->style;
 $styleID = $beerData->style_id ?? '';
+$styleParent = $beerData->parent ?? '';
+$styleClass = $beerData->class ?? '';
 $beverageType = $beerData->beverage_type ?? '';
 $description = $beerData->description ?? '';
 $abv = $beerData->abv ?? '';
@@ -44,12 +46,14 @@ if(isset($_POST['submit'])){
         $name = $_POST['name'];
         $styleLabel = $_POST['style_label'] ?? '';
         $styleID = $_POST['style_id'] ?? '';
+        $styleParent = $_POST['parent'] ?? '';
+        $styleClass = $_POST['class'] ?? '';
         $beverageType = $_POST['beverage_type'] ?? '';
         $description = $_POST['description'];
         $abv = $_POST['abv'];
         $ibu = $_POST['ibu'];
 
-        $patchData = array('name'=>$name, 'style_label'=>$styleLabel, 'style_id'=>$styleID, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
+        $patchData = array('name'=>$name, 'style_label'=>$styleLabel, 'style_id'=>$styleID, 'parent'=>$styleParent, 'class'=>$styleClass, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
         $patchResponse = $api->request('PATCH', '/beer/' . $beerID, $patchData);
         $patchArray = json_decode($patchResponse, true);
         if(isset($patchArray['error'])){
@@ -119,6 +123,8 @@ echo (strpos($htmlHead->html, '</head>') !== false)
                     $guidedStyle->required = true;
                     $guidedStyle->value = $styleLabel;
                     $guidedStyle->styleId = $styleID;
+                    $guidedStyle->parent = $styleParent;
+                    $guidedStyle->class = $styleClass;
                     $guidedStyle->beverageType = $beverageType;
                     $guidedStyle->validState = $validState['style'];
                     $guidedStyle->validMsg = $validMsg['style'];

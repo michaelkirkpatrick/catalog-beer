@@ -22,7 +22,9 @@ class GuidedStyleField {
 
     public $description = 'Style';
     public $value = '';            // style_label (raw text)
-    public $styleId = '';          // style_id (hidden)
+    public $styleId = '';          // style_id (hidden) — set when filed at style level
+    public $parent = '';           // parent/family slug (hidden) — set when filed at family level
+    public $class = '';            // super-class slug (hidden) — set when filed at class level
     public $beverageType = '';     // beverage_type (hidden)
     public $placeholder = 'Start typing — e.g. IPA, Tripel, Pilsner, Stout';
     public $hint = 'Start typing to match a canonical style. Your exact wording is always kept.';
@@ -48,6 +50,8 @@ class GuidedStyleField {
                  . ' value="' . $attr($this->value) . '"'
                  . ($this->required ? ' required' : '') . '>';
         $return .= '<input type="hidden" name="style_id" value="' . $attr($this->styleId) . '">';
+        $return .= '<input type="hidden" name="parent" value="' . $attr($this->parent) . '">';
+        $return .= '<input type="hidden" name="class" value="' . $attr($this->class) . '">';
         $return .= '<input type="hidden" name="beverage_type" value="' . $attr($this->beverageType) . '">';
         $return .= '<div class="cb-menu" hidden></div>';
         $return .= '</div>';
