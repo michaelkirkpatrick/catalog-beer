@@ -27,7 +27,9 @@ $brewerURL = $text2->get($beerData->brewer->id);
 $validState = array('brewer_id'=>'', 'name'=>'', 'style'=>'', 'description'=>'', 'abv'=>'', 'ibu'=>'');
 $validMsg = array('brewer_id'=>'', 'name'=>'', 'style'=>'', 'description'=>'', 'abv'=>'', 'ibu'=>'');
 $name = $beerData->name;
-$style = $beerData->style;
+$styleLabel = $beerData->style;
+$styleID = $beerData->style_id ?? '';
+$beverageType = $beerData->beverage_type ?? '';
 $description = $beerData->description ?? '';
 $abv = $beerData->abv ?? '';
 $ibu = $beerData->ibu ?? '';
@@ -40,12 +42,14 @@ if(isset($_POST['submit'])){
     }else{
         // Get Posted Variables
         $name = $_POST['name'];
-        $style = $_POST['style'];
+        $styleLabel = $_POST['style_label'] ?? '';
+        $styleID = $_POST['style_id'] ?? '';
+        $beverageType = $_POST['beverage_type'] ?? '';
         $description = $_POST['description'];
         $abv = $_POST['abv'];
         $ibu = $_POST['ibu'];
 
-        $patchData = array('name'=>$name, 'style'=>$style, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
+        $patchData = array('name'=>$name, 'style_label'=>$styleLabel, 'style_id'=>$styleID, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
         $patchResponse = $api->request('PATCH', '/beer/' . $beerID, $patchData);
         $patchArray = json_decode($patchResponse, true);
         if(isset($patchArray['error'])){
@@ -63,7 +67,10 @@ if(isset($_POST['submit'])){
 // HTML Head
 $beerName = $text1->get($beerData->name);
 $htmlHead = new htmlHead('Edit ' . $beerName);
-echo $htmlHead->html;
+$guidedCSS = '<link rel="stylesheet" href="/assets/css/guided-style.css">';
+echo (strpos($htmlHead->html, '</head>') !== false)
+    ? str_replace('</head>', "\t" . $guidedCSS . "\n</head>", $htmlHead->html)
+    : $htmlHead->html . $guidedCSS;
 ?>
 <body>
     <?php echo $nav->navbar('Beer'); ?>
@@ -107,16 +114,15 @@ echo $htmlHead->html;
                     $inputName->validMsg = $validMsg['name'];
                     echo $inputName->display();
 
-                    // Style
-                    $inputStyle = new InputField();
-                    $inputStyle->name = 'style';
-                    $inputStyle->description = 'Style';
-                    $inputStyle->type = 'text';
-                    $inputStyle->required = true;
-                    $inputStyle->value = $style;
-                    $inputStyle->validState = $validState['style'];
-                    $inputStyle->validMsg = $validMsg['style'];
-                    echo $inputStyle->display();
+                    // Style (guided)
+                    $guidedStyle = new GuidedStyleField();
+                    $guidedStyle->required = true;
+                    $guidedStyle->value = $styleLabel;
+                    $guidedStyle->styleId = $styleID;
+                    $guidedStyle->beverageType = $beverageType;
+                    $guidedStyle->validState = $validState['style'];
+                    $guidedStyle->validMsg = $validMsg['style'];
+                    echo $guidedStyle->display();
 
                     // Description
                     $textarea = new Textarea();
@@ -156,5 +162,7 @@ echo $htmlHead->html;
     </div>
   </div>
   <?php echo $nav->footer(); ?>
+  <?php echo StyleList::inlineScript(); ?>
+  <script src="/assets/js/guided-style.js"></script>
 </body>
 </html>
