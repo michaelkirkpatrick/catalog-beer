@@ -51,6 +51,7 @@
 
   // --- matching ------------------------------------------------------------
   function searchStyles(styles, q) {
+    q = norm(q);                  // case/accent-insensitive: names/aliases below are normalized too
     var out = [];
     for (var i = 0; i < styles.length; i++) {
       var s = styles[i];
@@ -70,6 +71,7 @@
     return out.slice(0, 10);
   }
   function searchTier(list, q) {          // families or classes: match name or alias
+    q = norm(q);                  // case/accent-insensitive (aliasHit + names normalize too)
     var out = [];
     for (var i = 0; i < list.length; i++) {
       var it = list[i], n = norm(it.name);
