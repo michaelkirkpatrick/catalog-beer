@@ -30,17 +30,25 @@ $emailAuth = isset($_GET['emailAuth']) ? substr($_GET['emailAuth'], 1, 36) : '';
                 }
             }else{
                 if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
+                    // Lookup the current user to report when their verification email was sent
+                    $api = new API();
+                    $userResp = $api->request('GET', '/users/' . $_SESSION['userID'], '');
+                    $userInfo = json_decode($userResp);
+
                     // Email Verification Required Message
-                    $today = date('l, F jS', time());
-                    $sent = date('l, F jS', $userInfo->email_auth_sent);
-                    if($sent == $today){
-                        $dateString = 'today at ' . date('g:i A', $userInfo->email_auth_sent);
-                    }else{
-                        $dateString = $sent . ' at ' . date('g:i A', $userInfo->email_auth_sent);
+                    $dateString = '';
+                    if($api->httpcode == 200 && isset($userInfo->email_auth_sent)){
+                        $today = date('l, F jS', time());
+                        $sent = date('l, F jS', $userInfo->email_auth_sent);
+                        if($sent == $today){
+                            $dateString = ' <strong>today at ' . date('g:i A', $userInfo->email_auth_sent) . '</strong>';
+                        }else{
+                            $dateString = ' <strong>' . $sent . ' at ' . date('g:i A', $userInfo->email_auth_sent) . '</strong>';
+                        }
                     }
-                    
+
                     // Show Message
-                    echo '<h1>Email Verification Required</h1><p class="lead">Before you will be able to add data to the Catalog.beer database or obtain an API key, you will need to verify your email address.</p><p>This helps us reduce spam on the site. Check your email; we sent you a message <strong>' . $dateString . '</strong> with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Click the link in that email to verify your email address.</p>';
+                    echo '<h1>Email Verification Required</h1><p class="lead">Before you will be able to add data to the Catalog.beer database or obtain an API key, you will need to verify your email address.</p><p>This helps us reduce spam on the site. Check your email; we sent you a message' . $dateString . ' with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Click the link in that email to verify your email address.</p>';
                 }
             }
             ?>
