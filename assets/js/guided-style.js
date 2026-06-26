@@ -1,37 +1,50 @@
 /* =============================================================================
-   guided-style.js — Catalog.beer guided style input (vanilla JS, Bootstrap 5)
+   guided-style.js — Catalog.beer Style field, confidence-ladder edition
    -----------------------------------------------------------------------------
-   Turns the "Style" field into a guided combobox that lets a brewer file at any
-   tier — a specific style, a family, or a super-class (Ale/Lager) — while
-   keeping their raw wording (style_label). Encyclopedic brewers pick a style;
-   generic brewers pick "IPA" (family) or "Lager" (class) and are done.
+   The UX is driven by HOW WELL the typed label resolves, not by forcing a pick:
+
+     label (free text)  ─ the hero, kept verbatim, shown publicly
+        │ resolve()
+        ├─ specific   exact name / alias hit, high confidence   → quiet ✓ + Change
+        ├─ approx     flagged best-fit (manual-approx)          → "closest match", confirm
+        ├─ family     matches a family/umbrella, not a style    → filed at family, refine optional
+        └─ unknown    new coinage, nothing matches              → picker, label kept
+
+   The input is NEVER overwritten with the canonical name. The brewer's words
+   stay; the canonical classification is the derived, overridable chip underneath.
 
    Markup contract (GuidedStyleField.class.php):
-     <div class="cb-style" data-cb-style>
-       <input name="style_label" autocomplete="off" ...>
+     <div class="sf" data-sf>
+       <input class="form-control sf-input" name="style_label" autocomplete="off">
        <input type="hidden" name="style_id">
-       <input type="hidden" name="parent">
-       <input type="hidden" name="class">
+       <input type="hidden" name="parent">           <!-- family slug -->
+       <input type="hidden" name="class">            <!-- super-class slug -->
        <input type="hidden" name="beverage_type">
-       <div class="cb-menu" hidden></div>
+       <input type="hidden" name="style_confidence">
+       <div class="sf-card" hidden></div>
+       <div class="sf-picker" hidden></div>
      </div>
-     <div class="form-text cb-status"></div>
 
-   Data (inlined server-side from the DB, the source of truth):
-     window.CB_STYLES  = [{id,name,category,bev,ca,al}]
-     window.CB_PARENTS = [{slug,name,bev,class,al}]
-     window.CB_CLASSES = [{slug,name,bev,al}]
+   Data (inlined server-side from the DB, the source of truth — StyleList):
+     window.CB_TAX = {
+       classes: [{slug,name,bev,al}],
+       parents: [{slug,name,cls,bev,sort,al}],
+       styles:  [{id,name,parent,cat,fam,bev,ca,al}],
+       approx:  { "<normalized alias>": "<style_id>" }
+     }
 
-   Only the chosen tier's hidden field is set; the server derives the coarser
-   levels (a style implies its family + class). Nothing legitimate is rejected.
+   We emit the resolved tier as parent/class SLUGS (+ style_id) so the API can
+   re-derive and validate server-side; style_confidence rides along as the only
+   client-authored field (it records HOW the brewer resolved — override vs auto).
    ========================================================================== */
 (function () {
   'use strict';
 
-  var GENERAL_BEER_CATCHALLS = ['specialty-beer', 'experimental-beer', 'historical-beer'];
-  var CHECK = '<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" class="me-1" style="vertical-align:-1px"><path d="M13.485 1.929a.75.75 0 0 1 .022 1.06l-7.25 7.5a.75.75 0 0 1-1.082 0l-3.25-3.364a.75.75 0 1 1 1.08-1.04l2.71 2.804 6.71-6.94a.75.75 0 0 1 1.06-.02z"/></svg>';
+  var CATCHALL_IDS = ['specialty-beer', 'experimental-beer', 'historical-beer'];
+  var FILLER = /\b(just|a|an|the|some|plain|kinda|sorta|our|my|its|it'?s|like|basically|style|beer)\b/g;
 
-  function norm(s) { return (s || '').toString().toLowerCase().trim(); }
+  function norm(s) { return (s || '').toString().toLowerCase().trim().replace(/\s+/g, ' '); }
+  function loose(s) { return norm(s).replace(FILLER, ' ').replace(/[^\w ]/g, ' ').replace(/\s+/g, ' ').trim(); }
   function esc(s) {
     return (s || '').replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -43,23 +56,18 @@
     if (i < 0) return esc(text);
     return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
   }
-  function aliasHit(item, q) {            // returns the matching alias, or null
-    var al = item.al || [];
-    for (var j = 0; j < al.length; j++) if (norm(al[j]).indexOf(q) >= 0) return al[j];
-    return null;
-  }
 
-  // --- matching ------------------------------------------------------------
-  function searchStyles(styles, q) {
-    q = norm(q);                  // case/accent-insensitive: names/aliases below are normalized too
+  function byId(styles, id) { for (var i = 0; i < styles.length; i++) if (styles[i].id === id) return styles[i]; return null; }
+
+  // ranked specific-style matches (name + alias), excludes catch-alls
+  function search(styles, q) {
+    q = norm(q); if (!q) return [];
     var out = [];
     for (var i = 0; i < styles.length; i++) {
-      var s = styles[i];
-      if (s.ca) continue;
-      var n = norm(s.name), score = -1, via = null;
+      var s = styles[i]; if (s.ca) continue;
+      var n = norm(s.name), score = -1, via = null, al = s.al || [];
       if (n.indexOf(q) === 0) score = 0;
       else if (n.indexOf(q) > 0) score = 3;
-      var al = s.al || [];
       for (var j = 0; j < al.length; j++) {
         var a = norm(al[j]);
         if (a.indexOf(q) === 0 && (score < 0 || score > 1)) { score = 1; via = al[j]; }
@@ -70,220 +78,336 @@
     out.sort(function (x, y) { return x.score - y.score || x.s.name.localeCompare(y.s.name); });
     return out.slice(0, 10);
   }
-  function searchTier(list, q) {          // families or classes: match name or alias
-    q = norm(q);                  // case/accent-insensitive (aliasHit + names normalize too)
-    var out = [];
-    for (var i = 0; i < list.length; i++) {
-      var it = list[i], n = norm(it.name);
-      if (n.indexOf(q) >= 0) out.push({ it: it, via: null });
-      else { var v = aliasHit(it, q); if (v) out.push({ it: it, via: v }); }
-    }
-    return out;
-  }
-  function exactIn(list, q, key) {        // exact name or alias match in a tier list
-    for (var i = 0; i < list.length; i++) {
-      var it = list[i];
-      if (norm(it.name) === q) return it;
-      var al = it.al || [];
-      for (var j = 0; j < al.length; j++) if (norm(al[j]) === q) return it;
-    }
-    return null;
-  }
-  function exactStyleName(styles, q) {
-    for (var i = 0; i < styles.length; i++) if (!styles[i].ca && norm(styles[i].name) === q) return styles[i];
-    return null;
-  }
-  function exactStyleAlias(styles, q) {
+
+  function exactMatch(styles, q) {
+    q = norm(q); if (!q) return null;
     for (var i = 0; i < styles.length; i++) {
       var s = styles[i]; if (s.ca) continue;
-      var al = s.al || []; for (var j = 0; j < al.length; j++) if (norm(al[j]) === q) return s;
+      if (norm(s.name) === q) return { s: s, via: null };
+      var al = s.al || [];
+      for (var j = 0; j < al.length; j++) if (norm(al[j]) === q) return { s: s, via: al[j] };
     }
     return null;
+  }
+
+  // --- tier matching off real taxonomy -----------------------------------
+  function aliasHit(aliases, q, lq) {
+    for (var i = 0; i < (aliases || []).length; i++) { var a = norm(aliases[i]); if (a === q || a === lq) return true; }
+    return false;
+  }
+  function parentMatch(tax, q, lq) {
+    for (var i = 0; i < tax.parents.length; i++) if (aliasHit(tax.parents[i].al, q, lq)) return tax.parents[i];
+    return null;
+  }
+  function classMatch(tax, q, lq) {
+    for (var i = 0; i < tax.classes.length; i++) if (aliasHit(tax.classes[i].al, q, lq)) return tax.classes[i];
+    return null;
+  }
+  function childrenOf(tax, slug) {
+    return tax.styles.filter(function (s) { return s.parent === slug && !s.ca; })
+      .sort(function (a, b) { return a.name.localeCompare(b.name); });
+  }
+  function parentsOf(tax, clsSlug) {
+    return tax.parents.filter(function (p) { return p.cls === clsSlug; })
+      .sort(function (a, b) { return (a.sort || 99) - (b.sort || 99); });
+  }
+
+  /* resolve typed text → specific | approx | group(parent|class) | unknown */
+  function resolve(tax, raw) {
+    var q = norm(raw); if (!q) return { state: 'empty' };
+    var lq = loose(raw) || q;
+    var approx = tax.approx || {};
+    if (approx[q]) { var ap = byId(tax.styles, approx[q]); if (ap) return { state: 'approx', style: ap }; }
+    var ex = exactMatch(tax.styles, q);
+    if (ex) return { state: 'specific', style: ex.s, via: ex.via };
+    var p = parentMatch(tax, q, lq);
+    if (p) return { state: 'group', gkind: 'parent', parent: p };
+    var c = classMatch(tax, q, lq);
+    if (c) return { state: 'group', gkind: 'class', cls: c };
+    return { state: 'unknown' };
   }
 
   // --- component -----------------------------------------------------------
   function enhance(root) {
-    var styles = window.CB_STYLES || [];
-    var families = window.CB_PARENTS || [];
-    var classes = window.CB_CLASSES || [];
-
-    function catchAllsFor(bev) { return styles.filter(function (s) { return s.ca && s.bev === bev; }); }
-    var catchallGroups = [
-      { label: 'Beer', items: GENERAL_BEER_CATCHALLS.map(function (id) { return styles.filter(function (s) { return s.id === id; })[0]; }).filter(Boolean) },
-      { label: 'Cider', items: catchAllsFor('cider') },
-      { label: 'Mead', items: catchAllsFor('mead') }
-    ].filter(function (g) { return g.items.length; });
-
-    var input = root.querySelector('input[name="style_label"]');
-    var hidId = root.querySelector('input[name="style_id"]');
-    var hidParent = root.querySelector('input[name="parent"]');
-    var hidClass = root.querySelector('input[name="class"]');
-    var hidBev = root.querySelector('input[name="beverage_type"]');
-    var menu = root.querySelector('.cb-menu');
-    var status = (root.parentNode || document).querySelector('.cb-status');
-    var hint = (input.getAttribute('data-hint') || 'Start typing a style, family (IPA), or class (Lager). Your exact wording is always kept.');
-
-    var sel = [];
-    var active = -1;
-
-    function setStatus(kind, html) {
-      if (!status) return;
-      status.className = 'form-text cb-status ' + (kind === 'ok' ? 'text-success' : kind === 'warn' ? 'text-warning-emphasis' : 'text-muted');
-      status.innerHTML = html;
+    var tax = window.CB_TAX || { classes: [], parents: [], styles: [], approx: {} };
+    if (!tax.approx) tax.approx = {};
+    var styles = tax.styles;
+    var parentBySlug = {};
+    tax.parents.forEach(function (p) { parentBySlug[p.slug] = p; });
+    function parentName(style) {
+      var p = style && style.parent && parentBySlug[style.parent];
+      return p ? p.name : (style ? style.cat : '');
     }
-    function setFields(styleId, parent, cls, bev) {
-      hidId.value = styleId || '';
-      if (hidParent) hidParent.value = parent || '';
-      if (hidClass) hidClass.value = cls || '';
-      if (hidBev) hidBev.value = bev || 'beer';
-    }
-    function unresolved() { setFields('', '', '', ''); }
-
-    function resolveStyle(s, label) {
-      setFields(s.id, '', '', s.bev);
-      var msg = CHECK + 'Will be filed as <strong>' + esc(s.name) + '</strong>';
-      if (label && norm(label) !== norm(s.name)) msg += ' · your label “' + esc(label) + '” is kept';
-      setStatus('ok', msg);
-    }
-    function resolveFamily(f, label) {
-      setFields('', f.slug, '', f.bev);
-      var msg = CHECK + 'Filed under the <strong>' + esc(f.name) + '</strong> family (no specific style)';
-      if (label && norm(label) !== norm(f.name)) msg += ' · your label “' + esc(label) + '” is kept';
-      setStatus('ok', msg);
-    }
-    function resolveClass(c, label) {
-      setFields('', '', c.slug, c.bev);
-      var msg = CHECK + 'Filed as <strong>' + esc(c.name) + '</strong> (any style)';
-      if (label && norm(label) !== norm(c.name)) msg += ' · your label “' + esc(label) + '” is kept';
-      setStatus('ok', msg);
-    }
-    function resolveCatch(s, label) {
-      setFields(s.id, '', '', s.bev);
-      var msg = CHECK + 'Filed under <strong>' + esc(s.name) + '</strong> — a non-standard style';
-      if (label && norm(label) !== norm(s.name)) msg += ' · your label “' + esc(label) + '” is kept';
-      setStatus('ok', msg);
+    function classSlugOf(parentSlug) {
+      var p = parentSlug && parentBySlug[parentSlug];
+      return (p && p.cls) ? p.cls : '';
     }
 
-    function close() { menu.hidden = true; menu.innerHTML = ''; sel = []; active = -1; }
+    var input   = root.querySelector('input[name="style_label"]');
+    var hId     = root.querySelector('input[name="style_id"]');
+    var hParent = root.querySelector('input[name="parent"]');
+    var hClass  = root.querySelector('input[name="class"]');
+    var hBev    = root.querySelector('input[name="beverage_type"]');
+    var hConf   = root.querySelector('input[name="style_confidence"]');
+    var card    = root.querySelector('.sf-card');
+    var picker  = root.querySelector('.sf-picker');
+    var catchalls = CATCHALL_IDS.map(function (id) { return byId(styles, id); }).filter(Boolean);
 
-    function render(q) {
-      var sMatches = searchStyles(styles, q);
-      var fMatches = searchTier(families, q);
-      var cMatches = searchTier(classes, q);
-      var html = '', idx = 0;
-      sel = [];
+    // snapshot of the currently-committed resolution, so Cancel can restore the
+    // exact card the user was on (incl. a manual override) rather than re-deriving.
+    var current = null;
+    function restore(s) {
+      if (!s) { update(); return; }
+      if (s.kind === 'specific') renderSpecific(s.style, s.label, { override: s.override });
+      else if (s.kind === 'approx') renderApprox(s.style, s.label);
+      else if (s.kind === 'group') renderGroup(s.g, s.label, s.scope);
+      else if (s.kind === 'unknown') renderUnknown(s.label);
+    }
 
-      if (q && (sMatches.length || fMatches.length || cMatches.length)) {
-        var lastCat = null;
-        for (var i = 0; i < sMatches.length; i++) {
-          var m = sMatches[i], s = m.s;
-          if (s.category !== lastCat) { html += '<div class="cb-group">' + esc(s.category) + '</div>'; lastCat = s.category; }
-          var note = m.via ? '<span class="cb-alias">matched “' + highlight(m.via, q) + '”</span>' : '';
-          html += '<button type="button" class="cb-opt" role="option" data-idx="' + idx + '"><span class="cb-opt-name">' + highlight(s.name, q) + '</span>' + note + '</button>';
-          sel.push({ kind: 'style', item: s }); idx++;
-        }
-        if (fMatches.length) {
-          html += '<div class="cb-group">Families</div>';
-          for (var fi = 0; fi < fMatches.length; fi++) {
-            var fm = fMatches[fi];
-            var fnote = fm.via ? '<span class="cb-alias">matched “' + highlight(fm.via, q) + '”</span>' : '';
-            html += '<button type="button" class="cb-opt cb-opt-catch" role="option" data-idx="' + idx + '"><span class="cb-opt-name">' + highlight(fm.it.name, q) + '</span>' + fnote + '<span class="cb-catch-badge">family</span></button>';
-            sel.push({ kind: 'family', item: fm.it }); idx++;
-          }
-        }
-        if (cMatches.length) {
-          html += '<div class="cb-group">Classes</div>';
-          for (var ci = 0; ci < cMatches.length; ci++) {
-            var cm = cMatches[ci];
-            html += '<button type="button" class="cb-opt cb-opt-catch" role="option" data-idx="' + idx + '"><span class="cb-opt-name">' + highlight(cm.it.name, q) + '</span><span class="cb-catch-badge">class</span></button>';
-            sel.push({ kind: 'class', item: cm.it }); idx++;
-          }
-        }
-      } else if (q) {
-        html += '<div class="cb-nomatch">No standard style, family, or class matches “<strong>' + esc(q) + '</strong>.” File it under a catch-all — your wording is kept exactly:</div>';
-        for (var gi = 0; gi < catchallGroups.length; gi++) {
-          var grp = catchallGroups[gi];
-          html += '<div class="cb-group">' + esc(grp.label) + '</div>';
-          for (var k = 0; k < grp.items.length; k++) {
-            html += '<button type="button" class="cb-opt cb-opt-catch" role="option" data-idx="' + idx + '"><span class="cb-opt-name">' + esc(grp.items[k].name) + '</span><span class="cb-catch-badge">catch-all</span></button>';
-            sel.push({ kind: 'catch', item: grp.items[k] }); idx++;
-          }
+    // Emit the resolved tier as slugs (+ style_id) plus the confidence signal.
+    // o = { id, parent, cls, bev, confidence }
+    function setHidden(o) {
+      hId.value = o.id || '';
+      if (hParent) hParent.value = o.parent || '';
+      if (hClass)  hClass.value  = o.cls || '';
+      if (hBev)    hBev.value    = o.bev || '';
+      if (hConf)   hConf.value   = o.confidence || '';
+    }
+    function showCard(cls, html) {
+      card.className = 'sf-card ' + cls;
+      card.innerHTML = html;
+      card.hidden = false;
+    }
+    function hidePicker() { picker.hidden = true; picker.innerHTML = ''; }
+
+    // ---- render each state --------------------------------------------------
+    function renderSpecific(style, label, opts) {
+      opts = opts || {};
+      var isCatch = !!style.ca;
+      var pname = parentName(style);
+      var pslug = style.parent || '';
+      setHidden({
+        id: style.id, parent: pslug, cls: classSlugOf(pslug), bev: style.bev || 'beer',
+        confidence: isCatch ? 'catch-all' : (opts.override ? 'override' : 'confident')
+      });
+      var fam = isCatch
+        ? ' <span class="sf-fam">· non-standard style</span>'
+        : (pname ? ' <span class="sf-fam">· ' + esc(pname) + ' family</span>' : '');
+      showCard('sf-ok',
+        '<span class="sf-ico">✓</span>' +
+        '<div class="sf-body">' +
+          // The brewer's verbatim label stays visible in the input above; the
+          // (label -> style_id + confidence) pairing is captured silently on save.
+          '<div class="sf-line">Categorized as <strong>' + esc(style.name) + '</strong>' + fam + '</div>' +
+        '</div>' +
+        '<button type="button" class="sf-change">Change</button>');
+      current = { kind: 'specific', style: style, label: label, override: !!opts.override };
+      bindChange(label);
+      hidePicker();
+    }
+
+    function renderApprox(style, label) {
+      var pname = parentName(style);
+      var pslug = style.parent || '';
+      setHidden({ id: style.id, parent: pslug, cls: classSlugOf(pslug), bev: style.bev || 'beer', confidence: 'approx' });
+      var fam = pname ? ' <span class="sf-fam">· ' + esc(pname) + ' family</span>' : '';
+      showCard('sf-approx',
+        '<span class="sf-ico">≈</span>' +
+        '<div class="sf-body">' +
+          '<div class="sf-line">Closest match: <strong>' + esc(style.name) + '</strong>' + fam + '</div>' +
+          '<div class="sf-sub">We’re not fully sure this is right — confirm or pick another.</div>' +
+          '<div class="sf-actions">' +
+            '<button type="button" class="sf-accept">Yes, that’s it</button>' +
+            '<button type="button" class="sf-link sf-change-link">Pick another</button>' +
+          '</div>' +
+        '</div>');
+      current = { kind: 'approx', style: style, label: label };
+      card.querySelector('.sf-accept').addEventListener('click', function () { renderSpecific(style, label, { override: true }); });
+      card.querySelector('.sf-change-link').addEventListener('click', function () { renderEdit(label); });
+    }
+
+    /* renderGroup — the honoring "family selector".
+       g = { gkind:'parent', parent }  → ONE tier: the parent's styles as chips.
+       g = { gkind:'class',  cls }     → TWO tiers: parent chips, then (scope=parentSlug)
+                                          that parent's styles + a back chip. */
+    function renderGroup(g, label, scope) {
+      current = { kind: 'group', g: g, label: label, scope: scope || null };
+      var headName, nudge, chips = '';
+
+      if (g.gkind === 'parent') {
+        headName = g.parent.name;
+        setHidden({ id: '', parent: g.parent.slug, cls: g.parent.cls || '', bev: g.parent.bev || 'beer', confidence: 'family' });
+        var pStyles = childrenOf(tax, g.parent.slug);
+        nudge = '“' + esc(g.parent.name) + '” spans ' + pStyles.length + ' styles — pick one, or leave it at the family level.';
+        pStyles.forEach(function (s) { chips += '<button type="button" class="sf-chip" data-id="' + esc(s.id) + '">' + esc(s.name) + '</button>'; });
+
+      } else { // class
+        if (!scope) {
+          headName = g.cls.name;
+          setHidden({ id: '', parent: '', cls: g.cls.slug, bev: g.cls.bev || 'beer', confidence: 'family' });
+          var kids = parentsOf(tax, g.cls.slug);
+          nudge = '“' + esc(g.cls.name) + '” is broad — narrow it down, or leave it general.';
+          kids.forEach(function (p) { chips += '<button type="button" class="sf-chip" data-pslug="' + esc(p.slug) + '">' + esc(p.name) + '</button>'; });
+        } else {
+          var par = tax.parents.filter(function (p) { return p.slug === scope; })[0];
+          headName = par ? par.name : g.cls.name;
+          // filed at the drilled-into family level (parent slug wins server-side)
+          setHidden({ id: '', parent: scope, cls: g.cls.slug, bev: g.cls.bev || 'beer', confidence: 'family' });
+          var sStyles = childrenOf(tax, scope);
+          nudge = 'Pick a specific style, or leave it at the ' + esc(headName) + ' level.';
+          chips += '<button type="button" class="sf-chip sf-chip-back" data-back="1">← all ' + esc(g.cls.name) + '</button>';
+          sStyles.forEach(function (s) { chips += '<button type="button" class="sf-chip" data-id="' + esc(s.id) + '">' + esc(s.name) + '</button>'; });
         }
       }
-      if (html) { menu.innerHTML = html; menu.hidden = false; active = -1; }
-      else { close(); }
-      return { s: sMatches, f: fMatches, c: cMatches };
+
+      showCard('sf-fam-card',
+        '<span class="sf-ico">◇</span>' +
+        '<div class="sf-body">' +
+          '<div class="sf-line">Categorized in the <strong>' + esc(headName) + '</strong> family.</div>' +
+          '<div class="sf-sub">' + nudge + '</div>' +
+          '<div class="sf-chips">' + chips + '</div>' +
+        '</div>');
+      card.querySelectorAll('.sf-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          if (chip.dataset.back) { renderGroup(g, label, null); return; }
+          if (chip.dataset.pslug) { renderGroup(g, label, chip.dataset.pslug); return; }
+          var s = byId(styles, chip.dataset.id);
+          if (s) renderSpecific(s, label, { override: true });
+        });
+      });
+      hidePicker();
     }
 
+    function renderUnknown(label) {
+      setHidden({ id: '', parent: '', cls: '', bev: '', confidence: 'unresolved' });
+      current = { kind: 'unknown', label: label };
+      showCard('sf-new',
+        '<span class="sf-ico">+</span>' +
+        '<div class="sf-body">' +
+          '<div class="sf-line"><strong>New to us.</strong> We don’t recognize “' + esc(label) + '” yet.</div>' +
+          '<div class="sf-sub">Search for the closest standard style so it stays searchable — your label will stay exactly as written.</div>' +
+          '<div class="sf-picker-mount"></div>' +
+          '<button type="button" class="sf-link sf-catch-toggle">Can’t find a match? File under a catch-all</button>' +
+          '<div class="sf-catch-list" hidden></div>' +
+        '</div>');
+      buildPicker(card.querySelector('.sf-picker-mount'), label, true, false);
+      var toggle = card.querySelector('.sf-catch-toggle');
+      var clist = card.querySelector('.sf-catch-list');
+      toggle.addEventListener('click', function () {
+        if (clist.hidden) {
+          clist.innerHTML = catchalls.map(function (c) {
+            return '<button type="button" class="sf-chip" data-id="' + esc(c.id) + '">' + esc(c.name) + '</button>';
+          }).join('');
+          clist.hidden = false;
+          toggle.textContent = 'Hide catch-alls';
+          clist.querySelectorAll('.sf-chip').forEach(function (ch) {
+            ch.addEventListener('click', function () { var s = byId(styles, ch.dataset.id); if (s) renderSpecific(s, label, { override: true }); });
+          });
+        } else {
+          clist.hidden = true;
+          toggle.textContent = 'Can’t find a match? File under a catch-all';
+        }
+      });
+    }
+
+    // ---- override = in-card edit mode (consistent with the not-found picker) -
+    function bindChange(label) {
+      var btn = card.querySelector('.sf-change');
+      if (btn) btn.addEventListener('click', function () { renderEdit(label); });
+    }
+    function renderEdit(label) {
+      var prev = current;
+      showCard('sf-edit',
+        '<span class="sf-ico">✎</span>' +
+        '<div class="sf-body">' +
+          '<div class="sf-edit-head"><span>Change category</span>' +
+            '<button type="button" class="sf-link sf-cancel">Cancel</button></div>' +
+          '<div class="sf-picker-mount"></div>' +
+        '</div>');
+      buildPicker(card.querySelector('.sf-picker-mount'), label, true, true);
+      card.querySelector('.sf-cancel').addEventListener('click', function () { restore(prev); });
+      var inp = card.querySelector('.sf-pick-input');
+      if (inp) inp.focus();
+      hidePicker();
+    }
+
+    function buildPicker(mount, label, inline, includeCatch) {
+      mount.innerHTML =
+        '<input type="text" class="form-control form-control-sm sf-pick-input" placeholder="Search styles…" autocomplete="off">' +
+        '<div class="sf-menu" hidden></div>';
+      var pInput = mount.querySelector('.sf-pick-input');
+      var menu = mount.querySelector('.sf-menu');
+      var sel = [], active = -1;
+
+      function close() { menu.hidden = true; menu.innerHTML = ''; sel = []; active = -1; }
+      function draw(q) {
+        var matches = search(styles, q); sel = [];
+        var html = '', idx = 0;
+        matches.forEach(function (m) {
+          var s = m.s;
+          var alias = m.via ? '<span class="sf-opt-alias">matched “' + highlight(m.via, q) + '”</span>' : '';
+          html += '<button type="button" class="sf-opt" data-idx="' + idx + '"><span class="sf-opt-name">' +
+            highlight(s.name, q) + '</span>' + alias + '</button>';
+          sel.push({ kind: 'style', style: s }); idx++;
+        });
+        if (includeCatch && q && matches.length === 0) {
+          html += '<div class="sf-group">No standard match — file under a catch-all</div>';
+          catchalls.forEach(function (c) {
+            html += '<button type="button" class="sf-opt sf-opt-catch" data-idx="' + idx + '"><span class="sf-opt-name">' +
+              esc(c.name) + '</span><span class="sf-catch-badge">catch-all</span></button>';
+            sel.push({ kind: 'catch', style: c }); idx++;
+          });
+        }
+        menu.innerHTML = html; menu.hidden = !html; active = -1;
+      }
+      function pick(i) {
+        var e = sel[i]; if (!e) return;
+        renderSpecific(e.style, label, { override: true });   // label stays verbatim
+        if (!inline) hidePicker();
+      }
+      function setActive(n) {
+        var opts = menu.querySelectorAll('.sf-opt');
+        if (active >= 0 && opts[active]) opts[active].classList.remove('sf-active');
+        active = n;
+        if (active >= 0 && opts[active]) { opts[active].classList.add('sf-active'); opts[active].scrollIntoView({ block: 'nearest' }); }
+      }
+      pInput.addEventListener('input', function () { draw(pInput.value.trim()); });
+      pInput.addEventListener('focus', function () { draw(pInput.value.trim()); });
+      pInput.addEventListener('keydown', function (e) {
+        if (menu.hidden) { if (e.key === 'ArrowDown') draw(pInput.value.trim()); return; }
+        if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(active + 1, sel.length - 1)); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(active - 1, 0)); }
+        else if (e.key === 'Enter') { if (active >= 0) { e.preventDefault(); pick(active); } }
+        else if (e.key === 'Escape') { e.preventDefault(); close(); }
+      });
+      menu.addEventListener('mousedown', function (e) {
+        var b = e.target.closest('.sf-opt'); if (!b) return;
+        e.preventDefault(); pick(parseInt(b.getAttribute('data-idx'), 10));
+      });
+    }
+
+    // ---- main update --------------------------------------------------------
     function update() {
-      var q = input.value.trim();
-      var nq = norm(q);
-      var m = render(q);
-      // Auto-resolve on an exact match, mirroring server precedence:
-      // exact style name -> class -> family -> style alias.
-      var byName = exactStyleName(styles, nq);
-      if (byName) { resolveStyle(byName, q); return; }
-      var c = exactIn(classes, nq);
-      if (c) { resolveClass(c, q); return; }
-      var f = exactIn(families, nq);
-      if (f) { resolveFamily(f, q); return; }
-      var byAlias = exactStyleAlias(styles, nq);
-      if (byAlias) { resolveStyle(byAlias, q); return; }
-
-      unresolved();
-      if (!q) setStatus('muted', esc(hint));
-      else if (m.s.length || m.f.length || m.c.length) setStatus('muted', 'Choose a style, family, or class from the list.');
-      else setStatus('warn', 'No match — pick a catch-all below so nothing is lost.');
+      var label = input.value.trim();
+      var r = resolve(tax, label);
+      if (r.state === 'empty') { card.hidden = true; hidePicker(); setHidden({}); return; }
+      hidePicker();
+      if (r.state === 'specific') renderSpecific(r.style, label, {});
+      else if (r.state === 'approx') renderApprox(r.style, label);
+      else if (r.state === 'group') renderGroup(r.gkind === 'parent' ? { gkind: 'parent', parent: r.parent } : { gkind: 'class', cls: r.cls }, label, null);
+      else renderUnknown(label);
     }
 
-    function choose(i) {
-      var e = sel[i];
-      if (!e) return;
-      if (e.kind === 'style') { input.value = e.item.name; resolveStyle(e.item, e.item.name); }
-      else if (e.kind === 'family') { input.value = e.item.name; resolveFamily(e.item, e.item.name); }
-      else if (e.kind === 'class') { input.value = e.item.name; resolveClass(e.item, e.item.name); }
-      else { resolveCatch(e.item, input.value.trim()); }
-      close();
-    }
-
-    function setActive(n) {
-      var opts = menu.querySelectorAll('.cb-opt');
-      if (active >= 0 && opts[active]) opts[active].classList.remove('cb-active');
-      active = n;
-      if (active >= 0 && opts[active]) { opts[active].classList.add('cb-active'); opts[active].scrollIntoView({ block: 'nearest' }); }
-    }
-
-    input.addEventListener('input', update);
-    input.addEventListener('focus', function () { if (input.value.trim()) update(); });
-    input.addEventListener('keydown', function (e) {
-      if (menu.hidden) return;
-      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(active + 1, sel.length - 1)); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(active - 1, 0)); }
-      else if (e.key === 'Enter') { if (active >= 0) { e.preventDefault(); choose(active); } }
-      else if (e.key === 'Escape') { close(); }
-    });
-    input.addEventListener('blur', function () { setTimeout(close, 140); });
-    menu.addEventListener('mousedown', function (e) {
-      var btn = e.target.closest('.cb-opt');
-      if (!btn) return;
-      e.preventDefault();
-      choose(parseInt(btn.getAttribute('data-idx'), 10));
-    });
-
-    // initial state (edit screens arrive with a label + the resolved tier)
-    if (input.value.trim()) {
-      var v = input.value.trim(), nv = norm(v);
-      var s0 = exactStyleName(styles, nv) || exactStyleAlias(styles, nv);
-      if (s0) resolveStyle(s0, v);
-      else if (hidId.value) { var ps = styles.filter(function (s) { return s.id === hidId.value; })[0]; if (ps) (ps.ca ? resolveCatch : resolveStyle)(ps, v); else setStatus('muted', esc(hint)); }
-      else if (hidParent && hidParent.value) { var pf = families.filter(function (f) { return f.slug === hidParent.value; })[0]; if (pf) resolveFamily(pf, v); else setStatus('muted', esc(hint)); }
-      else if (hidClass && hidClass.value) { var pc = classes.filter(function (c) { return c.slug === hidClass.value; })[0]; if (pc) resolveClass(pc, v); else setStatus('muted', esc(hint)); }
-      else setStatus('muted', esc(hint));
-    } else setStatus('muted', esc(hint));
+    var t;
+    input.addEventListener('input', function () { clearTimeout(t); t = setTimeout(update, 110); });
+    // NOTE: no 'change' listener — it fires on blur and would rebuild chips between
+    // a chip's mousedown and mouseup (the "click twice" bug). 'input' already covers
+    // typing, paste, and autofill.
+    if (input.value.trim()) update();
   }
 
   function init() {
-    var nodes = document.querySelectorAll('[data-cb-style]');
+    var nodes = document.querySelectorAll('[data-sf]');
     for (var i = 0; i < nodes.length; i++) enhance(nodes[i]);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

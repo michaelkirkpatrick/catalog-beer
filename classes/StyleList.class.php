@@ -1,16 +1,18 @@
 <?php
 /* ---
 StyleList — fetches the canonical style vocabulary from the API and shapes it for
-the guided-style typeahead, caching per session (fetched once, not per page load).
+the guided-style confidence-ladder field, caching per session (fetched once, not
+per page load).
 
-Three tiers, all fileable:
-  - window.CB_STYLES  = [{id,name,category,bev,ca,al}]        (GET /style)
-  - window.CB_PARENTS = [{slug,name,bev,class,al}]            (GET /style/parent)
-  - window.CB_CLASSES = [{slug,name,bev,al}]                  (GET /style/class)
+Emits one global, window.CB_TAX, in the compact runtime shape the resolver uses:
+  classes : [{slug,name,bev,al}]                    (GET /style/class)
+  parents : [{slug,name,cls,bev,sort,al}]           (GET /style/parent)
+  styles  : [{id,name,parent,cat,fam,bev,ca,al}]    (GET /style)
+  approx  : { "<normalized alias>": "<style_id>" }  (GET /style/approx)
 
 The database is the single source of truth; this is the browser-delivery path.
-If the API call fails, the lists are empty and the field degrades to plain text
-(the server still resolves/validates on submit).
+If the API call fails, the lists are empty and the field degrades to a plain text
+input (the server still resolves/validates on submit).
 --- */
 class StyleList {
 
@@ -22,12 +24,14 @@ class StyleList {
         $out = array();
         foreach($data as $s){
             $out[] = array(
-                'id'   => $s['id'] ?? '',
-                'name' => $s['name'] ?? '',
-                'category' => $s['category'] ?? '',
-                'bev'  => $s['beverage_type'] ?? 'beer',
-                'ca'   => !empty($s['catch_all']),
-                'al'   => self::aliases($s),
+                'id'     => $s['id'] ?? '',
+                'name'   => $s['name'] ?? '',
+                'parent' => $s['parent'] ?? '',
+                'cat'    => $s['category'] ?? '',
+                'fam'    => $s['family'] ?? '',
+                'bev'    => $s['beverage_type'] ?? 'beer',
+                'ca'     => !empty($s['catch_all']),
+                'al'     => self::aliases($s),
             );
         }
         if($out){ $_SESSION['cb_styles'] = $out; }
@@ -44,8 +48,9 @@ class StyleList {
             $out[] = array(
                 'slug' => $p['slug'] ?? '',
                 'name' => $p['name'] ?? '',
+                'cls'  => $p['class'] ?? null,
                 'bev'  => $p['beverage_type'] ?? 'beer',
-                'class' => $p['class'] ?? null,
+                'sort' => isset($p['sort_order']) ? intval($p['sort_order']) : null,
                 'al'   => self::aliases($p),
             );
         }
@@ -71,15 +76,36 @@ class StyleList {
         return $out;
     }
 
-    // Inline <script> assigning the three globals. JSON_HEX_TAG guards "</script>".
+    // manual-approx best-fits, as a { normalized-alias => style_id } map for the
+    // resolver's "Closest match" (Approx) tier. These never auto-resolve a beer.
+    public static function approx(){
+        if(isset($_SESSION['cb_approx']) && is_array($_SESSION['cb_approx'])){
+            return $_SESSION['cb_approx'];
+        }
+        $data = self::call('/style/approx');
+        $out = array();
+        foreach($data as $a){
+            $alias = isset($a['alias']) ? strtolower(trim($a['alias'])) : '';
+            if($alias !== '' && !empty($a['style_id'])){
+                $out[$alias] = $a['style_id'];
+            }
+        }
+        if($out){ $_SESSION['cb_approx'] = $out; }
+        return $out;
+    }
+
+    // Inline <script> assigning window.CB_TAX. JSON_HEX_TAG guards "</script>".
     public static function inlineScript(){
         $flags = JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
-        $styles  = json_encode(self::styles(), $flags);  if($styles === false){ $styles = '[]'; }
-        $parents = json_encode(self::parents(), $flags); if($parents === false){ $parents = '[]'; }
-        $classes = json_encode(self::classes(), $flags); if($classes === false){ $classes = '[]'; }
-        return '<script>window.CB_STYLES = ' . $styles . ';'
-             . 'window.CB_PARENTS = ' . $parents . ';'
-             . 'window.CB_CLASSES = ' . $classes . ';</script>';
+        $tax = array(
+            'classes' => self::classes(),
+            'parents' => self::parents(),
+            'styles'  => self::styles(),
+            'approx'  => (object) self::approx(),  // cast so an empty map encodes as {} not []
+        );
+        $json = json_encode($tax, $flags);
+        if($json === false){ $json = '{"classes":[],"parents":[],"styles":[],"approx":{}}'; }
+        return '<script>window.CB_TAX = ' . $json . ';</script>';
     }
 
     // --- helpers -----------------------------------------------------------

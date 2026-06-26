@@ -18,6 +18,7 @@ $styleID = '';
 $styleParent = '';
 $styleClass = '';
 $beverageType = '';
+$styleConfidence = '';
 $description = '';
 $abv = '';
 $ibu = '';
@@ -48,13 +49,14 @@ if(isset($_GET['brewerID'])){
                 $styleParent = $_POST['parent'] ?? '';
                 $styleClass = $_POST['class'] ?? '';
                 $beverageType = $_POST['beverage_type'] ?? '';
+                $styleConfidence = $_POST['style_confidence'] ?? '';
                 $description = $_POST['description'];
                 $abv = $_POST['abv'];
                 $ibu = $_POST['ibu'];
 
                 // Send the brewer's raw label + the resolved tier (style/family/class);
                 // the API derives the coarser levels + beverage_type (client not trusted).
-                $beerPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'style_label'=>$styleLabel, 'style_id'=>$styleID, 'parent'=>$styleParent, 'class'=>$styleClass, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
+                $beerPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'style_label'=>$styleLabel, 'style_id'=>$styleID, 'parent'=>$styleParent, 'class'=>$styleClass, 'style_confidence'=>$styleConfidence, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
                 $beerResponse = $api->request('POST', '/beer', $beerPOST);
                 $beerData = json_decode($beerResponse, true);
                 if(!isset($beerData['error'])){
@@ -149,6 +151,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
                     $guidedStyle->parent = $styleParent;
                     $guidedStyle->class = $styleClass;
                     $guidedStyle->beverageType = $beverageType;
+                    $guidedStyle->styleConfidence = $styleConfidence;
                     $guidedStyle->validState = $validState['style'];
                     $guidedStyle->validMsg = $validMsg['style'];
                     echo $guidedStyle->display();
