@@ -60,10 +60,13 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#beer-count">&gt; Number of Beers</a>
                     <a class="list-group-item list-group-item-action" href="#beer-search">&gt; Search Beer</a>
                     <a class="list-group-item list-group-item-action" href="#styles"><strong>Styles</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#style-object">&gt; The Style Object</a>
+                    <a class="list-group-item list-group-item-action" href="#style-specs">&gt; The Specs Object</a>
                     <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
                     <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
                     <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
                     <a class="list-group-item list-group-item-action" href="#style-classes">&gt; List Classes</a>
+                    <a class="list-group-item list-group-item-action" href="#style-approx">&gt; List Approximate Matches</a>
                     <a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
                     <a class="list-group-item list-group-item-action" href="#location-object">&gt; The Location Object</a>
                     <a class="list-group-item list-group-item-action" href="#location-add">&gt; Add a Location</a>
@@ -76,6 +79,11 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
                     <a class="list-group-item list-group-item-action" href="#location-zip">&gt; Find Locations by ZIP Code</a>
                     <a class="list-group-item list-group-item-action" href="#location-city">&gt; Find Locations by City</a>
+                    <a class="list-group-item list-group-item-action" href="#usage"><strong>Usage</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#usage-object">&gt; The Usage Object</a>
+                    <a class="list-group-item list-group-item-action" href="#usage-my-usage">&gt; Get My Usage</a>
+                    <a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#us-address-object">&gt; The US Address Object</a>
                     <a class="list-group-item list-group-item-action" href="#users"><strong>Users</strong></a>
                     <a class="list-group-item list-group-item-action" href="#users-object">&gt; The User Object</a>
                     <a class="list-group-item list-group-item-action" href="#users-retrieve">&gt; Retrieve a User</a>
@@ -84,21 +92,16 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#users-delete">&gt; Delete a User</a>
                     <a class="list-group-item list-group-item-action" href="#users-reset-password">&gt; Request Password Reset</a>
                     <a class="list-group-item list-group-item-action" href="#users-password-reset">&gt; Reset Password</a>
-                    <a class="list-group-item list-group-item-action" href="#usage"><strong>Usage</strong></a>
-                    <a class="list-group-item list-group-item-action" href="#usage-object">&gt; The Usage Object</a>
-                    <a class="list-group-item list-group-item-action" href="#usage-my-usage">&gt; Get My Usage</a>
-                    <a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
-                    <a class="list-group-item list-group-item-action" href="#us-address-object">&gt; The US Address Object</a>
                 </div>
             </div>
             <div class="col-md-8">
                 <h1 id="top">API Reference</h1>
-                <p>Last Updated: March 11, 2026</p>
+                <p>Last Updated: June 25, 2026</p>
                 
                 <h2 id="url">API Basics</h2>
                 <hr>
                 
-                <p>The Catalog.beer API is organized around REST. We use HTTP response codes to indicate the success or failure of your request. We use also use basic HTTP features like HTTP authentication and HTTP verbs.</p>
+                <p>The Catalog.beer API is organized around REST. We use HTTP response codes to indicate the success or failure of your request. We also use basic HTTP features like HTTP authentication and HTTP verbs.</p>
 
                 <p>The Catalog.beer API can be accessed using the following root URL:</p>
 
@@ -113,13 +116,13 @@ echo $htmlHead->html;
 
                 <p>Authenticate your account when using the API by including your secret API key in the request. You can find your API key on your <a href="/account">Account</a> page. Your API key carries many privileges, so be sure to keep it secret! Do not share your secret API key in publicly accessible areas such GitHub, client-side code, and so forth.</p>
 
-                <p>Authentication to the API is performed via the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">'Basic' HTTP authentication</a> scheme. <strong>Provide your API key as the username value.</strong> You do not need to provide a password.</p>
+                <p>Authentication to the API is performed via the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank" rel="noopener">'Basic' HTTP authentication</a> scheme. <strong>Provide your API key as the username value.</strong> You do not need to provide a password.</p>
                 
                 <p>When making a request using basic HTTP authentication, your request should contain a header field in the form of <code>Authorization: Basic &lt;credentials&gt;</code>, where <code>&lt;credentials&gt;</code> is the <code>base64_encode('username:password')</code> (Recall that your username in this case is your API Key and the password field should be left blank).</p>
                 
                 <p>For example, if your API Key is: <code>cadcbe6f-a80d-4e33-9f20-b53c2ed83845</code></p>
                 
-                <pre class="api-code">base64_encode('cadcbe6f-a80d&#8211;4e33&#8211;9f20-b53c2ed83845:')</pre>
+                <pre class="api-code">base64_encode('cadcbe6f-a80d-4e33-9f20-b53c2ed83845:')</pre>
                 
                 <p>Returning: <code>Y2FkY2JlNmYtYTgwZC00ZTMzLTlmMjAtYjUzYzJlZDgzODQ1Og==</code></p>
                 
@@ -234,7 +237,7 @@ echo $htmlHead->html;
                 <h2 id="brewer">Brewer</h2>
                 <hr>
 
-                <p>The brewer object is the central piece of the beer data puzzle. Brewers can have beers and locations associated with them. And in order to add a beer or location to the database, there must be a brewer to associated them with.</p>
+                <p>The brewer object is the central piece of the beer data puzzle. Brewers can have beers and locations associated with them. And in order to add a beer or location to the database, there must be a brewer to associate them with.</p>
 
                 <h3 id="brewer-object">The Brewer Object</h3>
 
@@ -267,7 +270,7 @@ echo $htmlHead->html;
                         <tr>
                             <td><var>description</var></td>
                             <td>string</td>
-                            <td>A description of the brewer. Note that this field may contain <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a> or new line characters.</td>
+                            <td>A description of the brewer. Note that this field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
                         </tr>
                         <tr>
                             <td><var>short_description</var></td>
@@ -337,7 +340,7 @@ echo $htmlHead->html;
                         <tr>
                             <td><var>description</var><br><small class="text-muted">(optional)</small></td>
                             <td>string</td>
-                            <td>A description of the brewer. This should be like the &#8220;About&#8221; page posted by the brewer. A brief origin story coupled with who they are. This field supports <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a>.</td>
+                            <td>A description of the brewer. This should be like the &#8220;About&#8221; page posted by the brewer. A brief origin story coupled with who they are. This field supports <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a>.</td>
                         </tr>
                         <tr>
                             <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
@@ -517,7 +520,7 @@ curl -X GET \
                         <tr>
                             <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
                             <td>string</td>
-                            <td>A opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
                         </tr>
                         <tr>
                             <td><var>count</var><br><small class="text-muted">(optional)</small></td>
@@ -888,7 +891,7 @@ curl -X GET \
     "object": "brewer",
     "name": "Ballast Point",
     "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we're just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there's a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn't share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
-    "short_description": "Award wining brewery built in San Diego, California. Dedicated to the craft.",
+    "short_description": "Award winning brewery built in San Diego, California. Dedicated to the craft.",
     "url": "https://www.ballastpoint.com/",
     "cb_verified": true,
     "brewer_verified": false,
@@ -1078,9 +1081,14 @@ curl -X GET \
                             <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>. Derived from the resolved style; never trusted from client input.</td>
                         </tr>
                         <tr>
+                            <td><var>style_confidence</var></td>
+                            <td>string</td>
+                            <td>How <var>style_id</var> was arrived at: <var>confident</var> (exact match), <var>override</var> (chosen by a person despite a different label), <var>approx</var> (an unconfirmed best-fit), <var>family</var> (filed at a family or class, no specific style), or <var>catch-all</var>. May be <var>null</var> on older records.</td>
+                        </tr>
+                        <tr>
                             <td><var>description</var></td>
                             <td>string</td>
-                            <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a> or new line characters.</td>
+                            <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
                         </tr>
                         <tr>
                             <td><var>abv</var></td>
@@ -1127,6 +1135,7 @@ curl -X GET \
     "parent": "ipa",
     "class": "ale",
     "beverage_type": "beer",
+    "style_confidence": "confident",
     "description": "Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal. To brew this beer we get Cascade Hops from Yakima, Washington. They are picked, shipped and put into the brew within 36 hours. The Wet Hops have a grassy, vegetal, chlorophyll flavor that is reminiscent of fresh cut Greens. We showcase this 100% Cascade Hop Beer with a very light and crisp grain bill including a small portion of rice. This allows the aroma and flavor from such a rare, very seasonal ingredient, to shine.",
     "abv": 5.5,
     "ibu": 25,
@@ -1138,7 +1147,7 @@ curl -X GET \
         "object": "brewer",
         "name": "Ballast Point",
         "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we're just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there's a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn't share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
-        "short_description": "Award wining brewery built in San Diego, California. Dedicated to the craft.",
+        "short_description": "Award winning brewery built in San Diego, California. Dedicated to the craft.",
         "url": "https://www.ballastpoint.com/",
         "cb_verified": true,
         "brewer_verified": false,
@@ -1197,9 +1206,14 @@ curl -X GET \
                             <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
                         </tr>
                         <tr>
+                            <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
+                            <td>string</td>
+                            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>approx</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
+                        </tr>
+                        <tr>
                             <td><var>description<br><small class="text-muted">(optional)</small></var></td>
                             <td>string</td>
-                            <td>A description of the beer. This may be a basic description, or it can be detailed contain tasting notes and brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a> and new line characters.</td>
+                            <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> and new line characters.</td>
                         </tr>
                         <tr>
                             <td><var>abv</var></td>
@@ -1222,7 +1236,7 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"West Coast IPA","description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","abv":"5.5","ibu":"25"}'
+  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"West Coast IPA","description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","abv":5.5,"ibu":25}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -1273,6 +1287,11 @@ curl -X POST \
             <td><var>class</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
             <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
+        </tr>
+        <tr>
+            <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>approx</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
         </tr>
         <tr>
             <td><var>abv</var></td>
@@ -1351,6 +1370,11 @@ curl -X PUT \
             <td><var>class</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
             <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
+        </tr>
+        <tr>
+            <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>approx</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
         </tr>
         <tr>
             <td><var>description</var><br><small class="text-muted">(optional)</small></td>
@@ -1438,7 +1462,7 @@ curl -X GET \
                         <tr>
                             <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
                             <td>string</td>
-                            <td>A opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
                         </tr>
                         <tr>
                             <td><var>count</var><br><small class="text-muted">(optional)</small></td>
@@ -1716,9 +1740,73 @@ curl -X GET \
     <li><strong>Style</strong> &#8212; a specific canonical style such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</li>
 </ul>
 
-<p>A beer may be filed at <em>any</em> tier. When you submit a beer, the <var>style</var> text you send is resolved to the most specific tier it matches, and the coarser tiers are derived automatically (a style implies its family and class). The beer object therefore carries <var>style</var> (your label), <var>style_id</var>, <var>parent</var>, <var>class</var>, and <var>beverage_type</var>. A separate <var>beverage_type</var> &#8212; <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var> &#8212; is always derived from the resolved style.</p>
+<p>A beer may be filed at <em>any</em> tier. When you submit a beer, you can either send the brewer&#8217;s wording as <var>style</var> and let the API resolve it to the most specific matching tier, or supply a <var>style_id</var> (or <var>parent</var>/<var>class</var>) to file at a tier directly &#8212; the most specific wins. Either way, the coarser tiers are derived automatically (a style implies its family and class). The beer object therefore carries <var>style</var> (your label), <var>style_id</var>, <var>parent</var>, <var>class</var>, and <var>beverage_type</var>. A separate <var>beverage_type</var> &#8212; <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var> &#8212; is always derived from the resolved style.</p>
 
 <p>The <code>/style</code> endpoints are read-only and let you fetch the vocabulary (e.g. to build a picker or validate input client-side). They return the same JSON for all callers and require authentication like every other endpoint.</p>
+
+<h3 id="style-object">The Style Object</h3>
+
+<p>The <code>/style</code> endpoints return style objects. <a href="#style-list">List Styles</a> returns a compact form of each; <a href="#style-detail">Retrieve a Style</a> returns the full object, adding <var>parent_name</var>, <var>source</var>, and <var>specs</var>.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Field</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td><var>id</var></td><td>string</td><td>The style&#8217;s slug (e.g. <var>american-ipa</var>) &#8212; the value used as <var>style_id</var> on a beer.</td></tr>
+        <tr><td><var>object</var></td><td>string</td><td>Always <var>style</var>.</td></tr>
+        <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. &#8220;American-Style India Pale Ale&#8221;).</td></tr>
+        <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
+        <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) &#8212; the canonical family tier you can file a beer at.</td></tr>
+        <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family (e.g. &#8220;India Pale Ale&#8221;).</td></tr>
+        <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
+        <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard &#8220;catch-all&#8221; styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits.</td></tr>
+        <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>.</td></tr>
+        <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">The Specs Object</a>.</td></tr>
+    </tbody>
+</table>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- STYLES: SPECS OBJECT ----->
+
+<h3 id="style-specs">The Specs Object</h3>
+
+<p>A <a href="#style-object">style</a> object&#8217;s <var>specs</var> field (detail only) holds the style&#8217;s guideline ranges, drawn from the same <var>source</var> as the style. Each field is a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline doesn&#8217;t specify that measurement. An individual <var>min</var> or <var>max</var> may also be <var>null</var> when the guideline gives only one bound.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Field</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td><var>abv</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Alcohol_by_volume" target="_blank" rel="noopener">Alcohol by Volume</a> range, as a percentage (e.g. <code>6.3</code> means 6.3%).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+        <tr><td><var>ibu</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Beer_measurement#Bitterness" target="_blank" rel="noopener">International Bitterness Units</a> range &#8212; the measure of hop bitterness.<br><span class="text-muted"><var>min</var> and <var>max</var> are integers.</span></td></tr>
+        <tr><td><var>srm</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">Standard Reference Method</a> range &#8212; beer color, from pale straw (low) to black (high).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+        <tr><td><var>og</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Original Gravity</a> range &#8212; the wort&#8217;s specific gravity before fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+        <tr><td><var>fg</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Final Gravity</a> range &#8212; the beer&#8217;s specific gravity after fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+    </tbody>
+</table>
+
+<h4>Sample</h4>
+<pre class="api-code">
+"specs": {
+    "abv": { "min": 6.3, "max": 7.5 },
+    "ibu": { "min": 50, "max": 70 },
+    "srm": { "min": 4, "max": 12 },
+    "og":  { "min": 1.06, "max": 1.07 },
+    "fg":  { "min": 1.01, "max": 1.016 }
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
 
 <h3 id="style-list">List Styles</h3>
 
@@ -1731,7 +1819,7 @@ curl -X GET \
 {
   "object": "list",
   "url": "/style",
-  "version": "2.1.0",
+  "version": "2.2.2",
   "has_more": false,
   "data": [
     {
@@ -1740,9 +1828,8 @@ curl -X GET \
       "name": "American-Style India Pale Ale",
       "beverage_type": "beer",
       "parent": "ipa",
-      "category": "IPA",
       "catch_all": false,
-      "aliases": ["American IPA", "IPA"]
+      "aliases": ["American IPA", "American India Pale Ale"]
     }
   ]
 }
@@ -1765,18 +1852,15 @@ curl -X GET \
   "beverage_type": "beer",
   "parent": "ipa",
   "parent_name": "India Pale Ale",
-  "category": "IPA",
-  "family": "Pale Ale",
-  "yeast_type": "Ale",
   "source": "BA-2026",
   "catch_all": false,
-  "aliases": ["American IPA", "IPA"],
+  "aliases": ["American IPA", "American India Pale Ale"],
   "specs": {
     "abv": { "min": 6.3, "max": 7.5 },
     "ibu": { "min": 50, "max": 70 },
-    "srm": { "min": 6, "max": 14 },
+    "srm": { "min": 4, "max": 12 },
     "og":  { "min": 1.06, "max": 1.07 },
-    "fg":  { "min": 1.01, "max": 1.018 }
+    "fg":  { "min": 1.01, "max": 1.016 }
   }
 }
 </pre>
@@ -1847,6 +1931,31 @@ curl -X GET \
 
 <p><a href="#top">^ Return to top</a></p>
 
+<h3 id="style-approx">List Approximate Matches</h3>
+
+<p>Returns the <em>approximate</em> alias map &#8212; hand-curated best-fit guesses (e.g. <code>"Triple IPA"</code> &#8594; <var>double-ipa</var>) that are deliberately kept out of the main alias vocabulary so they never auto-classify a beer. The guided style picker uses these to offer a &#8220;closest match &#8212; confirm or pick another&#8221; suggestion. Each entry maps an <var>alias</var> to a suggested <var>style_id</var>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/approx</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/approx",
+  "has_more": false,
+  "data": [
+    {
+      "alias": "Triple IPA",
+      "style_id": "double-ipa",
+      "name": "Imperial or Double India Pale Ale",
+      "parent": "ipa"
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
 <h2 id="location">Location</h2>
 
 <p>Brewers can have multiple locations associated with them. These should be public locations at which beer is served as opposed to a production or office space that does not offer beer tasting.</p>
@@ -1887,12 +1996,12 @@ curl -X GET \
         <tr>
             <td><var>country_code</var></td>
             <td>string</td>
-            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard.</td>
+            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
         </tr>
         <tr>
             <td><var>country_short_name</var></td>
             <td>string</td>
-            <td>The ISO 3166&#8211;1 short name for the country, in title case. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard.</td>
+            <td>The ISO 3166&#8211;1 short name for the country, in title case. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
         </tr>
         <tr>
             <td><var>latitude</var><br><small class="text-muted">(optional)</small></td>
@@ -2009,7 +2118,7 @@ curl -X GET \
         <tr>
             <td><var>country_code</var></td>
             <td>string</td>
-            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard.</td>
+            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
         </tr>
     </tbody>
 </table>
@@ -2020,6 +2129,7 @@ curl -X GET \
 curl -X POST \
   https://api.catalog.beer/location \
   -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
   -d '{"brewer_id":"050a11d3-0364-1eef-442f-82909ecadb1b","name":"Wrigley","url":"","country_code":"US"}'
   </pre>
@@ -2210,7 +2320,7 @@ curl -X DELETE \
         <tr>
             <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
             <td>string</td>
-            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
+            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
         </tr>
         <tr>
             <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
@@ -2220,7 +2330,7 @@ curl -X DELETE \
         <tr>
             <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
-            <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://about.usps.com/publications/pub100/pub100_044.htm">ZIP+4 Code</a>.</td>
+            <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
         </tr>
         <tr>
             <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
@@ -2236,6 +2346,7 @@ curl -X DELETE \
 curl -X POST \
   https://api.catalog.beer/address/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
   -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
   -d '{"address1":"","address2":"518 W Willow St","city":"Long Beach","sub_code":"US-CA","zip5":"","zip4":"","telephone":""}'
 </pre>
@@ -2315,7 +2426,7 @@ curl -X POST \
         <tr>
             <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
             <td>string</td>
-            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
+            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
         </tr>
         <tr>
             <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
@@ -2408,7 +2519,7 @@ curl -X GET \
         <tr>
             <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
-            <td>A opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
         </tr>
         <tr>
             <td><var>count</var><br><small class="text-muted">(optional)</small></td>
@@ -2880,7 +2991,7 @@ curl -X GET \
 
 <!---------- US ADDRESSES ---------->
 
-<h2 id="us-address">US Address</h2>
+<h2 id="us-address">US Addresses</h2>
 
 <p>For locations in the United States, data is stored and captured using the US Addresses data structure.</p>
                                 
@@ -2917,7 +3028,7 @@ curl -X GET \
         <tr>
             <td><var>sub_code</var></td>
             <td>string</td>
-            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard. (e.g. US-CA)</td>
+            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. US-CA)</td>
         </tr>
         <tr>
             <td><var>state_short</var></td>
@@ -2937,7 +3048,7 @@ curl -X GET \
         <tr>
             <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
             <td>integer</td>
-            <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://about.usps.com/publications/pub100/pub100_044.htm">ZIP+4 Code</a>.</td>
+            <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
         </tr>
         <tr>
             <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>

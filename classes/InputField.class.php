@@ -29,6 +29,7 @@ class InputField {
     // Public
     public $addAfter = '';
     public $addBefore = '';
+    public $autocomplete = '';      // e.g. 'off' to suppress browser autofill
     public $autofocus = false;
     public $description = '';
     public $maxLength = 255;
@@ -90,6 +91,9 @@ class InputField {
         }
         if($this->autofocus){
             $return .= ' autofocus';
+        }
+        if(!empty($this->autocomplete)){
+            $return .= ' autocomplete="' . $text->get($this->autocomplete) . '"';
         }
         $return .= '>';
 

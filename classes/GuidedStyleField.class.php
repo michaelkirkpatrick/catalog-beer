@@ -29,7 +29,7 @@ class GuidedStyleField {
     public $class = '';            // super-class slug (hidden) — set when filed at class level
     public $beverageType = '';     // beverage_type (hidden)
     public $styleConfidence = '';  // confidence (hidden): confident|override|approx|family|catch-all|unresolved
-    public $placeholder = 'Start typing — e.g. NEIPA, Tripel, Pilsner, Stout';
+    public $placeholder = '';
     public $hint = 'Type the style however you brand it — your exact wording is always kept.';
     public $required = false;
     public $validState = '';

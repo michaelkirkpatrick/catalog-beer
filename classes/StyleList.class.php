@@ -27,8 +27,6 @@ class StyleList {
                 'id'     => $s['id'] ?? '',
                 'name'   => $s['name'] ?? '',
                 'parent' => $s['parent'] ?? '',
-                'cat'    => $s['category'] ?? '',
-                'fam'    => $s['family'] ?? '',
                 'bev'    => $s['beverage_type'] ?? 'beer',
                 'ca'     => !empty($s['catch_all']),
                 'al'     => self::aliases($s),

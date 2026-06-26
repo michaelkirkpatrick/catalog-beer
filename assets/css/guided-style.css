@@ -107,5 +107,8 @@
 
 /* secondary catch-all path in the "not found" state — deliberate, not default */
 .sf-catch-toggle { display: inline-block; margin-top: .6rem; }
+
+/* "Search all styles…" escape hatch inside the chip-based Change editor */
+.sf-search-all { display: inline-block; margin-top: .6rem; }
 .sf-catch-list { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
 .sf-catch-list[hidden] { display: none; }

@@ -112,18 +112,24 @@
       .sort(function (a, b) { return (a.sort || 99) - (b.sort || 99); });
   }
 
-  /* resolve typed text → specific | approx | group(parent|class) | unknown */
+  /* resolve typed text → specific | approx | group(parent|class) | unknown.
+     Order matters. A recognized family/class umbrella ("Pale Ale", "Strong Ale",
+     "Brown Ale", "Lager") is checked FIRST, so a broad label opens the chip picker
+     to hone in instead of snapping to one sub-style — even when that same term is
+     also a specific style's alias/name or a manual-approx best-fit. Fully-qualified
+     names ("American-Style Pale Ale") aren't family aliases, so they still resolve
+     specific, and the matching sub-style stays one click away as a chip. */
   function resolve(tax, raw) {
     var q = norm(raw); if (!q) return { state: 'empty' };
     var lq = loose(raw) || q;
-    var approx = tax.approx || {};
-    if (approx[q]) { var ap = byId(tax.styles, approx[q]); if (ap) return { state: 'approx', style: ap }; }
-    var ex = exactMatch(tax.styles, q);
-    if (ex) return { state: 'specific', style: ex.s, via: ex.via };
     var p = parentMatch(tax, q, lq);
     if (p) return { state: 'group', gkind: 'parent', parent: p };
     var c = classMatch(tax, q, lq);
     if (c) return { state: 'group', gkind: 'class', cls: c };
+    var approx = tax.approx || {};
+    if (approx[q]) { var ap = byId(tax.styles, approx[q]); if (ap) return { state: 'approx', style: ap }; }
+    var ex = exactMatch(tax.styles, q);
+    if (ex) return { state: 'specific', style: ex.s, via: ex.via };
     return { state: 'unknown' };
   }
 
@@ -134,9 +140,11 @@
     var styles = tax.styles;
     var parentBySlug = {};
     tax.parents.forEach(function (p) { parentBySlug[p.slug] = p; });
+    var classBySlug = {};
+    tax.classes.forEach(function (c) { classBySlug[c.slug] = c; });
     function parentName(style) {
       var p = style && style.parent && parentBySlug[style.parent];
-      return p ? p.name : (style ? style.cat : '');
+      return p ? p.name : '';
     }
     function classSlugOf(parentSlug) {
       var p = parentSlug && parentBySlug[parentSlug];
@@ -230,47 +238,69 @@
        g = { gkind:'parent', parent }  → ONE tier: the parent's styles as chips.
        g = { gkind:'class',  cls }     → TWO tiers: parent chips, then (scope=parentSlug)
                                           that parent's styles + a back chip. */
-    function renderGroup(g, label, scope) {
+    function renderGroup(g, label, scope, edit) {
+      var editing = !!edit;
       current = { kind: 'group', g: g, label: label, scope: scope || null };
       var headName, nudge, chips = '';
 
       if (g.gkind === 'parent') {
         headName = g.parent.name;
-        setHidden({ id: '', parent: g.parent.slug, cls: g.parent.cls || '', bev: g.parent.bev || 'beer', confidence: 'family' });
+        if (!editing) setHidden({ id: '', parent: g.parent.slug, cls: g.parent.cls || '', bev: g.parent.bev || 'beer', confidence: 'family' });
         var pStyles = childrenOf(tax, g.parent.slug);
-        nudge = '“' + esc(g.parent.name) + '” spans ' + pStyles.length + ' styles — pick one, or leave it at the family level.';
+        nudge = editing
+          ? 'Pick a different style in the “' + esc(g.parent.name) + '” family.'
+          : '“' + esc(g.parent.name) + '” spans ' + pStyles.length + ' styles — pick one, or leave it at the family level.';
         pStyles.forEach(function (s) { chips += '<button type="button" class="sf-chip" data-id="' + esc(s.id) + '">' + esc(s.name) + '</button>'; });
 
       } else { // class
         if (!scope) {
           headName = g.cls.name;
-          setHidden({ id: '', parent: '', cls: g.cls.slug, bev: g.cls.bev || 'beer', confidence: 'family' });
+          if (!editing) setHidden({ id: '', parent: '', cls: g.cls.slug, bev: g.cls.bev || 'beer', confidence: 'family' });
           var kids = parentsOf(tax, g.cls.slug);
-          nudge = '“' + esc(g.cls.name) + '” is broad — narrow it down, or leave it general.';
+          nudge = editing
+            ? 'Pick a family, then a style.'
+            : '“' + esc(g.cls.name) + '” is broad — narrow it down, or leave it general.';
           kids.forEach(function (p) { chips += '<button type="button" class="sf-chip" data-pslug="' + esc(p.slug) + '">' + esc(p.name) + '</button>'; });
         } else {
           var par = tax.parents.filter(function (p) { return p.slug === scope; })[0];
           headName = par ? par.name : g.cls.name;
           // filed at the drilled-into family level (parent slug wins server-side)
-          setHidden({ id: '', parent: scope, cls: g.cls.slug, bev: g.cls.bev || 'beer', confidence: 'family' });
+          if (!editing) setHidden({ id: '', parent: scope, cls: g.cls.slug, bev: g.cls.bev || 'beer', confidence: 'family' });
           var sStyles = childrenOf(tax, scope);
-          nudge = 'Pick a specific style, or leave it at the ' + esc(headName) + ' level.';
+          nudge = editing
+            ? 'Pick a different style, or go back to all ' + esc(g.cls.name) + '.'
+            : 'Pick a specific style, or leave it at the ' + esc(headName) + ' level.';
           chips += '<button type="button" class="sf-chip sf-chip-back" data-back="1">← all ' + esc(g.cls.name) + '</button>';
           sStyles.forEach(function (s) { chips += '<button type="button" class="sf-chip" data-id="' + esc(s.id) + '">' + esc(s.name) + '</button>'; });
         }
       }
 
-      showCard('sf-fam-card',
-        '<span class="sf-ico">◇</span>' +
-        '<div class="sf-body">' +
-          '<div class="sf-line">Categorized in the <strong>' + esc(headName) + '</strong> family.</div>' +
-          '<div class="sf-sub">' + nudge + '</div>' +
-          '<div class="sf-chips">' + chips + '</div>' +
-        '</div>');
+      if (editing) {
+        showCard('sf-edit',
+          '<span class="sf-ico">✎</span>' +
+          '<div class="sf-body">' +
+            '<div class="sf-edit-head"><span>Change category</span>' +
+              '<button type="button" class="sf-link sf-cancel">Cancel</button></div>' +
+            '<div class="sf-sub">' + nudge + '</div>' +
+            '<div class="sf-chips">' + chips + '</div>' +
+            '<button type="button" class="sf-link sf-search-all">Search all styles…</button>' +
+          '</div>');
+        card.querySelector('.sf-cancel').addEventListener('click', function () { restore(edit.prev); });
+        card.querySelector('.sf-search-all').addEventListener('click', function () { renderEditSearch(label, edit.prev); });
+      } else {
+        showCard('sf-fam-card',
+          '<span class="sf-ico">◇</span>' +
+          '<div class="sf-body">' +
+            '<div class="sf-line">Categorized in the <strong>' + esc(headName) + '</strong> family.</div>' +
+            '<div class="sf-sub">' + nudge + '</div>' +
+            '<div class="sf-chips">' + chips + '</div>' +
+          '</div>');
+      }
+
       card.querySelectorAll('.sf-chip').forEach(function (chip) {
         chip.addEventListener('click', function () {
-          if (chip.dataset.back) { renderGroup(g, label, null); return; }
-          if (chip.dataset.pslug) { renderGroup(g, label, chip.dataset.pslug); return; }
+          if (chip.dataset.back) { renderGroup(g, label, null, edit); return; }
+          if (chip.dataset.pslug) { renderGroup(g, label, chip.dataset.pslug, edit); return; }
           var s = byId(styles, chip.dataset.id);
           if (s) renderSpecific(s, label, { override: true });
         });
@@ -310,17 +340,31 @@
       });
     }
 
-    // ---- override = in-card edit mode (consistent with the not-found picker) -
+    // ---- override = in-card edit mode --------------------------------------
     function bindChange(label) {
       var btn = card.querySelector('.sf-change');
       if (btn) btn.addEventListener('click', function () { renderEdit(label); });
     }
+    // Change / Pick-another: return to the chips this style sits in (reconstructed
+    // from its place in the taxonomy) so re-picking a sibling is one click, not a
+    // blank search box. Non-destructive — the committed value holds until you pick.
+    // Catch-alls and family-less styles fall back to the search picker.
     function renderEdit(label) {
       var prev = current;
+      var style = prev && prev.style;
+      if (style && !style.ca && style.parent && parentBySlug[style.parent]) {
+        var p = parentBySlug[style.parent];
+        if (p.cls && classBySlug[p.cls]) renderGroup({ gkind: 'class', cls: classBySlug[p.cls] }, label, style.parent, { prev: prev });
+        else renderGroup({ gkind: 'parent', parent: p }, label, null, { prev: prev });
+      } else {
+        renderEditSearch(label, prev);
+      }
+    }
+    function renderEditSearch(label, prev) {
       showCard('sf-edit',
         '<span class="sf-ico">✎</span>' +
         '<div class="sf-body">' +
-          '<div class="sf-edit-head"><span>Change category</span>' +
+          '<div class="sf-edit-head"><span>Search all styles</span>' +
             '<button type="button" class="sf-link sf-cancel">Cancel</button></div>' +
           '<div class="sf-picker-mount"></div>' +
         '</div>');
