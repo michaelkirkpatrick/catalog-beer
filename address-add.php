@@ -28,6 +28,9 @@ if(isset($_GET['locationID'])){
     $locationID = $_GET['locationID'];
     $locationResp = $api->request('GET', '/location/' . $locationID, '');
     $locationData = json_decode($locationResp);
+    if($api->unavailable()){
+        serve503();
+    }
     if(!isset($locationData->error)){
         
         // Save Location Info

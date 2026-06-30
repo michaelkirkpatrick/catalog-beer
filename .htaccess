@@ -3,17 +3,16 @@ RewriteEngine On
 # Deny Access to Folder Indexes
 Options -Indexes
 
-# Down for Maintenance
+# Down for Maintenance (manual toggle — uncomment, set your IP, then test)
 # RewriteCond %{REQUEST_URI} !\.(css|ico|jpg|js|png)$
 # My IP Address for testing
 # RewriteCond %{REMOTE_ADDR} !^111\.111\.111\.111$
-# RewriteRule .* /error/503.php [L]
+# RewriteRule .* /error_page/503.php [L]
 
-# Redirect Error Pages
-# ErrorDocument 403 /errors/403.php
-# ErrorDocument 404 /errors/404.php
-# ErrorDocument 500 /errors/500.php
-# ErrorDocument 503 /errors/503.php
+# Redirect Error Pages (uncomment to let Apache serve these on server-level
+# errors; only the pages that exist are listed — error_page/404.php, 503.php)
+# ErrorDocument 404 /error_page/404.php
+# ErrorDocument 503 /error_page/503.php
 
 # Clean URLs
 RewriteRule ^account/?$ 	account.php [L]

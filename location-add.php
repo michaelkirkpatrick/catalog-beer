@@ -23,6 +23,9 @@ if(isset($_GET['brewerID'])){
     $brewerID = $_GET['brewerID'];
     $brewerResp = $api->request('GET', '/brewer/' . $brewerID, '');
     $brewerData = json_decode($brewerResp);
+    if($api->unavailable()){
+        serve503();
+    }
     if(!isset($brewerData->error)){
         // Save Brewer Info
         $text1 = new Text(false, true, true);

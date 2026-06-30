@@ -8,6 +8,10 @@ $brewerID = $_GET['brewerID'] ?? '';
 $api = new API();
 $brewerResp = $api->request('GET', '/brewer/' . $brewerID . '/beer', '');
 $brewerData = json_decode($brewerResp);
+if($api->unavailable()){
+    // Backend down — temporarily unavailable, not "not found".
+    serve503();
+}
 if(!isset($brewerData->brewer) || isset($brewerData->error)){
     // Invalid Brewer ID or bad API response
     http_response_code(404);

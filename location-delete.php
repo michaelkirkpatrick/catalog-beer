@@ -10,6 +10,10 @@ $locationID = $_GET['locationID'] ?? '';
 $api = new API();
 $locationResp = $api->request('GET', '/location/' . $locationID, '');
 $locationData = json_decode($locationResp);
+if($api->unavailable()){
+    // Backend down — temporarily unavailable, not "not found".
+    serve503();
+}
 if(isset($locationData->error) || !isset($locationData->id)){
     http_response_code(404);
     header('location: /error_page/404.php');

@@ -112,5 +112,15 @@ class API {
             return $response;
         }
     }
+
+    // True when the backend is unreachable or returned a server error — i.e. the
+    // request did not complete with a usable response. httpcode is 0 on a cURL
+    // transport failure and >= 500 on a server error; 4xx (not-found / auth /
+    // validation) is intentionally NOT treated as "unavailable" so pages keep
+    // handling those themselves. Reflects the most recent request(); call it
+    // immediately after the request whose outcome you're checking.
+    public function unavailable(): bool {
+        return $this->httpcode === 0 || $this->httpcode >= 500;
+    }
 }
 ?>

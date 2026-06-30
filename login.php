@@ -85,6 +85,7 @@ if(isset($_POST['submit'])){
         }
     }else{
         // API unreachable or unexpected response
+        http_response_code(503);
         $alert->msg = 'Sorry, we are unable to process your login right now. Please try again later.';
         $alert->type = 'warning';
     }

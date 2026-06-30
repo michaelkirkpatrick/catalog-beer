@@ -19,7 +19,10 @@ $emailAuth = isset($_GET['emailAuth']) ? substr($_GET['emailAuth'], 1, 36) : '';
                 $api = new API();
                 $verifyResp = $api->request('POST', '/users/verify-email/' . $emailAuth , '');
                 $apiData = json_decode($verifyResp);
-                if(isset($apiData->error)){
+                if($api->unavailable()){
+                    // Backend unreachable — do NOT claim the email was verified.
+                    echo '<h1>Temporarily Unavailable</h1><p class="lead">Sorry, we couldn&#8217;t verify your email right now because we&#8217;re having trouble connecting. Your link is still valid &#8212; please try again in a few minutes.</p>';
+                }elseif(isset($apiData->error)){
                     // Verification Error
                     $text = new Text(false, true, true);
                     $errorMsg = $text->get($apiData->error_msg);

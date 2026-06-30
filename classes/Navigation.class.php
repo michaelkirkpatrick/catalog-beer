@@ -165,6 +165,10 @@ class Navigation {
         $api = new API();
         $b = json_decode($api->request('GET', '/brewer/count', ''));
         if(isset($b->value)){ $out['brewers'] = intval($b->value); }
+        // Backend unreachable — skip the second blocking call so the navbar doesn't
+        // hang twice on a timeout during an outage. Return uncached so the next
+        // page retries.
+        if($api->unavailable()){ return $out; }
         $r = json_decode($api->request('GET', '/beer/count', ''));
         if(isset($r->value)){ $out['beers'] = intval($r->value); }
 

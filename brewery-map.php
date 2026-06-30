@@ -36,7 +36,14 @@ echo $htmlHead->html;
                 // Query Map
                 $mapResponse = $api->request('GET', '/location/map', '');
                 $mapResponse = json_decode($mapResponse);
-                if(!isset($mapResponse->error)){
+                if($api->unavailable()){
+                    // Backend unreachable. Output (head + navbar) has already
+                    // started, so we can't serve a 503 page here — show an inline
+                    // notice instead of dereferencing a null response.
+                    $alert->msg = 'Sorry, we couldn\'t load the map right now because we\'re having trouble connecting. Please try again in a few minutes.';
+                    $alert->type = 'warning';
+                    echo $alert->display();
+                }elseif(!isset($mapResponse->error) && isset($mapResponse->data)){
                     // Build locations array
                     $locations = [];
                     foreach($mapResponse->data as $loc){

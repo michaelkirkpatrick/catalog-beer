@@ -11,12 +11,8 @@ $alert = new Alert();
 $api = new API();
 $brewerCountResp = $api->request('GET', '/brewer/count', '');
 $brewerCountData = json_decode($brewerCountResp);
-if(!isset($brewerCountData->value)){
-    http_response_code(503);
-    $htmlHead = new htmlHead('Brewers');
-    echo $htmlHead->html;
-    echo '<body>' . $nav->navbar('Brewers') . '<div class="container"><h1>Brewers</h1><p>Sorry, we are unable to connect to our database right now. Please try again later.</p></div>' . $nav->footer() . '</body></html>';
-    exit();
+if($api->unavailable() || !isset($brewerCountData->value)){
+    serve503();
 }
 $numBrewers = $brewerCountData->value;
 $perPage = 500;

@@ -66,6 +66,16 @@ function csrf_verify(){
     return isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token']);
 }
 
+// Serve a 503 "temporarily unavailable" page and stop. Call this when a backend
+// API request fails because the service is unreachable / returning 5xx (see
+// API::unavailable()), so users get a clear "try again" page instead of a 404, a
+// broken page, or a misleading login redirect. The 503 page is navbar-free so it
+// can't re-trigger the outage through Navigation's blocking count calls.
+function serve503(): void {
+    require ROOT . '/error_page/503.php';
+    exit();
+}
+
 // Navigation
 $nav = new Navigation();
 
@@ -81,6 +91,12 @@ if($guest == false){
     if(session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['userID'])){
         $api = new API();
         $jsonResponse = $api->request('GET', '/users/' . $_SESSION['userID'], '');
+
+        if($api->unavailable()){
+            // Backend down — don't bounce the user to /login (which would also
+            // fail); serve a 503 so they know it's temporary and to retry.
+            serve503();
+        }
 
         if($api->httpcode == 200){
             // Valid User

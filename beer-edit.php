@@ -11,6 +11,10 @@ $beerID = $_GET['beerID'] ?? '';
 $api = new API();
 $beerResp = $api->request('GET', '/beer/' . $beerID, '');
 $beerData = json_decode($beerResp);
+if($api->unavailable()){
+    // Backend down — temporarily unavailable, not "not found".
+    serve503();
+}
 if(isset($beerData->error) || !isset($beerData->id)){
     http_response_code(404);
     header('location: /error_page/404.php');

@@ -11,12 +11,8 @@ $alert = new Alert();
 $api = new API();
 $beerCountResp = $api->request('GET', '/beer/count', '');
 $beerCountData = json_decode($beerCountResp);
-if(!isset($beerCountData->value)){
-    http_response_code(503);
-    $htmlHead = new htmlHead('Beer');
-    echo $htmlHead->html;
-    echo '<body>' . $nav->navbar('Beer') . '<div class="container"><h1>Beer</h1><p>Sorry, we are unable to connect to our database right now. Please try again later.</p></div>' . $nav->footer() . '</body></html>';
-    exit();
+if($api->unavailable() || !isset($beerCountData->value)){
+    serve503();
 }
 $numBeers = $beerCountData->value;
 $perPage = 500;
