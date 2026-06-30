@@ -66,7 +66,6 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
                     <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
                     <a class="list-group-item list-group-item-action" href="#style-classes">&gt; List Classes</a>
-                    <a class="list-group-item list-group-item-action" href="#style-approx">&gt; List Approximate Matches</a>
                     <a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
                     <a class="list-group-item list-group-item-action" href="#location-object">&gt; The Location Object</a>
                     <a class="list-group-item list-group-item-action" href="#location-add">&gt; Add a Location</a>
@@ -97,10 +96,10 @@ echo $htmlHead->html;
             <div class="col-md-8">
                 <h1 id="top">API Reference</h1>
                 <p>Last Updated: June 25, 2026</p>
-                
+
                 <h2 id="url">API Basics</h2>
                 <hr>
-                
+
                 <p>The Catalog.beer API is organized around REST. We use HTTP response codes to indicate the success or failure of your request. We also use basic HTTP features like HTTP authentication and HTTP verbs.</p>
 
                 <p>The Catalog.beer API can be accessed using the following root URL:</p>
@@ -110,38 +109,38 @@ echo $htmlHead->html;
                 <p>When making an API request, be sure to include an <code>accept: application/json</code> header. All data returned by the API will be in JSON format.</p>
 
                 <p>Similarly, when making a PUT or POST request to the API, the body of your request must be in JSON as well. Be sure to include the <code>content-type: application/json</code> header in your request.</p>
-                
+
                 <h2 id="authentication">Authentication</h2>
                 <hr>
 
                 <p>Authenticate your account when using the API by including your secret API key in the request. You can find your API key on your <a href="/account">Account</a> page. Your API key carries many privileges, so be sure to keep it secret! Do not share your secret API key in publicly accessible areas such GitHub, client-side code, and so forth.</p>
 
                 <p>Authentication to the API is performed via the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank" rel="noopener">'Basic' HTTP authentication</a> scheme. <strong>Provide your API key as the username value.</strong> You do not need to provide a password.</p>
-                
+
                 <p>When making a request using basic HTTP authentication, your request should contain a header field in the form of <code>Authorization: Basic &lt;credentials&gt;</code>, where <code>&lt;credentials&gt;</code> is the <code>base64_encode('username:password')</code> (Recall that your username in this case is your API Key and the password field should be left blank).</p>
-                
+
                 <p>For example, if your API Key is: <code>cadcbe6f-a80d-4e33-9f20-b53c2ed83845</code></p>
-                
+
                 <pre class="api-code">base64_encode('cadcbe6f-a80d-4e33-9f20-b53c2ed83845:')</pre>
-                
+
                 <p>Returning: <code>Y2FkY2JlNmYtYTgwZC00ZTMzLTlmMjAtYjUzYzJlZDgzODQ1Og==</code></p>
-                
+
                 <p>Then your cURL request will look something like:</p>
-                
+
 <pre class="api-code">curl --location --request GET 'https://api.catalog.beer/brewer'
 --header 'Accept: application/json'
 --header 'Authorization: Basic Y2FkY2JlNmYtYTgwZC00ZTMzLTlmMjAtYjUzYzJlZDgzODQ1Og=='
 </pre>
 
                 <p>All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.</p>
-            
+
                 <h2 id="errors">Errors</h2>
                 <hr>
-                
+
                 <p>Catalog.beer uses conventional HTTP response codes to indicate the success or failure of an API request. In general, codes in the <var>2xx</var> range indicate success, codes in the <var>4xx</var> range indicate an error that failed given the information provided (e.g., a required parameter was omitted), and codes in the <var>5xx</var> range indicate an error with Catalog.beer&#8217;s servers.</p>
 
                 <p>The following parameters are returned in JSON format when an error occurs</p>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -242,7 +241,7 @@ echo $htmlHead->html;
                 <h3 id="brewer-object">The Brewer Object</h3>
 
                 <p>Whether you&#8217;re retrieving information on a specific brewer, adding a new brewer, or updating an existing brewer, successful requests will return the brewer object in JSON format. That object has the following parameters.</p>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -299,7 +298,7 @@ echo $htmlHead->html;
                         </tr>
                     </tbody>
                 </table>
-                
+
                 <h4>Sample</h4>
 
 <pre class="api-code">
@@ -307,7 +306,7 @@ echo $htmlHead->html;
   "id": "65911cdd-52e6-6305-3420-b9bbf6ea958d",
   "object": "brewer",
   "name": "HopSaint",
-  "description": "HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn't be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That's at the heart of HopSaint - a community that fosters lasting relationships & enriches our hometown through the production of honest, real beer. A community built on craft beer.",
+  "description": "HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn't be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That's at the heart of HopSaint - a community that fosters lasting relationships &amp; enriches our hometown through the production of honest, real beer. A community built on craft beer.",
   "short_description": "A brewery in Torrance, CA.",
   "url": "https://www.hopsaint.com/",
   "cb_verified": true,
@@ -322,7 +321,7 @@ echo $htmlHead->html;
                 <p>To add a brewer, send a <strong>POST</strong> request to the <code>/brewer</code> endpoint with the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#brewer-object">brewer object</a>.</p>
 
                 <pre class="api-code">POST https://api.catalog.beer/brewer</pre>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -363,7 +362,7 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"name":"HopSaint","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u2019t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u2019s at the heart of HopSaint - a community that fosters lasting relationships & enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/"}'
+  -d '{"name":"HopSaint","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u2019t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u2019s at the heart of HopSaint - a community that fosters lasting relationships &amp; enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/"}'
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
 
@@ -506,7 +505,7 @@ curl -X GET \
                 <p>If you want a list of all the brewers in the database, send a <strong>GET</strong> request to the <code>/brewer</code> endpoint.</p>
 
                 <pre class="api-code">GET https://api.catalog.beer/brewer</pre>
-                
+
                 <h4>Query Parameters</h4>
                 <table class="table">
                     <thead>
@@ -529,15 +528,15 @@ curl -X GET \
                         </tr>
                     </tbody>
                 </table>
-                
+
                 <p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
-                
+
                 <pre class="api-code">GET https://api.catalog.beer/brewer?count=5&amp;cursor=NQ%3D%3D</pre>
-                
+
                 <h4>Response</h4>
-                
+
                 <p>This request returns a list object with the following parameters.</p>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -627,7 +626,7 @@ curl -X GET \
                 <p>You can retrieve the total number of brewers that are in the database by sending a <strong>GET</strong> request the endpoint <code>/brewer/count</code>. A JSON object with the following parameters will be returned.</p>
 
                 <pre class="api-code">GET https://api.catalog.beer/brewer/count</pre>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -798,7 +797,7 @@ curl -X GET \
                 <p>If you would like a list of all the beers made by a brewer, send a request to the <code>/brewer/{brewer_id}/beer</code> endpoint. </p>
 
                 <p>This request returns a list object with the following parameters.</p>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -870,7 +869,7 @@ curl -X GET \
                         </tr>
                     </tbody>
                 </table>
-                
+
                 <h4>Sample Request</h4>
 <pre class="api-code">
 curl -X GET \
@@ -935,7 +934,7 @@ curl -X GET \
                 <p>If you would like to know all the locations associated with a brewer, send a request to the <code>/brewer/{brewer_id}/locations</code> endpoint.</p>
 
                 <p>This request returns a list object with the following parameters.</p>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -982,7 +981,7 @@ curl -X GET \
                         </tr>
                     </tbody>
                 </table>
-                
+
                 <h4>Sample Request</h4>
 <pre class="api-code">
 curl -X GET \
@@ -990,7 +989,7 @@ curl -X GET \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
-                
+
                 <h4>Sample Response</h4>
 <pre class="api-code">
 {
@@ -1021,7 +1020,7 @@ curl -X GET \
 }
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
-                
+
                 <h2 id="beer">Beer</h2>
                 <hr>
 
@@ -1030,7 +1029,7 @@ curl -X GET \
                 <h3 id="beer-object">The Beer Object</h3>
 
                 <p>When you add a new beer, are looking for information on a specific beer, or are updating a beer in the database, successful requests will return the beer object in JSON format. That object has the following parameters.</p>
-                
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -1083,7 +1082,7 @@ curl -X GET \
                         <tr>
                             <td><var>style_confidence</var></td>
                             <td>string</td>
-                            <td>How <var>style_id</var> was arrived at: <var>confident</var> (exact match), <var>override</var> (chosen by a person despite a different label), <var>approx</var> (an unconfirmed best-fit), <var>family</var> (filed at a family or class, no specific style), or <var>catch-all</var>. May be <var>null</var> on older records.</td>
+                            <td>How <var>style_id</var> was arrived at: <var>confident</var> (exact match), <var>override</var> (chosen by a person despite a different label), <var>family</var> (filed at a family or class, no specific style), or <var>catch-all</var>. May be <var>null</var> on older records.</td>
                         </tr>
                         <tr>
                             <td><var>description</var></td>
@@ -1208,7 +1207,7 @@ curl -X GET \
                         <tr>
                             <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
                             <td>string</td>
-                            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>approx</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
+                            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
                         </tr>
                         <tr>
                             <td><var>description<br><small class="text-muted">(optional)</small></var></td>
@@ -1291,7 +1290,7 @@ curl -X POST \
         <tr>
             <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
-            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>approx</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
+            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
         </tr>
         <tr>
             <td><var>abv</var></td>
@@ -1374,7 +1373,7 @@ curl -X PUT \
         <tr>
             <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
-            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>approx</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
+            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
         </tr>
         <tr>
             <td><var>description</var><br><small class="text-muted">(optional)</small></td>
@@ -1440,7 +1439,7 @@ curl -X GET \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
-                            
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="beer-list-all">List all Beer</h3>
@@ -1473,10 +1472,10 @@ curl -X GET \
                 </table>
                 <p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except -_.</p>
                 <pre class="api-code">GET https://api.catalog.beer/beer?count=5&amp;cursor=NQ%3D%3D</pre>
-                
+
                 <h4>Response</h4>
 <p>This request returns a list object with the following parameters.</p>
-                                
+
 <table class="table">
     <thead>
         <tr>
@@ -1572,7 +1571,7 @@ curl -X GET \
 <p>To retrieve the total number of beers that are in the database, send a <strong>GET</strong> request to the <code>/beer/count</code> endpoint. A JSON object with the following parameters will be returned.</p>
 
                                 <pre class="api-code">GET https://api.catalog.beer/beer/count</pre>
-                                
+
 <h4>Sample Request</h4>
 
 <pre class="api-code">
@@ -1591,7 +1590,7 @@ curl -X GET \
   "value": 87
 }
 </pre>
-                                
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="beer-search">Search Beer</h3>
@@ -1682,7 +1681,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/beer/search?q=ipa&count=2' \
+  'https://api.catalog.beer/beer/search?q=ipa&amp;count=2' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -1732,17 +1731,36 @@ curl -X GET \
 
 <h2 id="styles">Styles</h2>
 
-<p>Catalog.beer uses a canonical style vocabulary so beers can be classified consistently and queried reliably. The vocabulary is sourced primarily from the Brewers Association 2026 guidelines (with BJCP 2021 for cider, perry, and mead) and is organized into three tiers, from broadest to most specific:</p>
+<p>Every beer has a <strong>style</strong> &#8212; the kind of beer it is, like an IPA, a stout, or a lager. Catalog.beer records a beer&#8217;s style in two parts, so we get the best of both worlds: the brewer&#8217;s own words, and a tidy category we can sort and count by.</p>
+
+<p><strong>Part 1: Call it whatever you like.</strong> When you add or edit a beer, the <var>beer.style</var> field is plain text &#8212; type the name exactly as the brewer uses it. Want to call your beer a &#8220;Súper Lager&#8221; or a &#8220;Hazy Double&#8221;? Go for it. We keep that label exactly as you wrote it and show it to everyone, untouched.</p>
+
+<p><strong>Part 2: Tell us which category it fits.</strong> A name like &#8220;Hazy Double&#8221; reads well to a person, but a computer can&#8217;t tell that it&#8217;s a kind of IPA. So we also match each beer to one entry on our standard list of styles &#8212; its <em>canonical style</em>. That&#8217;s what lets the catalog answer questions like &#8220;show me every IPA&#8221; or &#8220;how many stouts are there?&#8221; Our standard list is drawn from the <a href='https://www.brewersassociation.org/edu/brewers-association-beer-style-guidelines/'>Brewers Association (BA) guidelines</a> and the <a href='https://www.bjcp.org/bjcp-style-guidelines/'>Beer Judge Certification Program (BJCP) guidelines</a>.</p>
+
+<p>You don&#8217;t have to get the category exactly right on your own. When you send just a label, the API tries to recognize it and match it for you &#8212; it knows, for example, that &#8220;NEIPA,&#8221; &#8220;New England IPA,&#8221; and &#8220;Juicy IPA&#8221; all point to the same style. If it recognizes your label, you&#8217;re done. If it doesn&#8217;t, you can name the category yourself.</p>
+
+<p>The standard list is organized into three levels, from the broadest bucket to the most specific:</p>
 
 <ul>
-    <li><strong>Class</strong> &#8212; the coarse fermentation super-family: <var>ale</var> or <var>lager</var>. (Not every family rolls up to a class &#8212; wheat, sour, smoked, cider, mead, etc. sit on their own.)</li>
-    <li><strong>Family</strong> &#8212; a character-based grouping such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var> (the <var>parent</var>).</li>
-    <li><strong>Style</strong> &#8212; a specific canonical style such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</li>
+    <li><strong>Class</strong> &#8212; the broadest grouping: <var>ale</var> or <var>lager</var>. (A few kinds of beer, like wheat beers and sours, don&#8217;t fall neatly into either one. That&#8217;s fine &#8212; they simply don&#8217;t have a class.)</li>
+    <li><strong>Family</strong> &#8212; a middle grouping of related styles, such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var>. (In the data, this field is named <var>parent</var>.)</li>
+    <li><strong>Style</strong> &#8212; one specific entry, such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</li>
 </ul>
 
-<p>A beer may be filed at <em>any</em> tier. When you submit a beer, you can either send the brewer&#8217;s wording as <var>style</var> and let the API resolve it to the most specific matching tier, or supply a <var>style_id</var> (or <var>parent</var>/<var>class</var>) to file at a tier directly &#8212; the most specific wins. Either way, the coarser tiers are derived automatically (a style implies its family and class). The beer object therefore carries <var>style</var> (your label), <var>style_id</var>, <var>parent</var>, <var>class</var>, and <var>beverage_type</var>. A separate <var>beverage_type</var> &#8212; <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var> &#8212; is always derived from the resolved style.</p>
+<p>File a beer at whichever level matches how much you actually know. Know it&#8217;s a West Coast IPA? File it as that exact style. Only know it&#8217;s &#8220;some kind of IPA&#8221;? File it at the IPA family. All you know is that it&#8217;s an ale? File it as the ale class. Whichever level you pick, the API fills in the broader ones for you &#8212; tell it &#8220;West Coast IPA&#8221; and it knows that belongs to the IPA family and the ale class. It never invents detail you didn&#8217;t give it.</p>
 
-<p>The <code>/style</code> endpoints are read-only and let you fetch the vocabulary (e.g. to build a picker or validate input client-side). They return the same JSON for all callers and require authentication like every other endpoint.</p>
+<p>So in a request, you have two ways to set the category:</p>
+
+<ul>
+    <li>Send just <var>beer.style</var> (the brewer&#8217;s wording) and let the API match it for you.</li>
+    <li>Or name the category directly with <var>style_id</var> (a specific style), <var>parent</var> (a family), or <var>class</var>. This is handy when you already know exactly where the beer belongs, or when the API couldn&#8217;t recognize your label. If you send more than one, the most specific one wins.</li>
+</ul>
+
+<p>If the API can&#8217;t recognize your label and you haven&#8217;t named a category, it won&#8217;t guess &#8212; it returns an error and points you to the list, where there&#8217;s always a catch-all (like <em>Specialty</em>) so an unusual beer that fits nowhere else still has a home.</p>
+
+<p>One more field comes along automatically: <var>beverage_type</var> &#8212; <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>. You never set this yourself; it&#8217;s taken from whatever style the beer ends up matching.</p>
+
+<p>The <code>/style</code> endpoints below are read-only. Use them to browse the full standard list &#8212; for example, to build your own style picker or to check a label before you submit it.</p>
 
 <h3 id="style-object">The Style Object</h3>
 
@@ -1931,31 +1949,6 @@ curl -X GET \
 
 <p><a href="#top">^ Return to top</a></p>
 
-<h3 id="style-approx">List Approximate Matches</h3>
-
-<p>Returns the <em>approximate</em> alias map &#8212; hand-curated best-fit guesses (e.g. <code>"Triple IPA"</code> &#8594; <var>double-ipa</var>) that are deliberately kept out of the main alias vocabulary so they never auto-classify a beer. The guided style picker uses these to offer a &#8220;closest match &#8212; confirm or pick another&#8221; suggestion. Each entry maps an <var>alias</var> to a suggested <var>style_id</var>.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style/approx</pre>
-
-<h4>Sample Response</h4>
-<pre class="api-code">
-{
-  "object": "list",
-  "url": "/style/approx",
-  "has_more": false,
-  "data": [
-    {
-      "alias": "Triple IPA",
-      "style_id": "double-ipa",
-      "name": "Imperial or Double India Pale Ale",
-      "parent": "ipa"
-    }
-  ]
-}
-</pre>
-
-<p><a href="#top">^ Return to top</a></p>
-
 <h2 id="location">Location</h2>
 
 <p>Brewers can have multiple locations associated with them. These should be public locations at which beer is served as opposed to a production or office space that does not offer beer tasting.</p>
@@ -1963,7 +1956,7 @@ curl -X GET \
 <h3 id="location-object">The Location Object</h3>
 
 <p>When you add an address to a location, are looking for information on a specific location, or are updating a location in the database, successful requests will return the location object in JSON format. That object has the following parameters.</p>
-                                
+
 <table class="table">
     <thead>
         <tr>
@@ -2090,7 +2083,7 @@ curl -X GET \
 <p>To add a location for a brewer, send a <strong>POST</strong> request to the <code>/location</code> endpoint with the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>.</p>
 
 <pre class="api-code">POST https://api.catalog.beer/location</pre>
-                                
+
 <table class="table">
     <thead>
         <tr>
@@ -2292,7 +2285,7 @@ curl -X DELETE \
 <p>Currently, only US addresses are supported. This documentation will be updated once support for other countries has been added.</p>
 
 <pre class="api-code">POST https://api.catalog.beer/address/{location_id}</pre>
-                                
+
 <table class="table">
     <thead>
         <tr>
@@ -2475,9 +2468,9 @@ curl -X GET \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
-                                
+
 <p><a href="#top">^ Return to top</a></p>
-                                
+
 <!----- /LOCATIONS/NEARBY ----->
 
 <h3 id="nearby-locations">Find Nearby Locations</h3>
@@ -2485,7 +2478,7 @@ curl -X GET \
 <p>One of the questions that gets asked most is &#8220;where is the nearest brewery?&#8221; or &#8220;I&#8217;m heading to Acme town, what breweries are local?&#8221;. To answer those questions or questions like them, use this endpoint.</p>
 
 <p>To retrieve a location, send a <strong>GET</strong> request to the <code>/location/nearby </code> endpoint with the <var>{latitude}</var> and <var>{longitude}</var> query parameters appended to the path.</p>
-                                
+
 <h4>Query Parameters</h4>
 <table class="table">
     <thead>
@@ -2528,14 +2521,14 @@ curl -X GET \
         </tr>
     </tbody>
 </table>
-                                
+
 <p>A sample request with query parameters.</p>
 
-<pre class="api-code">GET https://api.catalog.beer/location/nearby?latitude={latitude}&longitude={longitude}</pre>
-                                
+<pre class="api-code">GET https://api.catalog.beer/location/nearby?latitude={latitude}&amp;longitude={longitude}</pre>
+
 <h4>Response</h4>
 <p>This request returns a list object with the following parameters.</p>
-                                
+
 <table class="table">
     <thead>
         <tr>
@@ -2589,12 +2582,12 @@ curl -X GET \
         </tr>
     </tbody>
 </table>
-                                
+
 <h4>Sample Request</h4>
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/location/nearby?latitude=32.748482&longitude=-117.130094&search_radius=10&count=1' \
+  'https://api.catalog.beer/location/nearby?latitude=32.748482&amp;longitude=-117.130094&amp;search_radius=10&amp;count=1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -2649,7 +2642,7 @@ curl -X GET \
   ]
 }
 </pre>
-                    
+
 <p><a href="#top">^ Return to top</a></p>
 
 <!----- LOCATION: ZIP CODE ----->
@@ -2705,7 +2698,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/location/zip?zip_code=92104&search_radius=10&count=1' \
+  'https://api.catalog.beer/location/zip?zip_code=92104&amp;search_radius=10&amp;count=1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -2821,7 +2814,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/location/city?city=San%20Diego&state=CA&search_radius=10&count=1' \
+  'https://api.catalog.beer/location/city?city=San%20Diego&amp;state=CA&amp;search_radius=10&amp;count=1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -2994,13 +2987,13 @@ curl -X GET \
 <h2 id="us-address">US Addresses</h2>
 
 <p>For locations in the United States, data is stored and captured using the US Addresses data structure.</p>
-                                
+
 <!----- US ADDRESSES: OBJECT ----->
 
 <h3 id="us-address-object">The US Address Object</h3>
 
 <p>Addresses for the United States are stored in an object with the following parameters.</p>
-                                
+
 <table class="table">
     <thead>
         <tr>
@@ -3347,6 +3340,6 @@ curl -X POST \
             </div>
         </div>
   </div>
-  <?php echo $nav->footer(); ?> 
+  <?php echo $nav->footer(); ?>
 </body>
 </html>

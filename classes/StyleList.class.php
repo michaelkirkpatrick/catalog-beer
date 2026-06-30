@@ -8,7 +8,6 @@ Emits one global, window.CB_TAX, in the compact runtime shape the resolver uses:
   classes : [{slug,name,bev,al}]                    (GET /style/class)
   parents : [{slug,name,cls,bev,sort,al}]           (GET /style/parent)
   styles  : [{id,name,parent,cat,fam,bev,ca,al}]    (GET /style)
-  approx  : { "<normalized alias>": "<style_id>" }  (GET /style/approx)
 
 The database is the single source of truth; this is the browser-delivery path.
 If the API call fails, the lists are empty and the field degrades to a plain text
@@ -74,24 +73,6 @@ class StyleList {
         return $out;
     }
 
-    // manual-approx best-fits, as a { normalized-alias => style_id } map for the
-    // resolver's "Closest match" (Approx) tier. These never auto-resolve a beer.
-    public static function approx(){
-        if(isset($_SESSION['cb_approx']) && is_array($_SESSION['cb_approx'])){
-            return $_SESSION['cb_approx'];
-        }
-        $data = self::call('/style/approx');
-        $out = array();
-        foreach($data as $a){
-            $alias = isset($a['alias']) ? strtolower(trim($a['alias'])) : '';
-            if($alias !== '' && !empty($a['style_id'])){
-                $out[$alias] = $a['style_id'];
-            }
-        }
-        if($out){ $_SESSION['cb_approx'] = $out; }
-        return $out;
-    }
-
     // Inline <script> assigning window.CB_TAX. JSON_HEX_TAG guards "</script>".
     public static function inlineScript(){
         $flags = JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
@@ -99,10 +80,9 @@ class StyleList {
             'classes' => self::classes(),
             'parents' => self::parents(),
             'styles'  => self::styles(),
-            'approx'  => (object) self::approx(),  // cast so an empty map encodes as {} not []
         );
         $json = json_encode($tax, $flags);
-        if($json === false){ $json = '{"classes":[],"parents":[],"styles":[],"approx":{}}'; }
+        if($json === false){ $json = '{"classes":[],"parents":[],"styles":[]}'; }
         return '<script>window.CB_TAX = ' . $json . ';</script>';
     }
 

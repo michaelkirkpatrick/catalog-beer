@@ -33,8 +33,6 @@
    so nothing fights the paper background or reads as an "error". */
 .sf-ok       { background: #E7F0E8; border-color: #CFE3D4; }
 .sf-ok    .sf-ico { background: #CFE3D4; color: #1F5A3A; }
-.sf-approx   { background: #FBF1DC; border-color: #EAD7AC; }
-.sf-approx .sf-ico { background: #EAD7AC; color: var(--cb-amber-deep); }
 .sf-fam-card { background: var(--cb-paper-2); border-color: var(--cb-line-2); }
 .sf-fam-card .sf-ico { background: var(--cb-paper-3); color: var(--cb-amber-deep); }
 .sf-new      { background: var(--cb-paper-2); border-color: var(--cb-line-2); }

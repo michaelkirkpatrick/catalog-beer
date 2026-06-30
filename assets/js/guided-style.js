@@ -6,7 +6,6 @@
      label (free text)  ─ the hero, kept verbatim, shown publicly
         │ resolve()
         ├─ specific   exact name / alias hit, high confidence   → quiet ✓ + Change
-        ├─ approx     flagged best-fit (manual-approx)          → "closest match", confirm
         ├─ family     matches a family/umbrella, not a style    → filed at family, refine optional
         └─ unknown    new coinage, nothing matches              → picker, label kept
 
@@ -29,8 +28,7 @@
      window.CB_TAX = {
        classes: [{slug,name,bev,al}],
        parents: [{slug,name,cls,bev,sort,al}],
-       styles:  [{id,name,parent,cat,fam,bev,ca,al}],
-       approx:  { "<normalized alias>": "<style_id>" }
+       styles:  [{id,name,parent,cat,fam,bev,ca,al}]
      }
 
    We emit the resolved tier as parent/class SLUGS (+ style_id) so the API can
@@ -112,13 +110,13 @@
       .sort(function (a, b) { return (a.sort || 99) - (b.sort || 99); });
   }
 
-  /* resolve typed text → specific | approx | group(parent|class) | unknown.
+  /* resolve typed text → specific | group(parent|class) | unknown.
      Order matters. A recognized family/class umbrella ("Pale Ale", "Strong Ale",
      "Brown Ale", "Lager") is checked FIRST, so a broad label opens the chip picker
      to hone in instead of snapping to one sub-style — even when that same term is
-     also a specific style's alias/name or a manual-approx best-fit. Fully-qualified
-     names ("American-Style Pale Ale") aren't family aliases, so they still resolve
-     specific, and the matching sub-style stays one click away as a chip. */
+     also a specific style's alias/name. Fully-qualified names ("American-Style
+     Pale Ale") aren't family aliases, so they still resolve specific, and the
+     matching sub-style stays one click away as a chip. */
   function resolve(tax, raw) {
     var q = norm(raw); if (!q) return { state: 'empty' };
     var lq = loose(raw) || q;
@@ -126,8 +124,6 @@
     if (p) return { state: 'group', gkind: 'parent', parent: p };
     var c = classMatch(tax, q, lq);
     if (c) return { state: 'group', gkind: 'class', cls: c };
-    var approx = tax.approx || {};
-    if (approx[q]) { var ap = byId(tax.styles, approx[q]); if (ap) return { state: 'approx', style: ap }; }
     var ex = exactMatch(tax.styles, q);
     if (ex) return { state: 'specific', style: ex.s, via: ex.via };
     return { state: 'unknown' };
@@ -135,8 +131,7 @@
 
   // --- component -----------------------------------------------------------
   function enhance(root) {
-    var tax = window.CB_TAX || { classes: [], parents: [], styles: [], approx: {} };
-    if (!tax.approx) tax.approx = {};
+    var tax = window.CB_TAX || { classes: [], parents: [], styles: [] };
     var styles = tax.styles;
     var parentBySlug = {};
     tax.parents.forEach(function (p) { parentBySlug[p.slug] = p; });
@@ -167,7 +162,6 @@
     function restore(s) {
       if (!s) { update(); return; }
       if (s.kind === 'specific') renderSpecific(s.style, s.label, { override: s.override });
-      else if (s.kind === 'approx') renderApprox(s.style, s.label);
       else if (s.kind === 'group') renderGroup(s.g, s.label, s.scope);
       else if (s.kind === 'unknown') renderUnknown(s.label);
     }
@@ -212,26 +206,6 @@
       current = { kind: 'specific', style: style, label: label, override: !!opts.override };
       bindChange(label);
       hidePicker();
-    }
-
-    function renderApprox(style, label) {
-      var pname = parentName(style);
-      var pslug = style.parent || '';
-      setHidden({ id: style.id, parent: pslug, cls: classSlugOf(pslug), bev: style.bev || 'beer', confidence: 'approx' });
-      var fam = pname ? ' <span class="sf-fam">· ' + esc(pname) + ' family</span>' : '';
-      showCard('sf-approx',
-        '<span class="sf-ico">≈</span>' +
-        '<div class="sf-body">' +
-          '<div class="sf-line">Closest match: <strong>' + esc(style.name) + '</strong>' + fam + '</div>' +
-          '<div class="sf-sub">We’re not fully sure this is right — confirm or pick another.</div>' +
-          '<div class="sf-actions">' +
-            '<button type="button" class="sf-accept">Yes, that’s it</button>' +
-            '<button type="button" class="sf-link sf-change-link">Pick another</button>' +
-          '</div>' +
-        '</div>');
-      current = { kind: 'approx', style: style, label: label };
-      card.querySelector('.sf-accept').addEventListener('click', function () { renderSpecific(style, label, { override: true }); });
-      card.querySelector('.sf-change-link').addEventListener('click', function () { renderEdit(label); });
     }
 
     /* renderGroup — the honoring "family selector".
@@ -437,7 +411,6 @@
       if (r.state === 'empty') { card.hidden = true; hidePicker(); setHidden({}); return; }
       hidePicker();
       if (r.state === 'specific') renderSpecific(r.style, label, {});
-      else if (r.state === 'approx') renderApprox(r.style, label);
       else if (r.state === 'group') renderGroup(r.gkind === 'parent' ? { gkind: 'parent', parent: r.parent } : { gkind: 'class', cls: r.cls }, label, null);
       else renderUnknown(label);
     }
