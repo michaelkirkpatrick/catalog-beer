@@ -23,7 +23,7 @@ Environment is detected via subdomain in `classes/initialize.php`. Configuration
 
 ## Database Schema (canonical repo)
 
-The DB schema lives in a separate, public repo: [catalog-beer-mysql](https://github.com/michaelkirkpatrick/catalog-beer-mysql) (`catalog-beer-schema.sql`). This frontend only consumes the API, so it rarely drives schema changes — but if a change here implies one (e.g. a new field the API must persist, like the Guided Style Field's `style_confidence`), update `catalog-beer-schema.sql` too, in the same change, and keep it in step with the API repo and the migration DDL in `style-library/scripts/migration/`. A stale canonical schema misleads everyone who reads it.
+The DB schema lives in a separate, public repo: [catalog-beer-mysql](https://github.com/michaelkirkpatrick/catalog-beer-mysql) (`catalog-beer-schema.sql`). This frontend only consumes the API, so it rarely drives schema changes — but if a change here implies one (e.g. a new field the API must persist, like the Guided Style Field's `style_confidence`), update `catalog-beer-schema.sql` too, in the same change, and keep it in step with the API repo, adding migration DDL under `migrations/` in that repo. A stale canonical schema misleads everyone who reads it.
 
 ## Architecture
 

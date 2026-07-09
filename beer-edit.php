@@ -36,7 +36,10 @@ $styleID = $beerData->style_id ?? '';
 $styleParent = $beerData->parent ?? '';
 $styleClass = $beerData->class ?? '';
 $beverageType = $beerData->beverage_type ?? '';
-$styleConfidence = $beerData->style_confidence ?? '';
+// style_confidence is internal to the API (not returned in beer objects). The
+// hidden field starts empty: guided-style.js derives a fresh value on load, and
+// the API keeps the stored value when the tier is unchanged and none is sent.
+$styleConfidence = '';
 $description = $beerData->description ?? '';
 $abv = $beerData->abv ?? '';
 $ibu = $beerData->ibu ?? '';
@@ -49,7 +52,7 @@ if(isset($_POST['submit'])){
     }else{
         // Get Posted Variables
         $name = $_POST['name'];
-        $styleLabel = $_POST['style_label'] ?? '';
+        $styleLabel = $_POST['style'] ?? '';
         $styleID = $_POST['style_id'] ?? '';
         $styleParent = $_POST['parent'] ?? '';
         $styleClass = $_POST['class'] ?? '';
@@ -59,7 +62,7 @@ if(isset($_POST['submit'])){
         $abv = $_POST['abv'];
         $ibu = $_POST['ibu'];
 
-        $patchData = array('name'=>$name, 'style_label'=>$styleLabel, 'style_id'=>$styleID, 'parent'=>$styleParent, 'class'=>$styleClass, 'style_confidence'=>$styleConfidence, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
+        $patchData = array('name'=>$name, 'style'=>$styleLabel, 'style_id'=>$styleID, 'parent'=>$styleParent, 'class'=>$styleClass, 'style_confidence'=>$styleConfidence, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
         $patchResponse = $api->request('PATCH', '/beer/' . $beerID, $patchData);
         $patchArray = json_decode($patchResponse, true);
         if(isset($patchArray['error'])){

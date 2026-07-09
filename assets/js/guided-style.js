@@ -14,7 +14,7 @@
 
    Markup contract (GuidedStyleField.class.php):
      <div class="sf" data-sf>
-       <input class="form-control sf-input" name="style_label" autocomplete="off">
+       <input class="form-control sf-input" name="style" autocomplete="off">
        <input type="hidden" name="style_id">
        <input type="hidden" name="parent">           <!-- family slug -->
        <input type="hidden" name="class">            <!-- super-class slug -->
@@ -146,7 +146,7 @@
       return (p && p.cls) ? p.cls : '';
     }
 
-    var input   = root.querySelector('input[name="style_label"]');
+    var input   = root.querySelector('input[name="style"]');
     var hId     = root.querySelector('input[name="style_id"]');
     var hParent = root.querySelector('input[name="parent"]');
     var hClass  = root.querySelector('input[name="class"]');
@@ -420,7 +420,33 @@
     // NOTE: no 'change' listener — it fires on blur and would rebuild chips between
     // a chip's mousedown and mouseup (the "click twice" bug). 'input' already covers
     // typing, paste, and autofill.
-    if (input.value.trim()) update();
+
+    // Boot: honor the server-rendered tier (an edit form's stored resolution)
+    // instead of re-deriving from the label — a beer filed via a manual override
+    // must come back up as that override, not get re-resolved (or nulled) from
+    // its label. No stored tier (the add form) → derive from the label as usual.
+    function boot() {
+      var label = input.value.trim();
+      if (!label) return;
+      if (!styles.length) return; // taxonomy failed to load — leave the form as rendered
+      var stored = hId.value ? byId(styles, hId.value) : null;
+      if (stored) {
+        var r = resolve(tax, label);
+        var auto = (r.state === 'specific' && r.style && r.style.id === stored.id);
+        renderSpecific(stored, label, { override: !auto });
+        return;
+      }
+      if (hParent && hParent.value && parentBySlug[hParent.value]) {
+        renderGroup({ gkind: 'parent', parent: parentBySlug[hParent.value] }, label, null);
+        return;
+      }
+      if (hClass && hClass.value && classBySlug[hClass.value]) {
+        renderGroup({ gkind: 'class', cls: classBySlug[hClass.value] }, label, null);
+        return;
+      }
+      update();
+    }
+    boot();
   }
 
   function init() {

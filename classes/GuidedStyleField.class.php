@@ -2,11 +2,11 @@
 /* ---
 GuidedStyleField — renders the confidence-ladder "Style" field used on beer
 add/edit. Emits the markup contract guided-style.js (v2) enhances: a visible
-style_label input (the hero, never overwritten), the resolved tier as hidden
+style input (the hero, never overwritten), the resolved tier as hidden
 fields, plus empty card/picker mounts the script fills in.
 
     $guidedStyle = new GuidedStyleField();
-    $guidedStyle->value = $styleLabel;           // brewer's raw label (style_label)
+    $guidedStyle->value = $styleLabel;           // brewer's raw label (style)
     $guidedStyle->styleId = $styleID;            // resolved canonical style_id
     $guidedStyle->parent = $styleParent;         // resolved family slug
     $guidedStyle->class = $styleClass;           // resolved class slug
@@ -23,12 +23,12 @@ window.CB_TAX (see StyleList::inlineScript).
 class GuidedStyleField {
 
     public $description = 'Style';
-    public $value = '';            // style_label (raw text)
+    public $value = '';            // style (the brewer's raw label)
     public $styleId = '';          // style_id (hidden) — set when filed at style level
     public $parent = '';           // parent/family slug (hidden) — set when filed at family level
     public $class = '';            // super-class slug (hidden) — set when filed at class level
     public $beverageType = '';     // beverage_type (hidden)
-    public $styleConfidence = '';  // confidence (hidden): confident|override|approx|family|catch-all|unresolved
+    public $styleConfidence = '';  // confidence (hidden): confident|override|family|catch-all|unresolved
     public $placeholder = '';
     public $hint = 'Type the style however you brand it — your exact wording is always kept.';
     public $required = false;
@@ -45,7 +45,7 @@ class GuidedStyleField {
         $return  = '<div class="mb-3">';
         $return .= '<label class="form-label" for="styleField">' . $text->get($this->description) . '</label>';
         $return .= '<div class="sf" data-sf>';
-        $return .= '<input type="text" class="' . $inputClass . '" id="styleField" name="style_label" autocomplete="off"'
+        $return .= '<input type="text" class="' . $inputClass . '" id="styleField" name="style" autocomplete="off"'
                  . ' placeholder="' . $attr($this->placeholder) . '"'
                  . ' data-hint="' . $attr($this->hint) . '"'
                  . ' value="' . $attr($this->value) . '"'

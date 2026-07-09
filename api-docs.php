@@ -61,7 +61,6 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#beer-search">&gt; Search Beer</a>
                     <a class="list-group-item list-group-item-action" href="#styles"><strong>Styles</strong></a>
                     <a class="list-group-item list-group-item-action" href="#style-object">&gt; The Style Object</a>
-                    <a class="list-group-item list-group-item-action" href="#style-specs">&gt; The Specs Object</a>
                     <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
                     <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
                     <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
@@ -303,15 +302,15 @@ echo $htmlHead->html;
 
 <pre class="api-code">
 {
-  "id": "65911cdd-52e6-6305-3420-b9bbf6ea958d",
+  "id": "ce7d83f5-0c3d-42f4-9162-ca97019e89d1",
   "object": "brewer",
-  "name": "HopSaint",
+  "name": "HopSaint Brewing Company",
   "description": "HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn't be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That's at the heart of HopSaint - a community that fosters lasting relationships &amp; enriches our hometown through the production of honest, real beer. A community built on craft beer.",
   "short_description": "A brewery in Torrance, CA.",
   "url": "https://www.hopsaint.com/",
   "cb_verified": true,
   "brewer_verified": false,
-  "last_modified": 1736966600
+  "last_modified": 1783639444
 }
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
@@ -362,7 +361,7 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"name":"HopSaint","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u2019t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u2019s at the heart of HopSaint - a community that fosters lasting relationships &amp; enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/"}'
+  -d '{"name":"HopSaint Brewing Company","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u0027t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u0027s at the heart of HopSaint - a community that fosters lasting relationships &amp; enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https://www.hopsaint.com/"}'
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
 
@@ -408,11 +407,11 @@ curl -X POST \
 
 <pre class="api-code">
 curl -X PUT \
-  https://api.catalog.beer/brewer/65911cdd-52e6-6305-3420-b9bbf6ea958d \
+  https://api.catalog.beer/brewer/ce7d83f5-0c3d-42f4-9162-ca97019e89d1 \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"name":"HopSaint","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass.","short_description":"A brewery in Torrance, CA.","url":"https:\/\/www.hopsaint.com\/"}'
+  -d '{"name":"HopSaint Brewing Company","description":"HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn\u0027t be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That\u0027s at the heart of HopSaint - a community that fosters lasting relationships &amp; enriches our hometown through the production of honest, real beer. A community built on craft beer.","short_description":"A brewery in Torrance, CA.","url":"https://www.hopsaint.com/"}'
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
 
@@ -458,11 +457,11 @@ curl -X PUT \
 
 <pre class="api-code">
 curl -X PATCH \
-  https://api.catalog.beer/brewer/65911cdd-52e6-6305-3420-b9bbf6ea958d \
+  https://api.catalog.beer/brewer/ce7d83f5-0c3d-42f4-9162-ca97019e89d1 \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"short_description":"A craft brewery in Torrance, CA."}'
+  -d '{"short_description":"A brewery in Torrance, CA."}'
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
 
@@ -476,7 +475,7 @@ curl -X PATCH \
 
 <pre class="api-code">
 curl -X DELETE \
-  https://api.catalog.beer/brewer/65911cdd-52e6-6305-3420-b9bbf6ea958d \
+  https://api.catalog.beer/brewer/ce7d83f5-0c3d-42f4-9162-ca97019e89d1 \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -494,7 +493,7 @@ curl -X DELETE \
 
 <pre class="api-code">
 curl -X GET \
-  https://api.catalog.beer/brewer/65911cdd-52e6-6305-3420-b9bbf6ea958d \
+  https://api.catalog.beer/brewer/ce7d83f5-0c3d-42f4-9162-ca97019e89d1 \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -593,7 +592,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  https://api.catalog.beer/brewer \
+  'https://api.catalog.beer/brewer?count=2' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -604,17 +603,18 @@ curl -X GET \
 {
   "object": "list",
   "url": "/brewer",
-  "has_more": false,
+  "has_more": true,
+  "next_cursor": "Mg==",
   "data": [
     {
-      "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
-      "name": "Ballast Point",
-      "last_modified": 1708905600
+      "id": "19555c52-ade8-43fe-a7a8-5888af0842e9",
+      "name": "'t Hofbrouwerijke",
+      "last_modified": 1588448205
     },
     {
-      "id": "65911cdd-52e6-6305-3420-b9bbf6ea958d",
-      "name": "HopSaint",
-      "last_modified": 1706313600
+      "id": "d150fff4-ff71-4171-bd36-fb6dc8a83377",
+      "name": "(512) Brewing Company",
+      "last_modified": 1588448205
     }
   ]
 }
@@ -669,7 +669,7 @@ curl -X GET \
 {
   "object": "count",
   "url": "/brewer/count",
-  "value": 3
+  "value": 6760
 }
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
@@ -762,7 +762,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/brewer/search?q=stone' \
+  'https://api.catalog.beer/brewer/search?q=stone&amp;count=1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -774,18 +774,19 @@ curl -X GET \
   "object": "list",
   "url": "/brewer/search",
   "query": "stone",
-  "has_more": false,
+  "has_more": true,
+  "next_cursor": "MQ==",
   "data": [
     {
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "id": "9e9680fd-66e1-414f-8f5b-491d147aa3c0",
       "object": "brewer",
-      "name": "Stone Brewing",
-      "description": "Stone Brewing, founded in 1996 in San Diego...",
-      "short_description": "San Diego craft brewery",
-      "url": "https://www.stonebrewing.com/",
+      "name": "Stone Church Brewing",
+      "description": null,
+      "short_description": null,
+      "url": null,
       "cb_verified": true,
       "brewer_verified": false,
-      "last_modified": 1737234000
+      "last_modified": 1517949835
     }
   ]
 }
@@ -873,7 +874,7 @@ curl -X GET \
                 <h4>Sample Request</h4>
 <pre class="api-code">
 curl -X GET \
-  https://api.catalog.beer/brewer/e7fa4e64-a39e-fd06-f82a-37de2a7dfbda/beer \
+  https://api.catalog.beer/brewer/ab94abb7-a3e8-4cce-8945-4758cac66a53/beer \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -883,50 +884,52 @@ curl -X GET \
 <pre class="api-code">
 {
   "object": "list",
-  "url": "/brewer/e7fa4e64-a39e-fd06-f82a-37de2a7dfbda/beer",
+  "url": "/brewer/ab94abb7-a3e8-4cce-8945-4758cac66a53/beer",
   "has_more": false,
   "brewer": {
-    "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
+    "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
     "object": "brewer",
-    "name": "Ballast Point",
-    "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we're just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there's a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn't share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
-    "short_description": "Award winning brewery built in San Diego, California. Dedicated to the craft.",
+    "name": "Ballast Point Brewing Company",
+    "description": null,
+    "short_description": null,
     "url": "https://www.ballastpoint.com/",
-    "cb_verified": true,
+    "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": 1736356500
+    "last_modified": 1541544607
   },
   "data": [
     {
-      "id": "01fd323a-5984-a1c5-51a1-9b8abde3afb4",
-      "name": "12 Year Old Elijah Craig Ballast Point Victory at Sea",
-      "style": "Imperial Porter",
-      "style_id": "american-imperial-porter",
-      "parent": "porter",
-      "class": "ale",
-      "beverage_type": "beer"
-    },
-    {
-      "id": "e9a9936e-332c-aa6c-8dcf-70309b483db7",
-      "name": "Abandon Ship",
-      "style": "Smoked Beer",
-      "style_id": null,
+      "id": "650f8973-7c09-4cbf-99cd-857e095d84b0",
+      "name": "Abandon Ship With Chipotle",
+      "style": "Smoke Beer (Lager or Ale)",
+      "style_id": "smoke-beer",
       "parent": "smoked-beer",
       "class": null,
       "beverage_type": "beer"
     },
     {
-      "id": "b4d1c9f3-cb4a-c364-f1f0-a71a94295ead",
-      "name": "Abandon Ship with Chipotle",
-      "style": "Smoked Beer",
-      "style_id": null,
-      "parent": "smoked-beer",
+      "id": "36ebef31-f05b-4c78-b7c1-731ed136fe11",
+      "name": "Ballast Point Belgian-Style Tripel",
+      "style": "Belgian-Style Tripel",
+      "style_id": "belgian-tripel",
+      "parent": "belgian-strong-ale",
+      "class": "ale",
+      "beverage_type": "beer"
+    },
+    {
+      "id": "e778b401-0c2b-4bc0-8b53-ccb59860c1bf",
+      "name": "Ballast Point Red Velvet Cake",
+      "style": "Chocolate / Cocoa-Flavored Beer",
+      "style_id": "chocolate-beer",
+      "parent": "flavored-beer",
       "class": null,
       "beverage_type": "beer"
     }
   ]
 }
 </pre>
+
+                <p><small class="text-muted">Response truncated for documentation &#8212; this brewer has 81 beers in its <var>data</var> array.</small></p>
                 <p><a href="#top">^ Return to top</a></p>
 
                 <h3 id="brewer-locations">List all the Locations for a Brewer</h3>
@@ -985,7 +988,7 @@ curl -X GET \
                 <h4>Sample Request</h4>
 <pre class="api-code">
 curl -X GET \
-  https://api.catalog.beer/brewer/e7fa4e64-a39e-fd06-f82a-37de2a7dfbda/locations \
+  https://api.catalog.beer/brewer/ab94abb7-a3e8-4cce-8945-4758cac66a53/locations \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -994,27 +997,55 @@ curl -X GET \
 <pre class="api-code">
 {
   "object": "list",
-  "url": "/brewer/e7fa4e64-a39e-fd06-f82a-37de2a7dfbda/locations",
+  "url": "/brewer/ab94abb7-a3e8-4cce-8945-4758cac66a53/locations",
   "has_more": false,
   "brewer": {
-    "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
+    "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
     "object": "brewer",
-    "name": "Ballast Point",
+    "name": "Ballast Point Brewing Company",
     "description": null,
     "short_description": null,
     "url": "https://www.ballastpoint.com/",
-    "cb_verified": true,
+    "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": 1737234000
+    "last_modified": 1541544607
   },
   "data": [
     {
-      "id": "d94cdece-0b9f-cab6-9d6e-5fb3ba41d37c",
-      "name": "Daleville, Virginia"
+      "id": "76b558cd-a5f7-4fbe-820a-7a9dc9a924fe",
+      "name": "Chicago"
     },
     {
-      "id": "618df467-d2a3-5fdd-9d9e-f2b338d3485e",
+      "id": "e6c0250b-f179-48ac-8eab-a97c5159c733",
+      "name": "Daleville"
+    },
+    {
+      "id": "4ece62c7-38c2-41a2-a4db-02048e46fe55",
       "name": "Home Brew Mart"
+    },
+    {
+      "id": "972dc9a3-4462-48b5-9a0f-eb0ab6f94738",
+      "name": "Little Italy"
+    },
+    {
+      "id": "275047c9-72f4-4bec-a61e-26bf2b9d3f3e",
+      "name": "Long Beach"
+    },
+    {
+      "id": "baa6cb7d-391b-4755-8881-b4a123ed821a",
+      "name": "Miramar"
+    },
+    {
+      "id": "132eece9-6d63-42a4-81b1-0177a0050414",
+      "name": "Scripps Ranch"
+    },
+    {
+      "id": "2cc26eda-0028-4821-8e8f-df48c7688f77",
+      "name": "Temecula"
+    },
+    {
+      "id": "795b4249-04ed-4061-beda-9273a5feeabd",
+      "name": "The Kettle Room"
     }
   ]
 }
@@ -1080,11 +1111,6 @@ curl -X GET \
                             <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>. Derived from the resolved style; never trusted from client input.</td>
                         </tr>
                         <tr>
-                            <td><var>style_confidence</var></td>
-                            <td>string</td>
-                            <td>How <var>style_id</var> was arrived at: <var>confident</var> (exact match), <var>override</var> (chosen by a person despite a different label), <var>family</var> (filed at a family or class, no specific style), or <var>catch-all</var>. May be <var>null</var> on older records.</td>
-                        </tr>
-                        <tr>
                             <td><var>description</var></td>
                             <td>string</td>
                             <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
@@ -1126,32 +1152,31 @@ curl -X GET \
 
 <pre class="api-code">
 {
-    "id": "bc2170df-eef7-8f6b-205b-63cbfeb4a901",
-    "object": "beer",
-    "name": "Schooner Wet Hop",
-    "style": "West Coast IPA",
-    "style_id": "west-coast-ipa",
-    "parent": "ipa",
-    "class": "ale",
-    "beverage_type": "beer",
-    "style_confidence": "confident",
-    "description": "Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal. To brew this beer we get Cascade Hops from Yakima, Washington. They are picked, shipped and put into the brew within 36 hours. The Wet Hops have a grassy, vegetal, chlorophyll flavor that is reminiscent of fresh cut Greens. We showcase this 100% Cascade Hop Beer with a very light and crisp grain bill including a small portion of rice. This allows the aroma and flavor from such a rare, very seasonal ingredient, to shine.",
-    "abv": 5.5,
-    "ibu": 25,
-    "cb_verified": true,
+  "id": "6a7119c6-92a2-40d2-b87a-2e4529c8577a",
+  "object": "beer",
+  "name": "Sculpin IPA",
+  "style": "American-Style India Pale Ale",
+  "style_id": "american-ipa",
+  "parent": "ipa",
+  "class": "ale",
+  "beverage_type": "beer",
+  "description": "Our Sculpin IPA is a great example of what got us into brewing in the first place. After years of experimenting, we knew hopping an ale at five separate stages would produce something special. The result ended up being this gold-medal winning IPA, whose inspired use of hops creates hints of apricot, peach, mango and lemon flavors.",
+  "abv": 7,
+  "ibu": 70,
+  "cb_verified": true,
+  "brewer_verified": false,
+  "last_modified": 1783639445,
+  "brewer": {
+    "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
+    "object": "brewer",
+    "name": "Ballast Point Brewing Company",
+    "description": null,
+    "short_description": null,
+    "url": "https://www.ballastpoint.com/",
+    "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": 1736547720,
-    "brewer": {
-        "id": "e7fa4e64-a39e-fd06-f82a-37de2a7dfbda",
-        "object": "brewer",
-        "name": "Ballast Point",
-        "description": "## It Begins with the Search for Flavor\r\n\r\nThe perfect balance of taste and aroma. An obsession with ingredients. An exploration of techniques. And while we savor the result, we're just as fascinated by the process to get there. What started as a small group of home brewers, who simply wanted to make a better beer, evolved into the adventurers known today as Ballast Point.\r\n\r\n## Where Science Meets Art\r\n\r\nWe live to add our own touch and ask if there's a better way. As we tinkered, tested and tasted, we discovered that making beer was more art than science. And while we respect and honor tradition, we relish the opportunity to take it further. That freedom has allowed us to reinterpret brewing. And along the way help to reinvigorate the industry. From bringing a hoppy twist to a porter, or developing a proprietary yeast for our amber ale, to creating a breakthrough gold medal-winning IPA.\r\n\r\n## To Share Our Journey\r\nBut all of this would be wasted if we couldn't share it. Whether serving up new flavors, collaborating with seasoned brewmasters, or training the next generation at Home Brew Mart, we not only want to challenge our own tastes, but expand yours.\r\nBallast Point. Dedicated to the craft.",
-        "short_description": "Award winning brewery built in San Diego, California. Dedicated to the craft.",
-        "url": "https://www.ballastpoint.com/",
-        "cb_verified": true,
-        "brewer_verified": false,
-        "last_modified": 1736356500
-    }
+    "last_modified": 1541544607
+  }
 }
 </pre>
                                 <p><a href="#top">^ Return to top</a></p>
@@ -1162,8 +1187,7 @@ curl -X GET \
 
                                 <pre class="api-code">POST https://api.catalog.beer/beer</pre>
 
-                <div class="alert alert-info" role="alert">
-                    <strong>Styles are resolved to a canonical value.</strong> Send the brewer&#8217;s wording as <var>style</var> and the API resolves it to a canonical <a href="#styles">style</a>, family, or class &#8212; for example <code>"West Coast IPA"</code> &#8594; <var>west-coast-ipa</var>, <code>"IPA"</code> &#8594; the <var>ipa</var> family, <code>"Lager"</code> &#8594; the <var>lager</var> class. Your exact wording is preserved in the returned <var>style</var>. You may instead (or additionally) pass <var>style_id</var>, <var>parent</var>, or <var>class</var> to file at a specific tier; the most specific wins. If nothing resolves and no tier is given, the request returns <var>400</var> with a list of valid choices &#8212; pick a closer match or a catch-all (e.g. <code>specialty-beer</code>).</div>
+                <p>The <var>style</var> you submit is kept exactly as you wrote it and matched to the catalog&#8217;s standard list of styles &#8212; for example, &#8220;West Coast IPA&#8221; resolves to the <var>west-coast-ipa</var> style, &#8220;IPA&#8221; to the <var>ipa</var> family, and &#8220;Lager&#8221; to the <var>lager</var> class. To name the classification yourself, send <var>style_id</var>, <var>parent</var>, or <var>class</var>; if you send more than one, the most specific wins. If the label doesn&#8217;t match and no classification is given, the request returns a <var>400 Bad Request</var> error. See <a href="#styles">Styles</a>.</p>
 
                 <table class="table">
                     <thead>
@@ -1205,11 +1229,6 @@ curl -X GET \
                             <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
                         </tr>
                         <tr>
-                            <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
-                        </tr>
-                        <tr>
                             <td><var>description<br><small class="text-muted">(optional)</small></var></td>
                             <td>string</td>
                             <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> and new line characters.</td>
@@ -1235,7 +1254,7 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"West Coast IPA","description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","abv":5.5,"ibu":25}'
+  -d '{"brewer_id": "ab94abb7-a3e8-4cce-8945-4758cac66a53", "name": "Sculpin IPA", "style": "American-Style India Pale Ale", "description": "Our Sculpin IPA is a great example of what got us into brewing in the first place. After years of experimenting, we knew hopping an ale at five separate stages would produce something special. The result ended up being this gold-medal winning IPA, whose inspired use of hops creates hints of apricot, peach, mango and lemon flavors.", "abv": 7, "ibu": 70}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -1246,7 +1265,7 @@ curl -X POST \
 
 <pre class="api-code">PUT https://api.catalog.beer/beer/{beer_id}</pre>
 
-<div class="alert alert-info" role="alert"><strong>Styles are resolved to a canonical value</strong> &#8212; see <a href="#styles">Styles</a>. Send the brewer&#8217;s wording as <var>style</var>, or file at a tier with <var>style_id</var> / <var>parent</var> / <var>class</var>. Unresolvable input with no tier returns <var>400</var>.</div>
+<p>The style fields work the same as when <a href="#beer-create">adding a beer</a>: send the label as <var>style</var>, or name the classification with <var>style_id</var>, <var>parent</var>, or <var>class</var>. If the label doesn&#8217;t match and no classification is given, the request returns a <var>400 Bad Request</var> error. See <a href="#styles">Styles</a>.</p>
 
 <table class="table">
     <thead>
@@ -1288,11 +1307,6 @@ curl -X POST \
             <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
         </tr>
         <tr>
-            <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
-        </tr>
-        <tr>
             <td><var>abv</var></td>
             <td>float</td>
             <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
@@ -1314,11 +1328,11 @@ curl -X POST \
 
 <pre class="api-code">
 curl -X PUT \
-  https://api.catalog.beer/beer/bc2170df-eef7-8f6b-205b-63cbfeb4a901 \
+  https://api.catalog.beer/beer/6a7119c6-92a2-40d2-b87a-2e4529c8577a \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"e7fa4e64-a39e-fd06-f82a-37de2a7dfbda","name":"Schooner Wet Hop","style":"West Coast IPA","abv":5.5,"description":"Wet Hops (fresh hops) are hops that are picked off the vine and used in the brewing process before they are dried and packaged like normal.","ibu":25}'
+  -d '{"brewer_id": "ab94abb7-a3e8-4cce-8945-4758cac66a53", "name": "Sculpin IPA", "style": "American-Style India Pale Ale", "description": "Our Sculpin IPA is a great example of what got us into brewing in the first place. After years of experimenting, we knew hopping an ale at five separate stages would produce something special. The result ended up being this gold-medal winning IPA, whose inspired use of hops creates hints of apricot, peach, mango and lemon flavors.", "abv": 7, "ibu": 70}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -1329,7 +1343,7 @@ curl -X PUT \
 
 <pre class="api-code">PATCH https://api.catalog.beer/beer/{beer_id}</pre>
 
-<div class="alert alert-info" role="alert">Changing the style? Send any of <var>style</var> (label), <var>style_id</var>, <var>parent</var>, or <var>class</var> &#8212; the beer is re-resolved and its tier fields updated together. See <a href="#styles">Styles</a>.</div>
+<p>To change a beer&#8217;s style, send any of <var>style</var>, <var>style_id</var>, <var>parent</var>, or <var>class</var>. The style is re-resolved and all of the beer&#8217;s classification fields are updated together. See <a href="#styles">Styles</a>.</p>
 
 <table class="table">
     <thead>
@@ -1371,11 +1385,6 @@ curl -X PUT \
             <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
         </tr>
         <tr>
-            <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>How the style was resolved, for provenance: <var>confident</var>, <var>override</var>, <var>family</var>, or <var>catch-all</var>. Normally set by the guided style picker; if omitted, the API derives it from the resolved tier.</td>
-        </tr>
-        <tr>
             <td><var>description</var><br><small class="text-muted">(optional)</small></td>
             <td>string</td>
             <td>A description of the beer.</td>
@@ -1397,11 +1406,11 @@ curl -X PUT \
 
 <pre class="api-code">
 curl -X PATCH \
-  https://api.catalog.beer/beer/bc2170df-eef7-8f6b-205b-63cbfeb4a901 \
+  https://api.catalog.beer/beer/6a7119c6-92a2-40d2-b87a-2e4529c8577a \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"abv":5.8,"ibu":30}'
+  -d '{"abv":7,"ibu":70}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -1416,7 +1425,7 @@ curl -X PATCH \
 
 <pre class="api-code">
 curl -X DELETE \
-  https://api.catalog.beer/beer/bc2170df-eef7-8f6b-205b-63cbfeb4a901 \
+  https://api.catalog.beer/beer/6a7119c6-92a2-40d2-b87a-2e4529c8577a \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -1435,7 +1444,7 @@ curl -X DELETE \
 
 <pre class="api-code">
 curl -X GET \
-  https://api.catalog.beer/beer/bc2170df-eef7-8f6b-205b-63cbfeb4a901 \
+  https://api.catalog.beer/beer/6a7119c6-92a2-40d2-b87a-2e4529c8577a \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -1532,7 +1541,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  https://api.catalog.beer/beer \
+  'https://api.catalog.beer/beer?count=3' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -1543,22 +1552,23 @@ curl -X GET \
 {
   "object": "list",
   "url": "/beer",
-  "has_more": false,
+  "has_more": true,
+  "next_cursor": "Mw==",
   "data": [
     {
-      "id": "01fd323a-5984-a1c5-51a1-9b8abde3afb4",
-      "name": "12 Year Old Elijah Craig Ballast Point Victory at Sea",
-      "last_modified": 1708905600
-     },
-     {
-      "id": "e9a9936e-332c-aa6c-8dcf-70309b483db7",
-      "name": "Abandon Ship",
-      "last_modified": 1706313600
+      "id": "ed8d5bcd-9016-4954-9f4c-81855dbad55a",
+      "name": "¡Ándale! Pale Ale",
+      "last_modified": 1588448205
     },
     {
-      "id": "b4d1c9f3-cb4a-c364-f1f0-a71a94295ead",
-      "name": "Abandon Ship with Chipotle",
-      "last_modified": 1706313600
+      "id": "64cd7a20-ebf3-4358-bacf-180d1b7d9b96",
+      "name": "¡Guava Libre!",
+      "last_modified": 1588448205
+    },
+    {
+      "id": "5e4bf0c1-c743-4438-9289-6e77c17ad467",
+      "name": "¡Magnifico!",
+      "last_modified": 1588448205
     }
   ]
 }
@@ -1587,7 +1597,7 @@ curl -X GET \
 {
   "object": "count",
   "url": "/beer/count",
-  "value": 87
+  "value": 60607
 }
 </pre>
 
@@ -1681,7 +1691,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/beer/search?q=ipa&amp;count=2' \
+  'https://api.catalog.beer/beer/search?q=sculpin&amp;count=1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -1692,35 +1702,35 @@ curl -X GET \
 {
   "object": "list",
   "url": "/beer/search",
-  "query": "ipa",
+  "query": "sculpin",
   "has_more": true,
-  "next_cursor": "Mg==",
+  "next_cursor": "MQ==",
   "data": [
     {
-      "id": "e9a9936e-332c-aa6c-8dcf-70309b483db7",
+      "id": "6a7119c6-92a2-40d2-b87a-2e4529c8577a",
       "object": "beer",
-      "name": "Stone IPA",
-      "style": "West Coast IPA",
-      "style_id": "west-coast-ipa",
+      "name": "Sculpin IPA",
+      "style": "American-Style India Pale Ale",
+      "style_id": "american-ipa",
       "parent": "ipa",
       "class": "ale",
       "beverage_type": "beer",
-      "description": "A well-hopped West Coast IPA...",
-      "abv": 6.9,
-      "ibu": 77,
+      "description": "Our Sculpin IPA is a great example of what got us into brewing in the first place. After years of experimenting, we knew hopping an ale at five separate stages would produce something special. The result ended up being this gold-medal winning IPA, whose inspired use of hops creates hints of apricot, peach, mango and lemon flavors.",
+      "abv": 7,
+      "ibu": 70,
       "cb_verified": true,
       "brewer_verified": false,
-      "last_modified": 1737234000,
+      "last_modified": 1783639445,
       "brewer": {
-        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
         "object": "brewer",
-        "name": "Stone Brewing",
-        "description": "Stone Brewing, founded in 1996...",
-        "short_description": "San Diego craft brewery",
-        "url": "https://www.stonebrewing.com/",
-        "cb_verified": true,
+        "name": "Ballast Point Brewing Company",
+        "description": null,
+        "short_description": null,
+        "url": "https://www.ballastpoint.com/",
+        "cb_verified": false,
         "brewer_verified": false,
-        "last_modified": 1737234000
+        "last_modified": 1541544607
       }
     }
   ]
@@ -1730,37 +1740,53 @@ curl -X GET \
 <p><a href="#top">^ Return to top</a></p>
 
 <h2 id="styles">Styles</h2>
+<hr>
 
-<p>Every beer has a <strong>style</strong> &#8212; the kind of beer it is, like an IPA, a stout, or a lager. Catalog.beer records a beer&#8217;s style in two parts, so we get the best of both worlds: the brewer&#8217;s own words, and a tidy category we can sort and count by.</p>
+<p>Catalog.beer records a beer&#8217;s style in two parts: the brewer&#8217;s own label and a canonical classification. The label (<var>beer.style</var>) is plain text, stored and returned exactly as submitted. The classification files the beer against a standard vocabulary of styles, which is what allows the catalog to be sorted, filtered, and counted by style. The vocabulary is drawn from the <a href="https://www.brewersassociation.org/edu/brewers-association-beer-style-guidelines/" target="_blank" rel="noopener">Brewers Association (BA)</a> and <a href="https://www.bjcp.org/bjcp-style-guidelines/" target="_blank" rel="noopener">Beer Judge Certification Program (BJCP)</a> style guidelines.</p>
 
-<p><strong>Part 1: Call it whatever you like.</strong> When you add or edit a beer, the <var>beer.style</var> field is plain text &#8212; type the name exactly as the brewer uses it. Want to call your beer a &#8220;Súper Lager&#8221; or a &#8220;Hazy Double&#8221;? Go for it. We keep that label exactly as you wrote it and show it to everyone, untouched.</p>
+<p>The vocabulary has three tiers, from broadest to most specific. Each tier corresponds to a field on the <a href="#beer-object">beer object</a>.</p>
 
-<p><strong>Part 2: Tell us which category it fits.</strong> A name like &#8220;Hazy Double&#8221; reads well to a person, but a computer can&#8217;t tell that it&#8217;s a kind of IPA. So we also match each beer to one entry on our standard list of styles &#8212; its <em>canonical style</em>. That&#8217;s what lets the catalog answer questions like &#8220;show me every IPA&#8221; or &#8220;how many stouts are there?&#8221; Our standard list is drawn from the <a href='https://www.brewersassociation.org/edu/brewers-association-beer-style-guidelines/'>Brewers Association (BA) guidelines</a> and the <a href='https://www.bjcp.org/bjcp-style-guidelines/'>Beer Judge Certification Program (BJCP) guidelines</a>.</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Tier</th>
+            <th scope="col">Beer Field</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Class</td>
+            <td><var>class</var></td>
+            <td>The broadest grouping: <var>ale</var> or <var>lager</var>. Some families (e.g. wheat beers, sours, ciders, meads) do not roll up to a class; for those, <var>class</var> is <var>null</var>.</td>
+        </tr>
+        <tr>
+            <td>Family</td>
+            <td><var>parent</var></td>
+            <td>A group of related styles, such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var>.</td>
+        </tr>
+        <tr>
+            <td>Style</td>
+            <td><var>style_id</var></td>
+            <td>One specific style, such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</td>
+        </tr>
+    </tbody>
+</table>
 
-<p>You don&#8217;t have to get the category exactly right on your own. When you send just a label, the API tries to recognize it and match it for you &#8212; it knows, for example, that &#8220;NEIPA,&#8221; &#8220;New England IPA,&#8221; and &#8220;Juicy IPA&#8221; all point to the same style. If it recognizes your label, you&#8217;re done. If it doesn&#8217;t, you can name the category yourself.</p>
+<p>A beer may be filed at any tier. The API derives the broader tiers from the one you provide &#8212; file a beer as <var>west-coast-ipa</var> and its <var>parent</var> is set to <var>ipa</var> and its <var>class</var> to <var>ale</var>. The API never fills in a more specific tier than the one you gave it.</p>
 
-<p>The standard list is organized into three levels, from the broadest bucket to the most specific:</p>
+<p>When <a href="#beer-create">adding</a> or <a href="#beer-patch">updating</a> a beer, there are two ways to set the classification:</p>
 
-<ul>
-    <li><strong>Class</strong> &#8212; the broadest grouping: <var>ale</var> or <var>lager</var>. (A few kinds of beer, like wheat beers and sours, don&#8217;t fall neatly into either one. That&#8217;s fine &#8212; they simply don&#8217;t have a class.)</li>
-    <li><strong>Family</strong> &#8212; a middle grouping of related styles, such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var>. (In the data, this field is named <var>parent</var>.)</li>
-    <li><strong>Style</strong> &#8212; one specific entry, such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</li>
-</ul>
+<ol>
+    <li>Send the label as <var>style</var> and let the API match it. The label is checked against every canonical name and alias in the vocabulary &#8212; first as an exact style name, then as a class alias, a family alias, and a style alias. For example, &#8220;NEIPA,&#8221; &#8220;New England IPA,&#8221; and &#8220;Juicy IPA&#8221; all resolve to the same style.</li>
+    <li>Name the classification directly with <var>style_id</var>, <var>parent</var>, or <var>class</var>. These take precedence over <var>style</var>; if you send more than one, the most specific wins. Your label is still kept verbatim.</li>
+</ol>
 
-<p>File a beer at whichever level matches how much you actually know. Know it&#8217;s a West Coast IPA? File it as that exact style. Only know it&#8217;s &#8220;some kind of IPA&#8221;? File it at the IPA family. All you know is that it&#8217;s an ale? File it as the ale class. Whichever level you pick, the API fills in the broader ones for you &#8212; tell it &#8220;West Coast IPA&#8221; and it knows that belongs to the IPA family and the ale class. It never invents detail you didn&#8217;t give it.</p>
+<p>If the label doesn&#8217;t match anything in the vocabulary and no classification is given, the request returns a <var>400 Bad Request</var> error. The vocabulary includes catch-all styles (<var>catch_all: true</var> &#8212; e.g. <var>specialty-beer</var>) for beers that don&#8217;t fit a more specific style.</p>
 
-<p>So in a request, you have two ways to set the category:</p>
+<p>The beer&#8217;s <var>beverage_type</var> (<var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>) is set from the resolved classification. It cannot be set directly.</p>
 
-<ul>
-    <li>Send just <var>beer.style</var> (the brewer&#8217;s wording) and let the API match it for you.</li>
-    <li>Or name the category directly with <var>style_id</var> (a specific style), <var>parent</var> (a family), or <var>class</var>. This is handy when you already know exactly where the beer belongs, or when the API couldn&#8217;t recognize your label. If you send more than one, the most specific one wins.</li>
-</ul>
-
-<p>If the API can&#8217;t recognize your label and you haven&#8217;t named a category, it won&#8217;t guess &#8212; it returns an error and points you to the list, where there&#8217;s always a catch-all (like <em>Specialty</em>) so an unusual beer that fits nowhere else still has a home.</p>
-
-<p>One more field comes along automatically: <var>beverage_type</var> &#8212; <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>. You never set this yourself; it&#8217;s taken from whatever style the beer ends up matching.</p>
-
-<p>The <code>/style</code> endpoints below are read-only. Use them to browse the full standard list &#8212; for example, to build your own style picker or to check a label before you submit it.</p>
+<p>The <code>/style</code> endpoints are read-only. Use them to browse the vocabulary, build a style picker, or check a label before submitting a beer.</p>
 
 <h3 id="style-object">The Style Object</h3>
 
@@ -1780,21 +1806,18 @@ curl -X GET \
         <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. &#8220;American-Style India Pale Ale&#8221;).</td></tr>
         <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
         <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) &#8212; the canonical family tier you can file a beer at.</td></tr>
+        <tr><td><var>class</var></td><td>string</td><td>The slug of the <a href="#style-classes">class</a> the style rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> for families that do not roll up to one.</td></tr>
         <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family (e.g. &#8220;India Pale Ale&#8221;).</td></tr>
         <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
-        <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard &#8220;catch-all&#8221; styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits.</td></tr>
-        <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>.</td></tr>
-        <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">The Specs Object</a>.</td></tr>
+        <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard &#8220;catch-all&#8221; styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits. Use it to separate fallback buckets from standard styles &#8212; for example, keeping catch-alls out of a picker&#8217;s ranked matches.</td></tr>
+        <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side &#8212; for example, in a typeahead &#8212; without an API request per keystroke.</td></tr>
+        <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">the <var>specs</var> field</a> below.</td></tr>
     </tbody>
 </table>
 
-<p><a href="#top">^ Return to top</a></p>
+<h4 id="style-specs">The <var>specs</var> Field</h4>
 
-<!----- STYLES: SPECS OBJECT ----->
-
-<h3 id="style-specs">The Specs Object</h3>
-
-<p>A <a href="#style-object">style</a> object&#8217;s <var>specs</var> field (detail only) holds the style&#8217;s guideline ranges, drawn from the same <var>source</var> as the style. Each field is a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline doesn&#8217;t specify that measurement. An individual <var>min</var> or <var>max</var> may also be <var>null</var> when the guideline gives only one bound.</p>
+<p>The <var>specs</var> field (detail only) holds the style&#8217;s guideline ranges, drawn from the same <var>source</var> as the style. Each field is a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline doesn&#8217;t specify that measurement. An individual <var>min</var> or <var>max</var> may also be <var>null</var> when the guideline gives only one bound.</p>
 
 <table class="table">
     <thead>
@@ -1814,13 +1837,26 @@ curl -X GET \
 </table>
 
 <h4>Sample</h4>
+
 <pre class="api-code">
-"specs": {
+{
+  "id": "american-ipa",
+  "object": "style",
+  "name": "American-Style India Pale Ale",
+  "beverage_type": "beer",
+  "parent": "ipa",
+  "class": "ale",
+  "parent_name": "India Pale Ale",
+  "source": "BA-2026",
+  "catch_all": false,
+  "aliases": ["American India Pale Ale", "American IPA"],
+  "specs": {
     "abv": { "min": 6.3, "max": 7.5 },
     "ibu": { "min": 50, "max": 70 },
     "srm": { "min": 4, "max": 12 },
     "og":  { "min": 1.06, "max": 1.07 },
     "fg":  { "min": 1.01, "max": 1.016 }
+  }
 }
 </pre>
 
@@ -1828,16 +1864,25 @@ curl -X GET \
 
 <h3 id="style-list">List Styles</h3>
 
-<p>Returns every canonical style. The <var>version</var> field reflects the seeded vocabulary version &#8212; watch it to know when to refresh a cached copy.</p>
+<p>To list every style in the vocabulary, send a <strong>GET</strong> request to the <code>/style</code> endpoint. Styles are returned alphabetically by name as compact <a href="#style-object">style objects</a>. The response also includes a <var>version</var> field identifying the current version of the vocabulary; when it changes, refresh any cached copy.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/style</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
 
 <h4>Sample Response</h4>
 <pre class="api-code">
 {
   "object": "list",
   "url": "/style",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "has_more": false,
   "data": [
     {
@@ -1846,20 +1891,32 @@ curl -X GET \
       "name": "American-Style India Pale Ale",
       "beverage_type": "beer",
       "parent": "ipa",
+      "class": "ale",
       "catch_all": false,
-      "aliases": ["American IPA", "American India Pale Ale"]
+      "aliases": ["American India Pale Ale", "American IPA"]
     }
   ]
 }
 </pre>
 
+<p><small class="text-muted">Response truncated for documentation &#8212; the full response contains every style in the vocabulary.</small></p>
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="style-detail">Retrieve a Style</h3>
 
-<p>Returns one style with its full detail, including style guideline specs (ABV, IBU, SRM, OG, FG). The <var>{style_id}</var> is a slug, not a UUID.</p>
+<p>To retrieve a single style, send a <strong>GET</strong> request to the <code>/style</code> endpoint with the <var>{style_id}</var> parameter appended to the path. The <var>style_id</var> is the style&#8217;s slug (e.g. <var>american-ipa</var>), not a UUID. Successful requests return a full <a href="#style-object">style object</a>, including its <a href="#style-specs">specs</a>.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/style/{style_id}</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style/american-ipa \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
 
 <h4>Sample Response</h4>
 <pre class="api-code">
@@ -1869,10 +1926,11 @@ curl -X GET \
   "name": "American-Style India Pale Ale",
   "beverage_type": "beer",
   "parent": "ipa",
+  "class": "ale",
   "parent_name": "India Pale Ale",
   "source": "BA-2026",
   "catch_all": false,
-  "aliases": ["American IPA", "American India Pale Ale"],
+  "aliases": ["American India Pale Ale", "American IPA"],
   "specs": {
     "abv": { "min": 6.3, "max": 7.5 },
     "ibu": { "min": 50, "max": 70 },
@@ -1887,9 +1945,70 @@ curl -X GET \
 
 <h3 id="style-parents">List Families</h3>
 
-<p>Returns the family tier (the <var>parent</var> groupings), each with its <var>class</var> rollup and the aliases that resolve to it.</p>
+<p>To list the families in the vocabulary (the <var>parent</var> tier), send a <strong>GET</strong> request to the <code>/style/parent</code> endpoint. Families are returned in display order. Each family object has the following parameters.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/style/parent</pre>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Parameter</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><var>slug</var></td>
+            <td>string</td>
+            <td>The family&#8217;s slug (e.g. <var>ipa</var>) &#8212; the value used as <var>parent</var> on a beer.</td>
+        </tr>
+        <tr>
+            <td><var>object</var></td>
+            <td>string</td>
+            <td>The name of the object; in this case: &#8220;style_parent&#8221;.</td>
+        </tr>
+        <tr>
+            <td><var>name</var></td>
+            <td>string</td>
+            <td>The name of the family (e.g. &#8220;India Pale Ale&#8221;).</td>
+        </tr>
+        <tr>
+            <td><var>beverage_type</var></td>
+            <td>string</td>
+            <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+        </tr>
+        <tr>
+            <td><var>class</var></td>
+            <td>string</td>
+            <td>The slug of the <a href="#style-classes">class</a> this family rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> if it does not roll up to one.</td>
+        </tr>
+        <tr>
+            <td><var>description</var></td>
+            <td>string</td>
+            <td>A brief description of the family.</td>
+        </tr>
+        <tr>
+            <td><var>sort_order</var></td>
+            <td>integer</td>
+            <td>The family&#8217;s position in display order.</td>
+        </tr>
+        <tr>
+            <td><var>aliases</var></td>
+            <td>array</td>
+            <td>Names and spellings that resolve to this family when sent as a beer&#8217;s <var>style</var>.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style/parent \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
 
 <h4>Sample Response</h4>
 <pre class="api-code">
@@ -1904,21 +2023,74 @@ curl -X GET \
       "name": "India Pale Ale",
       "beverage_type": "beer",
       "class": "ale",
-      "description": "The hop showcase of brewing...",
+      "description": "The hop showcase of brewing: pale, bitter, and intensely aromatic ales ranging from crisp, resinous West Coast versions to soft, juicy hazy ones, plus session, double, Belgian, and black variations. Hops drive the aroma, flavor, and bitterness, with malt kept in a supporting role.",
       "sort_order": 2,
-      "aliases": ["IPA", "India Pale Ale", "IPAs"]
+      "aliases": ["India Pale Ale", "IPA", "IPAs"]
     }
   ]
 }
 </pre>
 
+<p><small class="text-muted">Response truncated for documentation &#8212; the full response contains every family.</small></p>
+
 <p><a href="#top">^ Return to top</a></p>
 
 <h3 id="style-classes">List Classes</h3>
 
-<p>Returns the super-class tier &#8212; currently <var>ale</var> and <var>lager</var> &#8212; with the aliases that resolve to each.</p>
+<p>To list the classes in the vocabulary &#8212; currently <var>ale</var> and <var>lager</var> &#8212; send a <strong>GET</strong> request to the <code>/style/class</code> endpoint. Classes are returned in display order. Each class object has the following parameters.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/style/class</pre>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Parameter</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><var>slug</var></td>
+            <td>string</td>
+            <td>The class&#8217;s slug (e.g. <var>ale</var>) &#8212; the value used as <var>class</var> on a beer.</td>
+        </tr>
+        <tr>
+            <td><var>object</var></td>
+            <td>string</td>
+            <td>The name of the object; in this case: &#8220;style_class&#8221;.</td>
+        </tr>
+        <tr>
+            <td><var>name</var></td>
+            <td>string</td>
+            <td>The name of the class (e.g. &#8220;Ale&#8221;).</td>
+        </tr>
+        <tr>
+            <td><var>beverage_type</var></td>
+            <td>string</td>
+            <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+        </tr>
+        <tr>
+            <td><var>sort_order</var></td>
+            <td>integer</td>
+            <td>The class&#8217;s position in display order.</td>
+        </tr>
+        <tr>
+            <td><var>aliases</var></td>
+            <td>array</td>
+            <td>Names and spellings that resolve to this class when sent as a beer&#8217;s <var>style</var>.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style/class \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
 
 <h4>Sample Response</h4>
 <pre class="api-code">
@@ -2040,39 +2212,39 @@ curl -X GET \
 
 <pre class="api-code">
 {
-    "id": "4920c879-76a6-4bb7-dccf-5f2642e28c08",
-    "object": "location",
-    "name": "San Diego",
-    "url": "",
-    "country_code": "US",
-    "country_short_name": "United States of America",
-    "latitude": 32.8882179,
-    "longitude": -117.1498184,
-    "cb_verified": true,
+  "id": "972dc9a3-4462-48b5-9a0f-eb0ab6f94738",
+  "object": "location",
+  "name": "Little Italy",
+  "url": "https://www.ballastpoint.com/location/ballast-point-little-italy/",
+  "country_code": "US",
+  "country_short_name": "United States of America",
+  "latitude": 32.7276344,
+  "longitude": -117.1697159,
+  "cb_verified": false,
+  "brewer_verified": false,
+  "last_modified": 1589147029,
+  "address": {
+    "address1": null,
+    "address2": "2215 India St",
+    "city": "San Diego",
+    "sub_code": "US-CA",
+    "state_short": "CA",
+    "state_long": "California",
+    "zip5": 92101,
+    "zip4": 1725,
+    "telephone": 6192557213
+  },
+  "brewer": {
+    "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
+    "object": "brewer",
+    "name": "Ballast Point Brewing Company",
+    "description": null,
+    "short_description": null,
+    "url": "https://www.ballastpoint.com/",
+    "cb_verified": false,
     "brewer_verified": false,
-    "last_modified": 1736729100,
-    "address": {
-        "address1": "",
-        "address2": "9990 Alesmith Ct",
-        "city": "San Diego",
-        "sub_code": "US-CA",
-        "state_short": "CA",
-        "state_long": "California",
-        "zip5": 92126,
-        "zip4": 4200,
-        "telephone": 8585499888
-    },
-    "brewer": {
-        "id": "634996c1-5ffb-9099-b015-11cbfe8bb53f",
-        "object": "brewer",
-        "name": "AleSmith Brewing Company",
-        "description": "",
-        "short_description": "",
-        "url": "https://alesmith.com/",
-        "cb_verified": true,
-        "brewer_verified": false,
-        "last_modified": 1736103600
-    }
+    "last_modified": 1541544607
+  }
 }
 </pre>
 
@@ -2124,33 +2296,33 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"050a11d3-0364-1eef-442f-82909ecadb1b","name":"Wrigley","url":"","country_code":"US"}'
+  -d '{"brewer_id":"9f96b99b-9865-4cf0-8950-bdc0d675be9f","name":"San Pedro","country_code":"US"}'
   </pre>
 
 <h4>Sample Response</h4>
  <pre class="api-code">
 {
-  "id": "e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7",
+  "id": "9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b",
   "object": "location",
-  "name": "Wrigley",
-  "url": "",
+  "name": "San Pedro",
+  "url": null,
   "country_code": "US",
   "country_short_name": "United States of America",
   "latitude": null,
   "longitude": null,
   "cb_verified": false,
   "brewer_verified": false,
-  "last_modified": 1738429200,
+  "last_modified": 1589147029,
   "brewer": {
-    "id": "050a11d3-0364-1eef-442f-82909ecadb1b",
+    "id": "9f96b99b-9865-4cf0-8950-bdc0d675be9f",
     "object": "brewer",
     "name": "Brouwerij West",
-    "description": "",
-    "short_description": "",
-    "url": "",
-    "cb_verified": false,
+    "description": null,
+    "short_description": null,
+    "url": "https://www.brouwerijwest.com/",
+    "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": 1738103400
+    "last_modified": 1517001234
   }
 }
 </pre>
@@ -2199,11 +2371,11 @@ curl -X POST \
 
 <pre class="api-code">
 curl -X PUT \
-  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  https://api.catalog.beer/location/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"050a11d3-0364-1eef-442f-82909ecadb1b","name":"Wrigley","country_code":"US","url":"https://www.brouwerijwest.com/wrigley"}'
+  -d '{"brewer_id":"9f96b99b-9865-4cf0-8950-bdc0d675be9f","name":"San Pedro","country_code":"US"}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -2250,11 +2422,11 @@ curl -X PUT \
 
 <pre class="api-code">
 curl -X PATCH \
-  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  https://api.catalog.beer/location/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"name":"Wrigley Taproom"}'
+  -d '{"name":"San Pedro"}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -2269,7 +2441,7 @@ curl -X PATCH \
 
 <pre class="api-code">
 curl -X DELETE \
-  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  https://api.catalog.beer/location/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -2337,49 +2509,49 @@ curl -X DELETE \
 
 <pre class="api-code">
 curl -X POST \
-  https://api.catalog.beer/address/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  https://api.catalog.beer/address/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"address1":"","address2":"518 W Willow St","city":"Long Beach","sub_code":"US-CA","zip5":"","zip4":"","telephone":""}'
+  -d '{"address1":"Warehouse No 9","address2":"110 E 22nd St","city":"San Pedro","sub_code":"US-CA","telephone":"3108339330"}'
 </pre>
 
 <h4>Sample Response</h4>
 
 <pre class="api-code">
 {
-  "id": "e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7",
+  "id": "9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b",
   "object": "location",
-  "name": "Wrigley",
-  "url": "",
+  "name": "San Pedro",
+  "url": null,
   "country_code": "US",
   "country_short_name": "United States of America",
-  "latitude": 33.7946519,
-  "longitude": -118.1891897,
+  "latitude": 33.7273445,
+  "longitude": -118.2799377,
   "cb_verified": false,
   "brewer_verified": false,
-  "last_modified": 1738429500,
+  "last_modified": 1589147029,
   "address": {
-    "address1": "",
-    "address2": "518 W Willow St",
-    "city": "Long Beach",
+    "address1": "Warehouse No 9",
+    "address2": "110 E 22nd St",
+    "city": "San Pedro",
     "sub_code": "US-CA",
     "state_short": "CA",
     "state_long": "California",
-    "zip5": 90806,
-    "zip4": null,
-    "telephone": null
+    "zip5": 90731,
+    "zip4": 7202,
+    "telephone": 3108339330
   },
   "brewer": {
-    "id": "050a11d3-0364-1eef-442f-82909ecadb1b",
+    "id": "9f96b99b-9865-4cf0-8950-bdc0d675be9f",
     "object": "brewer",
     "name": "Brouwerij West",
-    "description": "",
-    "short_description": "",
-    "url": "",
-    "cb_verified": false,
+    "description": null,
+    "short_description": null,
+    "url": "https://www.brouwerijwest.com/",
+    "cb_verified": true,
     "brewer_verified": false,
-    "last_modified": 1738103400
+    "last_modified": 1517001234
   }
 }
 </pre>
@@ -2443,11 +2615,11 @@ curl -X POST \
 
 <pre class="api-code">
 curl -X PUT \
-  https://api.catalog.beer/address/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  https://api.catalog.beer/address/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"address2":"518 W Willow St","city":"Long Beach","sub_code":"US-CA"}'
+  -d '{"address1":"Warehouse No 9","address2":"110 E 22nd St","city":"San Pedro","sub_code":"US-CA","zip5":"90731","zip4":"7202","telephone":"3108339330"}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -2464,7 +2636,7 @@ curl -X PUT \
 
 <pre class="api-code">
 curl -X GET \
-  https://api.catalog.beer/location/e00c24d6-de81-2ea4-dfd8-cd6f2cb5f1e7 \
+  https://api.catalog.beer/location/972dc9a3-4462-48b5-9a0f-eb0ab6f94738 \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -2603,25 +2775,25 @@ curl -X GET \
   "data": [
     {
       "location": {
-        "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
+        "id": "0b4ee673-8db0-4952-bbd6-cc0b69994c10",
         "object": "location",
         "name": "North Park",
-        "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
-        "url": "",
+        "brewer_id": "7205f9f1-6bf0-4241-9f0f-35a2351d8450",
+        "url": null,
         "country_code": "US",
         "country_short_name": "United States of America",
         "latitude": 32.7476883,
         "longitude": -117.12854,
-        "telephone": "6192557136",
+        "telephone": 6192557136,
         "address": {
-          "address1": "",
+          "address1": null,
           "address2": "3812 Grim Ave",
           "city": "San Diego",
           "sub_code": "US-CA",
           "state_short": "CA",
           "state_long": "California",
-          "zip5": "92104",
-          "zip4": "3602"
+          "zip5": 92104,
+          "zip4": 3602
         }
       },
       "distance": {
@@ -2629,7 +2801,7 @@ curl -X GET \
         "units": "miles"
       },
       "brewer": {
-        "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "id": "7205f9f1-6bf0-4241-9f0f-35a2351d8450",
         "object": "brewer",
         "name": "Mike Hess Brewing Co.",
         "description": null,
@@ -2714,38 +2886,38 @@ curl -X GET \
   "data": [
     {
       "location": {
-        "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
+        "id": "95a881ef-794a-4f2a-bd5a-ed88cfd1988d",
         "object": "location",
-        "name": "North Park",
-        "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
-        "url": "",
+        "name": "North Park Flavordome",
+        "brewer_id": "69e7ae7d-9a37-46b3-aa5d-7bf5d092b976",
+        "url": "https://www.moderntimesbeer.com/locations/north-park-flavordome/",
         "country_code": "US",
         "country_short_name": "United States of America",
-        "latitude": 32.7476883,
-        "longitude": -117.12854,
-        "telephone": "6192557136",
+        "latitude": 32.7414894,
+        "longitude": -117.129921,
+        "telephone": 6192695222,
         "address": {
-          "address1": "",
-          "address2": "3812 Grim Ave",
+          "address1": null,
+          "address2": "3000 Upas St",
           "city": "San Diego",
           "sub_code": "US-CA",
           "state_short": "CA",
           "state_long": "California",
-          "zip5": "92104",
-          "zip4": "3602"
+          "zip5": 92104,
+          "zip4": 4221
         }
       },
       "distance": {
-        "distance": 0.1,
+        "distance": 0.6,
         "units": "miles"
       },
       "brewer": {
-        "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "id": "69e7ae7d-9a37-46b3-aa5d-7bf5d092b976",
         "object": "brewer",
-        "name": "Mike Hess Brewing Co.",
+        "name": "Modern Times Beer",
         "description": null,
         "short_description": null,
-        "url": "https://www.mikehessbrewing.com/",
+        "url": "http://www.moderntimesbeer.com/",
         "cb_verified": true,
         "brewer_verified": false
       }
@@ -2830,38 +3002,38 @@ curl -X GET \
   "data": [
     {
       "location": {
-        "id": "d23d1ef7-4659-23e9-9ddb-405ece1223e9",
+        "id": "7abe715f-0ddf-405e-b730-e2ab1abaef13",
         "object": "location",
-        "name": "North Park",
-        "brewer_id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
-        "url": "",
+        "name": "East Village",
+        "brewer_id": "880a8e73-ae38-4466-b6af-f84141ae6996",
+        "url": "https://baycitybrewingco.com/visit/tasting-room/",
         "country_code": "US",
         "country_short_name": "United States of America",
-        "latitude": 32.7476883,
-        "longitude": -117.12854,
-        "telephone": "6192557136",
+        "latitude": 32.7119141,
+        "longitude": -117.1571503,
+        "telephone": 6197701844,
         "address": {
-          "address1": "",
-          "address2": "3812 Grim Ave",
+          "address1": null,
+          "address2": "627 8th Ave",
           "city": "San Diego",
           "sub_code": "US-CA",
           "state_short": "CA",
           "state_long": "California",
-          "zip5": "92104",
-          "zip4": "3602"
+          "zip5": 92101,
+          "zip4": 6453
         }
       },
       "distance": {
-        "distance": 2.3,
+        "distance": 0.3,
         "units": "miles"
       },
       "brewer": {
-        "id": "008fdcf3-b59d-9d7e-6b14-540a88bb36fa",
+        "id": "880a8e73-ae38-4466-b6af-f84141ae6996",
         "object": "brewer",
-        "name": "Mike Hess Brewing Co.",
-        "description": null,
+        "name": "Bay City Brewing",
+        "description": "Our brewing facility is located in the heart of San Diego between Mission Bay and San Diego Bay. From craft beer and cocktails to delicious food and wine, we strive to make every experience memorable.\r\n\r\nThe Bay City Brewing Company was established in San Diego, California in 1912 (incorporated in 1911). It was initially controlled by F.C. and August Lang, J.H. Zitt’s father-in-law and brother-in-law. Today, the Bay City Brewing Company is owned and operated by its partners Chad Robley, Ben Dubois, and Greg Anderson – all local San Diegans.",
         "short_description": null,
-        "url": "https://www.mikehessbrewing.com/",
+        "url": "http://baycitybrewingco.com/",
         "cb_verified": true,
         "brewer_verified": false
       }

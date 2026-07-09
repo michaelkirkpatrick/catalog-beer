@@ -47,7 +47,7 @@ if(isset($_GET['brewerID'])){
             }else{
                 // Get Posted Variables
                 $name = $_POST['name'];
-                $styleLabel = $_POST['style_label'] ?? '';
+                $styleLabel = $_POST['style'] ?? '';
                 $styleID = $_POST['style_id'] ?? '';
                 $styleParent = $_POST['parent'] ?? '';
                 $styleClass = $_POST['class'] ?? '';
@@ -59,7 +59,7 @@ if(isset($_GET['brewerID'])){
 
                 // Send the brewer's raw label + the resolved tier (style/family/class);
                 // the API derives the coarser levels + beverage_type (client not trusted).
-                $beerPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'style_label'=>$styleLabel, 'style_id'=>$styleID, 'parent'=>$styleParent, 'class'=>$styleClass, 'style_confidence'=>$styleConfidence, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
+                $beerPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'style'=>$styleLabel, 'style_id'=>$styleID, 'parent'=>$styleParent, 'class'=>$styleClass, 'style_confidence'=>$styleConfidence, 'description'=>$description, 'abv'=>$abv, 'ibu'=>$ibu);
                 $beerResponse = $api->request('POST', '/beer', $beerPOST);
                 $beerData = json_decode($beerResponse, true);
                 if(!isset($beerData['error'])){
