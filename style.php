@@ -46,12 +46,21 @@ $className = !empty($styleData->class) ? $text1->get(ucfirst($styleData->class))
 $srm = $styleData->specs->srm ?? null;
 $srmMin = (is_object($srm) && is_numeric($srm->min ?? null)) ? floatval($srm->min) : null;
 $srmMax = (is_object($srm) && is_numeric($srm->max ?? null)) ? floatval($srm->max) : null;
-$srmOpen = ($srmMin !== null && $srmMax === null);
-if($srmMin === null){ $srmMin = $srmMax; }
-$hasSrm = ($srmMin !== null);
+$srmOpen = ($srmMin !== null && $srmMax === null);   // "40+"  — floor, no ceiling
+$srmUnder = ($srmMin === null && $srmMax !== null);  // "<8"   — ceiling, no floor
+$hasSrm = ($srmMin !== null || $srmMax !== null);
 // The SRM color chart tops out at 40, so an open range paints to 40
+$srmPaintMin = $srmUnder ? 1 : $srmMin;
 $srmPaintMax = $srmOpen ? max($srmMin, 40) : $srmMax;
-$srmMid = $hasSrm ? ($srmOpen ? $srmMin : ($srmMin + $srmMax) / 2) : null;
+if($srmOpen){
+    $srmMid = $srmMin;
+}elseif($srmUnder){
+    $srmMid = $srmMax / 2;
+}elseif($hasSrm){
+    $srmMid = ($srmMin + $srmMax) / 2;
+}else{
+    $srmMid = null;
+}
 
 // Lede: the first sentence of the description
 $lede = '';
@@ -65,13 +74,14 @@ if(!empty($styleData->description)){
 $specBar = function($label, $spec, $decimals, $suffix, $scaleMin, $scaleMax){
     $min = (is_object($spec) && is_numeric($spec->min ?? null)) ? floatval($spec->min) : null;
     $max = (is_object($spec) && is_numeric($spec->max ?? null)) ? floatval($spec->max) : null;
-    // Open-ended guideline value ("8%+"): a floor with no ceiling
+    // Open-ended guideline values: "8%+" is a floor with no ceiling;
+    // "<0.5%" is a ceiling with no floor
     $open = ($min !== null && $max === null);
-    if($min === null){ $min = $max; }
-    if($min === null){
+    $under = ($min === null && $max !== null);
+    if($min === null && $max === null){
         return '';
     }
-    $lo = max(0, min(1, ($min - $scaleMin) / ($scaleMax - $scaleMin)));
+    $lo = $under ? 0 : max(0, min(1, ($min - $scaleMin) / ($scaleMax - $scaleMin)));
     $hi = $open ? 1 : max(0, min(1, ($max - $scaleMin) / ($scaleMax - $scaleMin)));
     $left = number_format($lo * 100, 1);
     $width = number_format(max(3, ($hi - $lo) * 100), 1);
@@ -81,6 +91,8 @@ $specBar = function($label, $spec, $decimals, $suffix, $scaleMin, $scaleMax){
     };
     if($open){
         $value = $fmt($min) . '+';
+    }elseif($under){
+        $value = '&lt;' . $fmt($max);
     }elseif($min === $max){
         $value = $fmt($min);
     }else{
@@ -147,7 +159,7 @@ echo $htmlHead->html;
                 echo '<p class="da-aka">Also known as ' . implode(', ', $aliases) . '</p>';
             }
             if($hasSrm){
-                echo '<div class="da-glass sp-glass" style="background:' . SRM::gradient(max(1, $srmMin - 1), $srmPaintMax, '180deg') . '"><div class="sp-foam"></div></div>';
+                echo '<div class="da-glass sp-glass" style="background:' . SRM::gradient(max(1, $srmPaintMin - 1), $srmPaintMax, '180deg') . '"><div class="sp-foam"></div></div>';
             }
             ?>
         </header>
@@ -236,10 +248,17 @@ echo $htmlHead->html;
                 <?php if($hasSrm){ ?>
                 <div>
                     <div class="sp-section-h" style="border:0;padding:0;margin-bottom:.7rem;">Color &middot; SRM</div>
-                    <div class="sp-srm-range" style="background:<?php echo SRM::gradient($srmMin, $srmPaintMax, '90deg'); ?>"></div>
+                    <div class="sp-srm-range" style="background:<?php echo SRM::gradient($srmPaintMin, $srmPaintMax, '90deg'); ?>"></div>
                     <div class="sp-srm-legend d-flex justify-content-between" style="margin-top:.4rem;">
-                        <span>SRM <?php echo ($srmMin + 0) . ($srmOpen ? '+' : ''); ?></span>
-                        <span><?php echo $srmOpen ? '' : ($srmMax + 0); ?></span>
+                        <?php
+                        if($srmOpen){
+                            echo '<span>SRM ' . ($srmMin + 0) . '+</span><span></span>';
+                        }elseif($srmUnder){
+                            echo '<span>SRM &lt;' . ($srmMax + 0) . '</span><span></span>';
+                        }else{
+                            echo '<span>SRM ' . ($srmMin + 0) . '</span><span>' . ($srmMax + 0) . '</span>';
+                        }
+                        ?>
                     </div>
                 </div>
                 <?php } if($specBars !== ''){ ?>

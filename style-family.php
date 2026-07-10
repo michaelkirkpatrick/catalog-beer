@@ -86,7 +86,7 @@ $srmLabel = function($s){
         return '';
     }
     if(!is_numeric($min)){
-        return 'SRM ' . ($max + 0);
+        return 'SRM &lt;' . ($max + 0);
     }
     if(!is_numeric($max)){
         return 'SRM ' . ($min + 0) . '+';
