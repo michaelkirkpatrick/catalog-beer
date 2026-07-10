@@ -110,7 +110,14 @@ echo $htmlHead->html;
         <div class="sp-eyebrow">
             <a href="/style">Styles</a><?php
             if($className !== ''){ echo ' &nbsp;/&nbsp; <span>' . $className . '</span>'; }
-            if($parentName !== ''){ echo ' &nbsp;/&nbsp; <span>' . $parentName . '</span>'; }
+            if($parentName !== ''){
+                $parentSlug = !empty($styleData->parent) ? $text3->get($styleData->parent) : '';
+                if($parentSlug !== ''){
+                    echo ' &nbsp;/&nbsp; <a href="/style/family/' . $parentSlug . '">' . $parentName . '</a>';
+                }else{
+                    echo ' &nbsp;/&nbsp; <span>' . $parentName . '</span>';
+                }
+            }
             ?>
         </div>
 

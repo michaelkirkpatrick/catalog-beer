@@ -45,6 +45,7 @@ RewriteRule ^brewer/?$ brewer-list.php [L]
 RewriteRule ^map/?$ brewery-map.php [L]
 
 RewriteRule ^style/?$ style-list.php [L]
+RewriteRule ^style/family/([-0-9a-z]{1,64})/?$ style-family.php?parentSlug=$1 [L]
 RewriteRule ^style/([-0-9a-z]{1,64})/?$ style.php?styleID=$1 [L]
 
 RewriteRule ^location/([-0-9a-f]{36})/add-address$ address-add.php?locationID=$1 [L]

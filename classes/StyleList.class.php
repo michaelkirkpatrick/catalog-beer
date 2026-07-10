@@ -6,7 +6,7 @@ per page load).
 
 Emits one global, window.CB_TAX, in the compact runtime shape the resolver uses:
   classes : [{slug,name,bev,al}]                    (GET /style/class)
-  parents : [{slug,name,cls,bev,sort,al}]           (GET /style/parent)
+  parents : [{slug,name,cls,bev,sort,al,desc}]      (GET /style/parent)
   styles  : [{id,name,parent,cat,fam,bev,ca,al,srm}]  (GET /style; srm = {min,max}|null)
 
 The database is the single source of truth; this is the browser-delivery path.
@@ -38,8 +38,9 @@ class StyleList {
     }
 
     public static function parents(){
-        if(isset($_SESSION['cb_parents']) && is_array($_SESSION['cb_parents'])){
-            return $_SESSION['cb_parents'];
+        // v2: rows carry desc — versioned key so pre-upgrade session caches refetch
+        if(isset($_SESSION['cb_parents_v2']) && is_array($_SESSION['cb_parents_v2'])){
+            return $_SESSION['cb_parents_v2'];
         }
         $data = self::call('/style/parent');
         $out = array();
@@ -51,9 +52,10 @@ class StyleList {
                 'bev'  => $p['beverage_type'] ?? 'beer',
                 'sort' => isset($p['sort_order']) ? intval($p['sort_order']) : null,
                 'al'   => self::aliases($p),
+                'desc' => $p['description'] ?? null,
             );
         }
-        if($out){ $_SESSION['cb_parents'] = $out; }
+        if($out){ $_SESSION['cb_parents_v2'] = $out; }
         return $out;
     }
 

@@ -221,6 +221,24 @@ if(!$apiData || !isset($apiData->data)){
     echo "Styles complete\n";
 }
 
+// Family pages
+$apiData = request('/style/parent');
+if(!$apiData || !isset($apiData->data)){
+    echo "Error: Failed to fetch family list. Aborting family section.\n";
+}else{
+    $familyLastMod = filemtime(ROOT . '/style-family.php');
+    foreach($apiData->data as $family){
+        if(!isset($family->slug)){
+            echo "Warning: Skipping family with missing data\n";
+            continue;
+        }
+        writeUrl($file, $prefix . 'style/family/' . $family->slug, $familyLastMod, 'monthly', 0.6);
+        $urlCount++;
+        checkSitemapLimit($file, $urlCount, $sitemapNumber);
+    }
+    echo "Families complete\n";
+}
+
 // --- Close final sitemap file ---
 closeSitemapFile($file);
 

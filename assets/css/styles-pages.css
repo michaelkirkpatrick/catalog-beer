@@ -95,6 +95,23 @@
     .da-glass { position: static; margin-top: 1.25rem; }
 }
 
+/* ---- Style family page ---- */
+.fam-hero { padding: 1.5rem 0 1.75rem; border-bottom: 2px solid var(--cb-ink); margin-bottom: 1.5rem; }
+.fam-title { font-size: 3.4rem; line-height: 1; margin: 0; }
+.fam-title .sp-count { font-size: .8rem; margin-left: .5rem; }
+.fam-lede { margin-top: 1rem; max-width: 60ch; font-size: 1.2rem; }
+.fam-styles { display: grid; gap: .15rem; margin-bottom: 2.5rem; }
+.fam-row {
+    display: flex; align-items: center; gap: .8rem;
+    padding: .7rem .3rem; border-bottom: 1px solid var(--cb-line); text-decoration: none;
+}
+.fam-row:hover { background: var(--cb-paper-2); }
+.fam-chip { width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(27,26,23,.1); flex: none; }
+.fam-chip-none { background: var(--cb-paper-3); }
+.fam-name { color: var(--cb-ink); font-weight: 500; flex: 1; }
+.fam-srm { font-family: var(--cb-mono); font-size: .72rem; color: var(--cb-muted); white-space: nowrap; }
+@media (max-width: 560px){ .fam-title { font-size: 2.4rem; } }
+
 /* ---- Styles index — "Color Cards" ---- */
 .ix-head { padding: 2rem 0 1.5rem; margin-bottom: 1.5rem; }
 .ix-h1 { font-family: var(--cb-serif); font-size: 3.4rem; color: var(--cb-ink); margin: 0; line-height: 1; }
@@ -113,6 +130,8 @@
 .ix-card-styles a { color: inherit; text-decoration: none; }
 .ix-card-styles a:hover { color: var(--cb-link); text-decoration: underline; }
 .ix-chip-list { font-size: .95rem; color: var(--cb-ink-2); line-height: 1.8; max-width: 72ch; }
+.ix-fam-link { color: inherit; text-decoration: none; }
+.ix-fam-link:hover { color: var(--cb-link); text-decoration: underline; }
 .ix-chip-sep { color: var(--cb-muted-2); padding: 0 .3rem; }
 @media (max-width: 860px){ .ix-card-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px){ .ix-card-grid { grid-template-columns: 1fr; } .ix-h1 { font-size: 2.4rem; } }

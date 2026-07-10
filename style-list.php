@@ -154,8 +154,9 @@ echo $htmlHead->html;
                         $cardStyle = ' style="--pc:' . $accent . '"';
                     }
 
-                    // Cards become links to family pages when those pages exist
-                    echo '<div class="ix-card"' . $cardStyle . '>';
+                    // The whole card links to the family page (so the style
+                    // names in the preview stay plain text — no nested anchors)
+                    echo '<a class="ix-card" href="/style/family/' . rawurlencode($p['slug']) . '"' . $cardStyle . '>';
                     echo '<div class="ix-card-top"><span class="ix-card-name">' . $text->get($p['name']) . '</span><span class="sp-count">' . count($kids) . '</span></div>';
                     if($mids){
                         echo '<div class="ix-sw-row">';
@@ -166,18 +167,19 @@ echo $htmlHead->html;
                     }
                     $preview = array();
                     foreach(array_slice($kids, 0, 3) as $s){
-                        $preview[] = '<a href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a>';
+                        $preview[] = $text->get($s['name']);
                     }
                     $more = (count($kids) > 3) ? ' &middot; +' . (count($kids) - 3) . ' more' : '';
                     echo '<div class="ix-card-styles">' . implode(' &middot; ', $preview) . $more . '</div>';
-                    echo '</div>';  // Close ix-card
+                    echo '</a>';  // Close ix-card
                 }
                 echo '</div>';  // Close ix-card-grid
             }else{
-                // Non-beer beverage type: heading + plain list of its styles
+                // Non-beer beverage type: heading (linking to the family page)
+                // + plain list of its styles
                 $p = $section['families'][0];
                 $kids = $byParent[$p['slug']];
-                echo '<h2 class="ix-class-h sp-class-h">' . $text->get($section['name']) . ' <span class="sp-count">' . count($kids) . ' styles</span></h2>';
+                echo '<h2 class="ix-class-h sp-class-h"><a class="ix-fam-link" href="/style/family/' . rawurlencode($p['slug']) . '">' . $text->get($section['name']) . '</a> <span class="sp-count">' . count($kids) . ' styles</span></h2>';
                 $names = array();
                 foreach($kids as $s){
                     $names[] = '<a class="sp-style-link" href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a>';
