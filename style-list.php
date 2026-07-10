@@ -166,7 +166,7 @@ echo $htmlHead->html;
                     }
                     $preview = array();
                     foreach(array_slice($kids, 0, 3) as $s){
-                        $preview[] = $text->get($s['name']);
+                        $preview[] = '<a href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a>';
                     }
                     $more = (count($kids) > 3) ? ' &middot; +' . (count($kids) - 3) . ' more' : '';
                     echo '<div class="ix-card-styles">' . implode(' &middot; ', $preview) . $more . '</div>';
@@ -180,7 +180,7 @@ echo $htmlHead->html;
                 echo '<h2 class="ix-class-h sp-class-h">' . $text->get($section['name']) . ' <span class="sp-count">' . count($kids) . ' styles</span></h2>';
                 $names = array();
                 foreach($kids as $s){
-                    $names[] = $text->get($s['name']);
+                    $names[] = '<a class="sp-style-link" href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a>';
                 }
                 echo '<p class="ix-chip-list">' . implode('<span class="ix-chip-sep">&middot;</span>', $names) . '</p>';
             }

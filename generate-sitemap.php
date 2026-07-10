@@ -198,6 +198,29 @@ while(true){
 
 echo "Beers complete\n";
 
+// --- (4) Styles ---
+
+echo "Starting styles...\n";
+
+$apiData = request('/style');
+if(!$apiData || !isset($apiData->data)){
+    echo "Error: Failed to fetch style list. Aborting style section.\n";
+}else{
+    // Styles have no per-row last_modified; content changes ship as deploys,
+    // so the page file's mtime is the honest signal.
+    $styleLastMod = filemtime(ROOT . '/style.php');
+    foreach($apiData->data as $style){
+        if(!isset($style->id)){
+            echo "Warning: Skipping style with missing data\n";
+            continue;
+        }
+        writeUrl($file, $prefix . 'style/' . $style->id, $styleLastMod, 'monthly', 0.6);
+        $urlCount++;
+        checkSitemapLimit($file, $urlCount, $sitemapNumber);
+    }
+    echo "Styles complete\n";
+}
+
 // --- Close final sitemap file ---
 closeSitemapFile($file);
 

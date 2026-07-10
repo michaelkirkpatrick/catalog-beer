@@ -77,6 +77,24 @@
 .sp-style-link:hover { text-decoration: underline; }
 .sp-count { font-family: var(--cb-mono); font-size: .68rem; color: var(--cb-muted); }
 
+/* ---- Style detail — "Tasting Sheet" ---- */
+.da-hero { position: relative; padding: 1.5rem 0 1.75rem; border-bottom: 2px solid var(--cb-ink); margin-bottom: 2rem; }
+.da-title { font-size: 4.2rem; line-height: 1.0; margin: 0; max-width: 14ch; }
+.da-sub { margin-top: 1rem; max-width: 34ch; }
+.da-aka { font-family: var(--cb-mono); font-size: .72rem; letter-spacing: .06em; color: var(--cb-muted); margin: .8rem 0 0; max-width: 48ch; }
+.da-glass { position: absolute; top: 1.5rem; right: 0; height: 188px; width: 112px; }
+.da-body { display: grid; grid-template-columns: 1fr 320px; gap: 3rem; align-items: start; }
+.da-body-solo { grid-template-columns: 1fr; }
+.da-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.75rem;
+    background: var(--cb-paper-2); border: 1px solid var(--cb-line); border-radius: .75rem; padding: 1.25rem 1.25rem 1.4rem; }
+.da-prose-h { font-family: var(--cb-serif); font-size: 1.6rem; color: var(--cb-ink); margin: 2.25rem 0 .75rem; }
+.da-prose-h:first-child { margin-top: 0; }
+@media (max-width: 860px){
+    .da-body { grid-template-columns: 1fr; }
+    .da-title { font-size: 2.8rem; }
+    .da-glass { position: static; margin-top: 1.25rem; }
+}
+
 /* ---- Styles index — "Color Cards" ---- */
 .ix-head { padding: 2rem 0 1.5rem; margin-bottom: 1.5rem; }
 .ix-h1 { font-family: var(--cb-serif); font-size: 3.4rem; color: var(--cb-ink); margin: 0; line-height: 1; }
@@ -92,6 +110,8 @@
 .ix-sw-row { display: flex; gap: 3px; margin: .8rem 0; }
 .ix-sw { flex: 1; height: 26px; border-radius: 3px; border: 1px solid rgba(27,26,23,.08); }
 .ix-card-styles { font-size: .82rem; color: var(--cb-muted); line-height: 1.5; }
+.ix-card-styles a { color: inherit; text-decoration: none; }
+.ix-card-styles a:hover { color: var(--cb-link); text-decoration: underline; }
 .ix-chip-list { font-size: .95rem; color: var(--cb-ink-2); line-height: 1.8; max-width: 72ch; }
 .ix-chip-sep { color: var(--cb-muted-2); padding: 0 .3rem; }
 @media (max-width: 860px){ .ix-card-grid { grid-template-columns: repeat(2, 1fr); } }
