@@ -1,0 +1,98 @@
+/* styles-pages.css — shared primitives for the Styles index + detail pages.
+   The kit: page measure, editorial type, SRM swatches, spec range bars, AAFM
+   blocks, beer teasers, sources. Index-specific .ix-* rules at the bottom.
+   All --cb-* tokens live in catalog.css. */
+
+/* ---- page measure / editorial type ---- */
+.sp-page { max-width: 1080px; margin: 0 auto; padding: 0 1.25rem; }
+.sp-eyebrow {
+    font-family: var(--cb-mono); font-size: .72rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--cb-muted);
+}
+.sp-eyebrow a { color: var(--cb-link); text-decoration: none; }
+.sp-eyebrow a:hover { text-decoration: underline; }
+.sp-title { font-family: var(--cb-serif); color: var(--cb-ink); line-height: .98; letter-spacing: -.015em; }
+.sp-lede {
+    font-family: var(--cb-serif); font-style: italic; color: var(--cb-ink-2);
+    font-size: 1.4rem; line-height: 1.4; font-weight: 400;
+}
+.sp-prose { color: var(--cb-ink-2); line-height: 1.7; }
+.sp-prose p { margin: 0 0 1rem; }
+.sp-section-h {
+    font-family: var(--cb-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--cb-muted); margin: 0 0 .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--cb-line);
+}
+
+/* ---- SRM swatch / liquid chip ---- */
+.sp-swatch { border-radius: 999px; display: inline-block; vertical-align: middle; }
+.sp-srm-range {
+    height: 12px; border-radius: 999px; border: 1px solid rgba(27,26,23,.12);
+}
+.sp-srm-legend { font-family: var(--cb-mono); font-size: .68rem; color: var(--cb-muted); }
+
+/* a tall "glass" of beer filled in the style's SRM color */
+.sp-glass { position: relative; width: 96px; border-radius: 6px 6px 14px 14px; overflow: hidden;
+    border: 1px solid rgba(27,26,23,.14); box-shadow: inset 0 0 0 3px rgba(255,255,255,.06); }
+.sp-glass .sp-foam { position: absolute; top: 0; left: 0; right: 0; height: 16%;
+    background: linear-gradient(#fffefb,#f3ead2); border-bottom: 1px solid rgba(27,26,23,.06); }
+
+/* ---- spec range bars (ABV/IBU/OG/FG) ---- */
+.sp-specs { display: flex; flex-direction: column; gap: .85rem; }
+.sp-spec { display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: center; gap: .7rem; }
+.sp-spec-k { font-family: var(--cb-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--cb-muted); }
+.sp-spec-track { position: relative; height: 6px; background: var(--cb-paper-3); border-radius: 999px; }
+.sp-spec-fill { position: absolute; top: 0; bottom: 0; background: var(--cb-amber); border-radius: 999px; }
+.sp-spec-v { font-family: var(--cb-mono); font-size: .78rem; color: var(--cb-ink-2); white-space: nowrap; }
+
+/* ---- AAFM (appearance/aroma/flavor/mouthfeel) ---- */
+.sp-aafm { display: grid; gap: 1.1rem; }
+.sp-aafm-k {
+    font-family: var(--cb-mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--cb-amber-deep); margin-bottom: .25rem;
+}
+.sp-aafm-v { color: var(--cb-ink-2); line-height: 1.6; font-size: .95rem; }
+
+/* ---- beers-in-style teaser ---- */
+.sp-beers { display: grid; gap: .15rem; }
+.sp-beer-row {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+    padding: .6rem .2rem; border-bottom: 1px solid var(--cb-line); text-decoration: none;
+}
+.sp-beer-row:hover { background: var(--cb-paper-2); }
+.sp-beer-name { color: var(--cb-ink); font-weight: 500; }
+.sp-beer-brewer { color: var(--cb-muted); font-size: .85rem; }
+.sp-beer-abv { font-family: var(--cb-mono); font-size: .8rem; color: var(--cb-muted); }
+
+/* ---- sources / citations ---- */
+.sp-sources { font-size: .82rem; color: var(--cb-muted); line-height: 1.6; }
+.sp-source-tag {
+    font-family: var(--cb-mono); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--cb-ink-2); background: var(--cb-paper-3); border-radius: .25rem; padding: .1rem .4rem; margin-right: .35rem;
+}
+
+/* ---- taxonomy tree ---- */
+.sp-class-h { font-family: var(--cb-serif); color: var(--cb-ink); letter-spacing: -.01em; }
+.sp-parent { text-decoration: none; }
+.sp-style-link { color: var(--cb-link); text-decoration: none; }
+.sp-style-link:hover { text-decoration: underline; }
+.sp-count { font-family: var(--cb-mono); font-size: .68rem; color: var(--cb-muted); }
+
+/* ---- Styles index — "Color Cards" ---- */
+.ix-head { padding: 2rem 0 1.5rem; margin-bottom: 1.5rem; }
+.ix-h1 { font-family: var(--cb-serif); font-size: 3.4rem; color: var(--cb-ink); margin: 0; line-height: 1; }
+.ix-sub { color: var(--cb-muted); margin-top: .6rem; max-width: 60ch; }
+.ix-class { margin-bottom: 2.5rem; }
+.ix-class-h { font-size: 1.5rem; margin: 0 0 1.1rem; }
+.ix-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.ix-card { --pc: var(--cb-line-2); display: block; text-decoration: none; background: #fff; border: 1px solid var(--cb-line-2);
+    border-radius: .7rem; padding: 1rem 1.1rem 1.1rem; transition: border-color .12s, box-shadow .12s; }
+.ix-card:hover { border-color: var(--pc); box-shadow: 0 .4rem 1rem rgba(27,26,23,.08); }
+.ix-card-top { display: flex; align-items: baseline; justify-content: space-between; }
+.ix-card-name { font-family: var(--cb-serif); font-size: 1.35rem; color: var(--cb-ink); }
+.ix-sw-row { display: flex; gap: 3px; margin: .8rem 0; }
+.ix-sw { flex: 1; height: 26px; border-radius: 3px; border: 1px solid rgba(27,26,23,.08); }
+.ix-card-styles { font-size: .82rem; color: var(--cb-muted); line-height: 1.5; }
+.ix-chip-list { font-size: .95rem; color: var(--cb-ink-2); line-height: 1.8; max-width: 72ch; }
+.ix-chip-sep { color: var(--cb-muted-2); padding: 0 .3rem; }
+@media (max-width: 860px){ .ix-card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px){ .ix-card-grid { grid-template-columns: 1fr; } .ix-h1 { font-size: 2.4rem; } }

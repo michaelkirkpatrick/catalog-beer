@@ -7,7 +7,7 @@ per page load).
 Emits one global, window.CB_TAX, in the compact runtime shape the resolver uses:
   classes : [{slug,name,bev,al}]                    (GET /style/class)
   parents : [{slug,name,cls,bev,sort,al}]           (GET /style/parent)
-  styles  : [{id,name,parent,cat,fam,bev,ca,al}]    (GET /style)
+  styles  : [{id,name,parent,cat,fam,bev,ca,al,srm}]  (GET /style; srm = {min,max}|null)
 
 The database is the single source of truth; this is the browser-delivery path.
 If the API call fails, the lists are empty and the field degrades to a plain text
@@ -16,8 +16,9 @@ input (the server still resolves/validates on submit).
 class StyleList {
 
     public static function styles(){
-        if(isset($_SESSION['cb_styles']) && is_array($_SESSION['cb_styles'])){
-            return $_SESSION['cb_styles'];
+        // v2: rows carry srm — versioned key so pre-upgrade session caches refetch
+        if(isset($_SESSION['cb_styles_v2']) && is_array($_SESSION['cb_styles_v2'])){
+            return $_SESSION['cb_styles_v2'];
         }
         $data = self::call('/style');
         $out = array();
@@ -29,9 +30,10 @@ class StyleList {
                 'bev'    => $s['beverage_type'] ?? 'beer',
                 'ca'     => !empty($s['catch_all']),
                 'al'     => self::aliases($s),
+                'srm'    => (isset($s['srm']) && is_array($s['srm'])) ? $s['srm'] : null,
             );
         }
-        if($out){ $_SESSION['cb_styles'] = $out; }
+        if($out){ $_SESSION['cb_styles_v2'] = $out; }
         return $out;
     }
 

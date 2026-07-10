@@ -111,6 +111,7 @@ class Navigation {
         $counts = $this->counts();
         $links = $this->activeNav($section, '/brewer', 'Brewers', $counts['brewers']);
         $links .= $this->activeNav($section, '/beer', 'Beer', $counts['beers']);
+        $links .= $this->activeNav($section, '/style', 'Styles');
         $links .= $this->activeNav($section, '/map', 'Map');
         
         // Add in Links

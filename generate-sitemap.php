@@ -102,6 +102,7 @@ $pages = [
     ''         => ['file' => 'index.php',          'priority' => 0.7],
     'brewer'   => ['file' => 'brewer-list.php',     'priority' => 1],
     'beer'     => ['file' => 'beer-list.php',       'priority' => 1],
+    'style'    => ['file' => 'style-list.php',      'priority' => 1],
     'brewer/add' => ['file' => 'brewer-add.php',    'priority' => 0.3],
     'api-docs' => ['file' => 'api-docs.php',        'priority' => 0.3],
     'whats-new' => ['file' => 'whats-new.php',      'priority' => 0.3],
