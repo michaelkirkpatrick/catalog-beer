@@ -1,0 +1,2655 @@
+{
+    "object": "list",
+    "url": "/style",
+    "version": "2.3.0",
+    "has_more": false,
+    "data": [
+        {
+            "id": "american-amber-lager",
+            "object": "style",
+            "name": "American-Style Amber Lager",
+            "beverage_type": "beer",
+            "parent": "amber-lager",
+            "catch_all": false,
+            "aliases": [
+                "Amber Lager",
+                "American Amber",
+                "American Amber Lager",
+                "American-Style Amber (Low Calorie) Lager"
+            ]
+        },
+        {
+            "id": "american-marzen-oktoberfest",
+            "object": "style",
+            "name": "American-Style Maerzen/Oktoberfest",
+            "beverage_type": "beer",
+            "parent": "amber-lager",
+            "catch_all": false,
+            "aliases": [
+                "American Maerzen",
+                "American Märzen",
+                "American Oktoberfest",
+                "American-Style Märzen / Oktoberfest",
+                "American-Style Oktoberfest"
+            ]
+        },
+        {
+            "id": "czech-amber-lager",
+            "object": "style",
+            "name": "Czech-Style Amber Lager",
+            "beverage_type": "beer",
+            "parent": "amber-lager",
+            "catch_all": false,
+            "aliases": [
+                "Czech Amber Lager",
+                "Czech Half-Dark Lager",
+                "Polotmavé",
+                "Polotmavý",
+                "Polotmavý Ležák"
+            ]
+        },
+        {
+            "id": "franconian-rotbier",
+            "object": "style",
+            "name": "Franconian-Style Rotbier",
+            "beverage_type": "beer",
+            "parent": "amber-lager",
+            "catch_all": false,
+            "aliases": [
+                "Franconian Rotbier",
+                "Nuremberg Red Beer",
+                "Nürnberger Rotbier"
+            ]
+        },
+        {
+            "id": "marzen-oktoberfest",
+            "object": "style",
+            "name": "German-Style Maerzen",
+            "beverage_type": "beer",
+            "parent": "amber-lager",
+            "catch_all": false,
+            "aliases": [
+                "German-Style Märzen",
+                "Märzen",
+                "Oktoberfest",
+                "Oktoberfest Märzen",
+                "Oktoberfest-Märzen"
+            ]
+        },
+        {
+            "id": "mexican-amber-lager",
+            "object": "style",
+            "name": "Mexican-Style Amber Lager",
+            "beverage_type": "beer",
+            "parent": "amber-lager",
+            "catch_all": false,
+            "aliases": [
+                "Cerveza Ambar",
+                "Mexican Amber Lager",
+                "Mexican Vienna Lager"
+            ]
+        },
+        {
+            "id": "vienna-lager",
+            "object": "style",
+            "name": "Vienna-Style Lager",
+            "beverage_type": "beer",
+            "parent": "amber-lager",
+            "catch_all": false,
+            "aliases": [
+                "Vienna Lager",
+                "Vienna-Style",
+                "Wiener Lager"
+            ]
+        },
+        {
+            "id": "american-amber-red-ale",
+            "object": "style",
+            "name": "American-Style Amber/Red Ale",
+            "beverage_type": "beer",
+            "parent": "amber-red-ale",
+            "catch_all": false,
+            "aliases": [
+                "Amber Ale",
+                "American Amber Ale",
+                "American Red Ale"
+            ]
+        },
+        {
+            "id": "double-hoppy-red-ale",
+            "object": "style",
+            "name": "Double Hoppy Red Ale",
+            "beverage_type": "beer",
+            "parent": "amber-red-ale",
+            "catch_all": false,
+            "aliases": [
+                "American Red IPA",
+                "Hoppy Red Ale",
+                "Red IPA"
+            ]
+        },
+        {
+            "id": "imperial-red-ale",
+            "object": "style",
+            "name": "Imperial Red Ale",
+            "beverage_type": "beer",
+            "parent": "amber-red-ale",
+            "catch_all": false,
+            "aliases": [
+                "Double Red Ale",
+                "Hoppy Red",
+                "Imperial Red"
+            ]
+        },
+        {
+            "id": "irish-red-ale",
+            "object": "style",
+            "name": "Irish-Style Red Ale",
+            "beverage_type": "beer",
+            "parent": "amber-red-ale",
+            "catch_all": false,
+            "aliases": [
+                "Irish Red",
+                "Irish Red Ale"
+            ]
+        },
+        {
+            "id": "belgian-blonde-ale",
+            "object": "style",
+            "name": "Belgian-Style Blonde Ale",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Blonde",
+                "Blond",
+                "Blonde Ale (Belgian)"
+            ]
+        },
+        {
+            "id": "belgian-fruit-beer",
+            "object": "style",
+            "name": "Belgian-Style Fruit Beer",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Fruit Beer",
+                "Belgian-Style Fruit Ale"
+            ]
+        },
+        {
+            "id": "belgian-pale-ale",
+            "object": "style",
+            "name": "Belgian-Style Pale Ale",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Amarillo Dry-Hopped Belgian Pale Ale",
+                "Belgian Pale",
+                "Belgian Pale Ale",
+                "Speciale Belge"
+            ]
+        },
+        {
+            "id": "belgian-session-ale",
+            "object": "style",
+            "name": "Belgian-Style Session Ale",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Session Ale",
+                "Belgian Single",
+                "Belgian Single with Guava",
+                "Enkel",
+                "Patersbier"
+            ]
+        },
+        {
+            "id": "belgian-table-beer",
+            "object": "style",
+            "name": "Belgian-Style Table Beer",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Table Beer",
+                "Bière de Table",
+                "Tafelbier"
+            ]
+        },
+        {
+            "id": "biere-de-garde",
+            "object": "style",
+            "name": "French-Style Bière de Garde",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Bière de Garde",
+                "French Country Ale",
+                "Garde Beer",
+                "Nord-Pas de Calais Farmhouse Ale"
+            ]
+        },
+        {
+            "id": "other-belgian-style-ale",
+            "object": "style",
+            "name": "Other Belgian-Style Ale",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": true,
+            "aliases": [
+                "Belgian Specialty Ale",
+                "Other Belgian-Style Ales"
+            ]
+        },
+        {
+            "id": "saison",
+            "object": "style",
+            "name": "Classic French & Belgian-Style Saison",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Saison",
+                "Farmhouse Ale",
+                "French & Belgian-Style Saison",
+                "French Saison",
+                "Saison"
+            ]
+        },
+        {
+            "id": "specialty-saison",
+            "object": "style",
+            "name": "Specialty Saison",
+            "beverage_type": "beer",
+            "parent": "belgian-ale",
+            "catch_all": false,
+            "aliases": [
+                "Brett Saison",
+                "Saison (Specialty)"
+            ]
+        },
+        {
+            "id": "belgian-dubbel",
+            "object": "style",
+            "name": "Belgian-Style Dubbel",
+            "beverage_type": "beer",
+            "parent": "belgian-strong-ale",
+            "catch_all": false,
+            "aliases": [
+                "Abbey Dubbel",
+                "Belgian Dubbel",
+                "Dubbel"
+            ]
+        },
+        {
+            "id": "belgian-quadrupel",
+            "object": "style",
+            "name": "Belgian-Style Quadrupel",
+            "beverage_type": "beer",
+            "parent": "belgian-strong-ale",
+            "catch_all": false,
+            "aliases": [
+                "Abbey Quad",
+                "Belgian Quad",
+                "Belgian-Style Dark Strong Ale",
+                "Quad",
+                "Quadrupel"
+            ]
+        },
+        {
+            "id": "belgian-strong-dark-ale",
+            "object": "style",
+            "name": "Belgian-Style Strong Dark Ale",
+            "beverage_type": "beer",
+            "parent": "belgian-strong-ale",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Dark Strong Ale",
+                "Belgian Strong Dark",
+                "Belgian Strong Dark Ale",
+                "Grande Reserve"
+            ]
+        },
+        {
+            "id": "belgian-strong-golden-ale",
+            "object": "style",
+            "name": "Belgian-Style Strong Golden Ale",
+            "beverage_type": "beer",
+            "parent": "belgian-strong-ale",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Golden Strong Ale",
+                "Belgian Strong Golden",
+                "Belgian-Style Pale Strong Ale",
+                "Duvel-style"
+            ]
+        },
+        {
+            "id": "belgian-tripel",
+            "object": "style",
+            "name": "Belgian-Style Tripel",
+            "beverage_type": "beer",
+            "parent": "belgian-strong-ale",
+            "catch_all": false,
+            "aliases": [
+                "Abbey Tripel",
+                "Barrel Aged Tripel",
+                "Belgian Tripel",
+                "Tripel",
+                "Triple",
+                "Trippel"
+            ]
+        },
+        {
+            "id": "best-bitter",
+            "object": "style",
+            "name": "Special Bitter or Best Bitter",
+            "beverage_type": "beer",
+            "parent": "bitter-mild",
+            "catch_all": false,
+            "aliases": [
+                "Best Bitter",
+                "English Best Bitter",
+                "Special Bitter"
+            ]
+        },
+        {
+            "id": "english-pale-mild",
+            "object": "style",
+            "name": "English-Style Pale Mild Ale",
+            "beverage_type": "beer",
+            "parent": "bitter-mild",
+            "catch_all": false,
+            "aliases": [
+                "Golden Mild",
+                "Light Mild",
+                "Pale Mild"
+            ]
+        },
+        {
+            "id": "extra-special-bitter",
+            "object": "style",
+            "name": "Extra Special Bitter",
+            "beverage_type": "beer",
+            "parent": "bitter-mild",
+            "catch_all": false,
+            "aliases": [
+                "American Extra Special Bitter",
+                "ESB",
+                "Extra Special Bitter Ale",
+                "Strong Bitter"
+            ]
+        },
+        {
+            "id": "ordinary-bitter",
+            "object": "style",
+            "name": "Ordinary Bitter",
+            "beverage_type": "beer",
+            "parent": "bitter-mild",
+            "catch_all": false,
+            "aliases": [
+                "Bitter",
+                "Session Bitter"
+            ]
+        },
+        {
+            "id": "american-malt-liquor",
+            "object": "style",
+            "name": "American-Style Malt Liquor",
+            "beverage_type": "beer",
+            "parent": "bock-strong-lager",
+            "catch_all": false,
+            "aliases": [
+                "American Malt Liquor",
+                "High-Gravity Lager",
+                "Malt Liquor"
+            ]
+        },
+        {
+            "id": "doppelbock",
+            "object": "style",
+            "name": "German-Style Doppelbock",
+            "beverage_type": "beer",
+            "parent": "bock-strong-lager",
+            "catch_all": false,
+            "aliases": [
+                "Doppelbock",
+                "Double Bock",
+                "Lager, Doppelbock",
+                "Salvator-Style"
+            ]
+        },
+        {
+            "id": "eisbock",
+            "object": "style",
+            "name": "German-Style Eisbock",
+            "beverage_type": "beer",
+            "parent": "bock-strong-lager",
+            "catch_all": false,
+            "aliases": [
+                "Eisbock",
+                "Ice Bock"
+            ]
+        },
+        {
+            "id": "heller-bock",
+            "object": "style",
+            "name": "German-Style Heller Bock/Maibock",
+            "beverage_type": "beer",
+            "parent": "bock-strong-lager",
+            "catch_all": false,
+            "aliases": [
+                "Heller Bock",
+                "Helles Bock",
+                "Maibock",
+                "May Bock",
+                "Pale Bock"
+            ]
+        },
+        {
+            "id": "traditional-bock",
+            "object": "style",
+            "name": "Traditional German-Style Bock",
+            "beverage_type": "beer",
+            "parent": "bock-strong-lager",
+            "catch_all": false,
+            "aliases": [
+                "Bock",
+                "Dark Bock",
+                "Dunkles Bock",
+                "German Bock"
+            ]
+        },
+        {
+            "id": "american-brown-ale",
+            "object": "style",
+            "name": "American-Style Brown Ale",
+            "beverage_type": "beer",
+            "parent": "brown-ale",
+            "catch_all": false,
+            "aliases": [
+                "American Brown",
+                "Northern Brown (American)",
+                "Texas Brown Ale"
+            ]
+        },
+        {
+            "id": "english-brown-ale",
+            "object": "style",
+            "name": "English-Style Brown Ale",
+            "beverage_type": "beer",
+            "parent": "brown-ale",
+            "catch_all": false,
+            "aliases": [
+                "British Brown Ale",
+                "Newcastle Brown Ale (style)",
+                "Northern English Brown Ale"
+            ]
+        },
+        {
+            "id": "english-dark-mild",
+            "object": "style",
+            "name": "English-Style Dark Mild Ale",
+            "beverage_type": "beer",
+            "parent": "brown-ale",
+            "catch_all": false,
+            "aliases": [
+                "Dark Mild",
+                "Mild",
+                "Mild Ale"
+            ]
+        },
+        {
+            "id": "applewine",
+            "object": "style",
+            "name": "Applewine",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Apple Wine"
+            ]
+        },
+        {
+            "id": "common-cider",
+            "object": "style",
+            "name": "Common Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Modern Cider",
+                "New World Cider"
+            ]
+        },
+        {
+            "id": "english-cider",
+            "object": "style",
+            "name": "English Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "West Country Cider"
+            ]
+        },
+        {
+            "id": "fire-cider",
+            "object": "style",
+            "name": "Fire Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Cidre de Feu"
+            ]
+        },
+        {
+            "id": "french-cider",
+            "object": "style",
+            "name": "French Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Cidre"
+            ]
+        },
+        {
+            "id": "fruit-cider",
+            "object": "style",
+            "name": "Fruit Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Cider with Other Fruit"
+            ]
+        },
+        {
+            "id": "heirloom-cider",
+            "object": "style",
+            "name": "Heirloom Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Craft Cider (heirloom)",
+                "Heritage Cider"
+            ]
+        },
+        {
+            "id": "ice-cider",
+            "object": "style",
+            "name": "Ice Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Apple Ice Wine",
+                "Cidre de Glace"
+            ]
+        },
+        {
+            "id": "new-england-cider",
+            "object": "style",
+            "name": "New England Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "New England-Style Cider"
+            ]
+        },
+        {
+            "id": "other-specialty-cider-perry",
+            "object": "style",
+            "name": "Other Specialty Cider or Perry",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": true,
+            "aliases": [
+                "Specialty Cider"
+            ]
+        },
+        {
+            "id": "spanish-cider",
+            "object": "style",
+            "name": "Spanish Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Basque Cider",
+                "Sagardoa",
+                "Sidra",
+                "Sidra Natural"
+            ]
+        },
+        {
+            "id": "spiced-cider",
+            "object": "style",
+            "name": "Spiced Cider",
+            "beverage_type": "cider",
+            "parent": "cider",
+            "catch_all": false,
+            "aliases": [
+                "Botanical Cider",
+                "Hopped Cider"
+            ]
+        },
+        {
+            "id": "american-dark-lager",
+            "object": "style",
+            "name": "American-Style Dark Lager",
+            "beverage_type": "beer",
+            "parent": "dark-lager",
+            "catch_all": false,
+            "aliases": [
+                "American Dark",
+                "American Dark Lager",
+                "Dark American Lager"
+            ]
+        },
+        {
+            "id": "czech-dark-lager",
+            "object": "style",
+            "name": "Czech-Style Dark Lager",
+            "beverage_type": "beer",
+            "parent": "dark-lager",
+            "catch_all": false,
+            "aliases": [
+                "Czech Black Lager",
+                "Czech Dark Lager",
+                "Tmavé",
+                "Tmavé Pivo",
+                "Tmavý",
+                "Tmavý Ležák"
+            ]
+        },
+        {
+            "id": "european-dark-lager",
+            "object": "style",
+            "name": "European-Style Dark Lager",
+            "beverage_type": "beer",
+            "parent": "dark-lager",
+            "catch_all": false,
+            "aliases": [
+                "Dark Lager",
+                "Euro Dark Lager",
+                "European Dark Lager",
+                "International Dark Lager"
+            ]
+        },
+        {
+            "id": "mexican-dark-lager",
+            "object": "style",
+            "name": "Mexican-Style Dark Lager",
+            "beverage_type": "beer",
+            "parent": "dark-lager",
+            "catch_all": false,
+            "aliases": [
+                "Dark Mexican Lager",
+                "Mexican Dark Lager",
+                "Vienna Mexicana"
+            ]
+        },
+        {
+            "id": "munich-dunkel",
+            "object": "style",
+            "name": "Munich-Style Dunkel",
+            "beverage_type": "beer",
+            "parent": "dark-lager",
+            "catch_all": false,
+            "aliases": [
+                "Bavarian Dunkel",
+                "Dunkel",
+                "European-Style Dark / Münchner Dunkel",
+                "Münchner Dunkel",
+                "Munich Dunkel"
+            ]
+        },
+        {
+            "id": "schwarzbier",
+            "object": "style",
+            "name": "German-Style Schwarzbier",
+            "beverage_type": "beer",
+            "parent": "dark-lager",
+            "catch_all": false,
+            "aliases": [
+                "Black Lager",
+                "Schwarzbier",
+                "Schwarzbier (German)"
+            ]
+        },
+        {
+            "id": "american-fruit-beer",
+            "object": "style",
+            "name": "American-Style Fruit Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "American Fruit Beer",
+                "Fruit Ale",
+                "Fruit Beer",
+                "Fruited Beer"
+            ]
+        },
+        {
+            "id": "chili-pepper-beer",
+            "object": "style",
+            "name": "Chili Pepper Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Chile Beer",
+                "Chili Beer",
+                "Pepper Beer"
+            ]
+        },
+        {
+            "id": "chocolate-beer",
+            "object": "style",
+            "name": "Chocolate or Cocoa Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Chocolate / Cocoa-Flavored Beer",
+                "Chocolate Beer",
+                "Chocolate Porter",
+                "Chocolate Stout",
+                "Cocoa Beer"
+            ]
+        },
+        {
+            "id": "coffee-beer",
+            "object": "style",
+            "name": "Coffee Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Brown Ale with Coffee",
+                "Coffee Ale",
+                "Coffee Porter",
+                "Coffee Stout",
+                "Coffee-Flavored Beer",
+                "Coffee-Infused Beer",
+                "Coffee, Cocoa Ale",
+                "Golden Ale with Coffee",
+                "IPA with Coffee",
+                "Pale Ale with Coffee"
+            ]
+        },
+        {
+            "id": "field-beer",
+            "object": "style",
+            "name": "Field Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Coconut Beer",
+                "Vegetable Beer"
+            ]
+        },
+        {
+            "id": "fruit-wheat-beer",
+            "object": "style",
+            "name": "Fruit Wheat Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Fruit Weizen",
+                "Fruit Wheat Ale or Lager with or without Yeast",
+                "Fruited Hefeweizen",
+                "Fruited Wheat Beer"
+            ]
+        },
+        {
+            "id": "herb-spice-beer",
+            "object": "style",
+            "name": "Herb and Spice Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Herb Beer",
+                "Herbed / Spiced Beer",
+                "Spiced Beer",
+                "Winter Warmer (when spiced)"
+            ]
+        },
+        {
+            "id": "pumpkin-spice-beer",
+            "object": "style",
+            "name": "Pumpkin Spice Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Pumpkin Ale",
+                "Pumpkin Beer",
+                "Pumpkin Spice Ale"
+            ]
+        },
+        {
+            "id": "pumpkin-squash-beer",
+            "object": "style",
+            "name": "Pumpkin/Squash Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Pumpkin Beer (unspiced)",
+                "Squash Beer"
+            ]
+        },
+        {
+            "id": "specialty-honey-beer",
+            "object": "style",
+            "name": "Specialty Honey Beer",
+            "beverage_type": "beer",
+            "parent": "flavored-beer",
+            "catch_all": false,
+            "aliases": [
+                "Braggot (adjacent, stronger)",
+                "Honey Ale",
+                "Honey Beer",
+                "Honey Lager",
+                "Specialty Honey Lager or Ale"
+            ]
+        },
+        {
+            "id": "adambier",
+            "object": "style",
+            "name": "Adambier",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "Dortmunder Adambier",
+                "Dortmunder Altbier"
+            ]
+        },
+        {
+            "id": "gotlandsdricke",
+            "object": "style",
+            "name": "Swedish-Style Gotlandsdricke",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "Gotland's Drink",
+                "Gotlandsdricka",
+                "Gotlandsdricke"
+            ]
+        },
+        {
+            "id": "grodziskie",
+            "object": "style",
+            "name": "Grodziskie",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "Grätzer",
+                "Piwo Grodziskie",
+                "Polish Smoked Wheat Beer"
+            ]
+        },
+        {
+            "id": "historical-beer",
+            "object": "style",
+            "name": "Historical Beer",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": true,
+            "aliases": [
+                "Historical Beer (Lager or Ale)",
+                "Historical Style",
+                "Indigenous Beer (Lager or Ale)"
+            ]
+        },
+        {
+            "id": "kentucky-common",
+            "object": "style",
+            "name": "Kentucky Common",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "Common Beer",
+                "Kentucky Common Beer",
+                "Louisville Common"
+            ]
+        },
+        {
+            "id": "kuit",
+            "object": "style",
+            "name": "Dutch-Style Kuit, Kuyt or Koyt",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "Dutch Kuit",
+                "Koyt",
+                "Kuit",
+                "Kuyt"
+            ]
+        },
+        {
+            "id": "pre-prohibition-lager",
+            "object": "style",
+            "name": "Pre-Prohibition Lager",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "American Pilsner (pre-Prohibition)",
+                "American-Style Pilsener",
+                "CAP",
+                "Classic American Pilsner",
+                "Pre-Pro Lager"
+            ]
+        },
+        {
+            "id": "sahti",
+            "object": "style",
+            "name": "Finnish-Style Sahti",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "Finnish Sahti",
+                "Sahti"
+            ]
+        },
+        {
+            "id": "schoeps",
+            "object": "style",
+            "name": "Breslau-Style Schoeps",
+            "beverage_type": "beer",
+            "parent": "historical",
+            "catch_all": false,
+            "aliases": [
+                "Breslau Schops",
+                "Breslauer Schöps",
+                "Schoeps",
+                "Schöps"
+            ]
+        },
+        {
+            "id": "altbier",
+            "object": "style",
+            "name": "German-Style Altbier",
+            "beverage_type": "beer",
+            "parent": "hybrid",
+            "catch_all": false,
+            "aliases": [
+                "Alt",
+                "Altbier",
+                "Düsseldorf Alt",
+                "German Alt"
+            ]
+        },
+        {
+            "id": "american-cream-ale",
+            "object": "style",
+            "name": "American-Style Cream Ale",
+            "beverage_type": "beer",
+            "parent": "hybrid",
+            "catch_all": false,
+            "aliases": [
+                "American Cream Ale",
+                "American-Style Cream Ale or Lager",
+                "Cream Ale"
+            ]
+        },
+        {
+            "id": "california-common",
+            "object": "style",
+            "name": "California Common",
+            "beverage_type": "beer",
+            "parent": "hybrid",
+            "catch_all": false,
+            "aliases": [
+                "California Common Beer",
+                "California Steam",
+                "Steam Beer"
+            ]
+        },
+        {
+            "id": "kolsch",
+            "object": "style",
+            "name": "German-Style Koelsch",
+            "beverage_type": "beer",
+            "parent": "hybrid",
+            "catch_all": false,
+            "aliases": [
+                "German Kölsch",
+                "German-Style Kölsch / Köln-Style Kölsch",
+                "Koelsch",
+                "Kölsch"
+            ]
+        },
+        {
+            "id": "american-black-ale",
+            "object": "style",
+            "name": "American-Style Black Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "Black IPA",
+                "Cascadian Dark Ale",
+                "CDA",
+                "India Black Ale"
+            ]
+        },
+        {
+            "id": "american-ipa",
+            "object": "style",
+            "name": "American-Style India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "American India Pale Ale",
+                "American IPA"
+            ]
+        },
+        {
+            "id": "belgian-ipa",
+            "object": "style",
+            "name": "Belgian-Style India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "Belgian IPA",
+                "Belgian-Style IPA",
+                "Belgo IPA"
+            ]
+        },
+        {
+            "id": "double-ipa",
+            "object": "style",
+            "name": "American-Style Imperial or Double India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "American-Style Double IPA",
+                "DIPA",
+                "Double IPA",
+                "Imperial IPA",
+                "Imperial or Double India Pale Ale",
+                "Imperial or Double IPA"
+            ]
+        },
+        {
+            "id": "english-ipa",
+            "object": "style",
+            "name": "British-Style India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "British IPA",
+                "English IPA",
+                "English-Style India Pale Ale",
+                "IPA (English)"
+            ]
+        },
+        {
+            "id": "experimental-ipa",
+            "object": "style",
+            "name": "Experimental India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": true,
+            "aliases": [
+                "Experimental IPA"
+            ]
+        },
+        {
+            "id": "hazy-imperial-ipa",
+            "object": "style",
+            "name": "Juicy or Hazy Imperial or Double India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "Double Hazy",
+                "Double IPA (Hazy)",
+                "Hazy DIPA",
+                "Hazy Imperial IPA",
+                "NEDIPA",
+                "Triple IPA (when above 10%)"
+            ]
+        },
+        {
+            "id": "hazy-ipa",
+            "object": "style",
+            "name": "Juicy or Hazy India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "Hazy IPA",
+                "Hazy/Juicy IPA",
+                "Juicy IPA",
+                "NE IPA",
+                "NEIPA",
+                "New England IPA"
+            ]
+        },
+        {
+            "id": "new-zealand-ipa",
+            "object": "style",
+            "name": "New Zealand-Style India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "New Zealand IPA",
+                "NZ IPA"
+            ]
+        },
+        {
+            "id": "session-ipa",
+            "object": "style",
+            "name": "Session India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "Session IPA",
+                "Sessions India Pale Ale",
+                "SIPA"
+            ]
+        },
+        {
+            "id": "west-coast-ipa",
+            "object": "style",
+            "name": "West Coast-Style India Pale Ale",
+            "beverage_type": "beer",
+            "parent": "ipa",
+            "catch_all": false,
+            "aliases": [
+                "WCIPA",
+                "West Coast IPA",
+                "Westcoast IPA"
+            ]
+        },
+        {
+            "id": "braggot",
+            "object": "style",
+            "name": "Braggot",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Bracket",
+                "Brackett"
+            ]
+        },
+        {
+            "id": "cyser",
+            "object": "style",
+            "name": "Cyser",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Apple Mead",
+                "Apple Melomel",
+                "Cyser (Apple Melomel)"
+            ]
+        },
+        {
+            "id": "dry-mead",
+            "object": "style",
+            "name": "Dry Mead",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Dry Traditional Mead"
+            ]
+        },
+        {
+            "id": "metheglin",
+            "object": "style",
+            "name": "Metheglin",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Spice, Herb, or Vegetable Mead",
+                "Spiced Mead"
+            ]
+        },
+        {
+            "id": "open-category-mead",
+            "object": "style",
+            "name": "Open Category Mead",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": true,
+            "aliases": [
+                "Experimental Mead",
+                "Specialty Mead"
+            ]
+        },
+        {
+            "id": "other-fruit-melomel",
+            "object": "style",
+            "name": "Other Fruit Melomel",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Fruit Mead",
+                "Melomel"
+            ]
+        },
+        {
+            "id": "pyment",
+            "object": "style",
+            "name": "Pyment",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Grape Mead",
+                "Grape Melomel",
+                "Pyment (Grape Melomel)"
+            ]
+        },
+        {
+            "id": "semi-sweet-mead",
+            "object": "style",
+            "name": "Semi-Sweet Mead",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Medium Mead"
+            ]
+        },
+        {
+            "id": "sweet-mead",
+            "object": "style",
+            "name": "Sweet Mead",
+            "beverage_type": "mead",
+            "parent": "mead",
+            "catch_all": false,
+            "aliases": [
+                "Dessert Mead"
+            ]
+        },
+        {
+            "id": "american-blonde-ale",
+            "object": "style",
+            "name": "Golden or Blonde Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "American Blonde Ale",
+                "American Golden Ale",
+                "Blonde - Dry Hopped",
+                "Blonde Ale",
+                "Golden Ale"
+            ]
+        },
+        {
+            "id": "american-pale-ale",
+            "object": "style",
+            "name": "American-Style Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "American Pale Ale",
+                "APA",
+                "Pale Ale",
+                "Pale Ale  (Unfiltered)",
+                "Pale Ale (GF)"
+            ]
+        },
+        {
+            "id": "american-strong-pale-ale",
+            "object": "style",
+            "name": "American-Style Strong Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "American Strong Pale Ale",
+                "Extra Pale Ale",
+                "Strong Pale Ale"
+            ]
+        },
+        {
+            "id": "australian-pale-ale",
+            "object": "style",
+            "name": "Australian-Style Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "Aussie Pale Ale",
+                "Australian Pale Ale",
+                "Pacific Ale"
+            ]
+        },
+        {
+            "id": "classic-australian-pale-ale",
+            "object": "style",
+            "name": "Classic Australian-Style Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "Australian Sparkling Ale",
+                "Classic Australian Pale Ale"
+            ]
+        },
+        {
+            "id": "classic-english-pale-ale",
+            "object": "style",
+            "name": "Classic English-Style Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "Burton Pale Ale",
+                "Classic Pale Ale",
+                "English Pale Ale"
+            ]
+        },
+        {
+            "id": "english-summer-ale",
+            "object": "style",
+            "name": "English-Style Summer Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "British Golden Ale",
+                "English Golden Ale",
+                "English Summer Ale",
+                "Summer Ale"
+            ]
+        },
+        {
+            "id": "hazy-pale-ale",
+            "object": "style",
+            "name": "Juicy or Hazy Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "Hazy Pale Ale",
+                "Juicy Pale Ale",
+                "NEPA",
+                "New England Pale Ale"
+            ]
+        },
+        {
+            "id": "hazy-strong-pale-ale",
+            "object": "style",
+            "name": "Juicy or Hazy Strong Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "Hazy Strong Pale Ale",
+                "Juicy Strong Pale Ale",
+                "Strong Hazy Pale Ale"
+            ]
+        },
+        {
+            "id": "international-pale-ale",
+            "object": "style",
+            "name": "International-Style Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "International Pale Ale"
+            ]
+        },
+        {
+            "id": "new-zealand-pale-ale",
+            "object": "style",
+            "name": "New Zealand-Style Pale Ale",
+            "beverage_type": "beer",
+            "parent": "pale-ale",
+            "catch_all": false,
+            "aliases": [
+                "Kiwi Pale Ale",
+                "New Zealand Pale Ale",
+                "NZ Pale Ale",
+                "Pacific Pale Ale"
+            ]
+        },
+        {
+            "id": "american-ipl",
+            "object": "style",
+            "name": "American-Style India Pale Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "American IPL",
+                "India Pale Lager",
+                "IPL"
+            ]
+        },
+        {
+            "id": "american-lager",
+            "object": "style",
+            "name": "American-Style Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "American Lager",
+                "American Standard Lager",
+                "American-Style Premium Lager",
+                "Budweiser-style Lager",
+                "Premium American Lager"
+            ]
+        },
+        {
+            "id": "american-light-lager",
+            "object": "style",
+            "name": "American-Style Light Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "American Light Lager",
+                "American-Style Light (Low Calorie) Lager",
+                "American-Style Low-Carbohydrate Light Lager",
+                "Light Lager",
+                "Lite Beer",
+                "Low-Calorie Lager"
+            ]
+        },
+        {
+            "id": "contemporary-american-lager",
+            "object": "style",
+            "name": "Contemporary American-Style Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Contemporary American Lager",
+                "Contemporary Lager",
+                "Craft American Lager"
+            ]
+        },
+        {
+            "id": "contemporary-american-light-lager",
+            "object": "style",
+            "name": "Contemporary American-Style Light Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Contemporary American Light Lager",
+                "Contemporary Light Lager",
+                "Craft Light Lager"
+            ]
+        },
+        {
+            "id": "dortmunder-export",
+            "object": "style",
+            "name": "German-Style Helles Exportbier",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Dortmunder",
+                "Dortmunder / European-Style Export",
+                "Dortmunder Export",
+                "Helles Exportbier"
+            ]
+        },
+        {
+            "id": "german-festbier",
+            "object": "style",
+            "name": "German-Style Oktoberfest/Festbier",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Festbier",
+                "German Oktoberfest",
+                "German-Style Oktoberfest / Wiesen (Meadow)",
+                "Oktoberfestbier",
+                "Wiesn",
+                "Wiesnbier"
+            ]
+        },
+        {
+            "id": "german-leichtbier",
+            "object": "style",
+            "name": "German-Style Leichtbier",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Leicht",
+                "Leichtbier",
+                "Light Beer (German)"
+            ]
+        },
+        {
+            "id": "international-light-lager",
+            "object": "style",
+            "name": "International Light Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Australasian, Latin American or Tropical-Style Light Lager",
+                "Imported Light Lager"
+            ]
+        },
+        {
+            "id": "kellerbier",
+            "object": "style",
+            "name": "Kellerbier or Zwickelbier",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Cellar Beer",
+                "Kellerbier",
+                "Kellerbier (Cellar beer) or Zwickelbier - Ale",
+                "Kellerbier (Cellar beer) or Zwickelbier - Lager",
+                "Ungespundetes",
+                "Zwickelbier"
+            ]
+        },
+        {
+            "id": "mexican-light-lager",
+            "object": "style",
+            "name": "Mexican-Style Light Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Cerveza Clara Light",
+                "Mexican Light Lager"
+            ]
+        },
+        {
+            "id": "mexican-pale-lager",
+            "object": "style",
+            "name": "Mexican-Style Pale Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Cerveza Clara",
+                "Mexican Lager",
+                "Mexican Pale Lager",
+                "Mexican Style Lager"
+            ]
+        },
+        {
+            "id": "munich-helles",
+            "object": "style",
+            "name": "Munich-Style Helles",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Bavarian Helles",
+                "Helles",
+                "Helles Munich Lager",
+                "Münchner (Munich)-Style Helles",
+                "Münchner Hell",
+                "Munich Helles"
+            ]
+        },
+        {
+            "id": "rice-lager",
+            "object": "style",
+            "name": "Rice Lager",
+            "beverage_type": "beer",
+            "parent": "pale-lager",
+            "catch_all": false,
+            "aliases": [
+                "Asian Rice Lager",
+                "Japanese-Style Rice Lager"
+            ]
+        },
+        {
+            "id": "common-perry",
+            "object": "style",
+            "name": "Common Perry",
+            "beverage_type": "perry",
+            "parent": "perry",
+            "catch_all": false,
+            "aliases": [
+                "Modern Perry",
+                "New World Perry"
+            ]
+        },
+        {
+            "id": "experimental-perry",
+            "object": "style",
+            "name": "Experimental Perry",
+            "beverage_type": "perry",
+            "parent": "perry",
+            "catch_all": true,
+            "aliases": [
+                "Other Specialty Perry",
+                "Specialty Perry"
+            ]
+        },
+        {
+            "id": "ice-perry",
+            "object": "style",
+            "name": "Ice Perry",
+            "beverage_type": "perry",
+            "parent": "perry",
+            "catch_all": false,
+            "aliases": [
+                "Poiré de Glace"
+            ]
+        },
+        {
+            "id": "traditional-perry",
+            "object": "style",
+            "name": "Traditional Perry",
+            "beverage_type": "perry",
+            "parent": "perry",
+            "catch_all": false,
+            "aliases": [
+                "Heirloom Perry",
+                "Heritage Perry",
+                "Poiré"
+            ]
+        },
+        {
+            "id": "contemporary-american-pilsner",
+            "object": "style",
+            "name": "Contemporary American-Style Pilsener",
+            "beverage_type": "beer",
+            "parent": "pilsner",
+            "catch_all": false,
+            "aliases": [
+                "American Hoppy Pilsner",
+                "Contemporary American Pilsner",
+                "Craft American Pilsner"
+            ]
+        },
+        {
+            "id": "czech-pilsner",
+            "object": "style",
+            "name": "Czech-Style Pale Lager",
+            "beverage_type": "beer",
+            "parent": "pilsner",
+            "catch_all": false,
+            "aliases": [
+                "Bohemian Pilsner",
+                "Bohemian-Style Pilsener",
+                "Czech Pilsner",
+                "Pils (Czech)",
+                "Pilsner - Czech",
+                "Pilsner (Czech)",
+                "Světlý Ležák"
+            ]
+        },
+        {
+            "id": "german-pilsner",
+            "object": "style",
+            "name": "German-Style Pilsener",
+            "beverage_type": "beer",
+            "parent": "pilsner",
+            "catch_all": false,
+            "aliases": [
+                "German Pils",
+                "German Pilsner",
+                "German style pilser",
+                "Northern German Pilsner",
+                "Pils"
+            ]
+        },
+        {
+            "id": "international-pilsner",
+            "object": "style",
+            "name": "International-Style Pilsener",
+            "beverage_type": "beer",
+            "parent": "pilsner",
+            "catch_all": false,
+            "aliases": [
+                "Euro Pale Lager",
+                "International Lager",
+                "International Pale Lager",
+                "International Pilsener",
+                "International Pilsner",
+                "Mexican Lager (adjacent)"
+            ]
+        },
+        {
+            "id": "italian-pilsner",
+            "object": "style",
+            "name": "Italian-Style Pilsener",
+            "beverage_type": "beer",
+            "parent": "pilsner",
+            "catch_all": false,
+            "aliases": [
+                "Italian Pils",
+                "Italian Pilsner",
+                "Italian-Style Pilsner"
+            ]
+        },
+        {
+            "id": "american-imperial-porter",
+            "object": "style",
+            "name": "American-Style Imperial Porter",
+            "beverage_type": "beer",
+            "parent": "porter",
+            "catch_all": false,
+            "aliases": [
+                "American Imperial Porter",
+                "Imperial Porter"
+            ]
+        },
+        {
+            "id": "baltic-porter",
+            "object": "style",
+            "name": "Baltic-Style Porter",
+            "beverage_type": "beer",
+            "parent": "porter",
+            "catch_all": false,
+            "aliases": [
+                "Baltic Porter",
+                "Imperial Baltic Porter"
+            ]
+        },
+        {
+            "id": "brown-porter",
+            "object": "style",
+            "name": "Brown Porter",
+            "beverage_type": "beer",
+            "parent": "porter",
+            "catch_all": false,
+            "aliases": [
+                "English Porter",
+                "London Porter",
+                "Porter (English)"
+            ]
+        },
+        {
+            "id": "robust-porter",
+            "object": "style",
+            "name": "Robust Porter",
+            "beverage_type": "beer",
+            "parent": "porter",
+            "catch_all": false,
+            "aliases": [
+                "American Porter",
+                "Dark Porter"
+            ]
+        },
+        {
+            "id": "smoke-porter",
+            "object": "style",
+            "name": "Smoke Porter",
+            "beverage_type": "beer",
+            "parent": "porter",
+            "catch_all": false,
+            "aliases": [
+                "Rauch Porter",
+                "Smoked Porter"
+            ]
+        },
+        {
+            "id": "scottish-export-ale",
+            "object": "style",
+            "name": "Scottish-Style Export Ale",
+            "beverage_type": "beer",
+            "parent": "scottish-ale",
+            "catch_all": false,
+            "aliases": [
+                "80/-",
+                "Eighty Shilling",
+                "Scottish 80",
+                "Scottish Export"
+            ]
+        },
+        {
+            "id": "scottish-heavy-ale",
+            "object": "style",
+            "name": "Scottish-Style Heavy Ale",
+            "beverage_type": "beer",
+            "parent": "scottish-ale",
+            "catch_all": false,
+            "aliases": [
+                "70/- (Seventy Shilling)",
+                "Heavy",
+                "Scottish 70",
+                "Scottish Export (adjacent, 80/-)",
+                "Scottish Heavy"
+            ]
+        },
+        {
+            "id": "scottish-light-ale",
+            "object": "style",
+            "name": "Scottish-Style Light Ale",
+            "beverage_type": "beer",
+            "parent": "scottish-ale",
+            "catch_all": false,
+            "aliases": [
+                "60/-",
+                "Light",
+                "Scottish 60",
+                "Scottish Light",
+                "Sixty Shilling"
+            ]
+        },
+        {
+            "id": "bock-rauchbier",
+            "object": "style",
+            "name": "Bamberg-Style Bock Rauchbier",
+            "beverage_type": "beer",
+            "parent": "smoked-beer",
+            "catch_all": false,
+            "aliases": [
+                "Bamberg Smoked Bock",
+                "Bock Rauchbier",
+                "Rauchbock",
+                "Smoked Bock"
+            ]
+        },
+        {
+            "id": "helles-rauchbier",
+            "object": "style",
+            "name": "Bamberg-Style Helles Rauchbier",
+            "beverage_type": "beer",
+            "parent": "smoked-beer",
+            "catch_all": false,
+            "aliases": [
+                "Bamberg Helles Rauchbier",
+                "Helles Rauchbier",
+                "Pale Smoked Lager"
+            ]
+        },
+        {
+            "id": "rauchbier",
+            "object": "style",
+            "name": "Bamberg-Style Rauchbier",
+            "beverage_type": "beer",
+            "parent": "smoked-beer",
+            "catch_all": false,
+            "aliases": [
+                "Bamberg Rauchbier",
+                "Bamberg-Style Märzen Rauchbier",
+                "Rauchbier",
+                "Smoked Märzen"
+            ]
+        },
+        {
+            "id": "smoke-beer",
+            "object": "style",
+            "name": "Smoke Beer",
+            "beverage_type": "beer",
+            "parent": "smoked-beer",
+            "catch_all": false,
+            "aliases": [
+                "Other Smoked Beer",
+                "Rauchbier (generic)",
+                "Smoke Beer (Lager or Ale)",
+                "Smoked Beer"
+            ]
+        },
+        {
+            "id": "weiss-rauchbier",
+            "object": "style",
+            "name": "Bamberg-Style Weiss Rauchbier",
+            "beverage_type": "beer",
+            "parent": "smoked-beer",
+            "catch_all": false,
+            "aliases": [
+                "Bamberg-Style Weiss (Smoke) Rauchbier (Dunkel or Helles)",
+                "Rauchweizen",
+                "Smoked Weissbier",
+                "Smoked Wheat Beer",
+                "Weiss Rauchbier"
+            ]
+        },
+        {
+            "id": "american-fruited-sour-ale",
+            "object": "style",
+            "name": "American-Style Fruited Sour Ale",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "American Fruit Sour",
+                "Fruited Sour",
+                "Imperial Dark Sour (Fruited)",
+                "Kettle Sour with Fruit",
+                "Sour Ale w/ Blueberries and Grapes"
+            ]
+        },
+        {
+            "id": "american-sour-ale",
+            "object": "style",
+            "name": "American-Style Sour Ale",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "American Sour",
+                "Kettle Sour",
+                "Mixed-Fermentation Sour",
+                "Sour Ale",
+                "Sour Ale (American)"
+            ]
+        },
+        {
+            "id": "belgian-spontaneous-ale",
+            "object": "style",
+            "name": "Contemporary Belgian-Style Spontaneous Fermented Ale",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Contemporary Spontaneous Fermented Ale",
+                "Modern Spontaneous Ale",
+                "Wild Ale (spontaneous)"
+            ]
+        },
+        {
+            "id": "berliner-weisse",
+            "object": "style",
+            "name": "Berliner-Style Weisse",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Berliner Weissbier",
+                "Berliner Weisse",
+                "Berliner-Style Weisse (Wheat)"
+            ]
+        },
+        {
+            "id": "brett-beer",
+            "object": "style",
+            "name": "Brett Beer",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "100% Brett Beer",
+                "Brett-Fermented Ale",
+                "Brettanomyces Beer"
+            ]
+        },
+        {
+            "id": "contemporary-gose",
+            "object": "style",
+            "name": "Contemporary-Style Gose",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "American Gose",
+                "Contemporary Gose",
+                "Fruited Gose",
+                "Gose w/ Calamansi Lime",
+                "Modern Gose"
+            ]
+        },
+        {
+            "id": "flanders-red-ale",
+            "object": "style",
+            "name": "Flanders-Style Red Ale",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Burgundy of Belgium",
+                "Flanders Red",
+                "West Flanders Red"
+            ]
+        },
+        {
+            "id": "gueuze",
+            "object": "style",
+            "name": "Belgian-Style Gueuze Lambic",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Geuze",
+                "Gueuze",
+                "Oude Geuze",
+                "Oude Gueuze"
+            ]
+        },
+        {
+            "id": "kriek-lambic",
+            "object": "style",
+            "name": "Belgian-Style Fruit Lambic",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Cassis",
+                "Framboise",
+                "Fruit Lambic",
+                "Kriek",
+                "Kriek Lambic",
+                "Pêche"
+            ]
+        },
+        {
+            "id": "lambic",
+            "object": "style",
+            "name": "Belgian-Style Lambic",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Lambic",
+                "Straight Lambic",
+                "Young Lambic"
+            ]
+        },
+        {
+            "id": "leipzig-gose",
+            "object": "style",
+            "name": "Leipzig-Style Gose",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "German Gose",
+                "Gose",
+                "Leipziger Gose"
+            ]
+        },
+        {
+            "id": "mixed-culture-brett-beer",
+            "object": "style",
+            "name": "Mixed-Culture Brett Beer",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Mixed Culture Brett Beer",
+                "Mixed-Culture Wild Ale",
+                "Mixed-Fermentation Brett Beer"
+            ]
+        },
+        {
+            "id": "oud-bruin",
+            "object": "style",
+            "name": "Flanders Oud Bruin",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Belgian-Style Flanders Oud Bruin or Oud Red Ales",
+                "Flanders Brown Ale",
+                "Old Brown",
+                "Oud Bruin"
+            ]
+        },
+        {
+            "id": "wild-beer",
+            "object": "style",
+            "name": "Wild Beer",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": true,
+            "aliases": [
+                "Wild Ale"
+            ]
+        },
+        {
+            "id": "wood-aged-sour-beer",
+            "object": "style",
+            "name": "Wood- and Barrel-Aged Sour Beer",
+            "beverage_type": "beer",
+            "parent": "sour-wild",
+            "catch_all": false,
+            "aliases": [
+                "Barrel Aged Tart Farmhouse Ale",
+                "Barrel-Aged Sour Beer",
+                "Wood-Aged Sour Beer"
+            ]
+        },
+        {
+            "id": "aged-beer",
+            "object": "style",
+            "name": "Aged Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": true,
+            "aliases": [
+                "Aged Beer (Ale or Lager)"
+            ]
+        },
+        {
+            "id": "american-belgo-ale",
+            "object": "style",
+            "name": "American-Belgo-Style Ale",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "American Belgo",
+                "American-Belgo Ale",
+                "Belgian-Style IPA (American)",
+                "Belgo-Style Ale",
+                "Dark American-Belgo-Style Ale",
+                "Pale American-Belgo-Style Ale"
+            ]
+        },
+        {
+            "id": "experimental-beer",
+            "object": "style",
+            "name": "Experimental Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": true,
+            "aliases": [
+                "Experimental Ale",
+                "Experimental Beer (Lager or Ale)"
+            ]
+        },
+        {
+            "id": "fresh-hop-beer",
+            "object": "style",
+            "name": "Fresh Hop Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "Fresh \"Wet\" Hop Ale",
+                "Fresh Hop Ale",
+                "Fresh Hop IPA",
+                "Fresh-Hopped Beer",
+                "Harvest Ale",
+                "Wet Hop Ale",
+                "Wet-Hopped Beer"
+            ]
+        },
+        {
+            "id": "german-rye-ale",
+            "object": "style",
+            "name": "German-Style Rye Ale",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "German Rye Ale",
+                "German-Style Rye Ale (Roggenbier) with or without Yeast",
+                "Roggenweizen",
+                "Rye Weissbier"
+            ]
+        },
+        {
+            "id": "ginjo-beer",
+            "object": "style",
+            "name": "Ginjo Beer or Sake-Yeast Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "Ginjo Beer",
+                "Koji Beer",
+                "Sake Beer",
+                "Sake-Yeast Beer"
+            ]
+        },
+        {
+            "id": "gluten-free-beer",
+            "object": "style",
+            "name": "Gluten-Free Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "GF Beer",
+                "Gluten-Reduced Beer"
+            ]
+        },
+        {
+            "id": "non-alcoholic-beer",
+            "object": "style",
+            "name": "Non-Alcoholic Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "Alcohol-Free Beer",
+                "Alkoholfrei",
+                "Low/No Beer",
+                "NA Beer",
+                "Near Beer",
+                "Non-Alcoholic (Beer) Malt Beverages"
+            ]
+        },
+        {
+            "id": "rye-beer",
+            "object": "style",
+            "name": "Rye Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "Roggen",
+                "Rye Ale",
+                "Rye Ale or Lager with or without Yeast",
+                "Rye Lager"
+            ]
+        },
+        {
+            "id": "session-beer",
+            "object": "style",
+            "name": "Session Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "Low-ABV Beer",
+                "Sessionable"
+            ]
+        },
+        {
+            "id": "specialty-beer",
+            "object": "style",
+            "name": "Specialty Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": true,
+            "aliases": [
+                "Specialty Stout",
+                "Specialty Stouts"
+            ]
+        },
+        {
+            "id": "wood-aged-beer",
+            "object": "style",
+            "name": "Wood- and Barrel-Aged Beer",
+            "beverage_type": "beer",
+            "parent": "specialty",
+            "catch_all": false,
+            "aliases": [
+                "Barrel-Aged Beer",
+                "BBA",
+                "Oak-Aged Beer",
+                "Wood- and Barrel-Aged Dark Beer",
+                "Wood- and Barrel-Aged Pale to Amber Beer",
+                "Wood- and Barrel-Aged Strong Beer",
+                "Wood-Aged Beer"
+            ]
+        },
+        {
+            "id": "american-imperial-stout",
+            "object": "style",
+            "name": "American-Style Imperial Stout",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "American Imperial Stout",
+                "Imperial Stout (American)",
+                "Imperial Stout, Stout",
+                "RIS (American)",
+                "Rum Barrel Aged Imperial Stout"
+            ]
+        },
+        {
+            "id": "american-stout",
+            "object": "style",
+            "name": "American-Style Stout",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "American Stout",
+                "Stout - American",
+                "West Coast Stout"
+            ]
+        },
+        {
+            "id": "british-imperial-stout",
+            "object": "style",
+            "name": "British-Style Imperial Stout",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "Imperial Stout",
+                "RIS",
+                "Russian Imperial Stout"
+            ]
+        },
+        {
+            "id": "export-stout",
+            "object": "style",
+            "name": "Export-Style Stout",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "Export Stout",
+                "Foreign (Export)-Style Stout",
+                "Foreign Export Stout",
+                "Foreign Extra Stout",
+                "Tropical Stout"
+            ]
+        },
+        {
+            "id": "irish-dry-stout",
+            "object": "style",
+            "name": "Classic Irish-Style Dry Stout",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "Dry Stout",
+                "Guinness-Style Stout",
+                "Irish Stout"
+            ]
+        },
+        {
+            "id": "oatmeal-stout",
+            "object": "style",
+            "name": "Oatmeal Stout",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "Oat Stout"
+            ]
+        },
+        {
+            "id": "pastry-stout",
+            "object": "style",
+            "name": "Dessert Stout or Pastry Beer",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "Adjunct Stout",
+                "Dessert Stout",
+                "Pastry Beer",
+                "Pastry Stout"
+            ]
+        },
+        {
+            "id": "sweet-stout",
+            "object": "style",
+            "name": "Sweet Stout or Cream Stout",
+            "beverage_type": "beer",
+            "parent": "stout",
+            "catch_all": false,
+            "aliases": [
+                "Cream Stout",
+                "Milk Stout",
+                "Sweet or Cream Stout",
+                "Sweet Stout"
+            ]
+        },
+        {
+            "id": "american-barleywine",
+            "object": "style",
+            "name": "American-Style Barley Wine Ale",
+            "beverage_type": "beer",
+            "parent": "strong-ale-barleywine",
+            "catch_all": false,
+            "aliases": [
+                "American Barleywine",
+                "West Coast Barleywine"
+            ]
+        },
+        {
+            "id": "american-wheatwine",
+            "object": "style",
+            "name": "American-Style Wheat Wine Ale",
+            "beverage_type": "beer",
+            "parent": "strong-ale-barleywine",
+            "catch_all": false,
+            "aliases": [
+                "American Wheat Wine",
+                "Wheat Wine",
+                "Wheat Wine Ale",
+                "Wheatwine"
+            ]
+        },
+        {
+            "id": "english-barleywine",
+            "object": "style",
+            "name": "British-Style Barley Wine Ale",
+            "beverage_type": "beer",
+            "parent": "strong-ale-barleywine",
+            "catch_all": false,
+            "aliases": [
+                "Barley Wine",
+                "British Barleywine",
+                "English Barleywine"
+            ]
+        },
+        {
+            "id": "old-ale",
+            "object": "style",
+            "name": "Old Ale",
+            "beverage_type": "beer",
+            "parent": "strong-ale-barleywine",
+            "catch_all": false,
+            "aliases": [
+                "English Old Ale",
+                "Stale",
+                "Stock Ale"
+            ]
+        },
+        {
+            "id": "other-strong-ale-or-lager",
+            "object": "style",
+            "name": "Other Strong Ale or Lager",
+            "beverage_type": "beer",
+            "parent": "strong-ale-barleywine",
+            "catch_all": true,
+            "aliases": [
+                "Other Strong Ale or Lager (Beer)"
+            ]
+        },
+        {
+            "id": "scotch-ale",
+            "object": "style",
+            "name": "Scotch Ale or Wee Heavy",
+            "beverage_type": "beer",
+            "parent": "strong-ale-barleywine",
+            "catch_all": false,
+            "aliases": [
+                "Scotch Ale",
+                "Strong Scotch Ale",
+                "Wee Heavy"
+            ]
+        },
+        {
+            "id": "strong-ale",
+            "object": "style",
+            "name": "English-Style Strong Ale",
+            "beverage_type": "beer",
+            "parent": "strong-ale-barleywine",
+            "catch_all": false,
+            "aliases": [
+                "Burton Ale",
+                "English Strong Ale",
+                "Strong Ale",
+                "Strong English Ale"
+            ]
+        },
+        {
+            "id": "american-wheat",
+            "object": "style",
+            "name": "American-Style Wheat Beer",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "American Pale Wheat",
+                "American Wheat",
+                "American Wheat Ale",
+                "American Wheat Beer",
+                "Dark American Wheat Ale or Lager with Yeast",
+                "Dark American Wheat Ale or Lager without Yeast",
+                "Light American Wheat Ale or Lager with Yeast",
+                "Light American Wheat Ale or Lager without Yeast"
+            ]
+        },
+        {
+            "id": "belgian-wit",
+            "object": "style",
+            "name": "Belgian-Style Witbier",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "Belgian Wheat",
+                "Belgian White",
+                "Belgian White (GF)",
+                "Belgian Wit",
+                "Belgian Wit with Raspberries",
+                "Belgian-Style White",
+                "Belgian-Style White (or Wit) / Belgian-Style Wheat",
+                "White Ale",
+                "Wit",
+                "Wit/White Ale",
+                "Witbier"
+            ]
+        },
+        {
+            "id": "bernstein-weizen",
+            "object": "style",
+            "name": "South German-Style Bernsteinfarbenes Weizen",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "Amber Wheat (German)",
+                "Bernstein Weisse",
+                "Bernsteinfarbenes Weissbier",
+                "Bernsteinfarbenes Weizen",
+                "South German-Style Bernsteinfarbenes Weizen / Weissbier"
+            ]
+        },
+        {
+            "id": "dunkelweizen",
+            "object": "style",
+            "name": "South German-Style Dunkelweizen",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "Dark Wheat",
+                "Dunkel Weiss",
+                "Dunkelweissbier",
+                "Dunkelweizen",
+                "Dunkles Weissbier",
+                "South German-Style Dunkel Weizen / Dunkel Weissbier"
+            ]
+        },
+        {
+            "id": "hefeweizen",
+            "object": "style",
+            "name": "South German-Style Hefeweizen",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "Hefe",
+                "Hefeweissbier",
+                "Hefeweizen",
+                "South German-Style Hefeweizen / Hefeweissbier",
+                "Weissbier",
+                "Weizen"
+            ]
+        },
+        {
+            "id": "kristalweizen",
+            "object": "style",
+            "name": "South German-Style Kristal Weizen",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "Crystal Wheat",
+                "Filtered Weissbier",
+                "Kristall Weizen",
+                "Kristallweizen",
+                "Kristalweizen",
+                "South German-Style Kristall Weizen / Kristall Weissbier"
+            ]
+        },
+        {
+            "id": "leichtes-weizen",
+            "object": "style",
+            "name": "German-Style Leichtes Weizen",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "German-Style Leichtes Weizen / Weissbier",
+                "Leicht Weizen",
+                "Leichtes Weissbier",
+                "Leichtes Weizen",
+                "Light Wheat Beer"
+            ]
+        },
+        {
+            "id": "roggenbier",
+            "object": "style",
+            "name": "Roggenbier",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "German Rye Beer",
+                "Rye Beer (German)"
+            ]
+        },
+        {
+            "id": "weizenbock",
+            "object": "style",
+            "name": "South German-Style Weizenbock",
+            "beverage_type": "beer",
+            "parent": "wheat-beer",
+            "catch_all": false,
+            "aliases": [
+                "South German-Style Weizenbock / Weissbock",
+                "Weissbock",
+                "Weizen Bock",
+                "Weizenbock",
+                "Wheat Bock"
+            ]
+        }
+    ]
+}
