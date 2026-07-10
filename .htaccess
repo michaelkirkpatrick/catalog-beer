@@ -24,6 +24,7 @@ RewriteRule ^logout/?$ 		logout.php [L]
 RewriteRule ^privacy/?$		privacy.php	[L]
 RewriteRule ^signup/?$		create-account.php [L]
 RewriteRule ^terms/?$		terms.php	[L]
+RewriteRule ^whats-new/?$	whats-new.php	[L]
 RewriteRule ^build-info/?$	build-info.php	[L]
 
 # Admin
