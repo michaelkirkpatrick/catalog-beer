@@ -74,7 +74,8 @@ $midSRM = function($s){
     return null;
 };
 
-// SRM range label ("SRM 4–12"), or '' when there's no color data
+// SRM range label ("SRM 4–12", or "SRM 40+" for an open-ended guideline
+// value), or '' when there's no color data
 $srmLabel = function($s){
     if(!isset($s['srm']) || !is_array($s['srm'])){
         return '';
@@ -84,8 +85,12 @@ $srmLabel = function($s){
     if(!is_numeric($min) && !is_numeric($max)){
         return '';
     }
-    if(!is_numeric($min)){ $min = $max; }
-    if(!is_numeric($max)){ $max = $min; }
+    if(!is_numeric($min)){
+        return 'SRM ' . ($max + 0);
+    }
+    if(!is_numeric($max)){
+        return 'SRM ' . ($min + 0) . '+';
+    }
     return ($min == $max) ? 'SRM ' . ($min + 0) : 'SRM ' . ($min + 0) . '&ndash;' . ($max + 0);
 };
 

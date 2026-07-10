@@ -40,14 +40,18 @@ $parentSlug = !empty($styleData->parent) ? $text3->get($styleData->parent) : '';
 // family already names the beverage type, so there's no tier to show.
 $className = !empty($styleData->class) ? $text1->get(ucfirst($styleData->class)) : '';
 
-// SRM color device
+// SRM color device. The guidelines publish some colors open-ended ("40+" —
+// at least 40, no upper bound), which the API returns as max: null. Don't
+// collapse that to a closed range: "40+" is not "exactly 40".
 $srm = $styleData->specs->srm ?? null;
 $srmMin = (is_object($srm) && is_numeric($srm->min ?? null)) ? floatval($srm->min) : null;
 $srmMax = (is_object($srm) && is_numeric($srm->max ?? null)) ? floatval($srm->max) : null;
+$srmOpen = ($srmMin !== null && $srmMax === null);
 if($srmMin === null){ $srmMin = $srmMax; }
-if($srmMax === null){ $srmMax = $srmMin; }
 $hasSrm = ($srmMin !== null);
-$srmMid = $hasSrm ? ($srmMin + $srmMax) / 2 : null;
+// The SRM color chart tops out at 40, so an open range paints to 40
+$srmPaintMax = $srmOpen ? max($srmMin, 40) : $srmMax;
+$srmMid = $hasSrm ? ($srmOpen ? $srmMin : ($srmMin + $srmMax) / 2) : null;
 
 // Lede: the first sentence of the description
 $lede = '';
@@ -61,20 +65,27 @@ if(!empty($styleData->description)){
 $specBar = function($label, $spec, $decimals, $suffix, $scaleMin, $scaleMax){
     $min = (is_object($spec) && is_numeric($spec->min ?? null)) ? floatval($spec->min) : null;
     $max = (is_object($spec) && is_numeric($spec->max ?? null)) ? floatval($spec->max) : null;
+    // Open-ended guideline value ("8%+"): a floor with no ceiling
+    $open = ($min !== null && $max === null);
     if($min === null){ $min = $max; }
-    if($max === null){ $max = $min; }
     if($min === null){
         return '';
     }
     $lo = max(0, min(1, ($min - $scaleMin) / ($scaleMax - $scaleMin)));
-    $hi = max(0, min(1, ($max - $scaleMin) / ($scaleMax - $scaleMin)));
+    $hi = $open ? 1 : max(0, min(1, ($max - $scaleMin) / ($scaleMax - $scaleMin)));
     $left = number_format($lo * 100, 1);
     $width = number_format(max(3, ($hi - $lo) * 100), 1);
     $fmt = function($v) use ($decimals, $suffix){
         $s = ($decimals !== null) ? number_format($v, $decimals) : rtrim(rtrim(number_format($v, 1), '0'), '.');
         return $s . $suffix;
     };
-    $value = ($min === $max) ? $fmt($min) : $fmt($min) . '&ndash;' . $fmt($max);
+    if($open){
+        $value = $fmt($min) . '+';
+    }elseif($min === $max){
+        $value = $fmt($min);
+    }else{
+        $value = $fmt($min) . '&ndash;' . $fmt($max);
+    }
     return '<div class="sp-spec"><div class="sp-spec-k">' . $label . '</div>'
         . '<div class="sp-spec-track"><div class="sp-spec-fill" style="left:' . $left . '%;width:' . $width . '%;background:var(--style-srm,var(--cb-amber));"></div></div>'
         . '<div class="sp-spec-v">' . $value . '</div></div>';
@@ -136,7 +147,7 @@ echo $htmlHead->html;
                 echo '<p class="da-aka">Also known as ' . implode(', ', $aliases) . '</p>';
             }
             if($hasSrm){
-                echo '<div class="da-glass sp-glass" style="background:' . SRM::gradient(max(1, $srmMin - 1), $srmMax, '180deg') . '"><div class="sp-foam"></div></div>';
+                echo '<div class="da-glass sp-glass" style="background:' . SRM::gradient(max(1, $srmMin - 1), $srmPaintMax, '180deg') . '"><div class="sp-foam"></div></div>';
             }
             ?>
         </header>
@@ -225,8 +236,11 @@ echo $htmlHead->html;
                 <?php if($hasSrm){ ?>
                 <div>
                     <div class="sp-section-h" style="border:0;padding:0;margin-bottom:.7rem;">Color &middot; SRM</div>
-                    <div class="sp-srm-range" style="background:<?php echo SRM::gradient($srmMin, $srmMax, '90deg'); ?>"></div>
-                    <div class="sp-srm-legend d-flex justify-content-between" style="margin-top:.4rem;"><span>SRM <?php echo $srmMin + 0; ?></span><span><?php echo $srmMax + 0; ?></span></div>
+                    <div class="sp-srm-range" style="background:<?php echo SRM::gradient($srmMin, $srmPaintMax, '90deg'); ?>"></div>
+                    <div class="sp-srm-legend d-flex justify-content-between" style="margin-top:.4rem;">
+                        <span>SRM <?php echo ($srmMin + 0) . ($srmOpen ? '+' : ''); ?></span>
+                        <span><?php echo $srmOpen ? '' : ($srmMax + 0); ?></span>
+                    </div>
                 </div>
                 <?php } if($specBars !== ''){ ?>
                 <div>
