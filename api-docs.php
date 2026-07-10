@@ -310,7 +310,7 @@ echo $htmlHead->html;
   "url": "https://www.hopsaint.com/",
   "cb_verified": true,
   "brewer_verified": false,
-  "last_modified": 1783639444
+  "last_modified": 1783639445
 }
 </pre>
                 <p><a href="#top">^ Return to top</a></p>
@@ -778,15 +778,15 @@ curl -X GET \
   "next_cursor": "MQ==",
   "data": [
     {
-      "id": "9e9680fd-66e1-414f-8f5b-491d147aa3c0",
+      "id": "a751e1bb-e738-4a3a-906b-6a707e082908",
       "object": "brewer",
-      "name": "Stone Church Brewing",
+      "name": "Stone Coast Brewing",
       "description": null,
       "short_description": null,
-      "url": null,
-      "cb_verified": true,
+      "url": "http://www.stonecoast.com/",
+      "cb_verified": false,
       "brewer_verified": false,
-      "last_modified": 1517949835
+      "last_modified": 1588448205
     }
   ]
 }
@@ -1165,7 +1165,7 @@ curl -X GET \
   "ibu": 70,
   "cb_verified": true,
   "brewer_verified": false,
-  "last_modified": 1783639445,
+  "last_modified": 1783642824,
   "brewer": {
     "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
     "object": "brewer",
@@ -1597,7 +1597,7 @@ curl -X GET \
 {
   "object": "count",
   "url": "/beer/count",
-  "value": 60607
+  "value": 60605
 }
 </pre>
 
@@ -1720,7 +1720,7 @@ curl -X GET \
       "ibu": 70,
       "cb_verified": true,
       "brewer_verified": false,
-      "last_modified": 1783639445,
+      "last_modified": 1783642824,
       "brewer": {
         "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
         "object": "brewer",
