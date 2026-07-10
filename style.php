@@ -35,11 +35,10 @@ $text3 = new Text(false, false, true);  // ids, URLs
 
 $styleName = $text1->get($styleData->name);
 $parentName = !empty($styleData->parent_name) ? $text1->get($styleData->parent_name) : '';
+$parentSlug = !empty($styleData->parent) ? $text3->get($styleData->parent) : '';
+// Only beer has a fermentation class. Cider / mead / perry have none, and their
+// family already names the beverage type, so there's no tier to show.
 $className = !empty($styleData->class) ? $text1->get(ucfirst($styleData->class)) : '';
-if($className === '' && !empty($styleData->beverage_type) && $styleData->beverage_type !== 'beer'){
-    // Cider / mead / perry have no fermentation class; show the beverage type
-    $className = $text1->get(ucfirst($styleData->beverage_type));
-}
 
 // SRM color device
 $srm = $styleData->specs->srm ?? null;
@@ -109,15 +108,17 @@ echo $htmlHead->html;
     <div class="sp-page" style="padding-top:1.25rem;<?php if($hasSrm){ echo '--style-srm:' . SRM::hex($srmMid) . ';'; } ?>">
         <div class="sp-eyebrow">
             <a href="/style">Styles</a><?php
+            // Styles / Ale / India Pale Ale / American-Style India Pale Ale
+            // Styles / Cider / Applewine        (no class tier for non-beer)
             if($className !== ''){ echo ' &nbsp;/&nbsp; <span>' . $className . '</span>'; }
             if($parentName !== ''){
-                $parentSlug = !empty($styleData->parent) ? $text3->get($styleData->parent) : '';
                 if($parentSlug !== ''){
                     echo ' &nbsp;/&nbsp; <a href="/style/family/' . $parentSlug . '">' . $parentName . '</a>';
                 }else{
                     echo ' &nbsp;/&nbsp; <span>' . $parentName . '</span>';
                 }
             }
+            echo ' &nbsp;/&nbsp; <span aria-current="page">' . $styleName . '</span>';
             ?>
         </div>
 

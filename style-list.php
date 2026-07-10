@@ -154,10 +154,10 @@ echo $htmlHead->html;
                         $cardStyle = ' style="--pc:' . $accent . '"';
                     }
 
-                    // The whole card links to the family page (so the style
-                    // names in the preview stay plain text — no nested anchors)
-                    echo '<a class="ix-card" href="/style/family/' . rawurlencode($p['slug']) . '"' . $cardStyle . '>';
-                    echo '<div class="ix-card-top"><span class="ix-card-name">' . $text->get($p['name']) . '</span><span class="sp-count">' . count($kids) . '</span></div>';
+                    // The card isn't a link — the family name and every style
+                    // name are, so a reader can jump straight to a style
+                    echo '<div class="ix-card"' . $cardStyle . '>';
+                    echo '<div class="ix-card-top"><a class="ix-card-name" href="/style/family/' . rawurlencode($p['slug']) . '">' . $text->get($p['name']) . '</a></div>';
                     if($mids){
                         echo '<div class="ix-sw-row">';
                         foreach($mids as $mid){
@@ -165,13 +165,12 @@ echo $htmlHead->html;
                         }
                         echo '</div>';
                     }
-                    $preview = array();
-                    foreach(array_slice($kids, 0, 3) as $s){
-                        $preview[] = $text->get($s['name']);
+                    echo '<ul class="ix-style-list">';
+                    foreach($kids as $s){
+                        echo '<li><a href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a></li>';
                     }
-                    $more = (count($kids) > 3) ? ' &middot; +' . (count($kids) - 3) . ' more' : '';
-                    echo '<div class="ix-card-styles">' . implode(' &middot; ', $preview) . $more . '</div>';
-                    echo '</a>';  // Close ix-card
+                    echo '</ul>';
+                    echo '</div>';  // Close ix-card
                 }
                 echo '</div>';  // Close ix-card-grid
             }else{

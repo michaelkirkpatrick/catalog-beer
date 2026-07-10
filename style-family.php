@@ -53,8 +53,9 @@ usort($catchAlls, function($a, $b){ return strcasecmp($a['name'], $b['name']); }
 $text = new Text(false, true, true);
 
 $familyName = $text->get($family['name']);
-$crumbContext = !empty($family['cls']) ? ucfirst($family['cls']) : ucfirst($family['bev']);
-$crumbContext = $text->get($crumbContext);
+// Beer families sit under a fermentation class; cider / mead / perry don't,
+// and their family name already is the beverage type
+$crumbContext = !empty($family['cls']) ? $text->get(ucfirst($family['cls'])) : '';
 
 // Midpoint of a style's SRM range, or null when there's no color data
 $midSRM = function($s){
@@ -88,14 +89,29 @@ $srmLabel = function($s){
     return ($min == $max) ? 'SRM ' . ($min + 0) : 'SRM ' . ($min + 0) . '&ndash;' . ($max + 0);
 };
 
+// Does any style in this family carry color? Cider, perry, and mead aren't
+// measured in SRM, so those families get no chip column at all — a row of
+// empty chips reads as broken rather than as "no data".
+$familyHasSRM = false;
+foreach(array_merge($kids, $catchAlls) as $s){
+    if($midSRM($s) !== null){
+        $familyHasSRM = true;
+        break;
+    }
+}
+
 // One row per style: chip + name (+ SRM range), linking to the Tasting Sheet
-$styleRow = function($s, $isCatchAll) use ($text, $midSRM, $srmLabel){
+$styleRow = function($s, $isCatchAll) use ($text, $midSRM, $srmLabel, $familyHasSRM){
     $mid = $midSRM($s);
     $html = '<a class="fam-row" href="/style/' . rawurlencode($s['id']) . '">';
-    if($mid !== null){
-        $html .= '<span class="fam-chip" style="background:' . SRM::hex($mid) . '"></span>';
-    }else{
-        $html .= '<span class="fam-chip fam-chip-none"></span>';
+    if($familyHasSRM){
+        // A colorless style inside a colored family (e.g. a catch-all) keeps a
+        // neutral chip so the column stays aligned
+        if($mid !== null){
+            $html .= '<span class="fam-chip" style="background:' . SRM::hex($mid) . '"></span>';
+        }else{
+            $html .= '<span class="fam-chip fam-chip-none"></span>';
+        }
     }
     $html .= '<span class="fam-name">' . $text->get($s['name']);
     if($isCatchAll){
@@ -121,7 +137,10 @@ echo $htmlHead->html;
 <body>
     <?php echo $nav->navbar('Styles'); ?>
     <div class="sp-page" style="padding-top:1.25rem;">
-        <div class="sp-eyebrow"><a href="/style">Styles</a> &nbsp;/&nbsp; <span><?php echo $crumbContext; ?></span></div>
+        <div class="sp-eyebrow"><a href="/style">Styles</a><?php
+            if($crumbContext !== ''){ echo ' &nbsp;/&nbsp; <span>' . $crumbContext . '</span>'; }
+            echo ' &nbsp;/&nbsp; <span aria-current="page">' . $familyName . '</span>';
+            ?></div>
 
         <header class="fam-hero">
             <h1 class="sp-title fam-title"><?php echo $familyName; ?> <span class="sp-count"><?php echo count($kids) + count($catchAlls); ?> styles</span></h1>
