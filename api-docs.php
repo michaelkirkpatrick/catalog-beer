@@ -1813,6 +1813,12 @@ curl -X GET \
         <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side &#8212; for example, in a typeahead &#8212; without an API request per keystroke.</td></tr>
         <tr><td><var>srm</var><br><small class="text-muted">(list only)</small></td><td>object</td><td>The style&#8217;s <a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">SRM</a> color range as a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline gives no color (cider, mead, perry, and catch-alls). The one spec included in list rows &#8212; enough to render color swatches without a request per style. On the detail endpoint the same range lives in <var>specs.srm</var>.</td></tr>
         <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">the <var>specs</var> field</a> below.</td></tr>
+        <tr><td><var>description</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>An editorial description of the style &#8212; what it is and what to expect in the glass. Plain prose; paragraphs separated by blank lines.</td></tr>
+        <tr><td><var>appearance</var>, <var>aroma</var>, <var>flavor</var>, <var>mouthfeel</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Short tasting-note fields describing the style in the glass. <var>null</var> for catch-all styles, which have no fixed sensory profile.</td></tr>
+        <tr><td><var>history</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The style&#8217;s origin and evolution &#8212; editorial prose with claims anchored to the citations in <var>sources.history_sources</var>.</td></tr>
+        <tr><td><var>notes</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Occasional editorial notes &#8212; e.g. how this entry relates to neighboring styles. <var>null</var> when there&#8217;s nothing to add.</td></tr>
+        <tr><td><var>commercial_examples</var><br><small class="text-muted">(detail only)</small></td><td>array</td><td>Classic or defining commercial examples of the style, as beer names (strings). Curated &#8212; not derived from the Catalog.beer database.</td></tr>
+        <tr><td><var>sources</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>Provenance: the style&#8217;s entry in each guideline it appears in (<var>brewers_association</var>, <var>bjcp</var> with year and code, <var>naba_2024</var>; the one marked <code>"primary": true</code> supplies the canonical name), plus <var>history_sources</var> &#8212; an array of <code>{ "citation", "url" }</code> objects backing the <var>history</var> prose.</td></tr>
     </tbody>
 </table>
 
@@ -1857,9 +1863,28 @@ curl -X GET \
     "srm": { "min": 4, "max": 12 },
     "og":  { "min": 1.06, "max": 1.07 },
     "fg":  { "min": 1.01, "max": 1.016 }
+  },
+  "description": "The defining style of American craft beer &#8212; medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. [&#8230;]",
+  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
+  "aroma": "Prominent American or New World hop character &#8212; citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. [&#8230;]",
+  "flavor": "Medium to high hop bitterness with matching hop flavor. [&#8230;]",
+  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
+  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. [&#8230;]",
+  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog [&#8230;]",
+  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
+  "sources": {
+    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
+    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
+    "naba_2024": { "name": "American-Style India Pale Ale" },
+    "history_sources": [
+      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
+      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
+    ]
   }
 }
 </pre>
+
+<p><small class="text-muted">Prose fields truncated for documentation ([&#8230;]) &#8212; the live response returns the full text.</small></p>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -1939,9 +1964,28 @@ curl -X GET \
     "srm": { "min": 4, "max": 12 },
     "og":  { "min": 1.06, "max": 1.07 },
     "fg":  { "min": 1.01, "max": 1.016 }
+  },
+  "description": "The defining style of American craft beer &#8212; medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. [&#8230;]",
+  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
+  "aroma": "Prominent American or New World hop character &#8212; citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. [&#8230;]",
+  "flavor": "Medium to high hop bitterness with matching hop flavor. [&#8230;]",
+  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
+  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. [&#8230;]",
+  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog [&#8230;]",
+  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
+  "sources": {
+    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
+    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
+    "naba_2024": { "name": "American-Style India Pale Ale" },
+    "history_sources": [
+      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
+      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
+    ]
   }
 }
 </pre>
+
+<p><small class="text-muted">Prose fields truncated for documentation ([&#8230;]) &#8212; the live response returns the full text.</small></p>
 
 <p><a href="#top">^ Return to top</a></p>
 
