@@ -37,6 +37,17 @@ echo $htmlHead->html;
                 <!-- Entries are ordered newest first. To add one, copy the <article> block below. -->
 
                 <article>
+                    <h2>A field guide to beer styles</h2>
+                    <p class="cb-article-date">July 11, 2026</p>
+
+                    <p>The standard list of styles behind every beer is now something you can explore. Visit <a href="/style">Beer Styles</a> to browse them all, grouped into 26 families across ale, lager, cider, mead, and perry. Each family is a card whose band of color is the real spread of shades you&#8217;ll find inside &#8212; from pale straw to black &#8212; so you can find your way around by eye.</p>
+
+                    <p>Every style has its own page: a tasting sheet with a plain-language description, what to expect in the glass (appearance, aroma, flavor, and mouthfeel), its color and vital statistics (alcohol, bitterness, and gravity), a short history, a few defining commercial examples, and the guideline sources behind it all. The figures come straight from the <a href="https://www.brewersassociation.org/edu/brewers-association-beer-style-guidelines/" target="_blank" rel="noopener">Brewers Association</a> and <a href="https://www.bjcp.org/bjcp-style-guidelines/" target="_blank" rel="noopener">BJCP</a> guidelines &#8212; and where a style has no fixed limit, such as an imperial stout that can always be darker, we say &#8220;40+&#8221; rather than invent a ceiling.</p>
+
+                    <p>Reading about a beer? Its style name is now a link &#8212; follow it to learn what the style is, then explore the rest of its family. Start anywhere and follow the color.</p>
+                </article>
+
+                <article>
                     <h2>A fresh look and smarter beer styles</h2>
                     <p class="cb-article-date">July 9, 2026</p>
 
