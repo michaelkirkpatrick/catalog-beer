@@ -2038,7 +2038,7 @@ curl -X GET \
     <li><strong>Description match</strong> &#8212; the query appears only in the style&#8217;s editorial description. A style that merely mentions a term never outranks one named for it.</li>
 </ol>
 
-<p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query matches a style family, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it.</p>
+<p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query exactly names a style family, by slug, name, or alias, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it. Searching &#8220;ipa&#8221; returns the <var>ipa</var> family alongside the individual IPA styles.</p>
 
 <table class="table">
     <thead>
@@ -2077,7 +2077,7 @@ curl -X GET \
         <tr>
             <td><var>families</var></td>
             <td>array</td>
-            <td>An array of <a href="#style-parents">style family objects</a> whose name, slug, or alias matches the query. Empty when no family matches. Families are never paginated &#8212; there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
+            <td>An array of <a href="#style-parents">style family objects</a> whose slug, name, or alias <em>exactly</em> matches the query. Empty when no family matches. Families are never paginated &#8212; there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. They are returned on the first page only, so an empty array on a later page means &#8220;not repeated here&#8221;, not &#8220;no family matched&#8221;. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
         </tr>
         <tr>
             <td><var>data</var></td>
