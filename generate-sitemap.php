@@ -98,19 +98,21 @@ $file = openSitemapFile($sitemapNumber);
 
 // --- (1) Top-Level Pages ---
 
+// Public, indexable pages only. Auth-gated and account pages (/login, /signup,
+// /account, /brewer/add) are Disallow'd in robots.txt — listing them here would
+// contradict that and waste crawl budget on pages that just bounce to /login.
 $pages = [
-    ''         => ['file' => 'index.php',          'priority' => 0.7],
-    'brewer'   => ['file' => 'brewer-list.php',     'priority' => 1],
-    'beer'     => ['file' => 'beer-list.php',       'priority' => 1],
-    'style'    => ['file' => 'style-list.php',      'priority' => 1],
-    'brewer/add' => ['file' => 'brewer-add.php',    'priority' => 0.3],
-    'api-docs' => ['file' => 'api-docs.php',        'priority' => 0.3],
+    ''          => ['file' => 'index.php',          'priority' => 0.7],
+    'brewer'    => ['file' => 'brewer-list.php',    'priority' => 1],
+    'beer'      => ['file' => 'beer-list.php',      'priority' => 1],
+    'style'     => ['file' => 'style-list.php',     'priority' => 1],
+    'map'       => ['file' => 'brewery-map.php',    'priority' => 0.5],
+    'api-docs'  => ['file' => 'api-docs.php',       'priority' => 0.3],
+    'api-usage' => ['file' => 'api-usage.php',      'priority' => 0.3],
     'whats-new' => ['file' => 'whats-new.php',      'priority' => 0.3],
-    'contact'  => ['file' => 'contact.php',         'priority' => 0.3],
-    'privacy'  => ['file' => 'privacy.php',         'priority' => 0.3],
-    'terms'    => ['file' => 'terms.php',           'priority' => 0.3],
-    'signup'   => ['file' => 'create-account.php',  'priority' => 0.3],
-    'login'    => ['file' => 'login.php',           'priority' => 0.3],
+    'contact'   => ['file' => 'contact.php',        'priority' => 0.3],
+    'privacy'   => ['file' => 'privacy.php',        'priority' => 0.3],
+    'terms'     => ['file' => 'terms.php',          'priority' => 0.3],
 ];
 
 foreach($pages as $slug => $info){

@@ -5,8 +5,15 @@
 # Credentials
 config/passwords.php
 
+# Database dumps — contain user emails, password hashes, and live API keys.
+# This repo is PUBLIC. Never commit one.
+*.sql
+
 # Generated at deploy time
 config/version.php
+
+# Generated on the server by generate-sitemap.php (cron)
+sitemap*.xml
 
 # Private keys
 *.p8
