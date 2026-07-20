@@ -63,6 +63,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#style-object">&gt; The Style Object</a>
                     <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
                     <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
+                    <a class="list-group-item list-group-item-action" href="#style-search">&gt; Search Styles</a>
                     <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
                     <a class="list-group-item list-group-item-action" href="#style-classes">&gt; List Classes</a>
                     <a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
@@ -1986,6 +1987,125 @@ curl -X GET \
 </pre>
 
 <p><small class="text-muted">Prose fields truncated for documentation ([&#8230;]) &#8212; the live response returns the full text.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-search">Search Styles</h3>
+
+<p>Search the style vocabulary by canonical name, alias, or description using full-text search. To search, send a <strong>GET</strong> request to the <code>/style/search</code> endpoint with a <var>q</var> query parameter. Alias matches are first-class: a search for &#8220;NEIPA&#8221; or &#8220;Juicy IPA&#8221; finds <var>hazy-ipa</var> even though neither term appears in the canonical name.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q={query}</pre>
+
+<h4>Query Parameters</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><var>q</var></td>
+            <td>string</td>
+            <td>The search query string. Maximum 255 characters.</td>
+        </tr>
+        <tr>
+            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+            <td>integer</td>
+            <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+        </tr>
+        <tr>
+            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q=oktoberfest&amp;count=5</pre>
+
+<h4>Response</h4>
+
+<p>This request returns a list object with the following parameters. Results are sorted by relevance to the search query, with matches on a style&#8217;s name ranking above matches on its aliases, and those above matches found only in its description.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Parameter</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><var>object</var></td>
+            <td>string</td>
+            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+        </tr>
+        <tr>
+            <td><var>url</var></td>
+            <td>string</td>
+            <td>The API endpoint accessed to retrieve this object. In this case: <code>/style/search</code>.</td>
+        </tr>
+        <tr>
+            <td><var>query</var></td>
+            <td>string</td>
+            <td>The search query that was submitted.</td>
+        </tr>
+        <tr>
+            <td><var>has_more</var></td>
+            <td>Boolean</td>
+            <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+        </tr>
+        <tr>
+            <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+        </tr>
+        <tr>
+            <td><var>data</var></td>
+            <td>array</td>
+            <td>An array of compact <a href="#style-object">style objects</a> matching the search query, sorted by relevance &#8212; the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/style/search?q=NEIPA' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/search",
+  "query": "NEIPA",
+  "has_more": false,
+  "data": [
+    {
+      "id": "hazy-ipa",
+      "object": "style",
+      "name": "Juicy or Hazy India Pale Ale",
+      "beverage_type": "beer",
+      "parent": "ipa",
+      "class": "ale",
+      "catch_all": false,
+      "aliases": ["Hazy IPA", "Hazy/Juicy IPA", "Juicy IPA", "NE IPA", "NEIPA", "New England IPA"],
+      "srm": { "min": 3, "max": 7 }
+    }
+  ]
+}
+</pre>
 
 <p><a href="#top">^ Return to top</a></p>
 
