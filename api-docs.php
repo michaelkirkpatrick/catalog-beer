@@ -2030,7 +2030,15 @@ curl -X GET \
 
 <h4>Response</h4>
 
-<p>This request returns a list object with the following parameters. Results are sorted by relevance to the search query, with matches on a style&#8217;s name ranking above matches on its aliases, and those above matches found only in its description.</p>
+<p>This request returns a list object with the following parameters. Results are ranked in three tiers, and relevance orders results within a tier rather than across tiers:</p>
+
+<ol>
+    <li><strong>Exact match</strong> &#8212; the query is exactly the style&#8217;s name or one of its aliases. Searching &#8220;American IPA&#8221; puts <var>american-ipa</var> first.</li>
+    <li><strong>Name match</strong> &#8212; the query appears in the style&#8217;s name or aliases. Aliases are treated as part of the name, which is why &#8220;NEIPA&#8221; finds <var>hazy-ipa</var> and &#8220;IPA&#8221; finds styles whose names spell out &#8220;India Pale Ale&#8221;.</li>
+    <li><strong>Description match</strong> &#8212; the query appears only in the style&#8217;s editorial description. A style that merely mentions a term never outranks one named for it.</li>
+</ol>
+
+<p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query matches a style family, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it.</p>
 
 <table class="table">
     <thead>
@@ -2067,9 +2075,14 @@ curl -X GET \
             <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
         </tr>
         <tr>
+            <td><var>families</var></td>
+            <td>array</td>
+            <td>An array of <a href="#style-parents">style family objects</a> whose name, slug, or alias matches the query. Empty when no family matches. Families are never paginated &#8212; there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
+        </tr>
+        <tr>
             <td><var>data</var></td>
             <td>array</td>
-            <td>An array of compact <a href="#style-object">style objects</a> matching the search query, sorted by relevance &#8212; the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
+            <td>An array of compact <a href="#style-object">style objects</a> matching the search query, in ranked order &#8212; the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
         </tr>
     </tbody>
 </table>
@@ -2091,6 +2104,7 @@ curl -X GET \
   "url": "/style/search",
   "query": "NEIPA",
   "has_more": false,
+  "families": [],
   "data": [
     {
       "id": "hazy-ipa",
@@ -2104,6 +2118,33 @@ curl -X GET \
       "srm": { "min": 3, "max": 7 }
     }
   ]
+}
+</pre>
+
+<h4>Sample Response &#8212; Broad Query</h4>
+
+<p>A query naming a whole family returns that family in <var>families</var> alongside its member styles in <var>data</var>. Offering the family is usually a better answer than the top-ranked individual style.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q=ipa
+
+{
+  "object": "list",
+  "url": "/style/search",
+  "query": "ipa",
+  "has_more": true,
+  "next_cursor": "Mw==",
+  "families": [
+    {
+      "slug": "ipa",
+      "object": "style_parent",
+      "name": "India Pale Ale",
+      "beverage_type": "beer",
+      "class": "ale",
+      "description": "...",
+      "sort_order": 2
+    }
+  ],
+  "data": [ ... ]
 }
 </pre>
 
