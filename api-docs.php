@@ -2034,9 +2034,12 @@ curl -X GET \
 
 <ol>
     <li><strong>Exact match</strong> &#8212; the query is exactly the style&#8217;s name or one of its aliases. Searching &#8220;American IPA&#8221; puts <var>american-ipa</var> first.</li>
-    <li><strong>Name match</strong> &#8212; the query appears in the style&#8217;s name or aliases. Aliases are treated as part of the name, which is why &#8220;NEIPA&#8221; finds <var>hazy-ipa</var> and &#8220;IPA&#8221; finds styles whose names spell out &#8220;India Pale Ale&#8221;.</li>
+    <li><strong>Full name match</strong> &#8212; every term in the query appears in the style&#8217;s name or aliases. Aliases count as part of the name, which is why &#8220;NEIPA&#8221; finds <var>hazy-ipa</var> and &#8220;IPA&#8221; finds styles whose names spell out &#8220;India Pale Ale&#8221;.</li>
+    <li><strong>Partial name match</strong> &#8212; some but not all query terms appear in the name or aliases.</li>
     <li><strong>Description match</strong> &#8212; the query appears only in the style&#8217;s editorial description. A style that merely mentions a term never outranks one named for it.</li>
 </ol>
+
+<p>Within a tier, styles are ordered by how many catalogued beers use them, so a search for a broad term surfaces styles that are actually brewed ahead of ones that exist only in the vocabulary. This ordering applies only between styles that match the query equally well &#8212; a precise match on a rare style always outranks a partial match on a common one.</p>
 
 <p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query exactly names a style family, by slug, name, or alias, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it. Searching &#8220;ipa&#8221; returns the <var>ipa</var> family alongside the individual IPA styles.</p>
 
