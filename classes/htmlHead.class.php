@@ -23,6 +23,12 @@ class htmlHead {
         $this->html = str_replace('##FATHOM##', $fathom, $html);
     }
     
+    // Append a page-specific stylesheet (loads after catalog.css)
+    function addStylesheet($href){
+        $link = "\t" . '<link rel="stylesheet" href="' . htmlspecialchars($href) . '">' . "\n";
+        $this->html = str_replace('</head>', $link . '</head>', $this->html);
+    }
+
     function addDescription($description){
         if(!empty($description)){
             $text = new Text(false, false, true);

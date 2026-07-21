@@ -63,6 +63,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#style-object">&gt; The Style Object</a>
                     <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
                     <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
+                    <a class="list-group-item list-group-item-action" href="#style-search">&gt; Search Styles</a>
                     <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
                     <a class="list-group-item list-group-item-action" href="#style-classes">&gt; List Classes</a>
                     <a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
@@ -1811,7 +1812,14 @@ curl -X GET \
         <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
         <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard &#8220;catch-all&#8221; styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits. Use it to separate fallback buckets from standard styles &#8212; for example, keeping catch-alls out of a picker&#8217;s ranked matches.</td></tr>
         <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side &#8212; for example, in a typeahead &#8212; without an API request per keystroke.</td></tr>
+        <tr><td><var>srm</var><br><small class="text-muted">(list only)</small></td><td>object</td><td>The style&#8217;s <a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">SRM</a> color range as a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline gives no color (cider, mead, perry, and catch-alls). The one spec included in list rows &#8212; enough to render color swatches without a request per style. On the detail endpoint the same range lives in <var>specs.srm</var>.</td></tr>
         <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">the <var>specs</var> field</a> below.</td></tr>
+        <tr><td><var>description</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>An editorial description of the style &#8212; what it is and what to expect in the glass. Plain prose; paragraphs separated by blank lines.</td></tr>
+        <tr><td><var>appearance</var>, <var>aroma</var>, <var>flavor</var>, <var>mouthfeel</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Short tasting-note fields describing the style in the glass. <var>null</var> for catch-all styles, which have no fixed sensory profile.</td></tr>
+        <tr><td><var>history</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The style&#8217;s origin and evolution &#8212; editorial prose with claims anchored to the citations in <var>sources.history_sources</var>.</td></tr>
+        <tr><td><var>notes</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Occasional editorial notes &#8212; e.g. how this entry relates to neighboring styles. <var>null</var> when there&#8217;s nothing to add.</td></tr>
+        <tr><td><var>commercial_examples</var><br><small class="text-muted">(detail only)</small></td><td>array</td><td>Classic or defining commercial examples of the style, as beer names (strings). Curated &#8212; not derived from the Catalog.beer database.</td></tr>
+        <tr><td><var>sources</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>Provenance: the style&#8217;s entry in each guideline it appears in (<var>brewers_association</var>, <var>bjcp</var> with year and code, <var>naba_2024</var>; the one marked <code>"primary": true</code> supplies the canonical name), plus <var>history_sources</var> &#8212; an array of <code>{ "citation", "url" }</code> objects backing the <var>history</var> prose.</td></tr>
     </tbody>
 </table>
 
@@ -1856,9 +1864,28 @@ curl -X GET \
     "srm": { "min": 4, "max": 12 },
     "og":  { "min": 1.06, "max": 1.07 },
     "fg":  { "min": 1.01, "max": 1.016 }
+  },
+  "description": "The defining style of American craft beer &#8212; medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. [&#8230;]",
+  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
+  "aroma": "Prominent American or New World hop character &#8212; citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. [&#8230;]",
+  "flavor": "Medium to high hop bitterness with matching hop flavor. [&#8230;]",
+  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
+  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. [&#8230;]",
+  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog [&#8230;]",
+  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
+  "sources": {
+    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
+    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
+    "naba_2024": { "name": "American-Style India Pale Ale" },
+    "history_sources": [
+      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
+      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
+    ]
   }
 }
 </pre>
+
+<p><small class="text-muted">Prose fields truncated for documentation ([&#8230;]) &#8212; the live response returns the full text.</small></p>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -1893,7 +1920,8 @@ curl -X GET \
       "parent": "ipa",
       "class": "ale",
       "catch_all": false,
-      "aliases": ["American India Pale Ale", "American IPA"]
+      "aliases": ["American India Pale Ale", "American IPA"],
+      "srm": { "min": 4, "max": 12 }
     }
   ]
 }
@@ -1937,7 +1965,189 @@ curl -X GET \
     "srm": { "min": 4, "max": 12 },
     "og":  { "min": 1.06, "max": 1.07 },
     "fg":  { "min": 1.01, "max": 1.016 }
+  },
+  "description": "The defining style of American craft beer &#8212; medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. [&#8230;]",
+  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
+  "aroma": "Prominent American or New World hop character &#8212; citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. [&#8230;]",
+  "flavor": "Medium to high hop bitterness with matching hop flavor. [&#8230;]",
+  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
+  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. [&#8230;]",
+  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog [&#8230;]",
+  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
+  "sources": {
+    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
+    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
+    "naba_2024": { "name": "American-Style India Pale Ale" },
+    "history_sources": [
+      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
+      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
+    ]
   }
+}
+</pre>
+
+<p><small class="text-muted">Prose fields truncated for documentation ([&#8230;]) &#8212; the live response returns the full text.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-search">Search Styles</h3>
+
+<p>Search the style vocabulary by canonical name, alias, or description using full-text search. To search, send a <strong>GET</strong> request to the <code>/style/search</code> endpoint with a <var>q</var> query parameter. Alias matches are first-class: a search for &#8220;NEIPA&#8221; or &#8220;Juicy IPA&#8221; finds <var>hazy-ipa</var> even though neither term appears in the canonical name.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q={query}</pre>
+
+<h4>Query Parameters</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><var>q</var></td>
+            <td>string</td>
+            <td>The search query string. Maximum 255 characters.</td>
+        </tr>
+        <tr>
+            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+            <td>integer</td>
+            <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+        </tr>
+        <tr>
+            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q=oktoberfest&amp;count=5</pre>
+
+<h4>Response</h4>
+
+<p>This request returns a list object with the following parameters. Results are ranked in three tiers, and relevance orders results within a tier rather than across tiers:</p>
+
+<ol>
+    <li><strong>Exact match</strong> &#8212; the query is exactly the style&#8217;s name or one of its aliases. Searching &#8220;American IPA&#8221; puts <var>american-ipa</var> first.</li>
+    <li><strong>Full name match</strong> &#8212; every term in the query appears in the style&#8217;s name or aliases. Aliases count as part of the name, which is why &#8220;NEIPA&#8221; finds <var>hazy-ipa</var> and &#8220;IPA&#8221; finds styles whose names spell out &#8220;India Pale Ale&#8221;.</li>
+    <li><strong>Partial name match</strong> &#8212; some but not all query terms appear in the name or aliases.</li>
+    <li><strong>Description match</strong> &#8212; the query appears only in the style&#8217;s editorial description. A style that merely mentions a term never outranks one named for it.</li>
+</ol>
+
+<p>Within a tier, styles are ordered by how many catalogued beers use them, so a search for a broad term surfaces styles that are actually brewed ahead of ones that exist only in the vocabulary. This ordering applies only between styles that match the query equally well &#8212; a precise match on a rare style always outranks a partial match on a common one.</p>
+
+<p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query exactly names a style family, by slug, name, or alias, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it. Searching &#8220;ipa&#8221; returns the <var>ipa</var> family alongside the individual IPA styles.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Parameter</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><var>object</var></td>
+            <td>string</td>
+            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+        </tr>
+        <tr>
+            <td><var>url</var></td>
+            <td>string</td>
+            <td>The API endpoint accessed to retrieve this object. In this case: <code>/style/search</code>.</td>
+        </tr>
+        <tr>
+            <td><var>query</var></td>
+            <td>string</td>
+            <td>The search query that was submitted.</td>
+        </tr>
+        <tr>
+            <td><var>has_more</var></td>
+            <td>Boolean</td>
+            <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+        </tr>
+        <tr>
+            <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+            <td>string</td>
+            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+        </tr>
+        <tr>
+            <td><var>families</var></td>
+            <td>array</td>
+            <td>An array of <a href="#style-parents">style family objects</a> whose slug, name, or alias <em>exactly</em> matches the query. Empty when no family matches. Families are never paginated &#8212; there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. They are returned on the first page only, so an empty array on a later page means &#8220;not repeated here&#8221;, not &#8220;no family matched&#8221;. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
+        </tr>
+        <tr>
+            <td><var>data</var></td>
+            <td>array</td>
+            <td>An array of compact <a href="#style-object">style objects</a> matching the search query, in ranked order &#8212; the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/style/search?q=NEIPA' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/search",
+  "query": "NEIPA",
+  "has_more": false,
+  "families": [],
+  "data": [
+    {
+      "id": "hazy-ipa",
+      "object": "style",
+      "name": "Juicy or Hazy India Pale Ale",
+      "beverage_type": "beer",
+      "parent": "ipa",
+      "class": "ale",
+      "catch_all": false,
+      "aliases": ["Hazy IPA", "Hazy/Juicy IPA", "Juicy IPA", "NE IPA", "NEIPA", "New England IPA"],
+      "srm": { "min": 3, "max": 7 }
+    }
+  ]
+}
+</pre>
+
+<h4>Sample Response &#8212; Broad Query</h4>
+
+<p>A query naming a whole family returns that family in <var>families</var> alongside its member styles in <var>data</var>. Offering the family is usually a better answer than the top-ranked individual style.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q=ipa
+
+{
+  "object": "list",
+  "url": "/style/search",
+  "query": "ipa",
+  "has_more": true,
+  "next_cursor": "Mw==",
+  "families": [
+    {
+      "slug": "ipa",
+      "object": "style_parent",
+      "name": "India Pale Ale",
+      "beverage_type": "beer",
+      "class": "ale",
+      "description": "...",
+      "sort_order": 2
+    }
+  ],
+  "data": [ ... ]
 }
 </pre>
 

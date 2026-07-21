@@ -1,4 +1,159 @@
+# ---------------------------------------------------------------------
+# catalog.beer — The Internet's Beer Database
+#
+# Policy: search engines and user-triggered AI agents are welcome.
+# Bulk AI *training* crawlers are not.
+#
+# A user-triggered fetch answers a real person's question and cites us.
+# A training crawl takes a permanent, uncredited copy of all 60,000+
+# beers and returns nothing. We're glad to answer questions. We are not
+# a free training corpus.
+#
+# Building something? Use the API instead of scraping:
+#   https://catalog.beer/api-docs
+# ---------------------------------------------------------------------
+
+
+# --- Default: everyone not named below ---
 User-agent: *
-Allow: *
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /verify-email
+Disallow: /admin/
+Disallow: /*/edit
+Disallow: /*/add-location
+Disallow: /*/edit-address
+Disallow: /*/add-address
+Disallow: /*/delete
+Disallow: /beer/add/
+Disallow: /brewer/add
+
+
+# ---------------------------------------------------------------------
+# AI TRAINING CRAWLERS — not permitted
+#
+# These ingest content into model training corpora. No attribution,
+# no traffic, no relationship.
+# ---------------------------------------------------------------------
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: omgili
+Disallow: /
+
+User-agent: PanguBot
+Disallow: /
+
+User-agent: AI2Bot
+Disallow: /
+
+
+# ---------------------------------------------------------------------
+# USER-TRIGGERED AI AGENTS — welcome
+#
+# These fetch live, on behalf of a specific person asking a specific
+# question, and link back. This is the traffic we want.
+#
+# Note the deliberate split: OAI-SearchBot (OpenAI's citing search
+# index) is allowed while GPTBot (OpenAI's training crawler) is not.
+# Same company, different purpose.
+#
+# A named group replaces the "*" group entirely rather than adding to
+# it, so the private-path rules are repeated in each one.
+# ---------------------------------------------------------------------
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /admin/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /admin/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /admin/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /admin/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /admin/
+
+User-agent: DuckAssistBot
+Allow: /
+Disallow: /account
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /admin/
+
 
 Sitemap: https://catalog.beer/sitemap.xml

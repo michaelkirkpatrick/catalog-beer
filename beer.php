@@ -62,8 +62,14 @@ echo $htmlHead->html;
                 }
                 echo '</h1>' . "\n";
                 
-                // Style
-                echo '<p class="lead">' . $beerStyle . '</p>' . "\n";
+                // Style — links to the style's reference page when the beer
+                // resolved to a canonical style
+                if(!empty($beerData->style_id)){
+                    $styleURL = $text3->get($beerData->style_id);
+                    echo '<p class="lead"><a href="/style/' . $styleURL . '" title="Learn about this beer style">' . $beerStyle . '</a></p>' . "\n";
+                }else{
+                    echo '<p class="lead">' . $beerStyle . '</p>' . "\n";
+                }
                 
                 // Description
                 if(!empty($beerData->description)){

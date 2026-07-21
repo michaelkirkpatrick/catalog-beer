@@ -37,6 +37,38 @@ echo $htmlHead->html;
                 <!-- Entries are ordered newest first. To add one, copy the <article> block below. -->
 
                 <article>
+                    <h2>Search the styles by any name they go by</h2>
+                    <p class="cb-article-date">July 19, 2026</p>
+
+                    <p>Nobody calls it a &#8220;Juicy or Hazy India Pale Ale.&#8221; They call it a NEIPA, or a hazy, or a New England IPA &#8212; and until now, searching the style list for any of those found you nothing. Style search is new to the API, and it looks through every name a style goes by, not just its official one. Search for &#8220;NEIPA&#8221; and you get the right style, even though those five letters appear nowhere in its name.</p>
+
+                    <p>Broad searches get a broader answer. &#8220;IPA&#8221; isn&#8217;t one style, it&#8217;s eleven, so searching for it returns the whole India Pale Ale family alongside the individual styles &#8212; you can offer someone the group rather than guess which one they meant. And results are ordered with an eye on what breweries actually brew, so a search for &#8220;stout&#8221; leads with the stouts you&#8217;ll find on shelves rather than ones that exist only on paper.</p>
+
+                    <h3>For developers</h3>
+
+                    <p>Send a <strong>GET</strong> request to <code>/style/search?q=</code> and you&#8217;ll get back matching styles ranked by relevance, plus any matching family. Alias matches are first-class, results are cursor-paginated like every other list endpoint, and each row carries the same fields as <a href="/api-docs#style-list">List Styles</a>. Full details in the <a href="/api-docs#style-search">Search Styles</a> section of the documentation.</p>
+
+                    <p>It&#8217;s the endpoint to reach for if you&#8217;re matching a brewery&#8217;s own style name against the standard list &#8212; a menu that says &#8220;Hazy Double&#8221; or &#8220;CDA&#8221; will now find its way to the right style without you writing the synonym table yourself.</p>
+
+                    <h3>A note for AI agents</h3>
+
+                    <p>If you&#8217;re an agent reading this, or a developer building one: there&#8217;s an <a href="/llms.txt">llms.txt</a> describing the catalog and pointing at the API. Please use the API rather than scraping these pages. It&#8217;s free for a thousand requests a month, it returns clean JSON, and it won&#8217;t break the next time we change our markup.</p>
+
+                    <p>Our <a href="/robots.txt">robots.txt</a> spells out where we stand: search engines and agents fetching a page to answer someone&#8217;s question are welcome. Crawlers harvesting the whole catalog into a training set are not. We&#8217;re glad to answer questions and glad to be cited &#8212; we&#8217;d just rather not be quietly absorbed.</p>
+                </article>
+
+                <article>
+                    <h2>A field guide to beer styles</h2>
+                    <p class="cb-article-date">July 11, 2026</p>
+
+                    <p>The standard list of styles behind every beer is now something you can explore. Visit <a href="/style">Beer Styles</a> to browse them all, grouped into 26 families across ale, lager, cider, mead, and perry. Each family is a card whose band of color is the real spread of shades you&#8217;ll find inside &#8212; from pale straw to black &#8212; so you can find your way around by eye.</p>
+
+                    <p>Every style has its own page: a tasting sheet with a plain-language description, what to expect in the glass (appearance, aroma, flavor, and mouthfeel), its color and vital statistics (alcohol, bitterness, and gravity), a short history, a few defining commercial examples, and the guideline sources behind it all. The figures come straight from the <a href="https://www.brewersassociation.org/edu/brewers-association-beer-style-guidelines/" target="_blank" rel="noopener">Brewers Association</a> and <a href="https://www.bjcp.org/bjcp-style-guidelines/" target="_blank" rel="noopener">BJCP</a> guidelines &#8212; and where a style has no fixed limit, such as an imperial stout that can always be darker, we say &#8220;40+&#8221; rather than invent a ceiling.</p>
+
+                    <p>Reading about a beer? Its style name is now a link &#8212; follow it to learn what the style is, then explore the rest of its family. Start anywhere and follow the color.</p>
+                </article>
+
+                <article>
                     <h2>A fresh look and smarter beer styles</h2>
                     <p class="cb-article-date">July 9, 2026</p>
 

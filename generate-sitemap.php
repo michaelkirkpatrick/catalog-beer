@@ -98,18 +98,21 @@ $file = openSitemapFile($sitemapNumber);
 
 // --- (1) Top-Level Pages ---
 
+// Public, indexable pages only. Auth-gated and account pages (/login, /signup,
+// /account, /brewer/add) are Disallow'd in robots.txt — listing them here would
+// contradict that and waste crawl budget on pages that just bounce to /login.
 $pages = [
-    ''         => ['file' => 'index.php',          'priority' => 0.7],
-    'brewer'   => ['file' => 'brewer-list.php',     'priority' => 1],
-    'beer'     => ['file' => 'beer-list.php',       'priority' => 1],
-    'brewer/add' => ['file' => 'brewer-add.php',    'priority' => 0.3],
-    'api-docs' => ['file' => 'api-docs.php',        'priority' => 0.3],
+    ''          => ['file' => 'index.php',          'priority' => 0.7],
+    'brewer'    => ['file' => 'brewer-list.php',    'priority' => 1],
+    'beer'      => ['file' => 'beer-list.php',      'priority' => 1],
+    'style'     => ['file' => 'style-list.php',     'priority' => 1],
+    'map'       => ['file' => 'brewery-map.php',    'priority' => 0.5],
+    'api-docs'  => ['file' => 'api-docs.php',       'priority' => 0.3],
+    'api-usage' => ['file' => 'api-usage.php',      'priority' => 0.3],
     'whats-new' => ['file' => 'whats-new.php',      'priority' => 0.3],
-    'contact'  => ['file' => 'contact.php',         'priority' => 0.3],
-    'privacy'  => ['file' => 'privacy.php',         'priority' => 0.3],
-    'terms'    => ['file' => 'terms.php',           'priority' => 0.3],
-    'signup'   => ['file' => 'create-account.php',  'priority' => 0.3],
-    'login'    => ['file' => 'login.php',           'priority' => 0.3],
+    'contact'   => ['file' => 'contact.php',        'priority' => 0.3],
+    'privacy'   => ['file' => 'privacy.php',        'priority' => 0.3],
+    'terms'     => ['file' => 'terms.php',          'priority' => 0.3],
 ];
 
 foreach($pages as $slug => $info){
@@ -196,6 +199,47 @@ while(true){
 }
 
 echo "Beers complete\n";
+
+// --- (4) Styles ---
+
+echo "Starting styles...\n";
+
+$apiData = request('/style');
+if(!$apiData || !isset($apiData->data)){
+    echo "Error: Failed to fetch style list. Aborting style section.\n";
+}else{
+    // Styles have no per-row last_modified; content changes ship as deploys,
+    // so the page file's mtime is the honest signal.
+    $styleLastMod = filemtime(ROOT . '/style.php');
+    foreach($apiData->data as $style){
+        if(!isset($style->id)){
+            echo "Warning: Skipping style with missing data\n";
+            continue;
+        }
+        writeUrl($file, $prefix . 'style/' . $style->id, $styleLastMod, 'monthly', 0.6);
+        $urlCount++;
+        checkSitemapLimit($file, $urlCount, $sitemapNumber);
+    }
+    echo "Styles complete\n";
+}
+
+// Family pages
+$apiData = request('/style/parent');
+if(!$apiData || !isset($apiData->data)){
+    echo "Error: Failed to fetch family list. Aborting family section.\n";
+}else{
+    $familyLastMod = filemtime(ROOT . '/style-family.php');
+    foreach($apiData->data as $family){
+        if(!isset($family->slug)){
+            echo "Warning: Skipping family with missing data\n";
+            continue;
+        }
+        writeUrl($file, $prefix . 'style/family/' . $family->slug, $familyLastMod, 'monthly', 0.6);
+        $urlCount++;
+        checkSitemapLimit($file, $urlCount, $sitemapNumber);
+    }
+    echo "Families complete\n";
+}
 
 // --- Close final sitemap file ---
 closeSitemapFile($file);
