@@ -137,6 +137,23 @@ echo $htmlHead->html;
             $mapLocations = [];
             $i=1;
             foreach($locationData->data as &$locationInfo){
+                // Get Location Info
+                $locationDetailResp = $api->request('GET', '/location/' . $locationInfo->id, '');
+                $locationDetailData = json_decode($locationDetailResp);
+
+                if(!isset($locationDetailData->name) || isset($locationDetailData->error)){
+                    // The location detail request failed or came back unusable. Skip
+                    // this location instead of rendering an empty card; the rest of
+                    // the page is still worth showing.
+                    $errorLog = new LogError();
+                    $errorLog->errorNumber = 'C22';
+                    $errorLog->errorMsg = 'Unable to load location details';
+                    $errorLog->badData = "brewerID: $brewerID\nlocationID: " . $locationInfo->id . "\nhttpcode: " . $api->httpcode . "\nresponse: " . var_export($locationDetailResp, true);
+                    $errorLog->filename = 'brewer.php';
+                    $errorLog->write();
+                    continue;
+                }
+
                 // Column Info
                 if($i == 1){
                     // Start New Row
@@ -144,10 +161,6 @@ echo $htmlHead->html;
                 }
                 // New Column
                 echo '<div class="col-md-4" itemprop="location" itemscope itemtype="http://schema.org/Place"><meta itemprop="publicAccess" content="true" />' . "\n";
-
-                // Get Location Info
-                $locationDetailResp = $api->request('GET', '/location/' . $locationInfo->id, '');
-                $locationDetailData = json_decode($locationDetailResp);
 
                 // Collect coordinates for map
                 if(!empty($locationDetailData->latitude) && !empty($locationDetailData->longitude)){
@@ -302,7 +315,7 @@ echo $htmlHead->html;
         echo '</div>' . "\n";
         echo '<hr>' . "\n";
 
-        if(count($brewerData->data) > 0){
+        if(isset($brewerData->data) && count($brewerData->data) > 0){
             // Column Sizing
             $perColumn = ceil(count($brewerData->data)/3);
             $i = 1;
