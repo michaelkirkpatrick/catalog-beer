@@ -107,6 +107,7 @@ RSYNC_OUTPUT=$(rsync -azOi --no-perms --delete \
 	--exclude 'README.md' \
 	--exclude 'sitemap*.xml' \
 	--exclude '*.p8' \
+	--exclude 'php-errors-*.txt' \
 	--filter 'P classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/***' \
 	./ "$REMOTE:$REMOTE_PATH/" 2>&1)
 

@@ -18,6 +18,9 @@ sitemap*.xml
 # Private keys
 *.p8
 
+# Server log excerpts pulled down for review (also rsync-excluded in deploy.sh)
+php-errors-*.txt
+
 # IDE
 .nova/
 .editorconfig
