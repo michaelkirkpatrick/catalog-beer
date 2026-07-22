@@ -28,3 +28,10 @@ php-errors-*.txt
 # Legacy
 classes/_notes/dwsync.xml
 _notes/dwsync.xml
+
+# Scratch space: local working files (dumps, exports, one-off scripts, notes).
+# Contents are ignored by git AND excluded from rsync in deploy.sh, so nothing
+# here can reach a server. Keep the directory itself tracked via .gitkeep so a
+# fresh clone has somewhere obvious to put this stuff.
+scratch/*
+!scratch/.gitkeep

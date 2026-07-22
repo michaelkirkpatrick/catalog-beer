@@ -6,6 +6,20 @@
 #   ./deploy.sh staging      Deploy to staging
 #   ./deploy.sh production   Deploy to production
 # Warn if there are uncommitted changes
+#
+# ---------------------------------------------------------------------------
+# Derived from the canonical template at:
+#     ~/Documents/MEK Studios/Linode/deploy.sh
+#
+# If you improve something here that every project should have -- a safety
+# check, a universal exclude, a bug fix -- update that template too, and tell
+# Michael which other projects need the same change. A fix that lives in only
+# one project is how these scripts drifted apart in the first place.
+#
+# Project-specific content (HOST/DEST, per-project excludes, vendored-library
+# handling, extra deploy users) belongs here and NOT in the template.
+# See Project-Conventions.md § Deploy script in the Linode repo.
+# ---------------------------------------------------------------------------
 if ! git diff --quiet HEAD 2>/dev/null; then
 	echo "WARNING: You have uncommitted changes."
 	git status --short
@@ -18,6 +32,44 @@ if ! git diff --quiet HEAD 2>/dev/null; then
 	if [[ $confirm != "y" ]]; then
 		echo "Aborted."
 		exit 0
+	fi
+fi
+
+# --- Preflight: untracked files are deployed too ---
+#
+# rsync copies the working tree, not the git index, so a file git has never
+# heard of is published exactly like a committed one. `git status` is not a
+# guide to what ships.
+#
+# This is not hypothetical. Found live on 2026-07-22:
+#   michaelandmollie.baby/invites.csv          27 guests' names + emails, HTTP 200
+#   mekstudios.com/irrigation-logs/api-smoke-test.sh              HTTP 200
+# Both were untracked working files sitting in the deploy root.
+#
+# Adding an --exclude afterwards does NOT clean up: rsync --delete deliberately
+# PROTECTS excluded files on the receiver, so anything already published stays
+# until someone removes it by hand. Catching it here is the cheap moment.
+#
+# Scratch work belongs in scratch/ (gitignored, and excluded from rsync below).
+#
+# Blind spot worth knowing: gitignored files are not listed here, because they
+# are the ones we exclude from rsync on purpose (common/passwords.php). If you
+# add a .gitignore entry, add a matching --exclude below or it will deploy.
+if git rev-parse --git-dir >/dev/null 2>&1; then
+	UNTRACKED=$(git ls-files --others --exclude-standard -- . | grep -v '^scratch/' || true)
+	if [[ -n "$UNTRACKED" ]]; then
+		echo "WARNING: these files are NOT in git but WILL be deployed:"
+		echo "$UNTRACKED" | sed 's/^/  /'
+		echo ""
+		if [[ -n "$1" ]]; then
+			echo "Aborting non-interactive deploy. Commit them, delete them, or move them to scratch/."
+			exit 1
+		fi
+		read -p "Deploy them anyway? (y/n): " confirm
+		if [[ $confirm != "y" ]]; then
+			echo "Aborted."
+			exit 0
+		fi
 	fi
 fi
 
@@ -100,6 +152,7 @@ RSYNC_OUTPUT=$(rsync -azOi --no-perms --delete \
 	--exclude '.gitignore' \
 	--exclude '.gitattributes' \
 	--exclude '.DS_Store' \
+	--exclude 'scratch/' \
 	--exclude 'CLAUDE.md' \
 	--exclude 'deploy.sh' \
 	--exclude '*.sql' \
