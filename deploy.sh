@@ -5,20 +5,38 @@
 #   ./deploy.sh              Interactive mode (prompts for environment)
 #   ./deploy.sh staging      Deploy to staging
 #   ./deploy.sh production   Deploy to production
+# --- Deploy targets ---
+#
+# Server addresses, destination hostnames and the SSH user live in deploy.conf,
+# which is gitignored. This script is public; the targets are not. Publishing a
+# server IP next to a valid SSH username hands over half a credential.
+#
+# Copy deploy.conf.example to deploy.conf and fill it in.
+CONF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/deploy.conf"
+if [[ ! -f "$CONF" ]]; then
+	echo "ERROR: deploy.conf not found next to this script."
+	echo "Copy deploy.conf.example to deploy.conf and fill in your targets."
+	exit 1
+fi
+# shellcheck source=/dev/null
+source "$CONF"
+if [[ -z "$DEPLOY_USER" ]]; then
+	echo "ERROR: DEPLOY_USER is not set in deploy.conf."
+	exit 1
+fi
+
 # Warn if there are uncommitted changes
 #
 # ---------------------------------------------------------------------------
-# Derived from the canonical template at:
-#     ~/Documents/MEK Studios/Linode/deploy.sh
+# Derived from a shared deploy template kept in the server-provisioning repo.
 #
 # If you improve something here that every project should have -- a safety
-# check, a universal exclude, a bug fix -- update that template too, and tell
-# Michael which other projects need the same change. A fix that lives in only
-# one project is how these scripts drifted apart in the first place.
+# check, a universal exclude, a bug fix -- update that template too, and flag
+# the other projects for the same change. A fix that lives in only one project
+# is how these scripts drift apart in the first place.
 #
 # Project-specific content (HOST/DEST, per-project excludes, vendored-library
 # handling, extra deploy users) belongs here and NOT in the template.
-# See Project-Conventions.md § Deploy script in the Linode repo.
 # ---------------------------------------------------------------------------
 if ! git diff --quiet HEAD 2>/dev/null; then
 	echo "WARNING: You have uncommitted changes."
@@ -39,12 +57,11 @@ fi
 #
 # rsync copies the working tree, not the git index, so a file git has never
 # heard of is published exactly like a committed one. `git status` is not a
-# guide to what ships.
+# guide to what ships, and .gitignore has no bearing on rsync at all.
 #
-# This is not hypothetical. Found live on 2026-07-22:
-#   michaelandmollie.baby/invites.csv          27 guests' names + emails, HTTP 200
-#   mekstudios.com/irrigation-logs/api-smoke-test.sh              HTTP 200
-# Both were untracked working files sitting in the deploy root.
+# This is not hypothetical -- a data export and an internal utility script,
+# both left in the deploy root while working on something, have ended up on
+# public URLs this way.
 #
 # Adding an --exclude afterwards does NOT clean up: rsync --delete deliberately
 # PROTECTS excluded files on the receiver, so anything already published stays
@@ -52,9 +69,9 @@ fi
 #
 # Scratch work belongs in scratch/ (gitignored, and excluded from rsync below).
 #
-# Blind spot worth knowing: gitignored files are not listed here, because they
-# are the ones we exclude from rsync on purpose (common/passwords.php). If you
-# add a .gitignore entry, add a matching --exclude below or it will deploy.
+# Blind spot worth knowing: gitignored files are not listed here, because those
+# are the ones excluded from rsync on purpose (the secrets include). If you add
+# a .gitignore entry, add a matching --exclude below or it will deploy.
 if git rev-parse --git-dir >/dev/null 2>&1; then
 	UNTRACKED=$(git ls-files --others --exclude-standard -- . | grep -v '^scratch/' || true)
 	if [[ -n "$UNTRACKED" ]]; then
@@ -95,13 +112,13 @@ fi
 
 case $ENV in
 	staging)
-		HOST="172.236.249.199"
-		DEST="staging.catalog.beer"
+		HOST="$STAGING_HOST"
+		DEST="$STAGING_DEST"
 		echo "Deploying to Staging..."
 		;;
 	production)
-		HOST="172.233.129.106"
-		DEST="catalog.beer"
+		HOST="$PRODUCTION_HOST"
+		DEST="$PRODUCTION_DEST"
 		if [[ -z "$1" ]]; then
 			read -p "Are you sure you want to deploy to Production? (y/n): " confirm
 			if [[ $confirm != "y" ]]; then
@@ -118,7 +135,7 @@ case $ENV in
 		;;
 esac
 
-REMOTE="michael@$HOST"
+REMOTE="$DEPLOY_USER@$HOST"
 REMOTE_PATH="/var/www/html/$DEST/public_html"
 SOCKET="/tmp/deploy-ssh-$$"
 
@@ -143,6 +160,14 @@ echo "Generated config/version.php ($(git rev-parse --short HEAD))"
 ssh -fNM -S "$SOCKET" "$REMOTE"
 trap 'ssh -S "$SOCKET" -O exit "$REMOTE" 2>/dev/null' EXIT
 
+# A note on '*.sh': it covers deploy.sh itself plus any smoke-test or utility
+# script. The root .htaccess also denies .sh, but excluding here keeps them off
+# the server in the first place.
+#
+# Comments cannot go inside the backslash-continued exclude list below -- the
+# continuation joins the comment onto the command and the '#' then swallows the
+# rest of it, silently dropping every remaining argument including the source
+# and destination. `bash -n` does not catch this.
 RSYNC_OUTPUT=$(rsync -azOi --no-perms --delete \
 	-e "ssh -S '$SOCKET'" \
 	--exclude '.git' \
@@ -155,6 +180,9 @@ RSYNC_OUTPUT=$(rsync -azOi --no-perms --delete \
 	--exclude 'scratch/' \
 	--exclude 'CLAUDE.md' \
 	--exclude 'deploy.sh' \
+	--exclude 'deploy.conf' \
+	--exclude 'deploy.conf.example' \
+	--exclude '*.sh' \
 	--exclude '*.sql' \
 	--exclude 'maintenance.html' \
 	--exclude 'README.md' \

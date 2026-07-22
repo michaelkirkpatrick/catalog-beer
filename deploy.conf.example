@@ -1,0 +1,8 @@
+# Copy to deploy.conf and fill in. deploy.conf is gitignored and never deployed.
+# Kept out of git so a public repo does not publish a server address next to a
+# valid SSH username.
+STAGING_HOST="10.0.0.1"
+STAGING_DEST="staging.example.com"
+PRODUCTION_HOST="10.0.0.2"
+PRODUCTION_DEST="example.com"
+DEPLOY_USER="deployuser"

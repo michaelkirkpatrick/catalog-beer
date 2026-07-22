@@ -3,11 +3,10 @@ RewriteEngine On
 # Never web content: docs, database dumps, shell scripts, data exports.
 # deploy.sh excludes most of these, but rsync's --delete deliberately PROTECTS
 # excluded files on the receiver -- so anything published before an exclusion
-# existed stays on disk, served, until removed by hand. Found live during the
-# 2026-07-22 audit: michaelandmollie.baby/invites.csv (27 guests' names and
-# email addresses, HTTP 200) and mekstudios.com/irrigation-logs/api-smoke-test.sh.
+# existed stays on disk, served, until removed by hand. An audit turned up
+# exactly that: a data export and a utility script still live on public URLs.
 # Deny at the server too: immediate, and it covers whatever lands here later.
-<FilesMatch "\.(md|sql|sh|csv)$">
+<FilesMatch "\.(md|sql|sh|csv|xls|xlsx)$">
 	Require all denied
 </FilesMatch>
 

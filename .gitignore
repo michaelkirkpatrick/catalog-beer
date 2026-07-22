@@ -35,3 +35,6 @@ _notes/dwsync.xml
 # fresh clone has somewhere obvious to put this stuff.
 scratch/*
 !scratch/.gitkeep
+
+# Deploy targets (server addresses + SSH user). See deploy.conf.example.
+deploy.conf
