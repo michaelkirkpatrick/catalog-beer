@@ -98,9 +98,9 @@ $specBar = function($label, $spec, $decimals, $suffix, $scaleMin, $scaleMax){
     }else{
         $value = $fmt($min) . '&ndash;' . $fmt($max);
     }
-    return '<div class="sp-spec"><div class="sp-spec-k">' . $label . '</div>'
-        . '<div class="sp-spec-track"><div class="sp-spec-fill" style="left:' . $left . '%;width:' . $width . '%;background:var(--style-srm,var(--cb-amber));"></div></div>'
-        . '<div class="sp-spec-v">' . $value . '</div></div>';
+    return '<div class="cb-spec"><div class="cb-spec__k">' . $label . '</div>'
+        . '<div class="cb-spec__track"><div class="cb-spec__fill" style="left:' . $left . '%;width:' . $width . '%;background:var(--style-srm,var(--cb-amber));"></div></div>'
+        . '<div class="cb-spec__v">' . $value . '</div></div>';
 };
 $specBars = '';
 $specBars .= $specBar('ABV', $styleData->specs->abv ?? null, null, '%', 0, 14);
@@ -128,8 +128,8 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Styles'); ?>
-    <div class="sp-page" style="padding-top:1.25rem;<?php if($hasSrm){ echo '--style-srm:' . SRM::hex($srmMid) . ';'; } ?>">
-        <div class="sp-eyebrow">
+    <div class="cb-page" style="padding-top:1.25rem;<?php if($hasSrm){ echo '--style-srm:' . SRM::hex($srmMid) . ';'; } ?>">
+        <div class="cb-eyebrow">
             <a href="/style">Styles</a><?php
             // Styles / Ale / India Pale Ale / American-Style India Pale Ale
             // Styles / Cider / Applewine        (no class tier for non-beer)
@@ -146,10 +146,10 @@ echo $htmlHead->html;
         </div>
 
         <header class="da-hero">
-            <h1 class="sp-title da-title"><?php echo $styleName; ?></h1>
+            <h1 class="cb-title da-title"><?php echo $styleName; ?></h1>
             <?php
             if($lede !== ''){
-                echo '<p class="sp-lede da-sub">' . $lede . '</p>';
+                echo '<p class="cb-lede da-sub">' . $lede . '</p>';
             }
             if(!empty($styleData->aliases)){
                 $aliases = array();
@@ -165,7 +165,7 @@ echo $htmlHead->html;
         </header>
 
         <div class="da-body<?php if(!$hasRail){ echo ' da-body-solo'; } ?>">
-            <main class="sp-prose">
+            <main class="cb-prose">
                 <?php
                 // Description
                 if(!empty($styleData->description)){
@@ -210,14 +210,14 @@ echo $htmlHead->html;
                 if(!empty($styleData->sources)){
                     $src = $styleData->sources;
                     if(!empty($src->brewers_association->name)){
-                        $sourceRows[] = '<span class="sp-source-tag">BA 2026</span>' . $text1->get($src->brewers_association->name);
+                        $sourceRows[] = '<span class="cb-tag">BA 2026</span>' . $text1->get($src->brewers_association->name);
                     }
                     if(!empty($src->bjcp->name)){
                         $bjcpTag = 'BJCP' . (!empty($src->bjcp->year) ? ' ' . intval($src->bjcp->year) : '') . (!empty($src->bjcp->code) ? ' &middot; ' . $text1->get($src->bjcp->code) : '');
-                        $sourceRows[] = '<span class="sp-source-tag">' . $bjcpTag . '</span>' . $text1->get($src->bjcp->name);
+                        $sourceRows[] = '<span class="cb-tag">' . $bjcpTag . '</span>' . $text1->get($src->bjcp->name);
                     }
                     if(!empty($src->naba_2024->name)){
-                        $sourceRows[] = '<span class="sp-source-tag">NABA 2024</span>' . $text1->get($src->naba_2024->name);
+                        $sourceRows[] = '<span class="cb-tag">NABA 2024</span>' . $text1->get($src->naba_2024->name);
                     }
                     if(!empty($src->history_sources)){
                         foreach($src->history_sources as $hs){
@@ -235,7 +235,7 @@ echo $htmlHead->html;
                 }
                 if($sourceRows){
                     echo '<div class="sp-sources" style="margin-top:2rem;">';
-                    echo '<div class="sp-section-h">Sources</div>';
+                    echo '<div class="cb-label cb-label--rule">Sources</div>';
                     foreach($sourceRows as $row){
                         echo '<div style="margin-bottom:.3rem;">' . $row . '</div>';
                     }
@@ -247,9 +247,9 @@ echo $htmlHead->html;
             <aside class="da-rail">
                 <?php if($hasSrm){ ?>
                 <div>
-                    <div class="sp-section-h" style="border:0;padding:0;margin-bottom:.7rem;">Color &middot; SRM</div>
-                    <div class="sp-srm-range" style="background:<?php echo SRM::gradient($srmPaintMin, $srmPaintMax, '90deg'); ?>"></div>
-                    <div class="sp-srm-legend d-flex justify-content-between" style="margin-top:.4rem;">
+                    <div class="cb-label">Color &middot; SRM</div>
+                    <div class="cb-srm-range" style="background:<?php echo SRM::gradient($srmPaintMin, $srmPaintMax, '90deg'); ?>"></div>
+                    <div class="cb-srm-legend d-flex justify-content-between" style="margin-top:.4rem;">
                         <?php
                         if($srmOpen){
                             echo '<span>SRM ' . ($srmMin + 0) . '+</span><span></span>';
@@ -263,8 +263,8 @@ echo $htmlHead->html;
                 </div>
                 <?php } if($specBars !== ''){ ?>
                 <div>
-                    <div class="sp-section-h" style="border:0;padding:0;margin-bottom:.7rem;">Vital stats</div>
-                    <div class="sp-specs"><?php echo $specBars; ?></div>
+                    <div class="cb-label">Vital stats</div>
+                    <div class="cb-specs"><?php echo $specBars; ?></div>
                 </div>
                 <?php } ?>
             </aside>

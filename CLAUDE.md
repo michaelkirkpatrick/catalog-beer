@@ -35,6 +35,23 @@ Two things to know about `--exclude`:
 
 The DB schema lives in a separate, public repo: [catalog-beer-mysql](https://github.com/michaelkirkpatrick/catalog-beer-mysql) (`catalog-beer-schema.sql`). This frontend only consumes the API, so it rarely drives schema changes — but if a change here implies one (e.g. a new field the API must persist, like the Guided Style Field's `style_confidence`), update `catalog-beer-schema.sql` too, in the same change, and keep it in step with the API repo, adding migration DDL under `migrations/` in that repo. A stale canonical schema misleads everyone who reads it.
 
+## Design System
+
+Three CSS layers, loaded in this order (`bootstrap → catalog.css → catalog-components.css → page css`):
+
+- **Tokens** — `assets/css/catalog.css` defines every `--cb-*` variable (color, type ladder, space, radius, elevation, motion) plus the Bootstrap bridge. This is the **only** place `--cb-*` are defined. Fonts are **self-hosted** (`assets/fonts/`, woff2) — no Google-Fonts `@import`; keep it that way.
+- **Primitives** — `assets/css/catalog-components.css` holds framework-free `.cb-*` components (`.cb-block__part`, `--variant`, `.is-state` naming). One `.cb-*` name per shared component.
+- **Page CSS** — `assets/css/styles-pages.css` (and peers) is **layout only**: grids, measures, page-specific pieces. Page prefixes (`da- fam- ix- bp- sf-`) are for layout, not new primitives.
+
+Guardrails (enforce in review):
+1. No `--cb-*` defined outside `catalog.css`.
+2. No raw hex, font stack, radius, or shadow in page CSS — tokens only.
+3. Font sizes come from the `--cb-fs-*` ladder.
+4. New shared components get ONE `.cb-*` name in `catalog-components.css`; page prefixes are layout only.
+5. No inline `style=` for reusable styling (inline is fine for data-driven values: SRM gradients, `--style-srm`, spec-bar geometry).
+
+Reference: the "Design System" doc (`Design System.html`) in the design bundle — audit + live specimen.
+
 ## Architecture
 
 ### Page Structure Pattern

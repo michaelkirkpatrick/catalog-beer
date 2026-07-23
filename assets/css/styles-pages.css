@@ -1,93 +1,59 @@
-/* styles-pages.css — shared primitives for the Styles index + detail pages.
-   The kit: page measure, editorial type, SRM swatches, spec range bars, AAFM
-   blocks, beer teasers, sources. Index-specific .ix-* rules at the bottom.
-   All --cb-* tokens live in catalog.css. */
+/* =============================================================================
+   styles-pages.css — page LAYOUT for the Styles + Brewer pages  (FINAL v1)
+   -----------------------------------------------------------------------------
+   Layer 3 of the system: grids, measures, and page-specific components only.
+   All shared primitives live in catalog-components.css; all tokens in
+   catalog.css. Nothing here declares a raw hex, font stack, or shadow.
 
-/* ---- page measure / editorial type ---- */
-.sp-page { max-width: 1080px; margin: 0 auto; padding: 0 1.25rem; }
-.sp-eyebrow {
-    font-family: var(--cb-mono); font-size: .72rem; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--cb-muted);
-}
-.sp-eyebrow a { color: var(--cb-link); text-decoration: none; }
-.sp-eyebrow a:hover { text-decoration: underline; }
-.sp-title { font-family: var(--cb-serif); color: var(--cb-ink); line-height: .98; letter-spacing: -.015em; }
-.sp-lede {
-    font-family: var(--cb-serif); font-style: italic; color: var(--cb-ink-2);
-    font-size: 1.4rem; line-height: 1.4; font-weight: 400;
-}
-.sp-prose { color: var(--cb-ink-2); line-height: 1.7; }
-.sp-prose p { margin: 0 0 1rem; }
-.sp-section-h {
-    font-family: var(--cb-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--cb-muted); margin: 0 0 .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--cb-line);
-}
+     sp-*  Styles pages shared pieces (glass, AAFM, sources, taxonomy)
+     da-*  Style detail — "Tasting Sheet"
+     fam-* Style family page
+     ix-*  Styles index — "Color Cards"
+     bp-*  Brewer detail — "One Scroll" (composes .cb-* primitives)
 
-/* ---- SRM swatch / liquid chip ---- */
-.sp-swatch { border-radius: 999px; display: inline-block; vertical-align: middle; }
-.sp-srm-range {
-    height: 12px; border-radius: 999px; border: 1px solid rgba(27,26,23,.12);
-}
-.sp-srm-legend { font-family: var(--cb-mono); font-size: .68rem; color: var(--cb-muted); }
+   Load AFTER catalog.css + catalog-components.css.
+   ========================================================================== */
 
-/* a tall "glass" of beer filled in the style's SRM color */
+/* ---- Styles pages: SRM glass ---- */
 .sp-glass { position: relative; width: 96px; border-radius: 6px 6px 14px 14px; overflow: hidden;
     border: 1px solid rgba(27,26,23,.14); box-shadow: inset 0 0 0 3px rgba(255,255,255,.06); }
 .sp-glass .sp-foam { position: absolute; top: 0; left: 0; right: 0; height: 16%;
     background: linear-gradient(#fffefb,#f3ead2); border-bottom: 1px solid rgba(27,26,23,.06); }
 
-/* ---- spec range bars (ABV/IBU/OG/FG) ---- */
-.sp-specs { display: flex; flex-direction: column; gap: .85rem; }
-.sp-spec { display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: center; gap: .7rem; }
-.sp-spec-k { font-family: var(--cb-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--cb-muted); }
-.sp-spec-track { position: relative; height: 6px; background: var(--cb-paper-3); border-radius: 999px; }
-.sp-spec-fill { position: absolute; top: 0; bottom: 0; background: var(--cb-amber); border-radius: 999px; }
-.sp-spec-v { font-family: var(--cb-mono); font-size: .78rem; color: var(--cb-ink-2); white-space: nowrap; }
-
 /* ---- AAFM (appearance/aroma/flavor/mouthfeel) ---- */
 .sp-aafm { display: grid; gap: 1.1rem; }
-.sp-aafm-k {
-    font-family: var(--cb-mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--cb-amber-deep); margin-bottom: .25rem;
-}
+.sp-aafm-k { font-family: var(--cb-mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--cb-amber-deep); margin-bottom: .25rem; }
 .sp-aafm-v { color: var(--cb-ink-2); line-height: 1.6; font-size: .95rem; }
 
 /* ---- beers-in-style teaser ---- */
 .sp-beers { display: grid; gap: .15rem; }
-.sp-beer-row {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
-    padding: .6rem .2rem; border-bottom: 1px solid var(--cb-line); text-decoration: none;
-}
-.sp-beer-row:hover { background: var(--cb-paper-2); }
-.sp-beer-name { color: var(--cb-ink); font-weight: 500; }
-.sp-beer-brewer { color: var(--cb-muted); font-size: .85rem; }
-.sp-beer-abv { font-family: var(--cb-mono); font-size: .8rem; color: var(--cb-muted); }
 
 /* ---- sources / citations ---- */
-.sp-sources { font-size: .82rem; color: var(--cb-muted); line-height: 1.6; }
-.sp-source-tag {
-    font-family: var(--cb-mono); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--cb-ink-2); background: var(--cb-paper-3); border-radius: .25rem; padding: .1rem .4rem; margin-right: .35rem;
-}
+.sp-sources { font-size: var(--cb-fs-xs); color: var(--cb-muted); line-height: 1.6; }
+/* .cb-tag drops the legacy right margin; source rows lead with the tag, so
+   restore the gap between tag and citation text */
+.sp-sources .cb-tag { margin-right: .35rem; }
 
-/* ---- taxonomy tree ---- */
+/* ---- taxonomy tree (index) ---- */
 .sp-class-h { font-family: var(--cb-serif); color: var(--cb-ink); letter-spacing: -.01em; }
 .sp-parent { text-decoration: none; }
 .sp-style-link { color: var(--cb-link); text-decoration: none; }
 .sp-style-link:hover { text-decoration: underline; }
-.sp-count { font-family: var(--cb-mono); font-size: .68rem; color: var(--cb-muted); margin-left: .5rem; }
 
 /* ---- Style detail — "Tasting Sheet" ---- */
 .da-hero { position: relative; padding: 1.5rem 0 1.75rem; border-bottom: 2px solid var(--cb-ink); margin-bottom: 2rem; }
 .da-title { font-size: 4.2rem; line-height: 1.0; margin: 0; max-width: 14ch; }
-.da-sub { margin-top: 1rem; max-width: 34ch; }
-.da-aka { font-family: var(--cb-mono); font-size: .72rem; letter-spacing: .06em; color: var(--cb-muted); margin: .8rem 0 0; max-width: 48ch; }
+.da-sub { margin-top: 1rem; max-width: 34ch; font-size: 1.4rem; }
+.da-aka { font-family: var(--cb-mono); font-size: var(--cb-fs-label); letter-spacing: var(--cb-track-tag); color: var(--cb-muted); margin: .8rem 0 0; max-width: 48ch; }
 .da-glass { position: absolute; top: 1.5rem; right: 0; height: 188px; width: 112px; }
 .da-body { display: grid; grid-template-columns: 1fr 320px; gap: 3rem; align-items: start; }
 .da-body-solo { grid-template-columns: 1fr; }
 .da-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.75rem;
-    background: var(--cb-paper-2); border: 1px solid var(--cb-line); border-radius: .75rem; padding: 1.25rem 1.25rem 1.4rem; }
+    background: var(--cb-paper-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-xl); padding: 1.25rem 1.25rem 1.4rem; }
 .da-prose-h { font-family: var(--cb-serif); font-size: 1.6rem; color: var(--cb-ink); margin: 2.25rem 0 .75rem; }
+/* borderless rail headers: plain .cb-label needs the standalone-label spacing */
+.da-rail .cb-label { display: block; margin-bottom: .7rem; }
 .da-prose-h:first-child { margin-top: 0; }
 @media (max-width: 860px){
     .da-body { grid-template-columns: 1fr; }
@@ -98,18 +64,16 @@
 /* ---- Style family page ---- */
 .fam-hero { padding: 1.5rem 0 1.75rem; border-bottom: 2px solid var(--cb-ink); margin-bottom: 1.5rem; }
 .fam-title { font-size: 3.4rem; line-height: 1; margin: 0; }
-.fam-title .sp-count { font-size: .8rem; }
+.fam-title .cb-count { font-size: var(--cb-fs-xs); margin-left: .5rem; }
 .fam-lede { margin-top: 1rem; max-width: 60ch; font-size: 1.2rem; }
 .fam-styles { display: grid; gap: .15rem; margin-bottom: 2.5rem; }
-.fam-row {
-    display: flex; align-items: center; gap: .8rem;
-    padding: .7rem .3rem; border-bottom: 1px solid var(--cb-line); text-decoration: none;
-}
+.fam-row { display: flex; align-items: center; gap: .8rem;
+    padding: .7rem .3rem; border-bottom: 1px solid var(--cb-line); text-decoration: none; }
 .fam-row:hover { background: var(--cb-paper-2); }
 .fam-chip { width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(27,26,23,.1); flex: none; }
 .fam-chip-none { background: var(--cb-paper-3); }
-.fam-name { color: var(--cb-ink); font-weight: 500; flex: 1; }
-.fam-srm { font-family: var(--cb-mono); font-size: .72rem; color: var(--cb-muted); white-space: nowrap; }
+.fam-name { color: var(--cb-ink); font-weight: var(--cb-fw-medium); flex: 1; }
+.fam-srm { font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-muted); white-space: nowrap; }
 @media (max-width: 560px){ .fam-title { font-size: 2.4rem; } }
 
 /* ---- Styles index — "Color Cards" ---- */
@@ -118,12 +82,13 @@
 .ix-sub { color: var(--cb-muted); margin-top: .6rem; max-width: 60ch; }
 .ix-class { margin-bottom: 2.5rem; }
 .ix-class-h { font-size: 1.5rem; margin: 0 0 1.1rem; }
+.ix-class-h .cb-count { margin-left: .5rem; }
 /* Cards size to their own content — a 3-style family shouldn't be stretched
    to the height of an 11-style one */
 .ix-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-items: start; }
-.ix-card { --pc: var(--cb-line-2); background: #fff; border: 1px solid var(--cb-line-2);
-    border-radius: .7rem; padding: 1rem 1.1rem 1.1rem; transition: border-color .12s, box-shadow .12s; }
-.ix-card:hover { border-color: var(--pc); box-shadow: 0 .4rem 1rem rgba(27,26,23,.08); }
+.ix-card { --pc: var(--cb-line-2); background: var(--cb-surface); border: 1px solid var(--cb-line-2);
+    border-radius: .7rem; padding: 1rem 1.1rem 1.1rem; transition: border-color var(--cb-dur), box-shadow var(--cb-dur); }
+.ix-card:hover { border-color: var(--pc); box-shadow: var(--cb-shadow-md); }
 .ix-card-top { display: flex; align-items: baseline; justify-content: space-between; }
 .ix-card-name { font-family: var(--cb-serif); font-size: 1.35rem; color: var(--cb-ink); text-decoration: none; }
 .ix-card:hover .ix-card-name { color: var(--cb-link); }
@@ -141,75 +106,40 @@
 @media (max-width: 860px){ .ix-card-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px){ .ix-card-grid { grid-template-columns: 1fr; } .ix-h1 { font-size: 2.4rem; } }
 
-/* ---- Brewer page ---- */
-/* The beer-list toolbar/rows toggle via the hidden attribute; their own
-   display rules would otherwise beat the UA's [hidden] { display: none } */
-.bp-toolbar[hidden], .bp-grp[hidden], .sp-beer-row[hidden], .bp-note[hidden] { display: none; }
+/* ---- Brewer detail — "One Scroll" ----
+   Primitives come from catalog-components.css (.cb-eyebrow, .cb-chip,
+   .cb-row, .cb-fact, .cb-rail, .cb-toolbar, .cb-search, .cb-select,
+   .cb-vdot, .cb-legend, .cb-note, .cb-action). Below is layout only. */
+.bp-grp[hidden] { display: none; }
 .bp-body { display: grid; grid-template-columns: 1fr 300px; gap: 2.5rem; align-items: start; margin-top: 1rem; }
 .bp-hero { border-bottom: 2px solid var(--cb-ink); padding-bottom: 1.1rem; margin-bottom: 1.4rem; }
-.bp-title { font-size: 3.4rem; margin: 0; }
+.bp-title { font-size: 3.4rem; }
 .bp-title a { color: inherit; text-decoration: none; }
 .bp-title a:hover { color: var(--cb-link); }
 .bp-lede { font-size: 1.3rem; margin: .8rem 0 0; max-width: 44ch; }
 .bp-prose { max-width: 60ch; }
 .bp-sec { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
-.bp-add { font-family: var(--cb-mono); font-size: .68rem; letter-spacing: .06em; color: var(--cb-link); text-decoration: none; white-space: nowrap; }
-.bp-add:hover { color: var(--cb-link-hover); text-decoration: underline; }
 
 /* taprooms: map band + card grid */
-.bp-map { height: 150px; border: 1px solid var(--cb-line-2); border-radius: .6rem; margin-bottom: .8rem; }
+.bp-map { height: 150px; border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); margin-bottom: .8rem; }
 .bp-loc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; }
-.bp-loc-card { background: #fff; border: 1px solid var(--cb-line-2); border-radius: .6rem; padding: .85rem .95rem; }
+.bp-loc-card { padding: .85rem .95rem; }
 .bp-loc-name { font-family: var(--cb-serif); font-size: 1.2rem; color: var(--cb-ink); margin: 0 0 .2rem; }
 .bp-loc-name a { color: inherit; text-decoration: none; }
 .bp-loc-name a:hover { color: var(--cb-link); }
-.bp-loc-meta { font-size: .82rem; color: var(--cb-muted); line-height: 1.45; }
+.bp-loc-meta { font-size: var(--cb-fs-xs); color: var(--cb-muted); line-height: 1.45; }
 .bp-loc-meta p { margin: 0; }
 
-/* beer toolbar: search + sort + family chips */
-.bp-toolbar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-bottom: .5rem; }
-.bp-search { flex: 1; min-width: 140px; font-family: var(--cb-sans); font-size: .86rem; color: var(--cb-ink-2);
-    background: #fff; border: 1px solid var(--cb-line-2); border-radius: .5rem; padding: .5rem .7rem; }
-.bp-search::placeholder { color: var(--cb-muted-2); }
-.bp-select { font-family: var(--cb-sans); font-size: .82rem; color: var(--cb-ink-2);
-    background: #fff; border: 1px solid var(--cb-line-2); border-radius: .5rem; padding: .5rem .7rem; }
-.chip { font-family: var(--cb-mono); font-size: .72rem; color: var(--cb-ink-2); background: #fff;
-    border: 1px solid var(--cb-line-2); border-radius: 999px; padding: .28rem .7rem; white-space: nowrap; cursor: pointer; }
-.chip.on { background: var(--cb-ink); color: var(--cb-paper); border-color: var(--cb-ink); }
-.chip .c { color: var(--cb-muted-2); margin-left: .3rem; }
-.chip.on .c { color: #c9bfa8; }
-
-/* beer rows grouped by style family */
-.grp-h { font-family: var(--cb-serif); font-size: 1.25rem; color: var(--cb-ink); margin: 1.4rem 0 .3rem;
+/* beer list */
+.bp-toolbar { margin-bottom: .5rem; }
+.bp-grp-h { font-family: var(--cb-serif); font-size: 1.25rem; color: var(--cb-ink); margin: 1.4rem 0 .3rem;
     display: flex; align-items: baseline; gap: .5rem; }
-.grp-h .c { font-family: var(--cb-mono); font-size: .7rem; color: var(--cb-muted); }
+.bp-grp-h .cb-count { font-size: .7rem; color: var(--cb-muted); }
 .bp-beer-l { display: flex; align-items: baseline; gap: .45rem; min-width: 0; }
-.bp-beer-style { color: var(--cb-muted); font-size: .82rem; }
-.bp-note { display: block; width: 100%; font-family: var(--cb-mono); font-size: .72rem; color: var(--cb-muted-2);
-    text-align: center; padding: .6rem; background: transparent; border: 1px dashed var(--cb-line-2); border-radius: .5rem;
-    margin-top: .9rem; cursor: pointer; }
-.bp-note:hover { color: var(--cb-ink-2); border-color: var(--cb-muted-2); }
-
-/* per-beer provenance marks + foot legend */
-.vdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: .04em; flex: none; }
-.vdot.first { background: var(--cb-amber); border: 1.5px solid var(--cb-amber); }
-.vdot.cbv { background: transparent; border: 1.5px solid var(--cb-amber-deep); }
-.vlegend { font-family: var(--cb-mono); font-size: .64rem; color: var(--cb-muted);
-    display: flex; gap: .9rem; align-items: center; flex-wrap: wrap;
-    margin-top: 1.1rem; padding-top: .8rem; border-top: 1px solid var(--cb-line); }
-.vlegend .vdot { margin-right: .3rem; }
+.bp-beer-l .cb-vdot { margin-right: .05rem; }
 
 /* facts rail */
-.bp-rail { position: sticky; top: 1rem; background: var(--cb-paper-2); border: 1px solid var(--cb-line);
-    border-radius: .75rem; padding: 1.1rem 1.15rem 1.25rem; }
-.bp-fact { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-    padding: .55rem 0; border-bottom: 1px solid var(--cb-line); }
-.bp-fact:last-child { border-bottom: 0; }
-.bp-fact-k { font-family: var(--cb-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--cb-muted); }
-.bp-fact-v { font-family: var(--cb-serif); font-size: 1.5rem; color: var(--cb-ink); line-height: 1; }
-.bp-fact-v.sm { font-family: var(--cb-sans); font-size: .9rem; font-weight: 500; text-align: right; }
-.bp-fact-v a { color: var(--cb-link); text-decoration: none; }
-.bp-fact-v a:hover { color: var(--cb-link-hover); }
+.bp-rail { position: sticky; top: 1rem; }
 
 @media (max-width: 860px){
     .bp-body { grid-template-columns: 1fr; }

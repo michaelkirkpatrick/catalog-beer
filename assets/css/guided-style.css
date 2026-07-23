@@ -1,8 +1,9 @@
 /* =============================================================================
-   guided-style.css — confidence-ladder Style field
-   Tuned to the Catalog.beer Phase 0 warm-paper theme (catalog.css --cb-* tokens).
-   The label input stays a normal control; everything below it is the derived
-   "resolution card" that changes with how well the label resolved.
+   guided-style.css — confidence-ladder Style field  (FINAL v1, tokenized)
+   -----------------------------------------------------------------------------
+   Same rules as shipped; hard-coded values swapped for catalog.css tokens
+   (success/warn colors, radii, shadow). No layout or size changes.
+   Load after catalog.css + catalog-components.css.
    ========================================================================== */
 
 .sf { position: relative; }
@@ -14,25 +15,23 @@
 .sf-card {
   display: flex; gap: .6rem; align-items: flex-start;
   margin-top: .55rem; padding: .65rem .8rem;
-  border: 1px solid; border-radius: .5rem; font-size: .92rem; line-height: 1.45;
+  border: 1px solid; border-radius: var(--cb-radius-md); font-size: .92rem; line-height: 1.45;
 }
 .sf-card[hidden] { display: none; }
 .sf-ico {
-  flex: 0 0 auto; width: 1.4rem; height: 1.4rem; border-radius: 50%;
-  display: grid; place-items: center; font-size: .85rem; font-weight: 700;
+  flex: 0 0 auto; width: 1.4rem; height: 1.4rem; border-radius: var(--cb-radius-circle);
+  display: grid; place-items: center; font-size: .85rem; font-weight: var(--cb-fw-bold);
   margin-top: .05rem;
 }
 .sf-body { flex: 1 1 auto; min-width: 0; }
 .sf-line { color: var(--cb-ink); }
-.sf-line strong { font-weight: 600; }
-.sf-fam { color: var(--cb-muted); font-weight: 400; }
+.sf-line strong { font-weight: var(--cb-fw-semibold); }
+.sf-fam { color: var(--cb-muted); font-weight: var(--cb-fw-regular); }
 .sf-sub { font-size: .82rem; color: var(--cb-muted); margin-top: .15rem; }
 
-/* state palettes — quiet, legible, confidence shown by color not shouting.
-   Greens/ambers borrowed from catalog.css; family + unknown stay warm-neutral
-   so nothing fights the paper background or reads as an "error". */
-.sf-ok       { background: #E7F0E8; border-color: #CFE3D4; }
-.sf-ok    .sf-ico { background: #CFE3D4; color: #1F5A3A; }
+/* state palettes — quiet, legible, confidence shown by color not shouting. */
+.sf-ok       { background: var(--cb-success-bg); border-color: var(--cb-success-border); }
+.sf-ok    .sf-ico { background: var(--cb-success-border); color: var(--cb-success); }
 .sf-fam-card { background: var(--cb-paper-2); border-color: var(--cb-line-2); }
 .sf-fam-card .sf-ico { background: var(--cb-paper-3); color: var(--cb-amber-deep); }
 .sf-new      { background: var(--cb-paper-2); border-color: var(--cb-line-2); }
@@ -42,31 +41,31 @@
 .sf-edit-head {
   display: flex; justify-content: space-between; align-items: baseline;
   font-family: var(--cb-mono);
-  font-size: .72rem; letter-spacing: .04em; color: var(--cb-muted); margin-bottom: .5rem;
+  font-size: var(--cb-fs-label); letter-spacing: .04em; color: var(--cb-muted); margin-bottom: .5rem;
 }
 
 /* --- inline actions / change link ----------------------------------------- */
 .sf-change {
   flex: 0 0 auto; align-self: flex-start;
   background: none; border: 0; padding: .1rem .15rem;
-  color: var(--cb-link); font-size: .82rem; font-weight: 500; cursor: pointer;
+  color: var(--cb-link); font-size: .82rem; font-weight: var(--cb-fw-medium); cursor: pointer;
   text-decoration: underline; text-underline-offset: 2px;
 }
 .sf-change:hover { color: var(--cb-link-hover); }
 .sf-actions { display: flex; gap: .5rem; align-items: center; margin-top: .5rem; flex-wrap: wrap; }
 .sf-accept {
-  border: 1px solid var(--cb-amber); background: #fff; color: var(--cb-amber-deep);
-  font-size: .82rem; font-weight: 600; padding: .25rem .75rem; border-radius: .4rem; cursor: pointer; white-space: nowrap;
+  border: 1px solid var(--cb-amber); background: var(--cb-surface); color: var(--cb-amber-deep);
+  font-size: .82rem; font-weight: var(--cb-fw-semibold); padding: .25rem .75rem; border-radius: var(--cb-radius-sm); cursor: pointer; white-space: nowrap;
 }
-.sf-accept:hover { background: #FBF1DC; }
+.sf-accept:hover { background: var(--cb-warn-bg); }
 .sf-link { background: none; border: 0; color: var(--cb-muted); font-size: .82rem; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
 .sf-link:hover { color: var(--cb-ink-2); }
 
 /* --- family chips --------------------------------------------------------- */
 .sf-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
 .sf-chip {
-  border: 1px solid var(--cb-line-2); background: #fff; color: var(--cb-ink-2);
-  font-size: .82rem; padding: .3rem .65rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--cb-line-2); background: var(--cb-surface); color: var(--cb-ink-2);
+  font-size: .82rem; padding: .3rem .65rem; border-radius: var(--cb-radius-pill); cursor: pointer;
   white-space: nowrap; line-height: 1.2;
 }
 .sf-chip:hover { background: var(--cb-paper-2); border-color: var(--cb-amber); color: var(--cb-ink); }
@@ -80,13 +79,13 @@
 .sf-pick-input { font-size: .92rem; }
 .sf-menu {
   position: absolute; z-index: 1000; left: 0; right: 0; top: calc(100% + 2px);
-  background: #fff; border: 1px solid var(--cb-line-2); border-radius: .375rem;
-  box-shadow: 0 .5rem 1rem rgba(27,26,23,.12); max-height: 300px; overflow-y: auto; padding: .25rem 0;
+  background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-sm);
+  box-shadow: var(--cb-shadow-lg); max-height: 300px; overflow-y: auto; padding: .25rem 0;
 }
 .sf-menu[hidden] { display: none; }
 .sf-group {
   font-family: var(--cb-mono);
-  font-size: .64rem; text-transform: uppercase; letter-spacing: .08em; color: var(--cb-muted);
+  font-size: var(--cb-fs-label-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--cb-muted);
   padding: .5rem .75rem .25rem;
 }
 .sf-opt {
@@ -94,13 +93,13 @@
   border: 0; background: none; padding: .4rem .75rem; font-size: .92rem; color: var(--cb-ink-2); cursor: pointer;
 }
 .sf-opt:hover, .sf-opt.sf-active { background: var(--cb-paper-2); }
-.sf-opt mark { padding: 0; background: rgba(212,154,61,.28); color: inherit; border-radius: 2px; }
+.sf-opt mark { padding: 0; background: rgba(212,154,61,.28); color: inherit; border-radius: 2px; } /* --cb-amber @ .28 (matches focus ring) */
 .sf-opt-alias { font-size: .78rem; color: var(--cb-muted-2); }
 .sf-opt-catch .sf-opt-name { font-weight: 550; }
 .sf-catch-badge {
   margin-left: auto; font-family: var(--cb-mono);
   font-size: .6rem; text-transform: uppercase; letter-spacing: .05em;
-  color: var(--cb-muted); background: var(--cb-paper-3); border-radius: .25rem; padding: .08rem .4rem; align-self: center;
+  color: var(--cb-muted); background: var(--cb-paper-3); border-radius: var(--cb-radius-xs); padding: .08rem .4rem; align-self: center;
 }
 
 /* secondary catch-all path in the "not found" state — deliberate, not default */

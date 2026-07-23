@@ -120,7 +120,7 @@ $styleRow = function($s, $isCatchAll) use ($text, $midSRM, $srmLabel, $familyHas
     }
     $html .= '<span class="fam-name">' . $text->get($s['name']);
     if($isCatchAll){
-        $html .= ' <span class="sp-source-tag">catch-all</span>';
+        $html .= ' <span class="cb-tag">catch-all</span>';
     }
     $html .= '</span>';
     $srm = $srmLabel($s);
@@ -141,17 +141,17 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Styles'); ?>
-    <div class="sp-page" style="padding-top:1.25rem;">
-        <div class="sp-eyebrow"><a href="/style">Styles</a><?php
+    <div class="cb-page" style="padding-top:1.25rem;">
+        <div class="cb-eyebrow"><a href="/style">Styles</a><?php
             if($crumbContext !== ''){ echo ' &nbsp;/&nbsp; <span>' . $crumbContext . '</span>'; }
             echo ' &nbsp;/&nbsp; <span aria-current="page">' . $familyName . '</span>';
             ?></div>
 
         <header class="fam-hero">
-            <h1 class="sp-title fam-title"><?php echo $familyName; ?> <span class="sp-count"><?php echo count($kids) + count($catchAlls); ?> styles</span></h1>
+            <h1 class="cb-title fam-title"><?php echo $familyName; ?> <span class="cb-count cb-count--bare"><?php echo count($kids) + count($catchAlls); ?> styles</span></h1>
             <?php
             if(!empty($family['desc'])){
-                echo '<p class="sp-lede fam-lede">' . $text->get($family['desc']) . '</p>';
+                echo '<p class="cb-lede fam-lede">' . $text->get($family['desc']) . '</p>';
             }
             if(!empty($family['al'])){
                 $aliases = array();

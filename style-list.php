@@ -132,7 +132,7 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Styles'); ?>
-    <div class="sp-page">
+    <div class="cb-page">
         <header class="ix-head">
             <h1 class="ix-h1">Beer Styles</h1>
             <p class="ix-sub">Browse by family &mdash; each swatch row is the spread of color you&#8217;ll find inside. <?php echo $styleCount; ?> styles across <?php echo $familyCount; ?> families, sorted by fermentation class.</p>
@@ -141,7 +141,7 @@ echo $htmlHead->html;
         foreach($sections as $section){
             echo '<section class="ix-class">';
             if($section['cards']){
-                echo '<h2 class="ix-class-h sp-class-h">' . $text->get($section['name']) . ' <span class="sp-count">' . count($section['families']) . ' families</span></h2>';
+                echo '<h2 class="ix-class-h sp-class-h">' . $text->get($section['name']) . ' <span class="cb-count cb-count--bare">' . count($section['families']) . ' families</span></h2>';
                 echo '<div class="ix-card-grid">';
                 foreach($section['families'] as $p){
                     $kids = $byParent[$p['slug']];
@@ -178,7 +178,7 @@ echo $htmlHead->html;
                 // + plain list of its styles
                 $p = $section['families'][0];
                 $kids = $byParent[$p['slug']];
-                echo '<h2 class="ix-class-h sp-class-h"><a class="ix-fam-link" href="/style/family/' . rawurlencode($p['slug']) . '">' . $text->get($section['name']) . '</a> <span class="sp-count">' . count($kids) . ' styles</span></h2>';
+                echo '<h2 class="ix-class-h sp-class-h"><a class="ix-fam-link" href="/style/family/' . rawurlencode($p['slug']) . '">' . $text->get($section['name']) . '</a> <span class="cb-count cb-count--bare">' . count($kids) . ' styles</span></h2>';
                 $names = array();
                 foreach($kids as $s){
                     $names[] = '<a class="sp-style-link" href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a>';

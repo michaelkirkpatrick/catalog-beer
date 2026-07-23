@@ -1,0 +1,134 @@
+/* =============================================================================
+   catalog-components.css — Catalog.beer shared primitives  (FINAL v1)
+   -----------------------------------------------------------------------------
+   Framework-agnostic component vocabulary built ENTIRELY from the tokens in
+   catalog.css. No Bootstrap dependency. Load order:
+
+     bootstrap.min.css → catalog.css → catalog-components.css → styles-pages.css
+
+   Naming:  .cb-block / .cb-block__part / .cb-block--variant / .is-state
+
+   BACK-COMPAT: the ALIASES block at the bottom re-declares the legacy .sp-*
+   primitives byte-for-byte so shipped pages keep rendering untouched. Each
+   alias is deleted once its last page is migrated (see HANDOFF.md).
+   ========================================================================== */
+
+/* ============================ measure / editorial ============================ */
+.cb-page   { max-width: var(--cb-measure); margin: 0 auto; padding: 0 var(--cb-space-5); }
+.cb-title  { font-family: var(--cb-serif); color: var(--cb-text-strong); line-height: 1; letter-spacing: var(--cb-track-tight); margin: 0; }
+.cb-lede   { font-family: var(--cb-serif); font-style: italic; color: var(--cb-ink-2); font-size: var(--cb-fs-lede); line-height: 1.4; font-weight: var(--cb-fw-regular); }
+.cb-prose  { color: var(--cb-ink-2); line-height: var(--cb-lh-relaxed); }
+.cb-prose p { margin: 0 0 var(--cb-space-4); }
+
+/* ============================ label ============================
+   THE mono / uppercase / tracked label. Replaces ~10 re-authorings:
+   .sp-eyebrow, .sp-section-h, .facet-h, .sf-group, .cb-foot-h, spec/AAFM
+   keys, .loc-tag … */
+.cb-label {
+  font-family: var(--cb-mono); font-size: var(--cb-fs-label);
+  letter-spacing: var(--cb-track-label); text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+.cb-label--accent { color: var(--cb-accent-deep); }
+.cb-label--sm     { font-size: var(--cb-fs-label-sm); letter-spacing: 0.1em; }
+/* section header = label + hairline rule */
+.cb-label--rule {
+  display: block; margin: 0 0 .9rem;
+  padding-bottom: var(--cb-space-2); border-bottom: 1px solid var(--cb-line);
+}
+
+/* eyebrow / breadcrumb — a label whose crumbs link */
+.cb-eyebrow { font-family: var(--cb-mono); font-size: var(--cb-fs-label); letter-spacing: var(--cb-track-label); text-transform: uppercase; color: var(--cb-text-muted); }
+.cb-eyebrow a { color: var(--cb-link); text-decoration: none; }
+.cb-eyebrow a:hover { text-decoration: underline; }
+
+/* mono action link — "+ Add Location", "Show on map" */
+.cb-action { font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); color: var(--cb-link); text-decoration: none; white-space: nowrap; }
+.cb-action:hover { color: var(--cb-link-hover); text-decoration: underline; }
+
+/* ============================ count + tag ============================ */
+.cb-count { font-family: var(--cb-mono); font-size: var(--cb-fs-label-xs); color: var(--cb-muted); background: var(--cb-paper-3); border-radius: var(--cb-radius-pill); padding: .05rem .45rem; }
+.cb-count--bare { background: none; padding: 0; }
+.cb-tag   { font-family: var(--cb-mono); font-size: var(--cb-fs-label-xs); letter-spacing: var(--cb-track-tag); text-transform: uppercase; color: var(--cb-ink-2); background: var(--cb-paper-3); border-radius: var(--cb-radius-xs); padding: .1rem .4rem; }
+.cb-tag--accent { color: var(--cb-accent-deep); background: var(--cb-paper-2); }
+
+/* ============================ chip (toggle / filter) ============================ */
+.cb-chip {
+  font-family: var(--cb-mono); font-size: var(--cb-fs-label);
+  border: 1px solid var(--cb-line-2); background: var(--cb-surface); color: var(--cb-ink-2);
+  border-radius: var(--cb-radius-pill); padding: .28rem .7rem; white-space: nowrap;
+  line-height: 1.2; cursor: pointer;
+}
+.cb-chip:hover { background: var(--cb-paper-2); border-color: var(--cb-amber); color: var(--cb-ink); }
+.cb-chip.is-on { background: var(--cb-ink); color: var(--cb-paper); border-color: var(--cb-ink); }
+.cb-chip .cb-count { background: none; color: var(--cb-muted-2); margin-left: .3rem; padding: 0; }
+.cb-chip.is-on .cb-count { color: #c9bfa8; }
+.cb-chip--back { color: var(--cb-muted); border-style: dashed; }
+
+/* ============================ surfaces: card + rail ============================ */
+.cb-card { background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); padding: var(--cb-space-4); }
+.cb-card--interactive { transition: border-color var(--cb-dur), box-shadow var(--cb-dur); }
+.cb-card--interactive:hover { border-color: var(--cb-amber); box-shadow: var(--cb-shadow-md); }
+.cb-rail { background: var(--cb-paper-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-xl); padding: 1.1rem 1.15rem 1.25rem; }
+.cb-rail > .cb-label { display: block; margin-bottom: .6rem; }
+
+/* ============================ list row (beer / taproom / style) ============================ */
+.cb-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--cb-space-4); padding: .6rem .2rem; border-bottom: 1px solid var(--cb-line); text-decoration: none; }
+.cb-row:hover { background: var(--cb-paper-2); }
+.cb-row__name  { color: var(--cb-ink); font-weight: var(--cb-fw-medium); }
+.cb-row__meta  { color: var(--cb-muted); font-size: var(--cb-fs-xs); }
+.cb-row__value { font-family: var(--cb-mono); font-size: var(--cb-fs-xs); color: var(--cb-muted); white-space: nowrap; }
+
+/* ============================ facts rail row (key : value) ============================ */
+.cb-fact { display: flex; justify-content: space-between; align-items: baseline; gap: var(--cb-space-4); padding: .55rem 0; border-bottom: 1px solid var(--cb-line); }
+.cb-fact:last-child { border-bottom: 0; }
+.cb-fact__k { font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase; color: var(--cb-muted); }
+.cb-fact__v { font-family: var(--cb-serif); font-size: 1.5rem; color: var(--cb-ink); line-height: 1; }
+.cb-fact__v--sm { font-family: var(--cb-sans); font-size: var(--cb-fs-sm); font-weight: var(--cb-fw-medium); text-align: right; }
+.cb-fact__v a { color: var(--cb-link); text-decoration: none; }
+.cb-fact__v a:hover { color: var(--cb-link-hover); }
+
+/* ============================ spec range bar (ABV / IBU / OG / FG) ============================ */
+.cb-specs { display: flex; flex-direction: column; gap: .85rem; }
+.cb-spec  { display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: center; gap: .7rem; }
+.cb-spec__k     { font-family: var(--cb-mono); font-size: var(--cb-fs-label); letter-spacing: .08em; text-transform: uppercase; color: var(--cb-muted); }
+.cb-spec__track { position: relative; height: 6px; background: var(--cb-paper-3); border-radius: var(--cb-radius-pill); }
+.cb-spec__fill  { position: absolute; top: 0; bottom: 0; background: var(--cb-amber); border-radius: var(--cb-radius-pill); }
+.cb-spec__v     { font-family: var(--cb-mono); font-size: var(--cb-fs-xs); color: var(--cb-ink-2); white-space: nowrap; }
+
+/* ============================ SRM swatch / color range ============================ */
+.cb-swatch    { border-radius: var(--cb-radius-pill); display: inline-block; vertical-align: middle; }
+.cb-srm-range { height: 12px; border-radius: var(--cb-radius-pill); border: 1px solid rgba(27,26,23,.12); }
+.cb-srm-legend{ font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); color: var(--cb-muted); }
+
+/* ============================ toolbar controls ============================
+   Real form controls — style <input type="search"> and <select> directly. */
+.cb-toolbar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.cb-search  { flex: 1; min-width: 140px; font-family: var(--cb-sans); font-size: var(--cb-fs-sm); color: var(--cb-ink-2); background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-md); padding: .5rem .7rem; }
+.cb-search::placeholder { color: var(--cb-muted-2); }
+.cb-search:focus, .cb-select:focus { outline: none; border-color: var(--cb-accent-deep); box-shadow: var(--cb-focus); }
+.cb-select  { font-family: var(--cb-sans); font-size: var(--cb-fs-xs); color: var(--cb-ink-2); background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-md); padding: .5rem .7rem; }
+/* segmented control */
+.cb-seg   { display: inline-flex; background: var(--cb-paper-2); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); padding: .25rem; }
+.cb-seg a { font-size: var(--cb-fs-base); text-decoration: none; color: var(--cb-muted); padding: .45rem .95rem; border-radius: var(--cb-radius-sm); display: flex; align-items: center; gap: .4rem; }
+.cb-seg a.is-on { background: var(--cb-surface); color: var(--cb-ink); font-weight: var(--cb-fw-semibold); box-shadow: var(--cb-shadow-sm); }
+
+/* ============================ provenance marks + legend ============================ */
+.cb-vdot { display: inline-block; width: 8px; height: 8px; border-radius: var(--cb-radius-circle); vertical-align: .04em; flex: none; }
+.cb-vdot--first { background: var(--cb-amber); border: 1.5px solid var(--cb-amber); }         /* brewer-provided        */
+.cb-vdot--cbv   { background: transparent; border: 1.5px solid var(--cb-amber-deep); }        /* Catalog.beer verified  */
+.cb-legend { font-family: var(--cb-mono); font-size: .64rem; color: var(--cb-muted); display: flex; gap: .9rem; align-items: center; flex-wrap: wrap; margin-top: 1.1rem; padding-top: .8rem; border-top: 1px solid var(--cb-line); }
+.cb-legend .cb-vdot { margin-right: .3rem; }
+.cb-legend__none { color: var(--cb-muted-2); }
+
+/* ============================ note / expander ============================ */
+.cb-note { display: block; width: 100%; font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-muted-2); text-align: center; padding: .6rem; background: transparent; border: 1px dashed var(--cb-line-2); border-radius: var(--cb-radius-md); margin-top: .9rem; }
+button.cb-note { cursor: pointer; }
+button.cb-note:hover { color: var(--cb-ink-2); border-color: var(--cb-muted-2); }
+
+/* ============================ divider ============================ */
+.cb-divider { border: 0; border-top: 2px solid var(--cb-ink); margin: var(--cb-space-6) 0; }
+
+/* JS toggles visibility via the hidden attribute; these components have
+   their own display values that would otherwise beat the UA's [hidden]. */
+.cb-toolbar[hidden], .cb-row[hidden], .cb-note[hidden], .cb-chip[hidden], .cb-legend[hidden] { display: none; }

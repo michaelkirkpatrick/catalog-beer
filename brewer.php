@@ -11,6 +11,9 @@ list stays scannable at scale via a client-side toolbar (search + sort +
 style-family chips) over rows grouped by style family — largest group first,
 A–Z within. Per-beer provenance dots (brewer-provided / Catalog.beer
 verified) render only when at least one beer on the page is verified.
+
+Design system: composes .cb-* primitives (catalog-components.css); bp-*
+classes are page layout only (styles-pages.css). Tokens in catalog.css.
 --- */
 
 // Get Brewer Information
@@ -124,7 +127,7 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Brewers'); ?>
-    <div class="sp-page" style="padding-top:1.25rem;" itemscope itemtype="http://schema.org/Brewery">
+    <div class="cb-page" style="padding-top:1.25rem;" itemscope itemtype="http://schema.org/Brewery">
         <?php
         // Flash message
         if($loggedIn && !empty($_SESSION['delete_location_success'])){
@@ -136,14 +139,14 @@ echo $htmlHead->html;
             $_SESSION['delete_location_success'] = false;
         }
         ?>
-        <div class="sp-eyebrow">
+        <div class="cb-eyebrow">
             <a href="/brewer">Brewers</a> &nbsp;/&nbsp; <span aria-current="page"><?php echo $brewerName; ?></span>
         </div>
 
         <div class="bp-body">
             <div>
                 <header class="bp-hero">
-                    <h1 class="sp-title bp-title" itemprop="name"><?php
+                    <h1 class="cb-title bp-title" itemprop="name"><?php
                     if(!empty($brewerData->brewer->url)){
                         $brewerURL = $text3->get($brewerData->brewer->url);
                         echo '<a href="' . $brewerURL . '" target="_blank" rel="noopener" itemprop="url">' . $brewerName . '</a>';
@@ -153,7 +156,7 @@ echo $htmlHead->html;
                     ?></h1>
                     <?php
                     if(!empty($brewerData->brewer->short_description)){
-                        echo '<p class="sp-lede bp-lede">' . $text1->get($brewerData->brewer->short_description) . '</p>';
+                        echo '<p class="cb-lede bp-lede">' . $text1->get($brewerData->brewer->short_description) . '</p>';
                     }
                     ?>
                 </header>
@@ -161,7 +164,7 @@ echo $htmlHead->html;
                 <?php
                 // About
                 if(!empty($brewerData->brewer->description)){
-                    echo '<div class="sp-prose bp-prose" itemprop="description">';
+                    echo '<div class="cb-prose bp-prose" itemprop="description">';
                     echo $text2->get($brewerData->brewer->description);
                     echo '</div>';
                 }
@@ -170,9 +173,9 @@ echo $htmlHead->html;
                 }
                 ?>
 
-                <h2 class="sp-section-h bp-sec" id="locations">
+                <h2 class="cb-label cb-label--rule bp-sec" id="locations">
                     <span><?php echo $taproomsLabel; if($locationCount > 0){ echo ' &middot; ' . $locationCount; } ?></span>
-                    <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="bp-add"><strong>+</strong> Add Location</a>
+                    <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add Location</a>
                 </h2>
                 <?php if($locationCount > 0){ ?>
                 <?php if($showMap){ echo '<div id="map" class="bp-map"></div>' . "\n"; } ?>
@@ -181,7 +184,7 @@ echo $htmlHead->html;
                         $locationName = $text1->get($loc->name);
                         $locationIDString = $text3->get($loc->id);
                         ?>
-                    <div class="bp-loc-card" itemprop="location" itemscope itemtype="http://schema.org/Place"><meta itemprop="publicAccess" content="true" />
+                    <div class="cb-card bp-loc-card" itemprop="location" itemscope itemtype="http://schema.org/Place"><meta itemprop="publicAccess" content="true" />
                         <h3 class="bp-loc-name" itemprop="name"><?php
                             if(!empty($loc->url)){
                                 $locationURL = $text3->get($loc->url);
@@ -229,24 +232,24 @@ echo $htmlHead->html;
                 <p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <a href="/brewer/<?php echo $brewerIDString; ?>/add-location">add it</a>.</p>
                 <?php } ?>
 
-                <h2 class="sp-section-h bp-sec" id="beer">
+                <h2 class="cb-label cb-label--rule bp-sec" id="beer">
                     <span>Beers<?php if($beerCount > 0){ echo ' &middot; ' . $beerCount; } ?></span>
-                    <a href="/beer/add/<?php echo $brewerIDString; ?>" class="bp-add"><strong>+</strong> Add beer</a>
+                    <a href="/beer/add/<?php echo $brewerIDString; ?>" class="cb-action"><strong>+</strong> Add beer</a>
                 </h2>
                 <?php if($beerCount > 0){ ?>
                 <?php if($showToolbar){ ?>
-                <div class="bp-toolbar" id="bpToolbar" hidden>
-                    <input type="search" class="bp-search" id="bpSearch" placeholder="Search beers&#8230;" aria-label="Search beers">
-                    <select class="bp-select" id="bpSort" aria-label="Sort beers">
+                <div class="cb-toolbar bp-toolbar" id="bpToolbar" hidden>
+                    <input type="search" class="cb-search" id="bpSearch" placeholder="Search beers&#8230;" aria-label="Search beers">
+                    <select class="cb-select" id="bpSort" aria-label="Sort beers">
                         <option value="style">Sort: Style</option>
                         <option value="az">Sort: A&#8211;Z</option>
                         <?php if($hasAbv){ echo '<option value="abv">Sort: ABV</option>'; } ?>
                     </select>
                 </div>
-                <div class="bp-toolbar" id="bpChips" hidden>
-                    <button type="button" class="chip on" data-family="">All <span class="c"><?php echo $beerCount; ?></span></button>
+                <div class="cb-toolbar bp-toolbar" id="bpChips" hidden>
+                    <button type="button" class="cb-chip is-on" data-family="">All <span class="cb-count"><?php echo $beerCount; ?></span></button>
                     <?php foreach($beerGroups as $familySlug => $group){
-                        echo '<button type="button" class="chip" data-family="' . $text3->get($familySlug) . '">' . $text1->get($group['label']) . ' <span class="c">' . count($group['beers']) . '</span></button>' . "\n";
+                        echo '<button type="button" class="cb-chip" data-family="' . $text3->get($familySlug) . '">' . $text1->get($group['label']) . ' <span class="cb-count">' . count($group['beers']) . '</span></button>' . "\n";
                     } ?>
                 </div>
                 <?php } ?>
@@ -259,7 +262,7 @@ echo $htmlHead->html;
                         $capped = ($showToolbar && $rowsSoFar >= $capRows) ? ' data-capped="1"' : '';
                         $rowsSoFar += $groupCount;
                         echo '<section class="bp-grp" data-family="' . $text3->get($familySlug) . '"' . $capped . '>' . "\n";
-                        echo '<h3 class="grp-h">' . $text1->get($group['label']) . ' <span class="c">' . $groupCount . '</span></h3>' . "\n";
+                        echo '<h3 class="bp-grp-h">' . $text1->get($group['label']) . ' <span class="cb-count cb-count--bare">' . $groupCount . '</span></h3>' . "\n";
                         echo '<div class="bp-grp-rows">' . "\n";
                         foreach($group['beers'] as $beerInfo){
                             $beerName = $text1->get($beerInfo->name);
@@ -267,17 +270,17 @@ echo $htmlHead->html;
                             $beerIDString = $text3->get($beerInfo->id);
                             $beerAbv = !empty($beerInfo->abv) ? floatval($beerInfo->abv) : 0;
                             $abvLabel = ($beerAbv > 0) ? rtrim(rtrim(number_format($beerAbv, 1), '0'), '.') . '%' : '';
-                            echo '<a class="sp-beer-row" href="/beer/' . $beerIDString . '" data-name="' . htmlspecialchars(mb_strtolower($beerInfo->name . ' ' . $beerInfo->style), ENT_QUOTES) . '" data-abv="' . $beerAbv . '">';
+                            echo '<a class="cb-row" href="/beer/' . $beerIDString . '" data-name="' . htmlspecialchars(mb_strtolower($beerInfo->name . ' ' . $beerInfo->style), ENT_QUOTES) . '" data-abv="' . $beerAbv . '">';
                             echo '<span class="bp-beer-l">';
                             if($hasVerifiedBeer){
                                 if(!empty($beerInfo->brewer_verified)){
-                                    echo '<span class="vdot first" title="Brewer-provided"></span>';
+                                    echo '<span class="cb-vdot cb-vdot--first" title="Brewer-provided"></span>';
                                 }elseif(!empty($beerInfo->cb_verified)){
-                                    echo '<span class="vdot cbv" title="Catalog.beer verified"></span>';
+                                    echo '<span class="cb-vdot cb-vdot--cbv" title="Catalog.beer verified"></span>';
                                 }
                             }
-                            echo '<span class="sp-beer-name">' . $beerName . '</span> <span class="bp-beer-style">' . $beerStyle . '</span></span>';
-                            echo '<span class="sp-beer-abv">' . $abvLabel . '</span>';
+                            echo '<span class="cb-row__name">' . $beerName . '</span> <span class="cb-row__meta">' . $beerStyle . '</span></span>';
+                            echo '<span class="cb-row__value">' . $abvLabel . '</span>';
                             echo '</a>' . "\n";
                         }
                         echo '</div>' . "\n";
@@ -287,26 +290,26 @@ echo $htmlHead->html;
                 </div>
                 <div id="bpFlat" hidden></div>
                 <?php if($showToolbar){ ?>
-                <button type="button" class="bp-note" id="bpShowAll" hidden>Show all <?php echo $beerCount; ?> beers &#9662;</button>
+                <button type="button" class="cb-note" id="bpShowAll" hidden>Show all <?php echo $beerCount; ?> beers &#9662;</button>
                 <?php } ?>
                 <?php if($hasVerifiedBeer){ ?>
-                <div class="vlegend"><span><span class="vdot first"></span>Brewer-provided</span><span><span class="vdot cbv"></span>Catalog.beer verified</span><span style="color:var(--cb-muted-2);">no mark &#8212; unverified</span></div>
+                <div class="cb-legend"><span><span class="cb-vdot cb-vdot--first"></span>Brewer-provided</span><span><span class="cb-vdot cb-vdot--cbv"></span>Catalog.beer verified</span><span class="cb-legend__none">no mark &#8212; unverified</span></div>
                 <?php } ?>
                 <?php }else{ ?>
                 <p class="lead">Well shucks, we have information about the brewer but nothing about what they brew. Can you help? <a href="/beer/add/<?php echo $brewerIDString; ?>">Add a beer</a></p>
                 <?php } ?>
             </div>
 
-            <aside class="bp-rail">
-                <div class="sp-section-h" style="border:0;padding:0;margin-bottom:.6rem;">Facts</div>
-                <div class="bp-fact"><span class="bp-fact-k"><?php echo $taproomsLabel; ?></span><span class="bp-fact-v"><?php echo $locationCount; ?></span></div>
-                <div class="bp-fact"><span class="bp-fact-k">Beers</span><span class="bp-fact-v"><?php echo $beerCount; ?></span></div>
+            <aside class="cb-rail bp-rail">
+                <div class="cb-label">Facts</div>
+                <div class="cb-fact"><span class="cb-fact__k"><?php echo $taproomsLabel; ?></span><span class="cb-fact__v"><?php echo $locationCount; ?></span></div>
+                <div class="cb-fact"><span class="cb-fact__k">Beers</span><span class="cb-fact__v"><?php echo $beerCount; ?></span></div>
                 <?php
                 if(!empty($brewerData->brewer->url)){
                     $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
                     if(!empty($urlHost)){
                         $urlHost = preg_replace('/^www\./', '', $urlHost);
-                        echo '<div class="bp-fact"><span class="bp-fact-k">Website</span><span class="bp-fact-v sm"><a href="' . $text3->get($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>';
+                        echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>';
                     }
                 }
                 ?>
@@ -350,19 +353,19 @@ echo $htmlHead->html;
         var rows = [];
         groups.forEach(function(g) {
             g._rowsBox = g.querySelector('.bp-grp-rows');
-            g._rows = Array.prototype.slice.call(g.querySelectorAll('.sp-beer-row'));
+            g._rows = Array.prototype.slice.call(g.querySelectorAll('.cb-row'));
             rows = rows.concat(g._rows);
         });
         var flat = document.getElementById('bpFlat');
         var search = document.getElementById('bpSearch');
         var sort = document.getElementById('bpSort');
-        var chips = Array.prototype.slice.call(document.querySelectorAll('#bpChips .chip'));
+        var chips = Array.prototype.slice.call(document.querySelectorAll('#bpChips .cb-chip'));
         var showAll = document.getElementById('bpShowAll');
         var expanded = false;
 
         function apply() {
             var q = search.value.trim().toLowerCase();
-            var chipOn = chips.filter(function(c) { return c.classList.contains('on'); })[0];
+            var chipOn = chips.filter(function(c) { return c.classList.contains('is-on'); })[0];
             var family = chipOn ? chipOn.getAttribute('data-family') : '';
             var mode = sort.value;
             // Any narrowing or re-sorting reveals the capped tail — hiding
@@ -421,8 +424,8 @@ echo $htmlHead->html;
         sort.addEventListener('change', apply);
         chips.forEach(function(c) {
             c.addEventListener('click', function() {
-                chips.forEach(function(o) { o.classList.remove('on'); });
-                c.classList.add('on');
+                chips.forEach(function(o) { o.classList.remove('is-on'); });
+                c.classList.add('is-on');
                 apply();
             });
         });
