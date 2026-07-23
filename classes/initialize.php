@@ -10,16 +10,9 @@ session_set_cookie_params([
     'samesite' => 'Lax'
 ]);
 
-// Start session only if client already has a session cookie.
-// Pages that create new sessions (login, account creation)
-// must call ensureSession() before writing to $_SESSION.
-function ensureSession(): void {
-    if (session_status() === PHP_SESSION_ACTIVE) {
-        return;
-    }
-    session_start();
-}
-
+// Start a session only if the client already presents a session cookie. Pages
+// that create a new session (login, account creation) call ensureSession()
+// instead — defined in classes/helpers/session.php, loaded below.
 if (isset($_COOKIE[session_name()])) {
     session_start();
 }
@@ -50,31 +43,14 @@ spl_autoload_register(function ($class_name) {
 // HTML Purifier
 require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
 
-// CSRF Protection
-function csrf_field(){
-    ensureSession();
-    if(empty($_SESSION['csrf_token'])){
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
-}
-
-function csrf_verify(){
-    if(session_status() !== PHP_SESSION_ACTIVE){
-        return false;
-    }
-    return isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token']);
-}
-
-// Serve a 503 "temporarily unavailable" page and stop. Call this when a backend
-// API request fails because the service is unreachable / returning 5xx (see
-// API::unavailable()), so users get a clear "try again" page instead of a 404, a
-// broken page, or a misleading login redirect. The 503 page is navbar-free so it
-// can't re-trigger the outage through Navigation's blocking count calls.
-function serve503(): void {
-    require ROOT . '/error_page/503.php';
-    exit();
-}
+// Function helpers (not autoloaded classes, so required explicitly). Loaded here,
+// after ROOT/config and before the auth gate below, which calls serve503().
+//   assets.php  — assetUrl/cssTag/jsTag: versioned, cache-busted local asset URLs
+//   session.php — ensureSession + csrf_field/csrf_verify
+//   http.php    — serve503
+require_once ROOT . '/classes/helpers/assets.php';
+require_once ROOT . '/classes/helpers/session.php';
+require_once ROOT . '/classes/helpers/http.php';
 
 // Navigation
 $nav = new Navigation();

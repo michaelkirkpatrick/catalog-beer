@@ -52,6 +52,10 @@ Guardrails (enforce in review):
 
 Reference: the "Design System" doc (`Design System.html`) in the design bundle — audit + live specimen.
 
+### Asset Versioning (cache-busting)
+
+Local CSS/JS link through helpers in `classes/helpers/assets.php` (required from `initialize.php`): `cssTag($path)`, `jsTag($path)`, and the underlying `assetUrl($path)`, which appends `?v=<filemtime>`. The `.htaccess` block serves `.css`/`.js` as `immutable` for a year **only** when that `?v=` token is present; an unversioned URL falls back to one hour so a stale copy self-heals. Editing a file is what busts its cache (mtime changes) — and mtime survives `deploy.sh`'s `rsync -a`, so the token matches on every environment. `htmlHead::addStylesheet()` and the design-system links (via the `##DESIGNSYSTEMCSS##` token in `head.html`) already route through these; use `cssTag`/`jsTag` for any new **local** asset. Leave CDN URLs (Bootstrap, Algolia) alone — they're versioned in their path.
+
 ## Architecture
 
 ### Page Structure Pattern

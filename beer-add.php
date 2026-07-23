@@ -95,7 +95,7 @@ if(isset($_GET['brewerID'])){
 
 // HTML Head
 $htmlHead = new htmlHead('Add a Beer');
-$guidedCSS = '<link rel="stylesheet" href="/assets/css/guided-style.css?v=' . @filemtime($_SERVER['DOCUMENT_ROOT'] . '/assets/css/guided-style.css') . '">';
+$guidedCSS = cssTag('/assets/css/guided-style.css');
 echo (strpos($htmlHead->html, '</head>') !== false)
     ? str_replace('</head>', "\t" . $guidedCSS . "\n</head>", $htmlHead->html)
     : $htmlHead->html . $guidedCSS;
@@ -203,6 +203,6 @@ echo (strpos($htmlHead->html, '</head>') !== false)
   </div>
   <?php echo $nav->footer(); ?>
   <?php echo StyleList::inlineScript(); ?>
-  <script src="/assets/js/guided-style.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/assets/js/guided-style.js'); ?>"></script>
+  <?php echo jsTag('/assets/js/guided-style.js'); ?>
 </body>
 </html>

@@ -15,6 +15,14 @@ class htmlHead {
         $pageTitle = $text->get($pageTitle);
         $html = str_replace('##PAGETITLE##', $pageTitle, $html);
 
+        // Design-system stylesheets, versioned for cache-busting (tokens+bridge
+        // first, then shared primitives — order matters, see the design system
+        // layering in CLAUDE.md). Emitted here because head.html is static and
+        // can't run cssTag() itself.
+        $designSystemCSS = cssTag('/assets/css/catalog.css') . "\n\t"
+            . cssTag('/assets/css/catalog-components.css');
+        $html = str_replace('##DESIGNSYSTEMCSS##', $designSystemCSS, $html);
+
         // Fathom Analytics (production only)
         $fathom = '';
         if(defined('ENVIRONMENT') && ENVIRONMENT === 'production'){
@@ -23,9 +31,11 @@ class htmlHead {
         $this->html = str_replace('##FATHOM##', $fathom, $html);
     }
     
-    // Append a page-specific stylesheet (loads after catalog.css)
+    // Append a page-specific stylesheet (loads after catalog.css). Versioned via
+    // cssTag() so a local edit busts the year-long immutable cache; an off-disk
+    // path degrades to an unversioned link (see assets.php).
     function addStylesheet($href){
-        $link = "\t" . '<link rel="stylesheet" href="' . htmlspecialchars($href) . '">' . "\n";
+        $link = "\t" . cssTag($href) . "\n";
         $this->html = str_replace('</head>', $link . '</head>', $this->html);
     }
 
