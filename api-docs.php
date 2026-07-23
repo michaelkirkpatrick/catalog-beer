@@ -832,7 +832,7 @@ curl -X GET \
                         <tr>
                             <td><var>data</var></td>
                             <td>array</td>
-                            <td>An array containing all the beers associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, <var>style</var>, <var>style_id</var>, <var>parent</var>, <var>class</var>, and <var>beverage_type</var> described below.</td>
+                            <td>An array containing all the beers associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, <var>style</var>, <var>style_id</var>, <var>parent</var>, <var>class</var>, <var>beverage_type</var>, <var>abv</var>, <var>cb_verified</var>, and <var>brewer_verified</var> described below.</td>
                         </tr>
                         <tr>
                             <td><var>id</var></td>
@@ -868,6 +868,21 @@ curl -X GET \
                             <td><var>beverage_type</var></td>
                             <td>string</td>
                             <td><var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+                        </tr>
+                        <tr>
+                            <td><var>abv</var></td>
+                            <td>number</td>
+                            <td>The alcohol by volume (ABV) of the beer, expressed as a percentage.</td>
+                        </tr>
+                        <tr>
+                            <td><var>cb_verified</var></td>
+                            <td>Boolean</td>
+                            <td>Whether the beer&#8217;s information has been verified by Catalog.beer against the brewery&#8217;s website.</td>
+                        </tr>
+                        <tr>
+                            <td><var>brewer_verified</var></td>
+                            <td>Boolean</td>
+                            <td>Whether the beer&#8217;s information was provided by the brewery (first-party data).</td>
                         </tr>
                     </tbody>
                 </table>
@@ -906,7 +921,10 @@ curl -X GET \
       "style_id": "smoke-beer",
       "parent": "smoked-beer",
       "class": null,
-      "beverage_type": "beer"
+      "beverage_type": "beer",
+      "abv": 7,
+      "cb_verified": false,
+      "brewer_verified": false
     },
     {
       "id": "36ebef31-f05b-4c78-b7c1-731ed136fe11",
@@ -915,7 +933,10 @@ curl -X GET \
       "style_id": "belgian-tripel",
       "parent": "belgian-strong-ale",
       "class": "ale",
-      "beverage_type": "beer"
+      "beverage_type": "beer",
+      "abv": 9.7,
+      "cb_verified": false,
+      "brewer_verified": false
     },
     {
       "id": "e778b401-0c2b-4bc0-8b53-ccb59860c1bf",
@@ -924,7 +945,10 @@ curl -X GET \
       "style_id": "chocolate-beer",
       "parent": "flavored-beer",
       "class": null,
-      "beverage_type": "beer"
+      "beverage_type": "beer",
+      "abv": 5.5,
+      "cb_verified": false,
+      "brewer_verified": false
     }
   ]
 }
@@ -971,17 +995,7 @@ curl -X GET \
                         <tr>
                             <td><var>data</var></td>
                             <td>array</td>
-                            <td>An array containing all the locations associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var> and <var>name</var> described below.</td>
-                        </tr>
-                        <tr>
-                            <td><var>id</var></td>
-                            <td>string</td>
-                            <td>The <var>location_id</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the location.</td>
+                            <td>An array containing all the locations associated with this brewer in the database sorted alphabetically by name. Each array object is a <a href="#location-object">location object</a> &#8212; including its <var>address</var> block, <var>latitude</var>, and <var>longitude</var> &#8212; without the nested <var>brewer</var> object (the list&#8217;s top-level <var>brewer</var> already carries it).</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1014,43 +1028,57 @@ curl -X GET \
   "data": [
     {
       "id": "76b558cd-a5f7-4fbe-820a-7a9dc9a924fe",
-      "name": "Chicago"
-    },
-    {
-      "id": "e6c0250b-f179-48ac-8eab-a97c5159c733",
-      "name": "Daleville"
+      "object": "location",
+      "name": "Chicago",
+      "url": null,
+      "country_code": "US",
+      "country_short_name": "United States of America",
+      "latitude": 41.9048372,
+      "longitude": -87.6483162,
+      "cb_verified": false,
+      "brewer_verified": false,
+      "last_modified": 1541544607,
+      "address": {
+        "address1": null,
+        "address2": "1462 N Milwaukee Ave",
+        "city": "Chicago",
+        "sub_code": "US-IL",
+        "state_short": "IL",
+        "state_long": "Illinois",
+        "zip5": 60622,
+        "zip4": null,
+        "telephone": null
+      }
     },
     {
       "id": "4ece62c7-38c2-41a2-a4db-02048e46fe55",
-      "name": "Home Brew Mart"
-    },
-    {
-      "id": "972dc9a3-4462-48b5-9a0f-eb0ab6f94738",
-      "name": "Little Italy"
-    },
-    {
-      "id": "275047c9-72f4-4bec-a61e-26bf2b9d3f3e",
-      "name": "Long Beach"
-    },
-    {
-      "id": "baa6cb7d-391b-4755-8881-b4a123ed821a",
-      "name": "Miramar"
-    },
-    {
-      "id": "132eece9-6d63-42a4-81b1-0177a0050414",
-      "name": "Scripps Ranch"
-    },
-    {
-      "id": "2cc26eda-0028-4821-8e8f-df48c7688f77",
-      "name": "Temecula"
-    },
-    {
-      "id": "795b4249-04ed-4061-beda-9273a5feeabd",
-      "name": "The Kettle Room"
+      "object": "location",
+      "name": "Home Brew Mart",
+      "url": "https://ballastpoint.com/location/home-brew-mart/",
+      "country_code": "US",
+      "country_short_name": "United States of America",
+      "latitude": 32.7477731,
+      "longitude": -117.1955504,
+      "cb_verified": false,
+      "brewer_verified": false,
+      "last_modified": 1541544607,
+      "address": {
+        "address1": null,
+        "address2": "5401 Linda Vista Rd",
+        "city": "San Diego",
+        "sub_code": "US-CA",
+        "state_short": "CA",
+        "state_long": "California",
+        "zip5": 92110,
+        "zip4": null,
+        "telephone": 6192952337
+      }
     }
   ]
 }
 </pre>
+
+                <p><small class="text-muted">Response truncated for documentation &#8212; this brewer has 9 locations in its <var>data</var> array.</small></p>
                 <p><a href="#top">^ Return to top</a></p>
 
                 <h2 id="beer">Beer</h2>
