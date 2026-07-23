@@ -95,7 +95,7 @@ if($beerCount > 0){
         $familySlug = !empty($beerInfo->parent) ? $beerInfo->parent : 'other';
         if(!isset($beerGroups[$familySlug])){
             $beerGroups[$familySlug] = array(
-                'label' => ($familySlug === 'other') ? 'Other' : ucwords(str_replace('-', ' ', $familySlug)),
+                'label' => ($familySlug === 'other') ? 'Other' : StyleList::parentName($familySlug),
                 'beers' => array()
             );
         }
