@@ -150,74 +150,64 @@ echo $htmlHead->html;
     <?php
     echo $nav->navbar('');
     ?>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-2">
-            <!-- Empty Column -->
-            </div>
-            <div class="col-md-8">
-                <h1>Get in Touch</h1>
-                <?php
-                // Display Alerts
-                echo $alert->display();
-                ?>
-                <form method="post" id="contact-form">
-                    <input type="hidden" name="signupFormHidden" value="set" />
-                    <?php
-                    // Name
-                    $inputName = new InputField();
-                    $inputName->name = 'name';
-                    $inputName->description = 'Name';
-                    $inputName->required = true;
-                    $inputName->placeholder = 'e.g., Hannah Brewer';
-                    $inputName->value = $name;
-                    $inputName->validState = $validState['name'];
-                    $inputName->validMsg = $validMsg['name'];
-                    echo $inputName->display();
+    <div class="cb-page cb-page--narrow">
+        <h1>Get in Touch</h1>
+        <?php
+        // Display Alerts
+        echo $alert->display();
+        ?>
+        <form method="post" id="contact-form">
+            <input type="hidden" name="signupFormHidden" value="set" />
+            <?php
+            // Name
+            $inputName = new InputField();
+            $inputName->name = 'name';
+            $inputName->description = 'Name';
+            $inputName->required = true;
+            $inputName->placeholder = 'e.g., Hannah Brewer';
+            $inputName->value = $name;
+            $inputName->validState = $validState['name'];
+            $inputName->validMsg = $validMsg['name'];
+            echo $inputName->display();
 
-                    // Email
-                    $inputEmail = new InputField();
-                    $inputEmail->name = 'email';
-                    $inputEmail->description = 'Email';
-                    $inputEmail->type = 'email';
-                    $inputEmail->required = true;
-                    $inputEmail->placeholder = 'e.g., hannah@catalog.beer';
-                    $inputEmail->value = $email;
-                    $inputEmail->validState = $validState['email'];
-                    $inputEmail->validMsg = $validMsg['email'];
-                    echo $inputEmail->display();
+            // Email
+            $inputEmail = new InputField();
+            $inputEmail->name = 'email';
+            $inputEmail->description = 'Email';
+            $inputEmail->type = 'email';
+            $inputEmail->required = true;
+            $inputEmail->placeholder = 'e.g., hannah@catalog.beer';
+            $inputEmail->value = $email;
+            $inputEmail->validState = $validState['email'];
+            $inputEmail->validMsg = $validMsg['email'];
+            echo $inputEmail->display();
 
-                    // Subject
-                    $inputSubject = new InputField();
-                    $inputSubject->name = 'subject';
-                    $inputSubject->description = 'Subject';
-                    $inputSubject->required = true;
-                    $inputSubject->value = $subject;
-                    $inputSubject->validState = $validState['subject'];
-                    $inputSubject->validMsg = $validMsg['subject'];
-                    echo $inputSubject->display();
+            // Subject
+            $inputSubject = new InputField();
+            $inputSubject->name = 'subject';
+            $inputSubject->description = 'Subject';
+            $inputSubject->required = true;
+            $inputSubject->value = $subject;
+            $inputSubject->validState = $validState['subject'];
+            $inputSubject->validMsg = $validMsg['subject'];
+            echo $inputSubject->display();
 
-                    // Body
-                    $textarea = new Textarea();
-                    $textarea->name = 'message';
-                    $textarea->description = 'Message';
-                    $textarea->value = $message;
-                    $textarea->required = true;
-                    $textarea->validState = $validState['message'];
-                    $textarea->validMsg = $validMsg['message'];
-                    $textarea->rows = 8;
-                    echo $textarea->display();
-                    ?>
-                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
-                    <input type="submit" class="btn btn-primary" value="Send Message" />
-                </form>
-            </div>
-            <div class="col-md-2">
-            <!-- Empty Column -->
-            </div>
-        </div>
-  </div>
-  <?php echo $nav->footer(); ?> 
+            // Body
+            $textarea = new Textarea();
+            $textarea->name = 'message';
+            $textarea->description = 'Message';
+            $textarea->value = $message;
+            $textarea->required = true;
+            $textarea->validState = $validState['message'];
+            $textarea->validMsg = $validMsg['message'];
+            $textarea->rows = 8;
+            echo $textarea->display();
+            ?>
+            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
+            <input type="submit" class="btn btn-primary" value="Send Message" />
+        </form>
+    </div>
+    <?php echo $nav->footer(); ?>
 </body>
 <script src='https://www.google.com/recaptcha/api.js?render=<?php echo RECAPTCHA_SITE_KEY; ?>'></script>
 <script type="application/javascript">

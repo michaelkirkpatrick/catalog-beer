@@ -10,6 +10,9 @@
      fam-* Style family page
      ix-*  Styles index — "Color Cards"
      bp-*  Brewer detail — "One Scroll" (composes .cb-* primitives)
+     be-*  Beer detail — Record / Coaster
+     cx-*  Beer + Brewer A–Z index — "Editorial index"
+     lv-*  Location detail — map-led editorial page
 
    Load AFTER catalog.css + catalog-components.css.
    ========================================================================== */
@@ -121,7 +124,9 @@
 .bp-sec { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
 
 /* taprooms: map band + card grid */
-.bp-map { height: 150px; border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); margin-bottom: .8rem; }
+/* 200px is Google's cutoff — below it the Maps API auto-hides every control. The map
+   options also set zoomControl explicitly, which overrides that suppression. */
+.bp-map { height: 200px; border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); margin-bottom: .8rem; }
 .bp-loc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; }
 .bp-loc-card { padding: .85rem .95rem; }
 .bp-loc-name { font-family: var(--cb-serif); font-size: 1.2rem; color: var(--cb-ink); margin: 0 0 .2rem; }
@@ -210,4 +215,102 @@ a.be-lede:hover { text-decoration: underline; }
     .be-title { font-size: 2.6rem; }
     .be-glass { justify-self: start; }
     .be-rail { position: static; }
+}
+
+/* ---- Beer / Brewer A-Z index — "Editorial index" ----
+   cx-* = catalog index. Layout only; composes .cb-* primitives (.cb-title,
+   .cb-legend, .cb-swatch). The 3-column A-Z list is CSS multi-column: content
+   flows top-to-bottom within a column, then into the next. Groups are
+   deliberately breakable — see the note on .cx-grp below. */
+.cx-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem;
+    border-bottom: 2px solid var(--cb-ink); padding-bottom: 1rem; margin: 1.6rem 0 1.6rem; }
+.cx-title { font-size: 3rem; }
+.cx-meta { font-family: var(--cb-mono); font-size: var(--cb-fs-label); letter-spacing: .08em;
+    text-transform: uppercase; color: var(--cb-muted); margin: .5rem 0 0; }
+.cx-add { flex: none; display: inline-flex; align-items: center; gap: .4rem; }
+
+.cx-cols { column-count: 3; column-gap: 2.5rem; }
+/* Groups MUST stay breakable. A page is a 500-row alphabetical slice, so one
+   letter can own most of it (page 1 of /beer is ~390 rows under '#'). With
+   break-inside:avoid such a group becomes one unbreakable block taller than any
+   balanced column, which collapses the layout to two visible columns. Instead
+   let groups flow and just keep a letter heading from being orphaned at the
+   foot of a column. */
+.cx-grp { margin: 0 0 1.1rem; }
+.cx-letter { font-family: var(--cb-serif); font-size: 1.4rem; color: var(--cb-ink);
+    border-bottom: 1px solid var(--cb-line-2); padding-bottom: .15rem; margin: 0 0 .45rem;
+    break-after: avoid; -webkit-column-break-after: avoid; break-inside: avoid; }
+.cx-row { display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+    padding: .16rem 0; text-decoration: none;
+    break-inside: avoid; -webkit-column-break-inside: avoid; }
+.cx-row__l { display: flex; align-items: center; gap: .45rem; min-width: 0; }
+.cx-swatch { width: 9px; height: 9px; flex: none; }
+.cx-name { color: var(--cb-link); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.cx-row:hover .cx-name { text-decoration: underline; }
+.cx-value { font-family: var(--cb-mono); font-size: .68rem; color: var(--cb-muted); white-space: nowrap; }
+
+/* editorial pager: mono chips, chevron prev/next, current = ink chip */
+.cx-pager { display: flex; justify-content: center; align-items: center; gap: .3rem;
+    margin-top: 2rem; font-family: var(--cb-mono); font-size: var(--cb-fs-label); }
+.cx-pager__chip { display: inline-flex; align-items: center; gap: .25rem; padding: .35rem .6rem;
+    border: 1px solid var(--cb-line-2); border-radius: 8px; color: var(--cb-ink-2); text-decoration: none; }
+.cx-pager__chip:hover { border-color: var(--cb-amber); color: var(--cb-amber-deep); }
+.cx-pager__num { padding: .35rem .6rem; color: var(--cb-ink-2); text-decoration: none; border-radius: 8px; }
+.cx-pager__num:hover { color: var(--cb-amber-deep); }
+.cx-pager__num.is-current { background: var(--cb-ink); color: var(--cb-paper); }
+.cx-pager__num.is-current:hover { color: var(--cb-paper); }
+.cx-pager__gap { color: var(--cb-muted-2); padding: 0 .2rem; }
+
+@media (max-width: 860px){ .cx-cols { column-count: 2; } }
+@media (max-width: 560px){ .cx-cols { column-count: 1; } .cx-title { font-size: 2.4rem; } }
+
+/* ---- Location detail — map-led editorial page ----
+   lv-* = location view. A hero-scale street map under the title, a facts rail
+   beside it, and the brewer's other taprooms below. Layout only; composes
+   .cb-* primitives (.cb-title, .cb-rail, .cb-fact, .cb-row, .cb-btn). */
+.lv-hero { border-bottom: 2px solid var(--cb-ink); padding: 0 0 .7rem; margin: 1.25rem 0 1.5rem; }
+.lv-title { font-size: 3.4rem; max-width: 18ch; }
+.lv-byline { margin-top: .7rem; color: var(--cb-muted); font-size: 1rem; }
+.lv-byline a { color: var(--cb-link); text-decoration: none; }
+.lv-byline a:hover { text-decoration: underline; }
+
+.lv-body { display: grid; grid-template-columns: 1fr 320px; gap: 3rem; align-items: start; }
+
+/* street map — the page's centerpiece */
+.lv-map { height: 440px; border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-sm); overflow: hidden; background: var(--cb-paper-3); }
+/* InfoWindow body now uses the shared .cb-mappop primitive in
+   catalog-components.css — see cbMapPopup() in assets/js/map-popup.js. */
+
+/* other taprooms */
+.lv-more { margin-top: 2.25rem; }
+.lv-row-l { display: flex; flex-direction: column; min-width: 0; }
+.lv-row-city { color: var(--cb-muted); font-size: var(--cb-fs-xs); }
+.lv-more .cb-row__value { color: var(--cb-link); }
+.lv-more .cb-row:last-child { border-bottom: 0; }
+
+/* facts rail */
+.lv-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; }
+.lv-rail .cb-label { display: block; margin-bottom: .7rem; }
+/* the address is the one multi-line fact — top-align its key against it */
+.lv-fact-addr { align-items: flex-start; }
+.lv-fact-addr .cb-fact__k { padding-top: .25rem; }
+.lv-addr { font-style: normal; text-align: right; }
+.lv-addr .lv-edit { margin-left: .35rem; }
+.lv-addr .lv-street { font-family: var(--cb-sans); font-size: var(--cb-fs-sm); font-weight: var(--cb-fw-medium); color: var(--cb-ink); line-height: 1.35; }
+.lv-addr .lv-region { font-family: var(--cb-sans); font-size: var(--cb-fs-sm); font-weight: var(--cb-fw-medium); color: var(--cb-ink-2); margin-top: .15rem; }
+.lv-edit { color: var(--cb-muted); text-decoration: none; }
+.lv-edit:hover { color: var(--cb-amber-deep); }
+.lv-rail-actions { display: flex; gap: .6rem; margin-top: 1.25rem; }
+.lv-rail-actions .cb-btn { flex: 1; justify-content: center; }
+/* delete is the destructive tail action — mono, quiet, centred under Edit */
+.lv-delete { align-self: center; margin-top: .85rem; font-family: var(--cb-mono);
+    font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: .4rem; }
+
+@media (max-width: 860px){
+    .lv-body { grid-template-columns: 1fr; gap: 1.75rem; }
+    .lv-title { font-size: 2.5rem; }
+    .lv-rail { position: static; }
+    .lv-map { height: 340px; }
 }

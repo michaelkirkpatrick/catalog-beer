@@ -62,35 +62,32 @@ if(isset($_POST['submit'])){
 }
 
 // HTML Head
-$locationName = $text1->get($locationData->name);
+// Short form: the brewer is named alongside this on every line it appears in.
+$locationName = $text1->get(locationShortName($locationData));
 $htmlHead = new htmlHead('Delete ' . $locationName);
 echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Brewers'); ?>
-    <div class="container">
-    <div class="row">
-        <div class="col">
+    <div class="cb-page">
         <?php
-                // Breadcrumbs
-                $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Delete ' . $locationName);
-                $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerID);
-                echo $nav->breadcrumbs();
+        // Breadcrumbs
+        $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Delete ' . $locationName);
+        $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerID);
+        echo $nav->breadcrumbs();
 
-                // Display Alerts
-                if(isset($alert)){
-                    echo $alert->display();
-                }
-                ?>
+        // Display Alerts
+        if(isset($alert)){
+            echo $alert->display();
+        }
+        ?>
         <p class="lead">Are you sure you want to delete the location <strong><?php echo $locationName; ?></strong> from <?php echo $brewerName; ?>? This action cannot be undone.</p>
         <form method="post">
-                    <?php echo csrf_field(); ?>
-                    <button type="submit" class="btn btn-danger" name="submit">Delete Location</button>
-                    <a href="/brewer/<?php echo htmlspecialchars($brewerID); ?>" class="btn btn-outline-secondary">Cancel</a>
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="btn btn-danger" name="submit">Delete Location</button>
+            <a href="/brewer/<?php echo htmlspecialchars($brewerID); ?>" class="btn btn-outline-secondary">Cancel</a>
         </form>
-      </div>
     </div>
-  </div>
-  <?php echo $nav->footer(); ?>
+    <?php echo $nav->footer(); ?>
 </body>
 </html>

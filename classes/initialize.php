@@ -48,9 +48,11 @@ require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
 //   assets.php  — assetUrl/cssTag/jsTag: versioned, cache-busted local asset URLs
 //   session.php — ensureSession + csrf_field/csrf_verify
 //   http.php    — serve503
+//   location.php— locationDisplayName/locationShortName: labels for an unnamed location
 require_once ROOT . '/classes/helpers/assets.php';
 require_once ROOT . '/classes/helpers/session.php';
 require_once ROOT . '/classes/helpers/http.php';
+require_once ROOT . '/classes/helpers/location.php';
 
 // Navigation
 $nav = new Navigation();

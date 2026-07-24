@@ -30,7 +30,10 @@ $brewerID = $text2->get($locationData->brewer->id);
 // Default Values from Existing Data
 $validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'');
 $validMsg = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'');
-$name = $locationData->name;
+// Raw stored name, not the display stand-in — this prefills the form field, and
+// an unnamed location must show an empty box rather than a composed label the
+// user would then save as a real name.
+$name = $locationData->name ?? '';
 $url = $locationData->url ?? '';
 
 // Process Form
@@ -59,79 +62,77 @@ if(isset($_POST['submit'])){
 }
 
 // HTML Head
-$locationName = $text1->get($locationData->name);
+$locationName = $text1->get(locationDisplayName($locationData));
 $htmlHead = new htmlHead('Edit ' . $locationName);
 echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Brewers'); ?>
-    <div class="container">
-    <div class="row">
-        <div class="col">
+    <div class="cb-page">
         <?php
-                // Breadcrumbs
-                $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Edit ' . $locationName);
-                $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerID);
-                echo $nav->breadcrumbs();
+        // Breadcrumbs
+        $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Edit ' . $locationName);
+        $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerID);
+        echo $nav->breadcrumbs();
 
-                // Display Alerts
-                echo $alert->display();
-                ?>
+        // Display Alerts
+        echo $alert->display();
+        ?>
         <form method="post">
-                    <?php echo csrf_field(); ?>
-                    <?php
-                    // Brewery (disabled, display only)
-                    echo '<fieldset disabled>' . "\n";
-                    $inputBrewerID = new InputField();
-                    $inputBrewerID->name = 'brewer_id';
-                    $inputBrewerID->description = 'Brewer';
-                    $inputBrewerID->type = 'text';
-                    $inputBrewerID->required = true;
-                    $inputBrewerID->value = $brewerName;
-                    $inputBrewerID->validState = $validState['brewer_id'];
-                    $inputBrewerID->validMsg = $validMsg['brewer_id'];
-                    echo $inputBrewerID->display();
-                    echo '</fieldset>' . "\n";
+            <?php echo csrf_field(); ?>
+            <?php
+            // Brewery (disabled, display only)
+            echo '<fieldset disabled>' . "\n";
+            $inputBrewerID = new InputField();
+            $inputBrewerID->name = 'brewer_id';
+            $inputBrewerID->description = 'Brewer';
+            $inputBrewerID->type = 'text';
+            $inputBrewerID->required = true;
+            $inputBrewerID->value = $brewerName;
+            $inputBrewerID->validState = $validState['brewer_id'];
+            $inputBrewerID->validMsg = $validMsg['brewer_id'];
+            echo $inputBrewerID->display();
+            echo '</fieldset>' . "\n";
 
-                    // Name
-                    $inputName = new InputField();
-                    $inputName->name = 'name';
-                    $inputName->description = 'Name';
-                    $inputName->type = 'text';
-                    $inputName->required = true;
-                    $inputName->autofocus = true;
-                    $inputName->value = $name;
-                    $inputName->validState = $validState['name'];
-                    $inputName->validMsg = $validMsg['name'];
-                    echo $inputName->display();
+            // Name — optional; clearing it is a valid edit. See
+            // location-add.php for why the placeholder says this.
+            $inputName = new InputField();
+            $inputName->name = 'name';
+            $inputName->description = 'Name';
+            $inputName->type = 'text';
+            $inputName->required = false;
+            $inputName->placeholder = 'Only if this taproom has a name of its own';
+            $inputName->autofocus = true;
+            $inputName->value = $name;
+            $inputName->validState = $validState['name'];
+            $inputName->validMsg = $validMsg['name'];
+            echo $inputName->display();
 
-                    // URL
-                    $inputURL = new InputField();
-                    $inputURL->name = 'url';
-                    $inputURL->description = 'Location Specific URL';
-                    $inputURL->type = 'url';
-                    $inputURL->required = false;
-                    $inputURL->value = $url;
-                    $inputURL->validState = $validState['url'];
-                    $inputURL->validMsg = $validMsg['url'];
-                    echo $inputURL->display();
+            // URL
+            $inputURL = new InputField();
+            $inputURL->name = 'url';
+            $inputURL->description = 'Location Specific URL';
+            $inputURL->type = 'url';
+            $inputURL->required = false;
+            $inputURL->value = $url;
+            $inputURL->validState = $validState['url'];
+            $inputURL->validMsg = $validMsg['url'];
+            echo $inputURL->display();
 
-                    // Country (disabled, US only)
-                    echo '<div class="mb-3">' . "\n";
-                    echo '<label for="CountryCodeField" class="form-label">Country</label>' . "\n";
-                    echo '<fieldset disabled>' . "\n";
-                    echo '<select name="country_code" class="form-select" id="CountryCodeField">' . "\n";
-                    echo '<option value="US">United States of America</option>' . "\n";
-                    echo '</select>' . "\n";
-                    echo '</fieldset>' . "\n";
-                    echo '</div>' . "\n";
-                    ?>
-                    <button type="submit" class="btn btn-primary" name="submit">Save Changes</button>
-                    <a href="/brewer/<?php echo htmlspecialchars($brewerID); ?>" class="btn btn-outline-secondary">Cancel</a>
+            // Country (disabled, US only)
+            echo '<div class="mb-3">' . "\n";
+            echo '<label for="CountryCodeField" class="form-label">Country</label>' . "\n";
+            echo '<fieldset disabled>' . "\n";
+            echo '<select name="country_code" class="form-select" id="CountryCodeField">' . "\n";
+            echo '<option value="US">United States of America</option>' . "\n";
+            echo '</select>' . "\n";
+            echo '</fieldset>' . "\n";
+            echo '</div>' . "\n";
+            ?>
+            <button type="submit" class="btn btn-primary" name="submit">Save Changes</button>
+            <a href="/brewer/<?php echo htmlspecialchars($brewerID); ?>" class="btn btn-outline-secondary">Cancel</a>
         </form>
-      </div>
     </div>
-  </div>
-  <?php echo $nav->footer(); ?>
+    <?php echo $nav->footer(); ?>
 </body>
 </html>

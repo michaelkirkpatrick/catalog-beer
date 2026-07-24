@@ -18,7 +18,7 @@ $htmlHead = new htmlHead('Temporarily Unavailable');
 echo $htmlHead->html;
 ?>
 <body>
-    <div class="container">
+    <div class="cb-page">
         <div class="p-5 mb-4 bg-light rounded-3">
             <h1 class="display-4">Temporarily Unavailable</h1>
             <p class="lead">Sorry &#8212; we&#8217;re having trouble connecting right now. This is usually temporary. Please try again in a few minutes.</p>

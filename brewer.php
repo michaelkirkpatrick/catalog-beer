@@ -53,7 +53,10 @@ if(isset($locationData->data)){
             // per-location detail fetch so the page still renders fully.
             $locationDetailResp = $api->request('GET', '/location/' . $locItem->id, '');
             $locationDetail = json_decode($locationDetailResp);
-            if(!isset($locationDetail->name) || isset($locationDetail->error)){
+            // Guard on id, not name: location names are optional, and isset()
+            // is false for a null one — checking name here would discard a
+            // perfectly good unnamed location and log it as a failed fetch.
+            if(!isset($locationDetail->id) || isset($locationDetail->error)){
                 // The location detail request failed or came back unusable.
                 // Skip this location; the rest of the page is still worth showing.
                 $errorLog = new LogError();
@@ -76,10 +79,19 @@ $taproomsLabel = ($locationCount === 1) ? 'Taproom' : 'Taprooms';
 $mapLocations = array();
 foreach($locations as $loc){
     if(!empty($loc->latitude) && !empty($loc->longitude)){
+        // Raw values, not $text1->get() output: cbMapPopup() writes these with
+        // textContent, which escapes for us — pre-encoded entities would show
+        // through as literal "&#8217;".
         $mapLocations[] = array(
             'lat' => (float)$loc->latitude,
             'lng' => (float)$loc->longitude,
-            'name' => $loc->name
+            'id' => $loc->id,
+            // The popup names the brewer on its own line, so an unnamed
+            // taproom is labelled by its city here too.
+            'name' => locationShortName($loc),
+            'brewerID' => $brewerData->brewer->id,
+            'brewerName' => $brewerData->brewer->name,
+            'city' => $loc->address->city ?? ''
         );
     }
 }
@@ -181,17 +193,15 @@ echo $htmlHead->html;
                 <?php if($showMap){ echo '<div id="map" class="bp-map"></div>' . "\n"; } ?>
                 <div class="bp-loc-grid">
                     <?php foreach($locations as $loc){
-                        $locationName = $text1->get($loc->name);
+                        // Short form: we're already on the brewer's page, so an
+                        // unnamed taproom is labelled by its city alone.
+                        $locationName = $text1->get(locationShortName($loc));
                         $locationIDString = $text3->get($loc->id);
                         ?>
                     <div class="cb-card bp-loc-card" itemprop="location" itemscope itemtype="http://schema.org/Place"><meta itemprop="publicAccess" content="true" />
                         <h3 class="bp-loc-name" itemprop="name"><?php
-                            if(!empty($loc->url)){
-                                $locationURL = $text3->get($loc->url);
-                                echo '<a href="' . $locationURL . '" target="_blank" rel="noopener" itemprop="url">' . $locationName . '</a>';
-                            }else{
-                                echo $locationName;
-                            }
+                            // Link the location name to its detail page.
+                            echo '<a href="/location/' . $locationIDString . '" itemprop="url">' . $locationName . '</a>';
                             if($loggedIn){
                                 echo ' <a href="/location/' . $locationIDString . '/edit" title="Edit Location"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
                                 echo ' <a href="/location/' . $locationIDString . '/delete" title="Delete Location"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash text-danger" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg></a>';
@@ -318,20 +328,37 @@ echo $htmlHead->html;
     </div>
     <?php echo $nav->footer(); ?>
     <?php if($showMap){ ?>
+    <?php echo jsTag('/assets/js/map-popup.js'); ?>
     <script>
     function initMap() {
         var locations = <?php echo json_encode($mapLocations); ?>;
-        var map = new google.maps.Map(document.getElementById('map'), { zoom: 14 });
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14,
+            mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID); ?>,
+            zoomControl: true,          // explicit: the API hides controls under 200x200
+            cameraControl: false,       // drops the N/S/E/W pan arrows
+            streetViewControl: false,   // no pegman
+            mapTypeControl: true,
+            fullscreenControl: true,
+            // Vector maps let users pitch and spin the map. Set in code, these beat the
+            // Map ID's cloud configuration; delete the three lines to hand control back
+            // to the console (where tilt/rotate is already enabled).
+            tiltInteractionEnabled: false,
+            headingInteractionEnabled: false,
+            rotateControl: false
+        });
         var bounds = new google.maps.LatLngBounds();
         locations.forEach(function(loc) {
-            var marker = new google.maps.Marker({
-                position: { lat: loc.lat, lng: loc.lng },
+            var position = { lat: loc.lat, lng: loc.lng };
+            var marker = new google.maps.marker.AdvancedMarkerElement({
+                position: position,
                 map: map,
-                title: loc.name
+                title: loc.name,
+                gmpClickable: true
             });
-            var infoWindow = new google.maps.InfoWindow({ content: '<strong>' + loc.name + '</strong>' });
-            marker.addListener('click', function() { infoWindow.open(map, marker); });
-            bounds.extend(marker.getPosition());
+            var infoWindow = new google.maps.InfoWindow({ content: cbMapPopup(loc) });
+            marker.addEventListener('gmp-click', function() { infoWindow.open({ anchor: marker, map: map }); });
+            bounds.extend(position);
         });
         map.fitBounds(bounds);
         if (locations.length === 1) {
@@ -341,7 +368,7 @@ echo $htmlHead->html;
         }
     }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_KEY; ?>&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_KEY; ?>&libraries=marker&loading=async&callback=initMap" async defer></script>
     <?php } ?>
     <?php if($showToolbar && $beerCount > 0){ ?>
     <script>

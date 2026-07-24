@@ -122,6 +122,7 @@
   --cb-space-12: 3rem;
   --cb-space-16: 4rem;
   --cb-measure:  1080px;    /* standard content max-width     */
+  --cb-measure-narrow: 720px; /* forms, prose, single-column  */
 
   /* ======================================================================
      4 · RADIUS  (replaces .25–.75rem scattered per component)
@@ -239,3 +240,12 @@ a:hover { color: var(--cb-link-hover); }
 .cb-foot-links a { text-decoration: none; }
 .cb-cc svg { fill: var(--cb-ink-2); }
 .cb-foot-lead { font-family: var(--cb-serif); font-size: var(--cb-fs-lg); color: var(--cb-ink); }
+
+/* ---- navbar global search (icon + rounded input) ----
+   Reuses the .cb-search primitive (catalog-components.css); the nav-scoped
+   rules below override its full-width flex sizing for the compact nav field.
+   Wired to Algolia separately — this is layout + affordance only. */
+.cb-navsearch { position: relative; display: flex; align-items: center; margin: .25rem 0; }
+.cb-navsearch__icon { position: absolute; left: .6rem; top: 50%; transform: translateY(-50%); display: flex; color: var(--cb-muted-2); pointer-events: none; }
+.cb-navsearch .cb-search { flex: none; width: 250px; max-width: 100%; font-size: .82rem; padding: .42rem .6rem .42rem 1.9rem; border-radius: 9px; }
+@media (min-width: 992px){ .cb-navsearch { margin: 0 1rem 0 .5rem; } }

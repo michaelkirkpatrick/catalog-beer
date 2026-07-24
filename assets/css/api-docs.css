@@ -1,0 +1,107 @@
+/* =============================================================================
+   api-docs.css — layout for /api-docs  (page CSS: layout only, tokens only)
+   -----------------------------------------------------------------------------
+   Replaces the inline <style> block that used to sit between </head> and <body>.
+   Loaded via htmlHead::addStylesheet(), so it is cache-busted by cssTag().
+
+   Load order: bootstrap → catalog.css → catalog-components.css → api-docs.css
+   ========================================================================== */
+
+/* ============================ two-column shell ============================
+   Sits inside .cb-page. Single column on small screens; rail + content at lg.
+   minmax(0, 1fr) — without the 0 floor, the 111 <pre> blocks would size the
+   content column to their widest line and blow the grid out. */
+.ad-layout { display: grid; grid-template-columns: 1fr; gap: var(--cb-space-8); }
+
+@media (min-width: 992px) {
+    .ad-layout { grid-template-columns: 16rem minmax(0, 1fr); gap: var(--cb-space-10); }
+}
+
+/* min-width: 0 for the same reason — a grid item's default min-width is auto,
+   which lets wide <pre> content push past the track. */
+.ad-content { min-width: 0; }
+
+/* ============================ sticky table of contents ============================
+   The rail follows the reader down a ~3,700-line document. The navbar is not
+   sticky, so a plain offset is all the clearance it needs. */
+@media (min-width: 992px) {
+    .ad-toc {
+        position: sticky;
+        top: var(--cb-space-4);
+        max-height: calc(100dvh - (var(--cb-space-4) * 2));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
+
+.ad-toc .list-group { border-radius: var(--cb-radius-md); }
+
+.ad-toc .list-group-item {
+    border-color: var(--cb-line);
+    background: transparent;
+    color: var(--cb-ink-2);
+    font-size: var(--cb-fs-sm);
+    padding: var(--cb-space-2) var(--cb-space-3);
+}
+.ad-toc .list-group-item:hover { background: var(--cb-paper-2); color: var(--cb-amber-deep); }
+
+/* Scrollspy marks the section currently in view. Bootstrap's default .active is
+   its blue; re-point it at the palette. */
+.ad-toc .list-group-item.active {
+    background: var(--cb-paper-2);
+    border-color: var(--cb-line);
+    color: var(--cb-ink);
+    font-weight: var(--cb-fw-semibold);
+    box-shadow: inset 3px 0 0 0 var(--cb-amber);
+}
+
+/* Mobile disclosure: 58 links would otherwise stand between the reader and the
+   first word of documentation. Bootstrap collapse (bundle is already loaded);
+   .d-lg-block re-shows the rail at lg regardless of collapse state. */
+.ad-toc-toggle {
+    font-family: var(--cb-mono);
+    font-size: var(--cb-fs-label);
+    letter-spacing: var(--cb-track-label);
+    text-transform: uppercase;
+    color: var(--cb-ink-2);
+    background: var(--cb-paper-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    padding: var(--cb-space-3) var(--cb-space-4);
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+.ad-toc-toggle:hover { color: var(--cb-amber-deep); border-color: var(--cb-line-2); }
+.ad-toc-toggle::after { content: " ▾"; }
+.ad-toc-toggle[aria-expanded="true"]::after { content: " ▴"; }
+
+/* ============================ prose rhythm ============================ */
+.ad-content h2,
+.ad-content h3 { margin-top: var(--cb-space-16); }
+.ad-content h4 { margin-top: var(--cb-space-8); }
+
+/* ============================ code blocks ============================
+   Bootstrap's reboot already gives <pre> overflow: auto, so the long curl and
+   JSON samples scroll inside the block rather than widening the page. */
+.api-code {
+    background-color: var(--cb-paper-2);
+    color: var(--cb-ink);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    padding: var(--cb-space-4);
+}
+
+/* <var> marks parameter names in the reference tables. */
+.ad-content var {
+    font-family: var(--cb-mono);
+    font-style: normal;
+    color: var(--cb-success);
+}
+
+/* ============================ parameter tables ============================
+   .table-responsive wraps each table (see api-docs.php). The min-width stops a
+   3-column table from crushing "Parameter" and "Type" to a few characters on a
+   phone — below it, the table scrolls instead of collapsing. */
+.ad-content .table-responsive { margin-bottom: var(--cb-space-4); }
+.ad-content .table-responsive > .table { min-width: 34rem; margin-bottom: 0; }

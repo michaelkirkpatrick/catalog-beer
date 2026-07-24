@@ -116,7 +116,22 @@ class Navigation {
         
         // Add in Links
         $html = str_replace('##ITEMS##', $links, $html);
-        
+
+        // Global search placeholder — reflects the section + cached counts.
+        // (The field is wired to Algolia separately; this is copy only.)
+        if($section == 'Beer'){
+            $searchPlaceholder = ($counts['beers'] !== null)
+                ? 'Search ' . number_format($counts['beers']) . ' beers…'
+                : 'Search beers…';
+        }elseif($section == 'Brewers'){
+            $searchPlaceholder = ($counts['brewers'] !== null)
+                ? 'Search ' . number_format($counts['brewers']) . ' brewers…'
+                : 'Search brewers…';
+        }else{
+            $searchPlaceholder = 'Search Catalog.beer…';
+        }
+        $html = str_replace('##SEARCHPLACEHOLDER##', htmlspecialchars($searchPlaceholder, ENT_QUOTES), $html);
+
         // Sign In / Sign Out
         if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
             $signIn = '<li><a class="dropdown-item" href="/account">My Account</a></li>' . "\n";
@@ -227,6 +242,69 @@ class Navigation {
         $pageNav .= '</ul>';        // Close pagination
         $pageNav .= '</nav>';       // Close nav
         return $pageNav;
+    }
+
+    // ----- Editorial Pager (catalog A-Z index pages) -----
+    // Mono chip pagination for the beer/brewer index: chevron Prev/Next, a
+    // 5-wide window centered on the current page, and first/last with ellipses.
+    // Distinct from pagination() (Bootstrap list, ±10 jumps) so restyling here
+    // doesn't disturb pages still using that one. Styles: .cx-pager* (styles-pages.css).
+    public function catalogPager($page, $totalPages, $baseURL){
+        $page = intval($page);
+        $totalPages = intval($totalPages);
+        if($totalPages <= 1){
+            return '';
+        }
+
+        $chevronLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>';
+        $chevronRight = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>';
+
+        $html = '<nav class="cx-pager" aria-label="Page navigation">';
+
+        // Prev
+        if($page > 1){
+            $html .= '<a class="cx-pager__chip" href="' . $baseURL . '?page=' . ($page - 1) . '" rel="prev" aria-label="Previous page">' . $chevronLeft . ' Prev</a>';
+        }
+
+        // 5-wide window, clamped so it never overruns either end
+        $window = 5;
+        $start = max(1, min($page - 2, $totalPages - ($window - 1)));
+        $end = min($totalPages, $start + $window - 1);
+
+        // Leading: first page + ellipsis when the window has moved off the start
+        if($start > 1){
+            $html .= $this->pagerNum(1, $page, $baseURL);
+            if($start > 2){
+                $html .= '<span class="cx-pager__gap" aria-hidden="true">&hellip;</span>';
+            }
+        }
+
+        for($i = $start; $i <= $end; $i++){
+            $html .= $this->pagerNum($i, $page, $baseURL);
+        }
+
+        // Trailing: ellipsis + last page when the window stops short of the end
+        if($end < $totalPages){
+            if($end < $totalPages - 1){
+                $html .= '<span class="cx-pager__gap" aria-hidden="true">&hellip;</span>';
+            }
+            $html .= $this->pagerNum($totalPages, $page, $baseURL);
+        }
+
+        // Next
+        if($page < $totalPages){
+            $html .= '<a class="cx-pager__chip" href="' . $baseURL . '?page=' . ($page + 1) . '" rel="next" aria-label="Next page">Next ' . $chevronRight . '</a>';
+        }
+
+        $html .= '</nav>';
+        return $html;
+    }
+
+    private function pagerNum($i, $page, $baseURL){
+        if($i == $page){
+            return '<a class="cx-pager__num is-current" href="' . $baseURL . '?page=' . $i . '" aria-current="page">' . $i . '</a>';
+        }
+        return '<a class="cx-pager__num" href="' . $baseURL . '?page=' . $i . '">' . $i . '</a>';
     }
 }
 ?>
