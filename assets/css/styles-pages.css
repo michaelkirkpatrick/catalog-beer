@@ -143,8 +143,14 @@
 .bp-beer-l { display: flex; align-items: baseline; gap: .45rem; min-width: 0; }
 .bp-beer-l .cb-vdot { margin-right: .05rem; }
 
-/* facts rail */
-.bp-rail { position: sticky; top: 1rem; }
+/* facts rail — Facts, plus a Location block for single-taproom breweries
+   (see the note in brewer.php). The address block there is the shared
+   .cb-addr primitive, same as the location page's rail. */
+.bp-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.6rem; }
+.bp-rail .cb-label { display: block; margin-bottom: .6rem; }
+/* label + its inline action share one line */
+.bp-rail-h { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; margin-bottom: .6rem; }
+.bp-rail-h .cb-label { margin-bottom: 0; }
 
 @media (max-width: 860px){
     .bp-body { grid-template-columns: 1fr; }
@@ -289,20 +295,11 @@ a.be-lede:hover { text-decoration: underline; }
 .lv-more .cb-row__value { color: var(--cb-link); }
 .lv-more .cb-row:last-child { border-bottom: 0; }
 
-/* facts rail */
+/* facts rail — the address block itself is the shared .cb-addr primitive */
 .lv-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; }
 .lv-rail .cb-label { display: block; margin-bottom: .7rem; }
-/* the address is the one multi-line fact — top-align its key against it */
-.lv-fact-addr { align-items: flex-start; }
-.lv-fact-addr .cb-fact__k { padding-top: .25rem; }
-.lv-addr { font-style: normal; text-align: right; }
-.lv-addr .lv-edit { margin-left: .35rem; }
-.lv-addr .lv-street { font-family: var(--cb-sans); font-size: var(--cb-fs-sm); font-weight: var(--cb-fw-medium); color: var(--cb-ink); line-height: 1.35; }
-.lv-addr .lv-region { font-family: var(--cb-sans); font-size: var(--cb-fs-sm); font-weight: var(--cb-fw-medium); color: var(--cb-ink-2); margin-top: .15rem; }
 .lv-edit { color: var(--cb-muted); text-decoration: none; }
 .lv-edit:hover { color: var(--cb-amber-deep); }
-.lv-rail-actions { display: flex; gap: .6rem; margin-top: 1.25rem; }
-.lv-rail-actions .cb-btn { flex: 1; justify-content: center; }
 /* delete is the destructive tail action — mono, quiet, centred under Edit */
 .lv-delete { align-self: center; margin-top: .85rem; font-family: var(--cb-mono);
     font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase;

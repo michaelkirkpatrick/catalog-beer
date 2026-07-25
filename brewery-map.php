@@ -52,11 +52,11 @@ echo $htmlHead->html;
                         'lat' => (float)$loc->latitude,
                         'lng' => (float)$loc->longitude,
                         'id' => $loc->id,
-                        // Site-wide map: the brewer isn't implied by context,
-                        // so an unnamed location takes the full stand-in. The
-                        // map payload carries no address, so it resolves to
-                        // the brewer name alone.
-                        'name' => locationDisplayName($loc, $loc->brewer->name),
+                        // The location's own name only. A composed stand-in
+                        // would print "{brewer} – {city}" above a brewer line
+                        // that already says it; cbMapPopup() leads with the
+                        // brewer when there's no name of its own.
+                        'name' => trim($loc->name ?? ''),
                         'brewerName' => $loc->brewer->name,
                         'brewerID' => $loc->brewer->id
                     ];
@@ -70,6 +70,12 @@ echo $htmlHead->html;
                 var map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 4,
                     mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID); ?>,
+                    // ctrl/cmd + scroll to zoom, two fingers to pan; relaxed to
+                    // greedy in fullscreen by the API. Set explicitly because the
+                    // 'auto' default only picks cooperative while the page is
+                    // scrollable — and the map is nearly the whole page here, so
+                    // a tall window leaves nothing to scroll and auto goes greedy.
+                    gestureHandling: 'cooperative',
                     zoomControl: true,          // explicit: the API hides controls under 200x200
                     cameraControl: false,       // drops the N/S/E/W pan arrows
                     streetViewControl: false,   // no pegman

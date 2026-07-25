@@ -48,11 +48,14 @@ require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
 //   assets.php  — assetUrl/cssTag/jsTag: versioned, cache-busted local asset URLs
 //   session.php — ensureSession + csrf_field/csrf_verify
 //   http.php    — serve503
-//   location.php— locationDisplayName/locationShortName: labels for an unnamed location
+//   location.php— labels for an unnamed location, plus the address / maps-link
+//                 formatting shared by the location and brewer facts rails
+//   address.php — the address fieldset shared by location-add and location-edit
 require_once ROOT . '/classes/helpers/assets.php';
 require_once ROOT . '/classes/helpers/session.php';
 require_once ROOT . '/classes/helpers/http.php';
 require_once ROOT . '/classes/helpers/location.php';
+require_once ROOT . '/classes/helpers/address.php';
 
 // Navigation
 $nav = new Navigation();

@@ -75,6 +75,25 @@ if(isset($locationData->data)){
 $locationCount = count($locations);
 $taproomsLabel = ($locationCount === 1) ? 'Taproom' : 'Taprooms';
 
+// A brewery with a single taproom carries it in the facts rail instead of a
+// section of its own: one card in a two-column grid, under a heading that counts
+// to one, is a lot of page furniture for one address. The rail block mirrors the
+// location page's own rail — address, phone, site — and links through to that
+// page, which is where the map and the rest of the record live.
+$singleLocation = ($locationCount === 1) ? $locations[0] : null;
+$singleAddress = locationAddressFacts(null, $text1);   // blank shape
+$singleMaps = array('google' => '', 'apple' => '');
+$singleLocationID = '';
+$singleLocationName = '';
+if($singleLocation !== null){
+    $singleAddress = locationAddressFacts($singleLocation, $text1);
+    // The standalone label for the maps pin: this taproom usually has no name of
+    // its own, and "Portland" alone would drop a pin on the city.
+    $singleMaps = locationMapsLinks($singleLocation, locationDisplayName($singleLocation, $brewerData->brewer->name));
+    $singleLocationID = $text3->get($singleLocation->id);
+    $singleLocationName = locationShortName($singleLocation);
+}
+
 // Map pins; the map band renders only for multi-taproom breweries
 $mapLocations = array();
 foreach($locations as $loc){
@@ -86,9 +105,10 @@ foreach($locations as $loc){
             'lat' => (float)$loc->latitude,
             'lng' => (float)$loc->longitude,
             'id' => $loc->id,
-            // The popup names the brewer on its own line, so an unnamed
-            // taproom is labelled by its city here too.
-            'name' => locationShortName($loc),
+            // The location's own name only — cbMapPopup() leads with the brewer
+            // when a taproom isn't named separately, so there's nothing to
+            // stand in for here.
+            'name' => trim($loc->name ?? ''),
             'brewerID' => $brewerData->brewer->id,
             'brewerName' => $brewerData->brewer->name,
             'city' => $loc->address->city ?? ''
@@ -185,6 +205,11 @@ echo $htmlHead->html;
                 }
                 ?>
 
+                <?php
+                // Single-taproom breweries get the Location block in the rail
+                // instead of this section — see the note up top.
+                if($singleLocation === null){
+                ?>
                 <h2 class="cb-label cb-label--rule bp-sec" id="locations">
                     <span><?php echo $taproomsLabel; if($locationCount > 0){ echo ' &middot; ' . $locationCount; } ?></span>
                     <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add Location</a>
@@ -223,7 +248,7 @@ echo $htmlHead->html;
                                 }
                                 echo '<span itemprop="addressLocality">' . $text1->get($loc->address->city) . '</span>, <span itemprop="addressRegion">' . $text1->get($loc->address->state_short) . '</span> <span itemprop="postalCode">' . $zipCode . '</span>';
                                 if($loggedIn){
-                                    echo ' <a href="/location/' . $locationIDString . '/edit-address" title="Edit Address"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
+                                    echo ' <a href="/location/' . $locationIDString . '/edit" title="Edit Address"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
                                 }
                                 echo '</p></div>';
 
@@ -241,6 +266,7 @@ echo $htmlHead->html;
                 <?php }else{ ?>
                 <p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <a href="/brewer/<?php echo $brewerIDString; ?>/add-location">add it</a>.</p>
                 <?php } ?>
+                <?php } /* end multi-taproom section */ ?>
 
                 <h2 class="cb-label cb-label--rule bp-sec" id="beer">
                     <span>Beers<?php if($beerCount > 0){ echo ' &middot; ' . $beerCount; } ?></span>
@@ -311,22 +337,107 @@ echo $htmlHead->html;
             </div>
 
             <aside class="cb-rail bp-rail">
-                <div class="cb-label">Facts</div>
-                <div class="cb-fact"><span class="cb-fact__k"><?php echo $taproomsLabel; ?></span><span class="cb-fact__v"><?php echo $locationCount; ?></span></div>
-                <div class="cb-fact"><span class="cb-fact__k">Beers</span><span class="cb-fact__v"><?php echo $beerCount; ?></span></div>
-                <?php
-                if(!empty($brewerData->brewer->url)){
-                    $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
-                    if(!empty($urlHost)){
-                        $urlHost = preg_replace('/^www\./', '', $urlHost);
-                        echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>';
+                <div>
+                    <div class="cb-label">Facts</div>
+                    <?php
+                    // The taproom count is the Location block's job when there's
+                    // exactly one — counting to one beside it just repeats it.
+                    if($singleLocation === null){
+                        echo '<div class="cb-fact"><span class="cb-fact__k">' . $taproomsLabel . '</span><span class="cb-fact__v">' . $locationCount . '</span></div>' . "\n";
                     }
-                }
+                    ?>
+                    <div class="cb-fact"><span class="cb-fact__k">Beers</span><span class="cb-fact__v"><?php echo $beerCount; ?></span></div>
+                    <?php
+                    if(!empty($brewerData->brewer->url)){
+                        $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
+                        if(!empty($urlHost)){
+                            $urlHost = preg_replace('/^www\./', '', $urlHost);
+                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>';
+                        }
+                    }
+                    ?>
+                </div>
+
+                <?php if($singleLocation !== null){ ?>
+                <?php
+                /* Same Place the taproom card used to declare, and the same
+                   properties — it has simply moved into the rail. The address
+                   and telephone sit inside this scope, not the Brewery's. */
                 ?>
+                <div itemprop="location" itemscope itemtype="https://schema.org/Place">
+                    <meta itemprop="name" content="<?php echo htmlspecialchars($singleLocationName, ENT_QUOTES); ?>" />
+                    <meta itemprop="publicAccess" content="true" />
+                    <div class="bp-rail-h">
+                        <span class="cb-label">Location</span>
+                        <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add</a>
+                    </div>
+
+                    <div class="cb-fact cb-fact--addr" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                        <meta itemprop="addressCountry" content="<?php echo $text1->get($singleLocation->country_code ?? 'US'); ?>" />
+                        <span class="cb-fact__k">Address</span>
+                        <address class="cb-addr cb-fact__v cb-fact__v--sm">
+                            <?php
+                            if($singleAddress['street'] !== '' || $singleAddress['city'] !== ''){
+                                $addressBlock = '';
+                                if($singleAddress['street'] !== ''){
+                                    $addressBlock .= '<span class="cb-addr__street" itemprop="streetAddress">' . $singleAddress['street'] . '</span><br>';
+                                }
+                                if($singleAddress['city'] !== ''){
+                                    $addressBlock .= '<span class="cb-addr__region">' . $singleAddress['city'] . '</span>';
+                                }
+                                if($singleMaps['google'] !== ''){
+                                    // The whole address is the link target — a two-line
+                                    // tap target beats a separate "directions" affordance
+                                    // next to it. maps-link.js swaps in the Apple href on
+                                    // Apple platforms.
+                                    echo '<a class="cb-addr__link" data-maps-link href="' . htmlspecialchars($singleMaps['google'], ENT_QUOTES) . '"'
+                                        . ' data-apple-href="' . htmlspecialchars($singleMaps['apple'], ENT_QUOTES) . '"'
+                                        . ' target="_blank" rel="noopener" title="Open this address in Maps">'
+                                        . $addressBlock . '</a>';
+                                }else{
+                                    echo $addressBlock;
+                                }
+                            }else{
+                                echo '<span class="cb-addr__region">Not on file</span>';
+                                if($loggedIn){
+                                    // The location editor carries the address now.
+                                    echo ' <a href="/location/' . $singleLocationID . '/edit" class="cb-action">Add</a>';
+                                }
+                            }
+                            ?>
+                        </address>
+                    </div>
+
+                    <?php
+                    if($singleAddress['telephone'] !== ''){
+                        echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . $text3->get($singleAddress['telephoneDigits']) . '" itemprop="telephone">' . $singleAddress['telephone'] . '</a></span></div>' . "\n";
+                    }
+
+                    if(!empty($singleLocation->url)){
+                        $locationHost = parse_url($singleLocation->url, PHP_URL_HOST);
+                        if(!empty($locationHost)){
+                            $locationHost = preg_replace('/^www\./', '', $locationHost);
+                            echo '                    <div class="cb-fact"><span class="cb-fact__k">Location Info</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($singleLocation->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($locationHost) . ' &#8599;</a></span></div>' . "\n";
+                        }
+                    }
+                    ?>
+
+                    <div class="cb-rail-actions">
+                        <a href="/location/<?php echo $singleLocationID; ?>" class="cb-btn cb-btn--ghost">Location Details</a>
+                        <?php if($loggedIn){ ?>
+                        <a href="/location/<?php echo $singleLocationID; ?>/edit" class="cb-btn cb-btn--ghost" title="Edit Location">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
+                            Edit
+                        </a>
+                        <?php } ?>
+                    </div>
+                </div>
+                <?php } ?>
             </aside>
         </div>
     </div>
     <?php echo $nav->footer(); ?>
+    <?php if($singleMaps['apple'] !== ''){ echo jsTag('/assets/js/maps-link.js') . "\n"; } ?>
     <?php if($showMap){ ?>
     <?php echo jsTag('/assets/js/map-popup.js'); ?>
     <script>
@@ -335,6 +446,11 @@ echo $htmlHead->html;
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
             mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID); ?>,
+            // ctrl/cmd + scroll to zoom, two fingers to pan; relaxed to greedy in
+            // fullscreen by the API. Set explicitly because the 'auto' default only
+            // picks cooperative while the page is scrollable — a brewer with few
+            // beers on a tall window would otherwise trap the scroll wheel.
+            gestureHandling: 'cooperative',
             zoomControl: true,          // explicit: the API hides controls under 200x200
             cameraControl: false,       // drops the N/S/E/W pan arrows
             streetViewControl: false,   // no pegman

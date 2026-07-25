@@ -41,8 +41,12 @@ if(isset($_GET['request'])){
             }
             break;
         case 'location':
-            if(isset($exploded[1]) && $exploded[1] === 'add-address'){
-                $message = 'Hello! Before you can add an address for this location to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
+            // $exploded is ['location', '{id}', '{action}'] — the action is at [2],
+            // not [1], which is why this message never used to appear. add-address
+            // and edit-address now redirect into the location editor, but they're
+            // still live URLs, so all three are worth a message.
+            if(isset($exploded[2]) && ($exploded[2] === 'edit' || $exploded[2] === 'add-address' || $exploded[2] === 'edit-address')){
+                $message = 'Hello! Before you can edit this location, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
             }
             break;
         default:

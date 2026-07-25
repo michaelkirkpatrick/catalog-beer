@@ -2,15 +2,19 @@
  * cbMapPopup — shared InfoWindow body for map pins.
  *
  * Used by brewer.php, brewery-map.php and location.php so all three maps label
- * their pins identically:
+ * their pins identically. Most specific line first:
  *
- *     Brewer name      serif  -> /brewer/{id}
- *     Taproom name     sans   -> /location/{id}
+ *     Taproom name     serif  -> /location/{id}   (only when it has one)
+ *     Brewer name      sans   -> /brewer/{id}
  *     Address lines    sans   (plain text, optional)
  *
- * The taproom line is dropped when it only repeats the brewer name ("Ninkasi
- * Brewing") or the city it sits in ("Portland") — both are common naming habits
- * and neither adds anything next to the brewer line and the pin's own position.
+ * Most taprooms aren't named separately, so the common shape is just the brewer
+ * over the address; the brewer takes the serif lead line whenever there's no
+ * distinct name above it. The taproom line is dropped when it only repeats the
+ * brewer name ("Ninkasi Brewing") or the city it sits in ("Portland") — both are
+ * common naming habits and neither adds anything next to the brewer line and the
+ * pin's own position. Pass the location's OWN name, never a composed
+ * "{brewer} – {city}" stand-in, or the repeat won't be recognised.
  *
  * SAFETY: every name is written with textContent, never innerHTML, so a value
  * containing markup renders as text. The maps used to concatenate names straight
@@ -72,19 +76,18 @@
         var brewerHref = href('/brewer/', pin.brewerID);
 
         // A taproom named after its brewer ("Ninkasi Brewing") or after the city
-        // it sits in ("Portland") says nothing the title line and the pin's own
+        // it sits in ("Portland") says nothing the brewer line and the pin's own
         // position on the map don't already say.
         var showName = name !== '' && !same(name, brewer) && !same(name, city);
 
-        if (brewer) {
-            wrap.appendChild(row('cb-mappop__title', brewer, brewerHref));
-            if (showName) {
-                wrap.appendChild(row('cb-mappop__sub', name, locationHref));
-            }
-        } else if (name) {
-            // No brewer on this pin — the taproom takes the title line rather
-            // than leaving the popup headless.
+        if (showName) {
             wrap.appendChild(row('cb-mappop__title', name, locationHref));
+            if (brewer) {
+                wrap.appendChild(row('cb-mappop__sub', brewer, brewerHref));
+            }
+        } else if (brewer) {
+            // The usual case: no name of its own, so the brewer leads.
+            wrap.appendChild(row('cb-mappop__title', brewer, brewerHref));
         }
 
         var meta = Array.isArray(pin.meta) ? pin.meta.map(clean).filter(Boolean).join('\n')

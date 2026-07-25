@@ -73,3 +73,143 @@ function locationShortName($location): string {
 
     return ($city !== '') ? $city : 'Taproom';
 }
+
+/**
+ * The address as raw display lines: the street (unit appended), then "City, ST".
+ *
+ * RAW, not escaped. The consumers escape for themselves — json_encode() for the
+ * map popups, rawurlencode() for the maps links — so $text1->get() output would
+ * reach them as a literal "&#8217;". A location need not have an address on
+ * file, in which case this comes back empty.
+ *
+ * @param object|null $location  Decoded location object from the API
+ * @return string[]              Zero, one or two lines
+ */
+function locationRawAddressLines($location): array {
+    $lines = array();
+    if(!isset($location->address)){
+        return $lines;
+    }
+    $address = $location->address;
+
+    // address2 is the street line, address1 the unit — the API's naming, not a typo
+    if(!empty($address->address2)){
+        $street = $address->address2;
+        if(!empty($address->address1)){
+            $street .= ' ' . $address->address1;
+        }
+        $lines[] = $street;
+    }
+    if(!empty($address->city)){
+        $city = $address->city;
+        if(!empty($address->state_short)){
+            $city .= ', ' . $address->state_short;
+        }
+        $lines[] = $city;
+    }
+
+    return $lines;
+}
+
+/**
+ * The address formatted for a facts rail. Every piece is '' when that part isn't
+ * on file — a location can exist without an address at all.
+ *
+ *   street           escaped street line, unit appended
+ *   city             escaped city line carrying the schema.org spans
+ *   cityShort        "Portland, OR" — the same line as plain text, for prose
+ *   telephone        "(503) 555-0100", only for the 10-digit numbers we store
+ *   telephoneDigits  those same digits, for a tel: href
+ *
+ * The spans in `city` (addressLocality / addressRegion / postalCode) expect a
+ * PostalAddress scope around them — see the rail markup on location.php.
+ *
+ * @param object|null $location  Decoded location object from the API
+ * @param Text        $text      Display pipeline, i.e. new Text(false, true, true)
+ */
+function locationAddressFacts($location, Text $text): array {
+    $facts = array('street' => '', 'city' => '', 'cityShort' => '', 'telephone' => '', 'telephoneDigits' => '');
+    if(!isset($location->address)){
+        return $facts;
+    }
+    $address = $location->address;
+
+    if(!empty($address->address2)){
+        $facts['street'] = $text->get($address->address2);
+        if(!empty($address->address1)){
+            $facts['street'] .= ' ' . $text->get($address->address1);
+        }
+    }
+
+    if(!empty($address->city)){
+        $zipCode = $text->get($address->zip5 ?? '');
+        if(!empty($address->zip4)){
+            $zipCode .= '-' . $text->get($address->zip4);
+        }
+        $city = $text->get($address->city);
+        $stateShort = $text->get($address->state_short ?? '');
+        $facts['city'] = '<span itemprop="addressLocality">' . $city . '</span>';
+        if($stateShort !== ''){
+            $facts['city'] .= ', <span itemprop="addressRegion">' . $stateShort . '</span>';
+            $facts['cityShort'] = $city . ', ' . $stateShort;
+        }else{
+            $facts['cityShort'] = $city;
+        }
+        if($zipCode !== ''){
+            $facts['city'] .= ' <span itemprop="postalCode">' . $zipCode . '</span>';
+        }
+    }
+
+    // Telephone — stored as 10 digits. Anything else is left unrendered rather
+    // than shown half-formatted.
+    $facts['telephoneDigits'] = strval($address->telephone ?? '');
+    if(strlen($facts['telephoneDigits']) === 10){
+        $facts['telephone'] = '(' . substr($facts['telephoneDigits'], 0, 3) . ') '
+            . substr($facts['telephoneDigits'], 3, 3) . '-' . substr($facts['telephoneDigits'], 6, 4);
+    }
+
+    return $facts;
+}
+
+/**
+ * "Open in maps" hrefs — the address in a facts rail doubles as a link into the
+ * visitor's mapping app, which is the whole interaction on a phone; nobody wants
+ * to copy-paste a street address into another app one-handed.
+ *
+ * Coordinates win when we have them: a pin is exact, where a geocoded string is
+ * the mapping app's best guess. The address text is the fallback so a location
+ * with no fix on file still resolves to something.
+ *
+ * Two hrefs, because there is no one URL that honours every platform's default:
+ * the Google form is universal (opens the Google Maps app on Android, the web
+ * everywhere else), and maps.apple.com hands off to Maps.app on iOS/macOS.
+ * assets/js/maps-link.js picks the Apple one on Apple platforms.
+ *
+ * @param object|null $location  Decoded location object from the API
+ * @param string      $label     Pin label for the Apple href, raw and optional
+ * @return array                 ['google' => string, 'apple' => string], both ''
+ *                               when there's neither a fix nor an address
+ */
+function locationMapsLinks($location, string $label = ''): array {
+    $links = array('google' => '', 'apple' => '');
+
+    if(!empty($location->latitude) && !empty($location->longitude)){
+        $coords = (float)$location->latitude . ',' . (float)$location->longitude;
+        $links['google'] = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($coords);
+        // ll centres the map, q labels the pin that lands on it.
+        $links['apple'] = 'https://maps.apple.com/?ll=' . rawurlencode($coords);
+        if(trim($label) !== ''){
+            $links['apple'] .= '&q=' . rawurlencode(trim($label));
+        }
+        return $links;
+    }
+
+    $addressLines = locationRawAddressLines($location);
+    if(count($addressLines) > 0){
+        $query = implode(', ', $addressLines);
+        $links['google'] = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($query);
+        $links['apple'] = 'https://maps.apple.com/?q=' . rawurlencode($query);
+    }
+
+    return $links;
+}
