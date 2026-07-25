@@ -55,17 +55,6 @@ if(isset($_GET['page'])){
 // Set Cursor
 $cursor = base64_encode(($page - 1) * $perPage);
 
-// SRM 1-40 -> hex (the beer-color chart). A beer's SRM comes from its style;
-// where it's unknown, fall back to a neutral swatch.
-$srmHex = array(
-    1=>'#FFE699', 2=>'#FFD878', 3=>'#FFCA5A', 4=>'#FFBF42', 5=>'#FBB123', 6=>'#F8A600', 7=>'#F39C00', 8=>'#EA8F00',
-    9=>'#E58500', 10=>'#DE7C00', 11=>'#D77200', 12=>'#CF6900', 13=>'#CB6200', 14=>'#C35900', 15=>'#BB5100', 16=>'#B54C00',
-    17=>'#B04500', 18=>'#A63E00', 19=>'#A13700', 20=>'#9B3200', 21=>'#952D00', 22=>'#8E2900', 23=>'#882300', 24=>'#821E00',
-    25=>'#7B1A00', 26=>'#771900', 27=>'#701400', 28=>'#6A0E00', 29=>'#660D00', 30=>'#5E0B00', 31=>'#5A0A02', 32=>'#560903',
-    33=>'#520907', 34=>'#4C0505', 35=>'#470606', 36=>'#440607', 37=>'#3F0708', 38=>'#3B0607', 39=>'#3A070B', 40=>'#360A0A',
-);
-$srmNeutral = '#C8A86B';
-
 // First-letter bucket for A-Z grouping: transliterate to ASCII, drop leading
 // punctuation/space, uppercase the first character. Non-letters group under '#'.
 if(!function_exists('cbListLetter')){
@@ -136,11 +125,10 @@ echo $htmlHead->html;
 
                 echo '<a class="cx-row" href="/beer/' . $beerID . '">';
                 echo '<span class="cx-row__l">';
-                // Swatch only when the enriched shape is present.
+                // Swatch only when the enriched shape is present. SRM::hex()
+                // maps 1-40 to the beer-color chart, neutral when unknown.
                 if(property_exists($row, 'srm')){
-                    $srm = ($row->srm === null) ? null : intval($row->srm);
-                    $color = ($srm !== null && isset($srmHex[$srm])) ? $srmHex[$srm] : $srmNeutral;
-                    echo '<span class="cb-swatch cx-swatch" style="background:' . $color . ';"></span>';
+                    echo '<span class="cb-swatch cx-swatch" style="background:' . SRM::hex($row->srm) . ';"></span>';
                 }
                 echo '<span class="cx-name">' . $beerName . '</span>';
                 echo '</span>';
