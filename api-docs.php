@@ -60,6 +60,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#location-add-address">&gt; Add an Address to a Location</a>
                     <a class="list-group-item list-group-item-action" href="#location-replace-address">&gt; Replace an Address (PUT)</a>
                     <a class="list-group-item list-group-item-action" href="#location-retrieve">&gt; Retrieve a Location</a>
+                    <a class="list-group-item list-group-item-action" href="#location-list-all">&gt; List all Locations</a>
                     <a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
                     <a class="list-group-item list-group-item-action" href="#location-zip">&gt; Find Locations by ZIP Code</a>
                     <a class="list-group-item list-group-item-action" href="#location-city">&gt; Find Locations by City</a>
@@ -2930,6 +2931,135 @@ curl -X GET \
   https://api.catalog.beer/location/972dc9a3-4462-48b5-9a0f-eb0ab6f94738 \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- /LOCATION (LIST) ----->
+
+<h3 id="location-list-all">List all Locations</h3>
+
+<p>Retrieves a list of all the locations in the database. To access this data, send a <strong>GET</strong> request to the <code>/location</code> endpoint.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/location</pre>
+
+<h4>Query Parameters</h4>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            </tr>
+            <tr>
+                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The number of results you would like returned from your request. The default value is 500.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Response</h4>
+<p>This request returns a list object with the following parameters.</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: &ldquo;list&rdquo;.</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The API endpoint accessed to retrieve this object. In this case: <code>/location</code>.</td>
+            </tr>
+            <tr>
+                <td><var>has_more</var></td>
+                <td>Boolean</td>
+                <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
+            </tr>
+            <tr>
+                <td><var>next_cursor</var></td>
+                <td>string</td>
+                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
+            </tr>
+            <tr>
+                <td><var>data</var></td>
+                <td>array</td>
+                <td>An array containing all the locations in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
+            </tr>
+            <tr>
+                <td><var>id</var></td>
+                <td>string</td>
+                <td>The <var>location_id</var>.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The name of the location. May be <var>null</var> &#8212; a location&#8217;s name is optional, and consumers that need a display title should compose one (for example, from the brewer name and city).</td>
+            </tr>
+            <tr>
+                <td><var>last_modified</var></td>
+                <td>integer</td>
+                <td>A Unix timestamp representing the date and time the location was last modified.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/location?count=3' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/location",
+  "has_more": true,
+  "next_cursor": "Mw==",
+  "data": [
+    {
+      "id": "972dc9a3-4462-48b5-9a0f-eb0ab6f94738",
+      "name": "10 Barrel Brewing Bend Pub",
+      "last_modified": 1721860205
+    },
+    {
+      "id": "3778262a-5b70-4f0c-b2a2-49831437eb3f",
+      "name": "10 Barrel Brewing East Bend",
+      "last_modified": 1721860205
+    },
+    {
+      "id": "f9d13aad-fce6-4c86-9f2b-c85dbcf12a45",
+      "name": "10 Barrel Brewing Portland",
+      "last_modified": 1721860205
+    }
+  ]
+}
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>

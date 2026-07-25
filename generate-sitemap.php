@@ -92,6 +92,11 @@ function checkSitemapLimit(&$file, &$urlCount, &$sitemapNumber){
 // --- Start ---
 echo "Starting sitemap generation ($environment)...\n";
 
+// Section failures below are logged and skipped so one API hiccup doesn't
+// zero out the whole sitemap — but cron must still hear about them, so any
+// failure flips this and the script exits non-zero.
+$hadErrors = false;
+
 $sitemapNumber = 0;
 $urlCount = 0;
 $file = openSitemapFile($sitemapNumber);
@@ -139,6 +144,7 @@ while(true){
     $apiData = request($url);
     if(!$apiData || !isset($apiData->data)){
         echo "Error: Failed to fetch brewer list. Aborting brewer section.\n";
+        $hadErrors = true;
         break;
     }
 
@@ -162,7 +168,48 @@ while(true){
 
 echo "Brewers complete\n";
 
-// --- (3) Beers ---
+// --- (3) Locations ---
+
+echo "Starting locations...\n";
+
+$cursor = '';
+
+while(true){
+    $url = '/location?count=' . $count;
+    if(!empty($cursor)){
+        $url .= '&cursor=' . $cursor;
+    }
+
+    $apiData = request($url);
+    if(!$apiData || !isset($apiData->data)){
+        // NOTE: GET /location is the newest list endpoint (Jul 2026) — if the
+        // deployed API predates it, this section fails until the API deploys.
+        echo "Error: Failed to fetch location list. Aborting location section.\n";
+        $hadErrors = true;
+        break;
+    }
+
+    foreach($apiData->data as $location){
+        if(!isset($location->id, $location->last_modified)){
+            echo "Warning: Skipping location with missing data\n";
+            continue;
+        }
+
+        writeUrl($file, $prefix . 'location/' . $location->id, $location->last_modified, 'monthly', 0.5);
+        $urlCount++;
+        checkSitemapLimit($file, $urlCount, $sitemapNumber);
+    }
+
+    if(!empty($apiData->next_cursor)){
+        $cursor = $apiData->next_cursor;
+    }else{
+        break;
+    }
+}
+
+echo "Locations complete\n";
+
+// --- (4) Beers ---
 
 echo "Starting beers...\n";
 
@@ -177,6 +224,7 @@ while(true){
     $apiData = request($url);
     if(!$apiData || !isset($apiData->data)){
         echo "Error: Failed to fetch beer list. Aborting beer section.\n";
+        $hadErrors = true;
         break;
     }
 
@@ -200,13 +248,14 @@ while(true){
 
 echo "Beers complete\n";
 
-// --- (4) Styles ---
+// --- (5) Styles ---
 
 echo "Starting styles...\n";
 
 $apiData = request('/style');
 if(!$apiData || !isset($apiData->data)){
     echo "Error: Failed to fetch style list. Aborting style section.\n";
+    $hadErrors = true;
 }else{
     // Styles have no per-row last_modified; content changes ship as deploys,
     // so the page file's mtime is the honest signal.
@@ -227,6 +276,7 @@ if(!$apiData || !isset($apiData->data)){
 $apiData = request('/style/parent');
 if(!$apiData || !isset($apiData->data)){
     echo "Error: Failed to fetch family list. Aborting family section.\n";
+    $hadErrors = true;
 }else{
     $familyLastMod = filemtime(ROOT . '/style-family.php');
     foreach($apiData->data as $family){
@@ -268,4 +318,31 @@ if($totalFiles === 1){
     fclose($index);
     echo "Sitemap generation complete: sitemap index with $totalFiles sitemap files\n";
 }
+
+// --- Remove stale numbered files from previous runs ---
+// If a run ever produces fewer files than the last one (or collapses to a
+// single sitemap.xml), the leftover sitemapN.xml would otherwise sit on the
+// server forever: deploys can't clean it (sitemap*.xml is rsync-excluded,
+// which also PROTECTS it from --delete) and crawlers keep fetching it.
+foreach(glob(ROOT . '/sitemap*.xml') as $path){
+    $basename = basename($path);
+    if(preg_match('/^sitemap(\d+)\.xml$/', $basename, $matches)){
+        $number = intval($matches[1]);
+        // In the single-file case sitemap0.xml was renamed away, so every
+        // surviving numbered file is stale; otherwise anything >= the count.
+        if($totalFiles === 1 || $number >= $totalFiles){
+            unlink($path);
+            echo "Removed stale $basename\n";
+        }
+    }
+}
+
+// Non-zero exit so cron surfaces a partial sitemap instead of silently
+// publishing it. The files written above are still in place — a partial
+// sitemap beats none — but the failure must be visible.
+if($hadErrors){
+    echo "COMPLETED WITH ERRORS — one or more sections were skipped.\n";
+    exit(1);
+}
+exit(0);
 ?>
