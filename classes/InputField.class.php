@@ -31,6 +31,7 @@ class InputField {
     public $addBefore = '';
     public $autocomplete = '';      // e.g. 'off' to suppress browser autofill
     public $autofocus = false;
+    public $dataAttributes = array();   // ['1p-ignore' => ''] renders data-1p-ignore
     public $description = '';
     public $maxLength = 255;
     public $name = '';
@@ -78,7 +79,7 @@ class InputField {
         }
         $return .= '<input type="' . $this->type . '" class="form-control' . $validInputClass . '" id="' . $text->get($this->name) . 'Field" placeholder="' . $text->get($this->placeholder) . '" name="' . $text->get($this->name) . '"';
         if($this->maxLength !== 0){
-            $return .= 'maxlength="' . $this->maxLength . '"';
+            $return .= ' maxlength="' . $this->maxLength . '"';
         }
         if(!empty($this->value) || $this->value === 0 || $this->value === '0'){
             $return .= ' value="' . htmlspecialchars($this->value, ENT_QUOTES, 'UTF-8') . '"';
@@ -94,6 +95,20 @@ class InputField {
         }
         if(!empty($this->autocomplete)){
             $return .= ' autocomplete="' . $text->get($this->autocomplete) . '"';
+        }
+        // Arbitrary data-* attributes, for the things only a vendor reads —
+        // data-1p-ignore, data-lpignore. A key that isn't a plain attribute name
+        // is dropped rather than escaped: it would be a bug, not a value.
+        foreach($this->dataAttributes as $key => $dataValue){
+            // A digit may lead: the attribute is data-1p-ignore, and it's the
+            // "data-" that has to satisfy HTML's name grammar, not the suffix.
+            if(preg_match('/^[a-z0-9][a-z0-9-]*$/', (string)$key) !== 1){
+                continue;
+            }
+            $return .= ' data-' . $key;
+            if((string)$dataValue !== ''){
+                $return .= '="' . htmlspecialchars((string)$dataValue, ENT_QUOTES, 'UTF-8') . '"';
+            }
         }
         $return .= '>';
 

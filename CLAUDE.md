@@ -147,6 +147,9 @@ Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15
 
 - **Algolia SiteSearch** — Homepage search (`algolia/search-init.php`). CSS/JS loaded from CDN. Secrets (`ALGOLIA_APPLICATION_ID`, `ALGOLIA_SEARCH_API_KEY`) in `passwords.php`. Indexing managed in the API repo via `generateSearchObject()` methods and `algolia/batch-upload.php`.
 - **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
-- **Google reCAPTCHA v3** — Form protection (`recaptcha.php`)
-- **Google Maps JavaScript API** — Map functionality, API key in `config.php` (domain-restricted, safe for client-side)
+- **Google reCAPTCHA v3** — Form protection (`recaptcha.php`). Public site key in `config.php`, `RECAPTCHA_SECRET_KEY` in `passwords.php`.
+- **Google Maps JavaScript API** — Maps on brewer / location / brewery-map. `GOOGLE_MAPS_KEY` in **`passwords.php`**; `GOOGLE_MAPS_MAP_ID` (public by design, configures the vector renderer and style in the Cloud Console) in `config.php`.
+- **Google Places API (New)** — Street-field autocomplete on the location forms (`assets/js/address-autocomplete.js`, wired by `addressAutocompleteScripts()`). Separate key, `GOOGLE_PLACES_KEY` in **`passwords.php`**, restricted to Places API (New) **+** Maps JavaScript API — the library loads through the Maps JS bootstrap, so a Places-only restriction 403s the loader. Kept apart from `GOOGLE_MAPS_KEY` because that one is readable on three public pages and Places sessions are far costlier than tile loads; splitting them also means a Places rotation or overage can't take the maps down.
+
+Both Google keys are browser keys: public by nature, HTTP-referrer-restricted, and they live in `passwords.php` only because that's where key material goes — not because they're secret.
 - **Fathom Analytics** — Privacy-focused analytics (in head template)

@@ -195,5 +195,6 @@ echo $htmlHead->html;
         </form>
     </div>
     <?php echo $nav->footer(); ?>
+    <?php echo addressAutocompleteScripts(); ?>
 </body>
 </html>

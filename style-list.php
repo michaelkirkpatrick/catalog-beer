@@ -25,18 +25,22 @@ $text = new Text(false, true, true);
 
 // --- Build the Class → Family → Style tree ---
 
-// Bucket non-catch-all styles by family, A→Z within each. Catch-alls
-// (Specialty Beer, Experimental IPA, …) are competition buckets, not styles a
-// reader browses for — hidden from cards and counts until they have pages.
+// Bucket every style by family, A→Z within each, catch-alls last. Catch-alls
+// (Specialty Beer, Experimental IPA, …) are broad competition buckets rather
+// than styles a reader browses for, but each one has a real page, so they're
+// listed with a tag and counted — the same treatment the family pages give
+// them. They stay out of the swatch rows (see familySwatchMids).
 $byParent = array();
 foreach($styles as $s){
-    if($s['ca']){
-        continue;
-    }
     $byParent[$s['parent']][] = $s;
 }
 foreach($byParent as $slug => $kids){
-    usort($kids, function($a, $b){ return strcasecmp($a['name'], $b['name']); });
+    usort($kids, function($a, $b){
+        if($a['ca'] !== $b['ca']){
+            return $a['ca'] ? 1 : -1;
+        }
+        return strcasecmp($a['name'], $b['name']);
+    });
     $byParent[$slug] = $kids;
 }
 
@@ -45,8 +49,10 @@ usort($parents, function($a, $b){
     return (($a['sort'] ?? 99) <=> ($b['sort'] ?? 99));
 });
 
-// Sections: one per beer class, then classless beer families, then one per
-// non-beer beverage type (its single family renders as a chip list).
+// Sections: one per beer class, then classless beer families. The non-beer
+// beverage types are kept in their own list so they can render below the beer
+// sections, under their own heading — this is a beer catalog first, and the
+// header count says so.
 $sections = array();
 foreach($classes as $c){
     $group = array();
@@ -68,20 +74,48 @@ foreach($parents as $p){
 if($otherBeer){
     $sections[] = array('name' => 'Other Beers', 'families' => $otherBeer, 'cards' => true);
 }
+$otherSections = array();
 foreach($parents as $p){
     // Cider / Perry / Mead — no SRM data (they aren't measured in SRM), so no
     // color cards; each renders as its own section with a simple style list.
     if($p['bev'] !== 'beer' && !empty($byParent[$p['slug']])){
-        $sections[] = array('name' => $p['name'], 'families' => array($p), 'cards' => false);
+        $otherSections[] = array('name' => $p['name'], 'families' => array($p), 'cards' => false);
     }
 }
 
-// Counts for the header — computed, never hardcoded
-$styleCount = 0;
-foreach($byParent as $kids){
-    $styleCount += count($kids);
+// Counts — computed, never hardcoded, and split by beverage so the headline
+// counts beer and the closing section counts everything else. Every style in
+// $byParent is listed on the page, catch-alls included, so each number here is
+// one a reader can verify by counting.
+$beerStyleCount = 0;
+$beerFamilyCount = 0;
+$otherStyleCount = 0;
+$otherNames = array();
+foreach($parents as $p){
+    if(empty($byParent[$p['slug']])){
+        continue;
+    }
+    if($p['bev'] === 'beer'){
+        $beerStyleCount += count($byParent[$p['slug']]);
+        $beerFamilyCount++;
+    }else{
+        $otherStyleCount += count($byParent[$p['slug']]);
+        $otherNames[] = mb_strtolower($p['name']);
+    }
 }
-$familyCount = count($parents);
+
+// "cider, perry, and mead" — the beverage list read back in prose
+function proseList($items){
+    $n = count($items);
+    if($n === 0){
+        return '';
+    }elseif($n === 1){
+        return $items[0];
+    }elseif($n === 2){
+        return $items[0] . ' and ' . $items[1];
+    }
+    return implode(', ', array_slice($items, 0, -1)) . ', and ' . $items[$n - 1];
+}
 
 // --- SRM helpers ---
 
@@ -103,10 +137,17 @@ function styleMidSRM($s){
 }
 
 // Swatch chips for a family: each style's mid SRM, light→dark, at most 8
-// (sampled evenly across the sorted spread when the family is larger)
+// (sampled evenly across the sorted spread when the family is larger).
+// Catch-alls are skipped — their guideline color ranges are deliberately wide
+// (Experimental IPA is SRM 3–40), so a chip for one paints a color no actual
+// style in the family has, and the "spread you'll find inside" caption stops
+// being true.
 function familySwatchMids($kids){
     $mids = array();
     foreach($kids as $s){
+        if($s['ca']){
+            continue;
+        }
         $mid = styleMidSRM($s);
         if($mid !== null){
             $mids[] = $mid;
@@ -126,7 +167,7 @@ function familySwatchMids($kids){
 
 // HTML Head
 $htmlHead = new htmlHead('Beer Styles');
-$htmlHead->addDescription('Browse every beer style by family — real color ranges, ' . $styleCount . ' styles across ' . $familyCount . ' families of beer, cider, mead, and perry.');
+$htmlHead->addDescription('Browse every beer style by family — real color ranges, ' . $beerStyleCount . ' beer styles across ' . $beerFamilyCount . ' families, plus ' . $otherStyleCount . ' styles of ' . proseList($otherNames) . '.');
 $htmlHead->addStylesheet('/assets/css/styles-pages.css');
 echo $htmlHead->html;
 ?>
@@ -135,10 +176,12 @@ echo $htmlHead->html;
     <div class="cb-page">
         <header class="ix-head">
             <h1 class="ix-h1">Beer Styles</h1>
-            <p class="ix-sub">Browse by family &mdash; each swatch row is the spread of color you&#8217;ll find inside. <?php echo $styleCount; ?> styles across <?php echo $familyCount; ?> families, sorted by fermentation class.</p>
+            <p class="ix-sub">Browse by family &mdash; each swatch row is the spread of color you&#8217;ll find inside. <?php echo $beerStyleCount; ?> beer styles across <?php echo $beerFamilyCount; ?> families, sorted by fermentation class.</p>
         </header>
         <?php
-        foreach($sections as $section){
+        // One section of the index: a grid of family color cards, or (for the
+        // non-beer beverages) a plain chip list of style links
+        $renderSection = function($section) use ($byParent, $text){
             echo '<section class="ix-class">';
             if($section['cards']){
                 echo '<h2 class="ix-class-h sp-class-h">' . $text->get($section['name']) . ' <span class="cb-count cb-count--bare">' . count($section['families']) . ' families</span></h2>';
@@ -167,7 +210,11 @@ echo $htmlHead->html;
                     }
                     echo '<ul class="ix-style-list">';
                     foreach($kids as $s){
-                        echo '<li><a href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a></li>';
+                        // The tag is load-bearing: a catch-all's page is prose
+                        // only — no tasting notes, usually no color or stats —
+                        // so it shouldn't read as another Tasting Sheet
+                        $tag = $s['ca'] ? ' <span class="cb-tag">catch-all</span>' : '';
+                        echo '<li><a href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . $tag . '</a></li>';
                     }
                     echo '</ul>';
                     echo '</div>';  // Close ix-card
@@ -181,11 +228,28 @@ echo $htmlHead->html;
                 echo '<h2 class="ix-class-h sp-class-h"><a class="ix-fam-link" href="/style/family/' . rawurlencode($p['slug']) . '">' . $text->get($section['name']) . '</a> <span class="cb-count cb-count--bare">' . count($kids) . ' styles</span></h2>';
                 $names = array();
                 foreach($kids as $s){
-                    $names[] = '<a class="sp-style-link" href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . '</a>';
+                    $tag = $s['ca'] ? ' <span class="cb-tag">catch-all</span>' : '';
+                    $names[] = '<a class="sp-style-link" href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . $tag . '</a>';
                 }
                 echo '<p class="ix-chip-list">' . implode('<span class="ix-chip-sep">&middot;</span>', $names) . '</p>';
             }
             echo '</section>';
+        };
+
+        foreach($sections as $section){
+            $renderSection($section);
+        }
+
+        // Beyond beer: same vocabulary, different ferment. Kept below the beer
+        // sections and out of the headline count so neither number is a lie.
+        if($otherSections){
+            echo '<header class="ix-divide">';
+            echo '<h2 class="ix-divide-h">Beyond Beer</h2>';
+            echo '<p class="ix-divide-sub">' . $otherStyleCount . ' more styles of ' . proseList($otherNames) . ' &mdash; fermented from fruit and honey rather than grain.</p>';
+            echo '</header>';
+            foreach($otherSections as $section){
+                $renderSection($section);
+            }
         }
         ?>
     </div>

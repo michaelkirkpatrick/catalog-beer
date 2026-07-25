@@ -14,6 +14,26 @@ echo $nav->breadcrumbs();
 <?php echo $nav->footer(); ?>
 --- */
 class Navigation {
+    /* Number of styles, stated in the homepage lede. Not a navbar badge.
+
+    Hard-coded on purpose. There is no /style/count endpoint, and the only other
+    way to get the number is to pull the whole vocabulary from GET /style — an
+    extra blocking API call for the many visitors who arrive without a session to
+    cache it in (initialize.php starts one only if a cookie is already present).
+    The vocabulary changes a few times a year, so a constant someone bumps is the
+    better trade.
+
+    Bump this whenever styles are added or removed. The true figure is the one
+    the Styles index prints in its headline ($beerStyleCount in style-list.php,
+    counted live off the vocabulary) — if the two ever disagree, that page is
+    right and this number is stale.
+
+    Beer only, deliberately: the headline a visitor lands on after clicking
+    through says "N beer styles", and the two numbers should match. The full
+    vocabulary is larger — style-list.php closes with $otherStyleCount more
+    styles of cider, perry and mead under "Beyond Beer". */
+    const STYLE_COUNT = 171;
+
     // Public Variables
     public $currentURI;
     public $breadcrumbHTML;
@@ -23,6 +43,7 @@ class Navigation {
     // Private Variables
     private $URIArray = array();
     private $topNavSection = '';
+    private $countsCache = null;
     
     // Startup
     function __construct(){
@@ -107,7 +128,8 @@ class Navigation {
         // Get Navbar
         $html = file_get_contents(ROOT . '/classes/resources/navbar.html');
         
-        // Generate Links (with cached counts for Brewers + Beer)
+        // Generate Links (with cached counts for Brewers + Beer). Styles carries no
+        // badge — the number isn't one a reader is browsing by.
         $counts = $this->counts();
         $links = $this->activeNav($section, '/brewer', 'Brewers', $counts['brewers']);
         $links .= $this->activeNav($section, '/beer', 'Beer', $counts['beers']);
@@ -169,12 +191,40 @@ class Navigation {
         return $html;
     }
 
-    // Brewer + beer counts for the navbar. Cached per-session (short TTL) because
-    // the navbar renders on every page; each count is a blocking API call.
-    // Cache is busted on add (see beer-add.php / brewer-add.php) for instant freshness.
-    private function counts(){
+    // Brewer, beer + style counts. Brewers and beers come from the API and are
+    // cached per-session (short TTL) because the navbar badges them on every page
+    // and each count is a blocking API call. Cache is busted on add (see
+    // beer-add.php / brewer-add.php) for instant freshness.
+    //
+    // Public because the homepage states all three numbers in its lede — it reads
+    // brewers and beers from here rather than counting again, so the page costs
+    // nothing the navbar wasn't already paying for. Either may be null (API down).
+    public function counts(){
+        // Per-request memo. Anonymous visitors have no session at all (see
+        // initialize.php), so the session cache below can't hold anything for
+        // them — without this the homepage, which asks for the counts before it
+        // renders the navbar, would fetch them twice on every hit.
+        if($this->countsCache !== null){
+            return $this->countsCache;
+        }
+
+        $out = $this->fetchCounts();
+
+        // Styles are not fetched — see STYLE_COUNT. Stamped on every read rather
+        // than stored, so bumping the constant takes effect immediately instead
+        // of waiting out every live session's cached copy.
+        $out['styles'] = self::STYLE_COUNT;
+
+        $this->countsCache = $out;
+        return $out;
+    }
+
+    // The API-backed half of counts(): brewers + beers, session-cached.
+    private function fetchCounts(){
         if(isset($_SESSION['cb_counts']['ts']) && (time() - $_SESSION['cb_counts']['ts']) < 600){
-            return $_SESSION['cb_counts'];
+            // Fill any key a session cached before this shape grew, so a live
+            // session mid-deploy reads null (no badge) rather than warning.
+            return $_SESSION['cb_counts'] + array('brewers' => null, 'beers' => null);
         }
 
         $out = array('brewers' => null, 'beers' => null, 'ts' => time());

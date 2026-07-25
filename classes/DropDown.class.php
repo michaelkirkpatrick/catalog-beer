@@ -26,6 +26,7 @@ echo $dropDown->display();
 class DropDown {
 
     // Public
+    public $autocomplete = '';      // e.g. 'off' to suppress browser autofill
     public $name = '';
     public $values = array();
     public $descriptions = array();
@@ -71,6 +72,9 @@ class DropDown {
         $return .= '<select class="form-select' . $selectClassAdd . '" name="' . htmlspecialchars($this->name) . '" id="' . htmlspecialchars($this->name) . 'Field"';
         if(!empty($this->validState)){
             $return .= ' aria-describedby="helpMsg' . htmlspecialchars($this->name) . '"';
+        }
+        if(!empty($this->autocomplete)){
+            $return .= ' autocomplete="' . htmlspecialchars($this->autocomplete) . '"';
         }
         if($this->disabled){
             $return .= ' disabled';

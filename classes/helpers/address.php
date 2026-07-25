@@ -177,6 +177,29 @@ function addressPut($api, string $locationID, array $fields): array {
 function addressFormFields(array $fields, array $validState, array $validMsg, bool $autofocus = false): string {
     $html = '';
 
+    /* Autofill is switched off on every control below, which is the opposite of
+       what you'd want on a checkout. The person filling this in is cataloguing a
+       BREWERY's address, not their own, so their saved home address is never the
+       right answer — at best noise, at worst a contributor's home address in a
+       public database.
+
+       autocomplete="off" alone doesn't achieve it: Chrome has ignored it on
+       address fields for years, and where the attribute means nothing to it, it
+       classifies the field by name instead — and ours are named city, zip,
+       telephone, which is exactly what those heuristics look for. An
+       unrecognised token leaves the field unclassifiable, and a DIFFERENT token
+       per field also stops Chrome treating the group as one address section.
+       That the tokens aren't spec-legal values is the point. data-1p-ignore and
+       data-lpignore are the documented opt-outs for 1Password and LastPass,
+       which read the field names too.
+
+       None of this is a guarantee — no method is, short of the browser vendors
+       agreeing on one — but it's the strongest signal a page can send. */
+    $noFill = function($name){
+        return 'cb-no-autofill-' . $name;
+    };
+    $noFillData = array('1p-ignore' => '', 'lpignore' => 'true', 'form-type' => 'other');
+
     // Street Address — address2 in the API's naming
     $inputAddress2 = new InputField();
     $inputAddress2->name = 'address2';
@@ -187,6 +210,11 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputAddress2->autofocus = $autofocus;
     $inputAddress2->validState = $validState['address2'] ?? '';
     $inputAddress2->validMsg = $validMsg['address2'] ?? '';
+    $inputAddress2->autocomplete = $noFill('address2');
+    // The hook address-autocomplete.js looks for. It also rewrites the label and
+    // placeholder once it's running — the server-rendered pair has to stay true
+    // for the no-JS case, where this is just a street address box.
+    $inputAddress2->dataAttributes = $noFillData + array('cb-address-autocomplete' => '');
     $html .= $inputAddress2->display();
 
     // Unit / Suite — address1
@@ -198,6 +226,8 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputAddress1->value = $fields['address1'];
     $inputAddress1->validState = $validState['address1'] ?? '';
     $inputAddress1->validMsg = $validMsg['address1'] ?? '';
+    $inputAddress1->autocomplete = $noFill('address1');
+    $inputAddress1->dataAttributes = $noFillData;
     $html .= $inputAddress1->display();
 
     // City
@@ -209,6 +239,8 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputCity->value = $fields['city'];
     $inputCity->validState = $validState['city'] ?? '';
     $inputCity->validMsg = $validMsg['city'] ?? '';
+    $inputCity->autocomplete = $noFill('city');
+    $inputCity->dataAttributes = $noFillData;
     $html .= $inputCity->display();
 
     // State
@@ -222,6 +254,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $dropDown->currentValue = $fields['sub_code'];
     $dropDown->validState = $validState['sub_code'] ?? '';
     $dropDown->validMsg = $validMsg['sub_code'] ?? '';
+    $dropDown->autocomplete = $noFill('sub_code');
     $html .= $dropDown->display();
 
     // ZIP
@@ -233,6 +266,8 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputZIP->value = $fields['zip'];
     $inputZIP->validState = $validState['zip'] ?? '';
     $inputZIP->validMsg = $validMsg['zip'] ?? '';
+    $inputZIP->autocomplete = $noFill('zip');
+    $inputZIP->dataAttributes = $noFillData;
     $html .= $inputZIP->display();
 
     // Telephone
@@ -244,7 +279,40 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputTelephone->value = $fields['telephone'];
     $inputTelephone->validState = $validState['telephone'] ?? '';
     $inputTelephone->validMsg = $validMsg['telephone'] ?? '';
+    $inputTelephone->autocomplete = $noFill('telephone');
+    $inputTelephone->dataAttributes = $noFillData;
     $html .= $inputTelephone->display();
 
     return $html;
+}
+
+/**
+ * The scripts behind the street field's Places autocomplete, for the foot of
+ * location-add.php and location-edit.php. See assets/js/address-autocomplete.js
+ * for what it does and why it's in that field.
+ *
+ * Two tags, in this order: ours defines window.cbAddressAutocompleteInit, then
+ * the Maps loader calls it. Ours is deliberately NOT async — it has to have run
+ * by the time the callback fires.
+ *
+ * Returns '' when there's no key to load with, so an environment whose
+ * passwords.php predates GOOGLE_PLACES_KEY degrades to the plain form rather
+ * than a console full of Google errors. There is deliberately no fallback to
+ * GOOGLE_MAPS_KEY: that key is on three public pages, so anyone can read it,
+ * and Places sessions cost enough that it shouldn't be able to spend them.
+ *
+ * GOOGLE_PLACES_KEY must allow BOTH "Places API (New)" and "Maps JavaScript
+ * API" — the library is loaded through the Maps JS bootstrap below, so a
+ * Places-only restriction 403s the loader before autocomplete ever runs.
+ */
+function addressAutocompleteScripts(): string {
+    if(!defined('GOOGLE_PLACES_KEY') || GOOGLE_PLACES_KEY === ''){
+        return '';
+    }
+
+    $mapsSrc = 'https://maps.googleapis.com/maps/api/js?key=' . rawurlencode(GOOGLE_PLACES_KEY)
+        . '&libraries=places&loading=async&callback=cbAddressAutocompleteInit';
+
+    return jsTag('/assets/js/address-autocomplete.js') . "\n"
+        . '    <script src="' . htmlspecialchars($mapsSrc, ENT_QUOTES) . '" async defer></script>';
 }
