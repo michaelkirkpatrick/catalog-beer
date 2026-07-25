@@ -54,7 +54,24 @@ Reference: the "Design System" doc (`Design System.html`) in the design bundle �
 
 ### Asset Versioning (cache-busting)
 
-Local CSS/JS link through helpers in `classes/helpers/assets.php` (required from `initialize.php`): `cssTag($path)`, `jsTag($path)`, and the underlying `assetUrl($path)`, which appends `?v=<filemtime>`. The `.htaccess` block serves `.css`/`.js` as `immutable` for a year **only** when that `?v=` token is present; an unversioned URL falls back to one hour so a stale copy self-heals. Editing a file is what busts its cache (mtime changes) — and mtime survives `deploy.sh`'s `rsync -a`, so the token matches on every environment. `htmlHead::addStylesheet()` and the design-system links (via the `##DESIGNSYSTEMCSS##` token in `head.html`) already route through these; use `cssTag`/`jsTag` for any new **local** asset. Leave CDN URLs (Bootstrap, Algolia) alone — they're versioned in their path.
+Local CSS/JS link through helpers in `classes/helpers/assets.php` (required from `initialize.php`): `cssTag($path)`, `jsTag($path)`, and the underlying `assetUrl($path)`, which appends `?v=<filemtime>`. The `.htaccess` block serves `.css`/`.js` as `immutable` for a year **only** when that `?v=` token is present; an unversioned URL falls back to one hour so a stale copy self-heals. Editing a file is what busts its cache (mtime changes) — and mtime survives `deploy.sh`'s `rsync -a`, so the token matches on every environment. `htmlHead::addStylesheet()` and the design-system links (via the `##DESIGNSYSTEMCSS##` token in `head.html`) already route through these; use `cssTag`/`jsTag` for any new **local** asset. Leave the remaining CDN URL (Algolia) alone — it's versioned in its path.
+
+### Bootstrap is vendored, not CDN
+
+`assets/css/bootstrap.min.css` and `assets/js/bootstrap.bundle.min.js` are **byte-identical copies of bootstrap@5.3.3**, self-hosted to keep a third-party DNS+TLS handshake off the render-blocking path (the same reason the fonts are self-hosted). They emit through `##BOOTSTRAPCSS##` (filled in `htmlHead`) and `##BOOTSTRAPJS##` (filled in `Navigation::footer()`), so they ride the same `?v=<mtime>` immutable caching as everything else.
+
+Keep the vendored files byte-identical to upstream — that's what makes them verifiable:
+
+```
+openssl dgst -sha384 -binary assets/css/bootstrap.min.css | openssl base64 -A
+# QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH
+openssl dgst -sha384 -binary assets/js/bootstrap.bundle.min.js | openssl base64 -A
+# YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz
+```
+
+Consequence of that choice: both files keep their `sourceMappingURL` comment and the `.map` files are **not** vendored, so opening devtools logs a 404 for `bootstrap.min.css.map`. That's deliberate — a harmless devtools-only notice, traded for being able to re-verify the bytes above. Don't "fix" it by editing the vendored files.
+
+Bootstrap is being retired incrementally as pages are redesigned onto `.cb-*` rather than as a migration project; see `../Claude Ideas/bootstrap-removal.md`.
 
 ## Architecture
 

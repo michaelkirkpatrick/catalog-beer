@@ -19,9 +19,10 @@
  * An asset linked WITHOUT going through here still works, but falls back to a
  * one-hour cache — so it self-heals rather than pinning a stale copy for a year.
  *
- * Only pass LOCAL, web-absolute paths through these helpers. CDN URLs (Bootstrap,
- * Algolia) are already versioned in their path and are left alone; a non-local
- * path is returned untouched anyway (see assetUrl).
+ * Only pass LOCAL, web-absolute paths through these helpers. Bootstrap is local
+ * (vendored under assets/, see CLAUDE.md) and does route through here; the one
+ * remaining CDN URL (Algolia) is already versioned in its path and is left alone.
+ * A non-local path is returned untouched anyway (see assetUrl).
  *
  * Usage:
  *   echo cssTag('/assets/css/styles-pages.css');

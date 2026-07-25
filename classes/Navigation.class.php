@@ -120,6 +120,11 @@ class Navigation {
             $staging = '';
         }
         $html = str_replace('##STAGING##', $staging, $html);
+
+        // Bootstrap bundle, self-hosted and versioned (see htmlHead for the why).
+        // Emitted here because plain-footer.html is static and can't run jsTag().
+        $html = str_replace('##BOOTSTRAPJS##', jsTag('/assets/js/bootstrap.bundle.min.js'), $html);
+
         return $html;
     }
     
@@ -246,59 +251,12 @@ class Navigation {
         return $out;
     }
     
-    // ----- Pagination -----
-    public function pagination($page, $totalPages, $baseURL){
-        $pageNav = '<nav aria-label="Page navigation">';
-        $pageNav .= '<ul class="pagination justify-content-center">';
-        
-        if($page > 1){
-            // Previous
-            $previous = $page - 1;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $previous . '" aria-label="Previous" title="Previous Page"><span aria-hidden="true">&lt;</span><span class="visually-hidden">Previous</span></a></li>';
-        }
-        
-        if($page >= 15){
-            // Jump 10 back
-            $minusTen = $page - 10;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $minusTen . '" aria-label="Jump Back 10" title="Jump Back 10"><span aria-hidden="true">-10</span><span class="visually-hidden">Jump Back 10</span></a></li>';
-        }
-        
-        // Starting Page Number
-        if($page-5 > 0){$start = $page-5;}
-        else{$start = 1;}
-        
-        // Display Navigation
-        for($i=$start; $i<=$start+9; $i++){
-            // Active State?
-            if($i == $page){$classAdd = ' active';}
-            else{$classAdd = '';}
-            
-            // Display HTML
-            $pageNav .= '<li class="page-item' . $classAdd . '"><a class="page-link" href="' . $baseURL . '?page=' . $i . '">' . $i . '</a></li>';
-        }
-        
-        if($page+14 < $totalPages){
-            // Jump forward 10
-            $plusTen = $page + 10;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $plusTen . '" aria-label="Jump Forward 10" title="Jump Forward 10"><span aria-hidden="true">+10</span><span class="visually-hidden">Jump Forward 10</span></a></li>';
-        }
-        
-        if($page < $totalPages){
-            // Next
-            $next = $page + 1;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $next . '" aria-label="Next" title="Next Page"><span aria-hidden="true">&gt;</span><span class="visually-hidden">Next</span></a></li>';
-        }
-        
-        $pageNav .= '</ul>';        // Close pagination
-        $pageNav .= '</nav>';       // Close nav
-        return $pageNav;
-    }
-
     // ----- Editorial Pager (catalog A-Z index pages) -----
     // Mono chip pagination for the beer/brewer index: chevron Prev/Next, a
     // 5-wide window centered on the current page, and first/last with ellipses.
-    // Distinct from pagination() (Bootstrap list, ±10 jumps) so restyling here
-    // doesn't disturb pages still using that one. Styles: .cx-pager* (styles-pages.css).
+    // The only pager on the site — it replaced a Bootstrap-markup pagination()
+    // (.pagination/.page-item/.page-link, ±10 jumps) that was left behind with no
+    // call sites and has been deleted. Styles: .cx-pager* (styles-pages.css).
     public function catalogPager($page, $totalPages, $baseURL){
         $page = intval($page);
         $totalPages = intval($totalPages);

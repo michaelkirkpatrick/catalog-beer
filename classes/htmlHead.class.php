@@ -15,6 +15,14 @@ class htmlHead {
         $pageTitle = $text->get($pageTitle);
         $html = str_replace('##PAGETITLE##', $pageTitle, $html);
 
+        // Bootstrap, self-hosted rather than CDN: same bytes, but no DNS+TLS
+        // handshake to a third party on the render-blocking path, and it rides the
+        // same ?v=<mtime> immutable caching as everything else. Vendored copy is
+        // byte-identical to bootstrap@5.3.3 — re-verify with:
+        //   openssl dgst -sha384 -binary assets/css/bootstrap.min.css | openssl base64 -A
+        //   => QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH
+        $html = str_replace('##BOOTSTRAPCSS##', cssTag('/assets/css/bootstrap.min.css'), $html);
+
         // Design-system stylesheets, versioned for cache-busting (tokens+bridge
         // first, then shared primitives — order matters, see the design system
         // layering in CLAUDE.md). Emitted here because head.html is static and
