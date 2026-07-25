@@ -10,6 +10,11 @@
      fam-* Style family page
      ix-*  Styles index — "Color Cards"
      bp-*  Brewer detail — "One Scroll" (composes .cb-* primitives)
+     be-*  Beer detail — Record / Coaster
+     cx-*  Beer + Brewer A–Z index — "Editorial index"
+     lv-*  Location detail — map-led editorial page
+     hp-*  Homepage — the mark, the scale, the CTA pair
+     sr-*  Search results — tabs, refinement rail, hit rows
 
    Load AFTER catalog.css + catalog-components.css.
    ========================================================================== */
@@ -99,12 +104,19 @@
 .ix-style-list a { display: block; padding: .42rem .1rem; text-decoration: none;
     color: var(--cb-ink-2); font-size: .88rem; line-height: 1.35; }
 .ix-style-list a:hover { color: var(--cb-link); }
+/* catch-all rows sit last in the list, tagged and slightly recessive */
+.ix-style-list .cb-tag, .ix-chip-list .cb-tag { margin-left: .3rem; }
 .ix-chip-list { font-size: .95rem; color: var(--cb-ink-2); line-height: 1.8; max-width: 72ch; }
 .ix-fam-link { color: inherit; text-decoration: none; }
 .ix-fam-link:hover { color: var(--cb-link); text-decoration: underline; }
 .ix-chip-sep { color: var(--cb-muted-2); padding: 0 .4rem; }
+/* Cider / perry / mead close the page below a rule — in the vocabulary, but
+   outside the beer count in the header */
+.ix-divide { border-top: 2px solid var(--cb-ink); padding-top: 1.25rem; margin: 1rem 0 1.75rem; }
+.ix-divide-h { font-family: var(--cb-serif); font-size: 2rem; color: var(--cb-ink); margin: 0; line-height: 1.1; letter-spacing: -.01em; }
+.ix-divide-sub { color: var(--cb-muted); margin-top: .5rem; max-width: 60ch; }
 @media (max-width: 860px){ .ix-card-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px){ .ix-card-grid { grid-template-columns: 1fr; } .ix-h1 { font-size: 2.4rem; } }
+@media (max-width: 560px){ .ix-card-grid { grid-template-columns: 1fr; } .ix-h1 { font-size: 2.4rem; } .ix-divide-h { font-size: 1.6rem; } }
 
 /* ---- Brewer detail — "One Scroll" ----
    Primitives come from catalog-components.css (.cb-eyebrow, .cb-chip,
@@ -121,7 +133,9 @@
 .bp-sec { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
 
 /* taprooms: map band + card grid */
-.bp-map { height: 150px; border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); margin-bottom: .8rem; }
+/* 200px is Google's cutoff — below it the Maps API auto-hides every control. The map
+   options also set zoomControl explicitly, which overrides that suppression. */
+.bp-map { height: 200px; border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); margin-bottom: .8rem; }
 .bp-loc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; }
 .bp-loc-card { padding: .85rem .95rem; }
 .bp-loc-name { font-family: var(--cb-serif); font-size: 1.2rem; color: var(--cb-ink); margin: 0 0 .2rem; }
@@ -138,12 +152,311 @@
 .bp-beer-l { display: flex; align-items: baseline; gap: .45rem; min-width: 0; }
 .bp-beer-l .cb-vdot { margin-right: .05rem; }
 
-/* facts rail */
-.bp-rail { position: sticky; top: 1rem; }
+/* facts rail — Facts, plus a Location block for single-taproom breweries
+   (see the note in brewer.php). The address block there is the shared
+   .cb-addr primitive, same as the location page's rail. */
+.bp-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.6rem; }
+/* :not(--band) — this rule is more specific than .cb-label--band and loads
+   after it, so without the guard it would cancel the band's bleed margins. */
+.bp-rail .cb-label:not(.cb-label--band) { display: block; margin-bottom: .6rem; }
+/* rail: a mono line out of a block, reading as one more fact row. Tightens the
+   gap to the edit button below it so the two don't read as separate groups. */
+.bp-rail-link { margin-top: 1.1rem; }
+.bp-rail-link + .cb-rail-actions { margin-top: .75rem; }
+/* rail: the quiet "add" line under a block's edit button */
+.bp-rail-add { margin-top: .7rem; text-align: center; }
+.bp-rail-add .cb-action { color: var(--cb-muted); }
 
 @media (max-width: 860px){
     .bp-body { grid-template-columns: 1fr; }
     .bp-title { font-size: 2.6rem; }
     .bp-rail { position: static; }
     .bp-loc-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- Beer detail — "Record / Coaster" ----
+   Primitives from catalog-components.css (.cb-eyebrow, .cb-title, .cb-lede,
+   .cb-prose, .cb-rail, .cb-fact, .cb-spec, .cb-srm-range, .cb-vdot, .cb-row,
+   .cb-legend, .cb-action). Layout + data-driven pieces only. The glass reuses
+   .sp-glass. State A is the two-column record; State B the centered coaster
+   card for beers with only a name / style / ABV. */
+.be-topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .25rem; }
+.be-hero { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start;
+    border-bottom: 2px solid var(--cb-ink); padding: 1.25rem 0 1.75rem; margin: .5rem 0 2rem; }
+.be-title { font-size: 3.4rem; max-width: 16ch; }
+.be-verify { display: inline-flex; align-items: center; gap: .4rem; margin-top: .7rem;
+    font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag);
+    text-transform: uppercase; color: var(--cb-amber-deep); background: var(--cb-paper-2);
+    border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-pill); padding: .28rem .65rem; }
+.be-lede { display: block; margin-top: .75rem; font-size: 1.4rem; }
+a.be-lede { color: var(--cb-link); text-decoration: none; }
+a.be-lede:hover { text-decoration: underline; }
+.be-lede--static { color: var(--cb-ink-2); }
+.be-byline { margin-top: .5rem; color: var(--cb-muted); font-size: .9rem; }
+.be-byline a { color: var(--cb-link); text-decoration: none; }
+.be-byline a:hover { text-decoration: underline; }
+/* Tapered glass from the design handoff (not the rounded .sp-glass) */
+.be-glass { position: relative; width: 112px; height: 184px; justify-self: end;
+    clip-path: polygon(2% 0, 98% 0, 84% 100%, 16% 100%);
+    filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--cb-ink) 16%, transparent)); }
+.be-foam { position: absolute; top: 0; left: 0; right: 0; height: 15px;
+    background: linear-gradient(var(--cb-white), var(--cb-paper)); }
+
+.be-body { display: grid; grid-template-columns: 1fr 300px; gap: 3rem; align-items: start; }
+.be-prose { max-width: 60ch; }
+.be-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.6rem; }
+.be-rail .cb-label { display: block; margin-bottom: .6rem; }
+.be-rel-h { font-family: var(--cb-serif); font-size: 1.45rem; color: var(--cb-ink); margin: 2.25rem 0 .4rem;
+    display: flex; align-items: baseline; gap: .5rem; }
+.be-rel-h .cb-count { font-size: .85rem; color: var(--cb-muted); }
+.be-rel-l { display: flex; align-items: baseline; gap: .5rem; min-width: 0; }
+
+/* this-beer spec bars: style's typical range (band) + this beer (marker) */
+.be-band { position: absolute; top: 0; bottom: 0; border-radius: var(--cb-radius-pill);
+    background: color-mix(in srgb, var(--cb-amber) 34%, transparent); }
+.be-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; border-radius: 2px;
+    background: var(--cb-amber-deep); }
+.be-hint { font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag);
+    text-transform: uppercase; color: var(--cb-muted-2); margin-top: .7rem; line-height: 1.5; }
+
+/* State B — minimal "coaster" card */
+.be-card { width: 100%; max-width: 440px; margin: 1.5rem auto 0; background: var(--cb-surface);
+    border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-xl); box-shadow: var(--cb-shadow-md);
+    padding: 2.75rem 2rem 2.5rem; text-align: center; }
+.be-card .be-glass { justify-self: auto; margin: 0 auto; }
+.be-card .be-title { font-size: 2.6rem; margin: 1.4rem 0 0; line-height: 1.05; max-width: none; }
+.be-card .be-lede { font-size: 1.3rem; }
+.be-card-rule { border: 0; border-top: 1px solid var(--cb-line); margin: 1.6rem 0; }
+.be-card-abv { font-family: var(--cb-serif); font-size: 2.5rem; color: var(--cb-ink); line-height: 1; }
+.be-card-srm { max-width: 220px; margin: 1.6rem auto 0; }
+
+@media (max-width: 860px){
+    .be-body { grid-template-columns: 1fr; }
+    .be-hero { grid-template-columns: 1fr; }
+    .be-title { font-size: 2.6rem; }
+    .be-glass { justify-self: start; }
+    .be-rail { position: static; }
+}
+
+/* ---- Beer / Brewer A-Z index — "Editorial index" ----
+   cx-* = catalog index. Layout only; composes .cb-* primitives (.cb-title,
+   .cb-legend, .cb-swatch). The 3-column A-Z list is CSS multi-column: content
+   flows top-to-bottom within a column, then into the next. Groups are
+   deliberately breakable — see the note on .cx-grp below. */
+.cx-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem;
+    border-bottom: 2px solid var(--cb-ink); padding-bottom: 1rem; margin: 1.6rem 0 1.6rem; }
+.cx-title { font-size: 3rem; }
+.cx-meta { font-family: var(--cb-mono); font-size: var(--cb-fs-label); letter-spacing: .08em;
+    text-transform: uppercase; color: var(--cb-muted); margin: .5rem 0 0; }
+.cx-add { flex: none; display: inline-flex; align-items: center; gap: .4rem; }
+
+.cx-cols { column-count: 3; column-gap: 2.5rem; }
+/* Groups MUST stay breakable. A page is a 500-row alphabetical slice, so one
+   letter can own most of it (page 1 of /beer is ~390 rows under '#'). With
+   break-inside:avoid such a group becomes one unbreakable block taller than any
+   balanced column, which collapses the layout to two visible columns. Instead
+   let groups flow and just keep a letter heading from being orphaned at the
+   foot of a column. */
+.cx-grp { margin: 0 0 1.1rem; }
+.cx-letter { font-family: var(--cb-serif); font-size: 1.4rem; color: var(--cb-ink);
+    border-bottom: 1px solid var(--cb-line-2); padding-bottom: .15rem; margin: 0 0 .45rem;
+    break-after: avoid; -webkit-column-break-after: avoid; break-inside: avoid; }
+.cx-row { display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+    padding: .16rem 0; text-decoration: none;
+    break-inside: avoid; -webkit-column-break-inside: avoid; }
+.cx-row__l { display: flex; align-items: center; gap: .45rem; min-width: 0; }
+.cx-swatch { width: 9px; height: 9px; flex: none; }
+.cx-name { color: var(--cb-link); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.cx-row:hover .cx-name { text-decoration: underline; }
+.cx-value { font-family: var(--cb-mono); font-size: .68rem; color: var(--cb-muted); white-space: nowrap; }
+
+/* editorial pager: mono chips, chevron prev/next, current = ink chip */
+.cx-pager { display: flex; justify-content: center; align-items: center; gap: .3rem;
+    margin-top: 2rem; font-family: var(--cb-mono); font-size: var(--cb-fs-label); }
+.cx-pager__chip { display: inline-flex; align-items: center; gap: .25rem; padding: .35rem .6rem;
+    border: 1px solid var(--cb-line-2); border-radius: 8px; color: var(--cb-ink-2); text-decoration: none; }
+.cx-pager__chip:hover { border-color: var(--cb-amber); color: var(--cb-amber-deep); }
+.cx-pager__num { padding: .35rem .6rem; color: var(--cb-ink-2); text-decoration: none; border-radius: 8px; }
+.cx-pager__num:hover { color: var(--cb-amber-deep); }
+.cx-pager__num.is-current { background: var(--cb-ink); color: var(--cb-paper); }
+.cx-pager__num.is-current:hover { color: var(--cb-paper); }
+.cx-pager__gap { color: var(--cb-muted-2); padding: 0 .2rem; }
+
+@media (max-width: 860px){ .cx-cols { column-count: 2; } }
+@media (max-width: 560px){ .cx-cols { column-count: 1; } .cx-title { font-size: 2.4rem; } }
+
+/* ---- Location detail — map-led editorial page ----
+   lv-* = location view. A hero-scale street map under the title, a facts rail
+   beside it, and the brewer's other taprooms below. Layout only; composes
+   .cb-* primitives (.cb-title, .cb-rail, .cb-fact, .cb-row, .cb-btn). */
+.lv-hero { border-bottom: 2px solid var(--cb-ink); padding: 0 0 .7rem; margin: 1.25rem 0 1.5rem; }
+.lv-title { font-size: 3.4rem; max-width: 18ch; }
+.lv-byline { margin-top: .7rem; color: var(--cb-muted); font-size: 1rem; }
+.lv-byline a { color: var(--cb-link); text-decoration: none; }
+.lv-byline a:hover { text-decoration: underline; }
+
+.lv-body { display: grid; grid-template-columns: 1fr 320px; gap: 3rem; align-items: start; }
+
+/* street map — the page's centerpiece */
+.lv-map { height: 440px; border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-sm); overflow: hidden; background: var(--cb-paper-3); }
+/* InfoWindow body now uses the shared .cb-mappop primitive in
+   catalog-components.css — see cbMapPopup() in assets/js/map-popup.js. */
+
+/* other taprooms */
+.lv-more { margin-top: 2.25rem; }
+.lv-row-l { display: flex; flex-direction: column; min-width: 0; }
+.lv-row-city { color: var(--cb-muted); font-size: var(--cb-fs-xs); }
+.lv-more .cb-row__value { color: var(--cb-link); }
+.lv-more .cb-row:last-child { border-bottom: 0; }
+
+/* facts rail — the address block itself is the shared .cb-addr primitive */
+.lv-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; }
+.lv-rail .cb-label { display: block; margin-bottom: .7rem; }
+.lv-edit { color: var(--cb-muted); text-decoration: none; }
+.lv-edit:hover { color: var(--cb-amber-deep); }
+/* delete is the destructive tail action — mono, quiet, centred under Edit */
+.lv-delete { align-self: center; margin-top: .85rem; font-family: var(--cb-mono);
+    font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: .4rem; }
+
+@media (max-width: 860px){
+    .lv-body { grid-template-columns: 1fr; gap: 1.75rem; }
+    .lv-title { font-size: 2.5rem; }
+    .lv-rail { position: static; }
+    .lv-map { height: 340px; }
+}
+
+/* =============================================================================
+   hp-* — Homepage
+   -----------------------------------------------------------------------------
+   One column, centred: the SRM mark, the title, the scale, two buttons. No
+   search block — search lives in the nav on every page. Layout only; the
+   buttons are the shared .cb-btn primitive and the licence note is .cb-label.
+   ========================================================================== */
+.hp-hero { display: flex; flex-direction: column; align-items: center;
+    padding: var(--cb-space-16) 0 var(--cb-space-10); }
+
+/* The mark's squares are inline SRM fills (data-driven, see index.php); the
+   glass takes currentColor so ink comes from the token, not a hard-coded hex. */
+.hp-mark { width: min(360px, 62vw); height: auto; display: block; color: var(--cb-ink); }
+
+.hp-title { text-align: center; margin: var(--cb-space-12) 0 0;
+    font-size: var(--cb-fs-title); line-height: 1.15; }
+.hp-title__brand { display: block; font-size: .6em; color: var(--cb-muted); }
+
+.hp-pitch { max-width: 46rem; margin: 0 auto; text-align: center;
+    padding-bottom: var(--cb-space-12); }
+/* balanced so the sentence doesn't wrap to a one-word last line on a phone */
+.hp-lede { margin: 0 0 1.75rem; color: var(--cb-ink-2);
+    font-size: var(--cb-fs-lg); line-height: var(--cb-lh-relaxed); text-wrap: balance; }
+.hp-num  { font-family: var(--cb-mono); }
+
+.hp-cta { display: flex; justify-content: center; gap: var(--cb-space-3); flex-wrap: wrap; }
+/* the page's one decision — sized up from the default .cb-btn */
+.hp-btn { font-size: var(--cb-fs-base); padding: .7rem 1.35rem; }
+
+/* developer door: quiet, mono, under the fold of the buttons */
+.hp-note { margin: 1.75rem 0 0; }
+.hp-note a { text-decoration: none; }
+
+@media (max-width: 560px){
+    .hp-hero  { padding: var(--cb-space-10) 0 var(--cb-space-8); }
+    .hp-title { margin-top: var(--cb-space-8); font-size: var(--cb-fs-h2); }
+    .hp-cta .hp-btn { flex: 1 1 100%; justify-content: center; }
+}
+
+/* =============================================================================
+   sr-*  Search results — tabs, refinement rail, hit rows
+   Layout only; composes .cb-* primitives (cb-search, cb-btn, cb-count, cb-tag,
+   cb-label, cb-swatch, cb-action). SRM swatch/gradient colors are data-driven
+   inline styles.
+   ========================================================================== */
+
+/* ---- head: title + query form ---- */
+.sr-head  { padding: 2rem 0 1rem; }
+.sr-title { font-size: 2.6rem; margin-bottom: 1rem; }
+.sr-form  { display: flex; gap: .6rem; max-width: 620px; }
+.sr-input { flex: 1; font-size: var(--cb-fs-base); }
+
+/* ---- type tabs ---- */
+.sr-tabs { display: flex; gap: .4rem; flex-wrap: wrap; margin: .75rem 0 1.25rem;
+    border-bottom: 1px solid var(--cb-line); padding-bottom: .75rem; }
+.sr-tab  { display: inline-flex; align-items: center; gap: .45rem; font-family: var(--cb-mono);
+    font-size: var(--cb-fs-label); text-decoration: none; color: var(--cb-ink-2);
+    border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-pill); padding: .35rem .8rem; }
+.sr-tab:hover { border-color: var(--cb-amber); color: var(--cb-ink); background: var(--cb-paper-2); }
+.sr-tab.is-on { background: var(--cb-ink); color: var(--cb-paper); border-color: var(--cb-ink); }
+.sr-tab.is-on .cb-count { background: none; color: #c9bfa8; }
+
+/* ---- layout: results + rail ---- */
+.sr-layout { display: block; }
+.sr-layout--rail { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 2.25rem; align-items: start; }
+
+/* ---- result meta row ---- */
+.sr-meta   { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: .5rem; }
+.sr-count  { font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-muted); }
+.sr-notice { font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-accent-deep); }
+.sr-clear  { font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); color: var(--cb-link); text-decoration: none; }
+.sr-clear:hover { text-decoration: underline; }
+
+/* ---- hit rows ---- */
+.sr-list {}
+.sr-hit  { display: block; padding: .8rem .2rem; border-bottom: 1px solid var(--cb-line); text-decoration: none; }
+.sr-hit:hover { background: var(--cb-paper-2); }
+.sr-hit__lead { display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; }
+.sr-hit__name { color: var(--cb-ink); font-weight: var(--cb-fw-medium); }
+.sr-hit:hover .sr-hit__name { color: var(--cb-link); }
+.sr-hit__type { font-family: var(--cb-mono); font-size: var(--cb-fs-label-xs); letter-spacing: var(--cb-track-tag);
+    text-transform: uppercase; color: var(--cb-muted-2); margin-left: auto; }
+.sr-swatch { width: 13px; height: 13px; flex: none; border: 1px solid rgba(27,26,23,.12); }
+.sr-grad   { width: 26px; height: 13px; flex: none; border-radius: 3px; border: 1px solid rgba(27,26,23,.12); }
+.sr-hit__sub { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: .2rem; }
+.sr-hit__ctx { color: var(--cb-muted); font-size: var(--cb-fs-xs); min-width: 0; }
+.sr-dot { color: var(--cb-muted-2); padding: 0 .35rem; }
+.sr-hit__value { font-family: var(--cb-mono); font-size: var(--cb-fs-xs); color: var(--cb-muted); white-space: nowrap; }
+.sr-hit__snippet { display: block; color: var(--cb-ink-2); font-size: var(--cb-fs-sm); line-height: 1.5; margin-top: .3rem;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ---- refinement rail ---- */
+.sr-rail  { position: sticky; top: 1rem; }
+.sr-group { padding: .9rem 0; border-bottom: 1px solid var(--cb-line); }
+.sr-group:first-child { padding-top: .25rem; }
+.sr-group__h { display: block; margin-bottom: .5rem; }
+.sr-group__note { display: block; font-family: var(--cb-mono); font-size: var(--cb-fs-label-xs); color: var(--cb-muted-2); margin-top: .4rem; }
+.sr-facets { list-style: none; margin: 0; padding: 0; }
+.sr-facet  { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem;
+    padding: .28rem .35rem; border-radius: var(--cb-radius-xs); text-decoration: none;
+    color: var(--cb-ink-2); font-size: var(--cb-fs-sm); }
+.sr-facet:hover { background: var(--cb-paper-2); color: var(--cb-ink); }
+.sr-facet.is-on { background: var(--cb-ink); color: var(--cb-paper); }
+.sr-facet.is-on:hover { background: var(--cb-ink); color: var(--cb-paper); }
+.sr-facet__v { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sr-facet__x { font-size: var(--cb-fs-sm); line-height: 1; }
+.sr-more > summary { font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); color: var(--cb-link);
+    cursor: pointer; padding: .3rem .35rem; list-style: none; }
+.sr-more > summary::-webkit-details-marker { display: none; }
+.sr-more > summary:hover { text-decoration: underline; }
+.sr-more[open] > summary { color: var(--cb-muted); }
+
+/* ---- pager ---- */
+.sr-pager { display: flex; align-items: baseline; gap: 1.1rem; margin-top: 1.25rem; }
+.sr-page  { font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-link); text-decoration: none; }
+.sr-page:hover { text-decoration: underline; }
+.sr-page__where { font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-muted); }
+
+/* ---- empty state ---- */
+.sr-empty { padding: 2.5rem 0; }
+.sr-empty__msg { color: var(--cb-ink-2); font-size: var(--cb-fs-base); margin: 0 0 .75rem; }
+.sr-suggest { margin-top: 1.25rem; max-width: 380px; }
+.sr-suggest > .cb-label { display: block; margin-bottom: .5rem; }
+.sr-suggest__row { display: flex; align-items: center; gap: .55rem; padding: .45rem .2rem;
+    border-bottom: 1px solid var(--cb-line); text-decoration: none; color: var(--cb-ink); }
+.sr-suggest__row:hover { color: var(--cb-link); background: var(--cb-paper-2); }
+
+/* ---- responsive ---- */
+@media (max-width: 860px){
+    .sr-layout--rail { grid-template-columns: 1fr; }
+    .sr-rail { position: static; order: 2; border-top: 2px solid var(--cb-ink); margin-top: 1.5rem; padding-top: .5rem; }
+    .sr-title { font-size: 2rem; }
 }

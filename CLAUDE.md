@@ -52,6 +52,27 @@ Guardrails (enforce in review):
 
 Reference: the "Design System" doc (`Design System.html`) in the design bundle — audit + live specimen.
 
+### Asset Versioning (cache-busting)
+
+Local CSS/JS link through helpers in `classes/helpers/assets.php` (required from `initialize.php`): `cssTag($path)`, `jsTag($path)`, and the underlying `assetUrl($path)`, which appends `?v=<filemtime>`. The `.htaccess` block serves `.css`/`.js` as `immutable` for a year **only** when that `?v=` token is present; an unversioned URL falls back to one hour so a stale copy self-heals. Editing a file is what busts its cache (mtime changes) — and mtime survives `deploy.sh`'s `rsync -a`, so the token matches on every environment. `htmlHead::addStylesheet()` and the design-system links (via the `##DESIGNSYSTEMCSS##` token in `head.html`) already route through these; use `cssTag`/`jsTag` for any new **local** asset. (No CDN-loaded CSS/JS remains — Bootstrap is vendored and the Algolia SiteSearch assets are gone.)
+
+### Bootstrap is vendored, not CDN
+
+`assets/css/bootstrap.min.css` and `assets/js/bootstrap.bundle.min.js` are **byte-identical copies of bootstrap@5.3.3**, self-hosted to keep a third-party DNS+TLS handshake off the render-blocking path (the same reason the fonts are self-hosted). They emit through `##BOOTSTRAPCSS##` (filled in `htmlHead`) and `##BOOTSTRAPJS##` (filled in `Navigation::footer()`), so they ride the same `?v=<mtime>` immutable caching as everything else.
+
+Keep the vendored files byte-identical to upstream — that's what makes them verifiable:
+
+```
+openssl dgst -sha384 -binary assets/css/bootstrap.min.css | openssl base64 -A
+# QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH
+openssl dgst -sha384 -binary assets/js/bootstrap.bundle.min.js | openssl base64 -A
+# YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz
+```
+
+Consequence of that choice: both files keep their `sourceMappingURL` comment and the `.map` files are **not** vendored, so opening devtools logs a 404 for `bootstrap.min.css.map`. That's deliberate — a harmless devtools-only notice, traded for being able to re-verify the bytes above. Don't "fix" it by editing the vendored files.
+
+Bootstrap is being retired incrementally as pages are redesigned onto `.cb-*` rather than as a migration project; see `../Claude Ideas/bootstrap-removal.md`.
+
 ## Architecture
 
 ### Page Structure Pattern
@@ -141,8 +162,11 @@ Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15
 
 ### External Integrations
 
-- **Algolia SiteSearch** — Homepage search (`algolia/search-init.php`). CSS/JS loaded from CDN. Secrets (`ALGOLIA_APPLICATION_ID`, `ALGOLIA_SEARCH_API_KEY`) in `passwords.php`. Indexing managed in the API repo via `generateSearchObject()` methods and `algolia/batch-upload.php`.
+- **Algolia search** — Server-rendered results page at `/search` (`search.php`), the destination for the nav search form. Queries go through `Search.class.php` (cURL to Algolia's multi-query REST endpoint) using `ALGOLIA_APPLICATION_ID` / `ALGOLIA_SEARCH_API_KEY` from `passwords.php` — the search-only key that used to ship to browsers; no client-side Algolia JS remains (the old SiteSearch modal and its CDN assets are gone). Indexing, index settings, and synonyms are managed in the API repo (`generateSearchObject()` methods, `algolia/settings.php`, `algolia/synonyms.php`, `algolia/batch-upload.php`).
 - **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
-- **Google reCAPTCHA v3** — Form protection (`recaptcha.php`)
-- **Google Maps JavaScript API** — Map functionality, API key in `config.php` (domain-restricted, safe for client-side)
+- **Google reCAPTCHA v3** — Form protection (`recaptcha.php`). Public site key in `config.php`, `RECAPTCHA_SECRET_KEY` in `passwords.php`.
+- **Google Maps JavaScript API** — Maps on brewer / location / brewery-map. `GOOGLE_MAPS_KEY` in **`passwords.php`**; `GOOGLE_MAPS_MAP_ID` (public by design, configures the vector renderer and style in the Cloud Console) in `config.php`.
+- **Google Places API (New)** — Street-field autocomplete on the location forms (`assets/js/address-autocomplete.js`, wired by `addressAutocompleteScripts()`). Separate key, `GOOGLE_PLACES_KEY` in **`passwords.php`**, restricted to Places API (New) **+** Maps JavaScript API — the library loads through the Maps JS bootstrap, so a Places-only restriction 403s the loader. Kept apart from `GOOGLE_MAPS_KEY` because that one is readable on three public pages and Places sessions are far costlier than tile loads; splitting them also means a Places rotation or overage can't take the maps down.
+
+Both Google keys are browser keys: public by nature, HTTP-referrer-restricted, and they live in `passwords.php` only because that's where key material goes — not because they're secret.
 - **Fathom Analytics** — Privacy-focused analytics (in head template)

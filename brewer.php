@@ -53,7 +53,10 @@ if(isset($locationData->data)){
             // per-location detail fetch so the page still renders fully.
             $locationDetailResp = $api->request('GET', '/location/' . $locItem->id, '');
             $locationDetail = json_decode($locationDetailResp);
-            if(!isset($locationDetail->name) || isset($locationDetail->error)){
+            // Guard on id, not name: location names are optional, and isset()
+            // is false for a null one — checking name here would discard a
+            // perfectly good unnamed location and log it as a failed fetch.
+            if(!isset($locationDetail->id) || isset($locationDetail->error)){
                 // The location detail request failed or came back unusable.
                 // Skip this location; the rest of the page is still worth showing.
                 $errorLog = new LogError();
@@ -72,14 +75,43 @@ if(isset($locationData->data)){
 $locationCount = count($locations);
 $taproomsLabel = ($locationCount === 1) ? 'Taproom' : 'Taprooms';
 
+// A brewery with a single taproom carries it in the facts rail instead of a
+// section of its own: one card in a two-column grid, under a heading that counts
+// to one, is a lot of page furniture for one address. The rail block mirrors the
+// location page's own rail — address, phone, site — and links through to that
+// page, which is where the map and the rest of the record live.
+$singleLocation = ($locationCount === 1) ? $locations[0] : null;
+$singleAddress = locationAddressFacts(null, $text1);   // blank shape
+$singleMaps = array('google' => '', 'apple' => '');
+$singleLocationID = '';
+$singleLocationName = '';
+if($singleLocation !== null){
+    $singleAddress = locationAddressFacts($singleLocation, $text1);
+    // The standalone label for the maps pin: this taproom usually has no name of
+    // its own, and "Portland" alone would drop a pin on the city.
+    $singleMaps = locationMapsLinks($singleLocation, locationDisplayName($singleLocation, $brewerData->brewer->name));
+    $singleLocationID = $text3->get($singleLocation->id);
+    $singleLocationName = locationShortName($singleLocation);
+}
+
 // Map pins; the map band renders only for multi-taproom breweries
 $mapLocations = array();
 foreach($locations as $loc){
     if(!empty($loc->latitude) && !empty($loc->longitude)){
+        // Raw values, not $text1->get() output: cbMapPopup() writes these with
+        // textContent, which escapes for us — pre-encoded entities would show
+        // through as literal "&#8217;".
         $mapLocations[] = array(
             'lat' => (float)$loc->latitude,
             'lng' => (float)$loc->longitude,
-            'name' => $loc->name
+            'id' => $loc->id,
+            // The location's own name only — cbMapPopup() leads with the brewer
+            // when a taproom isn't named separately, so there's nothing to
+            // stand in for here.
+            'name' => trim($loc->name ?? ''),
+            'brewerID' => $brewerData->brewer->id,
+            'brewerName' => $brewerData->brewer->name,
+            'city' => $loc->address->city ?? ''
         );
     }
 }
@@ -95,7 +127,7 @@ if($beerCount > 0){
         $familySlug = !empty($beerInfo->parent) ? $beerInfo->parent : 'other';
         if(!isset($beerGroups[$familySlug])){
             $beerGroups[$familySlug] = array(
-                'label' => ($familySlug === 'other') ? 'Other' : ucwords(str_replace('-', ' ', $familySlug)),
+                'label' => ($familySlug === 'other') ? 'Other' : StyleList::parentName($familySlug),
                 'beers' => array()
             );
         }
@@ -168,34 +200,32 @@ echo $htmlHead->html;
                     echo $text2->get($brewerData->brewer->description);
                     echo '</div>';
                 }
-                if($loggedIn){
-                    echo '<p style="margin-top:1rem;"><a href="/brewer/' . $brewerIDString . '/edit" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg> Edit Brewer</a></p>';
-                }
+                // Editing the brewer record lives at the foot of the rail's
+                // Facts block now — the block it edits.
                 ?>
 
+                <?php
+                // Single-taproom breweries get the Location block in the rail
+                // instead of this section — see the note up top.
+                if($singleLocation === null){
+                ?>
                 <h2 class="cb-label cb-label--rule bp-sec" id="locations">
                     <span><?php echo $taproomsLabel; if($locationCount > 0){ echo ' &middot; ' . $locationCount; } ?></span>
-                    <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add Location</a>
+                    <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add location</a>
                 </h2>
                 <?php if($locationCount > 0){ ?>
                 <?php if($showMap){ echo '<div id="map" class="bp-map"></div>' . "\n"; } ?>
                 <div class="bp-loc-grid">
                     <?php foreach($locations as $loc){
-                        $locationName = $text1->get($loc->name);
+                        // Short form: we're already on the brewer's page, so an
+                        // unnamed taproom is labelled by its city alone.
+                        $locationName = $text1->get(locationShortName($loc));
                         $locationIDString = $text3->get($loc->id);
                         ?>
                     <div class="cb-card bp-loc-card" itemprop="location" itemscope itemtype="http://schema.org/Place"><meta itemprop="publicAccess" content="true" />
                         <h3 class="bp-loc-name" itemprop="name"><?php
-                            if(!empty($loc->url)){
-                                $locationURL = $text3->get($loc->url);
-                                echo '<a href="' . $locationURL . '" target="_blank" rel="noopener" itemprop="url">' . $locationName . '</a>';
-                            }else{
-                                echo $locationName;
-                            }
-                            if($loggedIn){
-                                echo ' <a href="/location/' . $locationIDString . '/edit" title="Edit Location"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
-                                echo ' <a href="/location/' . $locationIDString . '/delete" title="Delete Location"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash text-danger" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg></a>';
-                            }
+                            // Link the location name to its detail page.
+                            echo '<a href="/location/' . $locationIDString . '" itemprop="url">' . $locationName . '</a>';
                         ?></h3>
                         <div class="bp-loc-meta">
                             <?php
@@ -212,9 +242,6 @@ echo $htmlHead->html;
                                     $zipCode = $text1->get($loc->address->zip5);
                                 }
                                 echo '<span itemprop="addressLocality">' . $text1->get($loc->address->city) . '</span>, <span itemprop="addressRegion">' . $text1->get($loc->address->state_short) . '</span> <span itemprop="postalCode">' . $zipCode . '</span>';
-                                if($loggedIn){
-                                    echo ' <a href="/location/' . $locationIDString . '/edit-address" title="Edit Address"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil text-muted" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></a>';
-                                }
                                 echo '</p></div>';
 
                                 // Telephone
@@ -231,6 +258,7 @@ echo $htmlHead->html;
                 <?php }else{ ?>
                 <p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <a href="/brewer/<?php echo $brewerIDString; ?>/add-location">add it</a>.</p>
                 <?php } ?>
+                <?php } /* end multi-taproom section */ ?>
 
                 <h2 class="cb-label cb-label--rule bp-sec" id="beer">
                     <span>Beers<?php if($beerCount > 0){ echo ' &middot; ' . $beerCount; } ?></span>
@@ -301,37 +329,157 @@ echo $htmlHead->html;
             </div>
 
             <aside class="cb-rail bp-rail">
-                <div class="cb-label">Facts</div>
-                <div class="cb-fact"><span class="cb-fact__k"><?php echo $taproomsLabel; ?></span><span class="cb-fact__v"><?php echo $locationCount; ?></span></div>
-                <div class="cb-fact"><span class="cb-fact__k">Beers</span><span class="cb-fact__v"><?php echo $beerCount; ?></span></div>
-                <?php
-                if(!empty($brewerData->brewer->url)){
-                    $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
-                    if(!empty($urlHost)){
-                        $urlHost = preg_replace('/^www\./', '', $urlHost);
-                        echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>';
+                <div>
+                    <div class="cb-label cb-label--band">Facts</div>
+                    <?php
+                    // The taproom count is the Location block's job when there's
+                    // exactly one — counting to one beside it just repeats it.
+                    if($singleLocation === null){
+                        echo '<div class="cb-fact"><span class="cb-fact__k">' . $taproomsLabel . '</span><span class="cb-fact__v">' . $locationCount . '</span></div>' . "\n";
                     }
-                }
+                    ?>
+                    <div class="cb-fact"><span class="cb-fact__k">Beers</span><span class="cb-fact__v"><?php echo $beerCount; ?></span></div>
+                    <?php
+                    if(!empty($brewerData->brewer->url)){
+                        $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
+                        if(!empty($urlHost)){
+                            $urlHost = preg_replace('/^www\./', '', $urlHost);
+                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>';
+                        }
+                    }
+                    ?>
+                    <?php if($loggedIn){ ?>
+                    <div class="cb-rail-actions">
+                        <a href="/brewer/<?php echo $brewerIDString; ?>/edit" class="cb-btn cb-btn--ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
+                            Edit brewer
+                        </a>
+                    </div>
+                    <?php } ?>
+                </div>
+
+                <?php if($singleLocation !== null){ ?>
+                <?php
+                /* Same Place the taproom card used to declare, and the same
+                   properties — it has simply moved into the rail. The address
+                   and telephone sit inside this scope, not the Brewery's. */
                 ?>
+                <div itemprop="location" itemscope itemtype="https://schema.org/Place">
+                    <meta itemprop="name" content="<?php echo htmlspecialchars($singleLocationName, ENT_QUOTES); ?>" />
+                    <meta itemprop="publicAccess" content="true" />
+                    <div class="cb-label cb-label--band">Location</div>
+
+                    <div class="cb-fact cb-fact--addr" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                        <meta itemprop="addressCountry" content="<?php echo $text1->get($singleLocation->country_code ?? 'US'); ?>" />
+                        <span class="cb-fact__k">Address</span>
+                        <address class="cb-addr cb-fact__v cb-fact__v--sm">
+                            <?php
+                            if($singleAddress['street'] !== '' || $singleAddress['city'] !== ''){
+                                $addressBlock = '';
+                                if($singleAddress['street'] !== ''){
+                                    $addressBlock .= '<span class="cb-addr__street" itemprop="streetAddress">' . $singleAddress['street'] . '</span><br>';
+                                }
+                                if($singleAddress['city'] !== ''){
+                                    $addressBlock .= '<span class="cb-addr__region">' . $singleAddress['city'] . '</span>';
+                                }
+                                if($singleMaps['google'] !== ''){
+                                    // The whole address is the link target — a two-line
+                                    // tap target beats a separate "directions" affordance
+                                    // next to it. maps-link.js swaps in the Apple href on
+                                    // Apple platforms.
+                                    echo '<a class="cb-addr__link" data-maps-link href="' . htmlspecialchars($singleMaps['google'], ENT_QUOTES) . '"'
+                                        . ' data-apple-href="' . htmlspecialchars($singleMaps['apple'], ENT_QUOTES) . '"'
+                                        . ' target="_blank" rel="noopener" title="Open this address in Maps">'
+                                        . $addressBlock . '</a>';
+                                }else{
+                                    echo $addressBlock;
+                                }
+                            }else{
+                                echo '<span class="cb-addr__region">Not on file</span>';
+                                if($loggedIn){
+                                    // The location editor carries the address now.
+                                    echo ' <a href="/location/' . $singleLocationID . '/edit" class="cb-action">Add</a>';
+                                }
+                            }
+                            ?>
+                        </address>
+                    </div>
+
+                    <?php
+                    if($singleAddress['telephone'] !== ''){
+                        echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . $text3->get($singleAddress['telephoneDigits']) . '" itemprop="telephone">' . $singleAddress['telephone'] . '</a></span></div>' . "\n";
+                    }
+
+                    if(!empty($singleLocation->url)){
+                        $locationHost = parse_url($singleLocation->url, PHP_URL_HOST);
+                        if(!empty($locationHost)){
+                            $locationHost = preg_replace('/^www\./', '', $locationHost);
+                            // "Taproom site", not "Location Info" — this is the
+                            // taproom's own website. The Catalog.beer record is
+                            // the separate "Location details" line below.
+                            echo '                    <div class="cb-fact"><span class="cb-fact__k">Taproom site</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($singleLocation->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($locationHost) . ' &#8599;</a></span></div>' . "\n";
+                        }
+                    }
+                    ?>
+
+                    <div class="bp-rail-link">
+                        <a href="/location/<?php echo $singleLocationID; ?>" class="cb-action">Location details &rarr;</a>
+                    </div>
+                    <?php if($loggedIn){ ?>
+                    <div class="cb-rail-actions">
+                        <a href="/location/<?php echo $singleLocationID; ?>/edit" class="cb-btn cb-btn--ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
+                            Edit location
+                        </a>
+                    </div>
+                    <div class="bp-rail-add">
+                        <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add another location</a>
+                    </div>
+                    <?php } ?>
+                </div>
+                <?php } ?>
             </aside>
         </div>
     </div>
     <?php echo $nav->footer(); ?>
+    <?php if($singleMaps['apple'] !== ''){ echo jsTag('/assets/js/maps-link.js') . "\n"; } ?>
     <?php if($showMap){ ?>
+    <?php echo jsTag('/assets/js/map-popup.js'); ?>
     <script>
     function initMap() {
         var locations = <?php echo json_encode($mapLocations); ?>;
-        var map = new google.maps.Map(document.getElementById('map'), { zoom: 14 });
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14,
+            mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID); ?>,
+            // ctrl/cmd + scroll to zoom, two fingers to pan; relaxed to greedy in
+            // fullscreen by the API. Set explicitly because the 'auto' default only
+            // picks cooperative while the page is scrollable — a brewer with few
+            // beers on a tall window would otherwise trap the scroll wheel.
+            gestureHandling: 'cooperative',
+            zoomControl: true,          // explicit: the API hides controls under 200x200
+            cameraControl: false,       // drops the N/S/E/W pan arrows
+            streetViewControl: false,   // no pegman
+            mapTypeControl: true,
+            fullscreenControl: true,
+            // Vector maps let users pitch and spin the map. Set in code, these beat the
+            // Map ID's cloud configuration; delete the three lines to hand control back
+            // to the console (where tilt/rotate is already enabled).
+            tiltInteractionEnabled: false,
+            headingInteractionEnabled: false,
+            rotateControl: false
+        });
         var bounds = new google.maps.LatLngBounds();
         locations.forEach(function(loc) {
-            var marker = new google.maps.Marker({
-                position: { lat: loc.lat, lng: loc.lng },
+            var position = { lat: loc.lat, lng: loc.lng };
+            var marker = new google.maps.marker.AdvancedMarkerElement({
+                position: position,
                 map: map,
-                title: loc.name
+                title: loc.name,
+                gmpClickable: true
             });
-            var infoWindow = new google.maps.InfoWindow({ content: '<strong>' + loc.name + '</strong>' });
-            marker.addListener('click', function() { infoWindow.open(map, marker); });
-            bounds.extend(marker.getPosition());
+            var infoWindow = new google.maps.InfoWindow({ content: cbMapPopup(loc) });
+            marker.addEventListener('gmp-click', function() { infoWindow.open({ anchor: marker, map: map }); });
+            bounds.extend(position);
         });
         map.fitBounds(bounds);
         if (locations.length === 1) {
@@ -341,7 +489,7 @@ echo $htmlHead->html;
         }
     }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_KEY; ?>&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_KEY; ?>&libraries=marker&loading=async&callback=initMap" async defer></script>
     <?php } ?>
     <?php if($showToolbar && $beerCount > 0){ ?>
     <script>

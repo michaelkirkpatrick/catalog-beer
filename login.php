@@ -41,8 +41,12 @@ if(isset($_GET['request'])){
             }
             break;
         case 'location':
-            if(isset($exploded[1]) && $exploded[1] === 'add-address'){
-                $message = 'Hello! Before you can add an address for this location to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
+            // $exploded is ['location', '{id}', '{action}'] — the action is at [2],
+            // not [1], which is why this message never used to appear. add-address
+            // and edit-address now redirect into the location editor, but they're
+            // still live URLs, so all three are worth a message.
+            if(isset($exploded[2]) && ($exploded[2] === 'edit' || $exploded[2] === 'add-address' || $exploded[2] === 'edit-address')){
+                $message = 'Hello! Before you can edit this location, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
             }
             break;
         default:
@@ -96,53 +100,47 @@ $htmlHead = new htmlHead('Sign In');
 echo $htmlHead->html;
 ?>
 <body>
-    <div class="container">
-    <div class="row">
-        <div class="col"></div>
-        <div class="col-6">
-                <div class="text-center"><a href="/"><img src="/images/logo-black.svg" alt="Catalog.beer" style="margin-top:2em; margin-bottom:2em; width:100px;"></a></div>
+    <div class="cb-page cb-page--narrow">
+        <div class="text-center"><a href="/"><img src="/images/logo-black.svg" alt="Catalog.beer" style="margin-top:2em; margin-bottom:2em; width:100px;"></a></div>
         <?php
-                // Breadcrumbs
-                $nav->breadcrumbText = array('Home', 'Sign In');
-                $nav->breadcrumbLink = array('/');
-                echo $nav->breadcrumbs();
-                
-                // Display Alerts
-                echo $alert->display();
-                ?>
-        <form method="post">
-                    <?php
-                    // Email
-                    $inputEmail = new InputField();
-                    $inputEmail->name = 'email';
-                    $inputEmail->description = 'Email address';
-                    $inputEmail->type = 'email';
-                    $inputEmail->required = true;
-                    $inputEmail->placeholder = 'e.g., hannah@acme.beer';
-                    $inputEmail->value = $email;
-                    $inputEmail->validState = $validState['email'];
-                    $inputEmail->validMsg = $validMsg['email'];
-                    echo $inputEmail->display();
+        // Breadcrumbs
+        $nav->breadcrumbText = array('Home', 'Sign In');
+        $nav->breadcrumbLink = array('/');
+        echo $nav->breadcrumbs();
 
-                    // Password
-                    $inputPassword = new InputField();
-                    $inputPassword->name = 'password';
-                    $inputPassword->description = 'Password';
-                    $inputPassword->type = 'password';
-                    $inputPassword->required = true;
-                    $inputPassword->placeholder = 'e.g., &middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;';
-                    $inputPassword->value = $password;
-                    $inputPassword->validState = $validState['password'];
-                    $inputPassword->validMsg = $validMsg['password'];
-                    echo $inputPassword->display();
-                    ?>
-                    <button type="submit" class="btn btn-primary" name="submit">Sign in</button>
+        // Display Alerts
+        echo $alert->display();
+        ?>
+        <form method="post">
+            <?php
+            // Email
+            $inputEmail = new InputField();
+            $inputEmail->name = 'email';
+            $inputEmail->description = 'Email address';
+            $inputEmail->type = 'email';
+            $inputEmail->required = true;
+            $inputEmail->placeholder = 'e.g., hannah@acme.beer';
+            $inputEmail->value = $email;
+            $inputEmail->validState = $validState['email'];
+            $inputEmail->validMsg = $validMsg['email'];
+            echo $inputEmail->display();
+
+            // Password
+            $inputPassword = new InputField();
+            $inputPassword->name = 'password';
+            $inputPassword->description = 'Password';
+            $inputPassword->type = 'password';
+            $inputPassword->required = true;
+            $inputPassword->placeholder = 'e.g., &middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;';
+            $inputPassword->value = $password;
+            $inputPassword->validState = $validState['password'];
+            $inputPassword->validMsg = $validMsg['password'];
+            echo $inputPassword->display();
+            ?>
+            <button type="submit" class="btn btn-primary" name="submit">Sign in</button>
             <p class="text-center"><a href="/signup">Create an account</a></p>
         </form>
-      </div>
-      <div class="col"></div>
-    </div>  
-  </div>
-  <?php echo $nav->footer(); ?>
+    </div>
+    <?php echo $nav->footer(); ?>
 </body>
 </html>

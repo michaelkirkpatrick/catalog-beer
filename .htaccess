@@ -13,6 +13,29 @@ RewriteEngine On
 # Deny Access to Folder Indexes
 Options -Indexes
 
+# Local CSS/JS — cached for a year, but ONLY when the request carries the
+# ?v=<mtime> token that classes/assets.php appends (cssTag/jsTag/assetUrl). Because
+# the URL then changes whenever the file does, a deploy invalidates every cached
+# copy; nothing else has to.
+#
+# The gate is the whole point: an asset requested WITHOUT the token — a page that
+# missed the helper, or somebody pasting the bare URL — must not get pinned in a
+# browser for a year with no way to bust it. Those fall back to an hour, so a stale
+# copy self-heals. Do not collapse these two into one unconditional header.
+#
+# The RewriteRule only sets an env var: no substitution ("-"), no [L], and the
+# \.(css|js)$ anchor can't collide with the clean-URL routing rules further down.
+<IfModule mod_rewrite.c>
+	RewriteCond %{QUERY_STRING} (^|&)v=\d
+	RewriteRule \.(css|js)$ - [E=VERSIONED:1]
+</IfModule>
+<IfModule mod_headers.c>
+	<FilesMatch "\.(css|js)$">
+		Header set Cache-Control "public, max-age=31536000, immutable" env=VERSIONED
+		Header set Cache-Control "public, max-age=3600" env=!VERSIONED
+	</FilesMatch>
+</IfModule>
+
 # Down for Maintenance (manual toggle — uncomment, set your IP, then test)
 # RewriteCond %{REQUEST_URI} !\.(css|ico|jpg|js|png)$
 # My IP Address for testing
@@ -34,6 +57,7 @@ RewriteRule ^logout/?$ 		logout.php [L]
 RewriteRule ^privacy/?$		privacy.php	[L]
 RewriteRule ^signup/?$		create-account.php [L]
 RewriteRule ^terms/?$		terms.php	[L]
+RewriteRule ^search/?$	search.php	[L]
 RewriteRule ^whats-new/?$	whats-new.php	[L]
 RewriteRule ^build-info/?$	build-info.php	[L]
 
@@ -62,7 +86,7 @@ RewriteRule ^location/([-0-9a-f]{36})/add-address$ address-add.php?locationID=$1
 RewriteRule ^location/([-0-9a-f]{36})/delete$ location-delete.php?locationID=$1 [L]
 RewriteRule ^location/([-0-9a-f]{36})/edit$ location-edit.php?locationID=$1 [L]
 RewriteRule ^location/([-0-9a-f]{36})/edit-address$ address-edit.php?locationID=$1 [L]
-RewriteRule ^location/([-0-9a-f]{36})/?$ brewer-list.php [L]
+RewriteRule ^location/([-0-9a-f]{36})/?$ location.php?locationID=$1 [L]
 RewriteRule ^location/?$ brewer-list.php [L]
 
 RewriteRule ^verify-email(\/[-0-9a-f]{36})?$ verify-email.php?emailAuth=$1 [L]

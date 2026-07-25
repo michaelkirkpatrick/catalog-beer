@@ -12,7 +12,7 @@ $emailAuth = isset($_GET['emailAuth']) ? substr($_GET['emailAuth'], 1, 36) : '';
 ?>
 <body>
     <?php echo $nav->navbar(''); ?>
-    <div class="container">
+    <div class="cb-page">
         <div class="p-5 mb-4 bg-light rounded-3">
             <?php
             if(!empty($emailAuth)){
@@ -56,7 +56,7 @@ $emailAuth = isset($_GET['emailAuth']) ? substr($_GET['emailAuth'], 1, 36) : '';
             }
             ?>
         </div>
-  </div>
-  <?php echo $nav->footer(); ?> 
+    </div>
+    <?php echo $nav->footer(); ?>
 </body>
 </html>

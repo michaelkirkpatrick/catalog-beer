@@ -95,114 +95,110 @@ if(isset($_GET['brewerID'])){
 
 // HTML Head
 $htmlHead = new htmlHead('Add a Beer');
-$guidedCSS = '<link rel="stylesheet" href="/assets/css/guided-style.css?v=' . @filemtime($_SERVER['DOCUMENT_ROOT'] . '/assets/css/guided-style.css') . '">';
+$guidedCSS = cssTag('/assets/css/guided-style.css');
 echo (strpos($htmlHead->html, '</head>') !== false)
     ? str_replace('</head>', "\t" . $guidedCSS . "\n</head>", $htmlHead->html)
     : $htmlHead->html . $guidedCSS;
 ?>
 <body>
     <?php echo $nav->navbar('Beer'); ?>
-    <div class="container">
-    <div class="row">
-        <div class="col">
+    <div class="cb-page">
         <?php
-                // Breadcrumbs
-                $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Add Beer');
-                $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerURL);
-                echo $nav->breadcrumbs();
-                
-                // Display Alerts
-                echo $alert->display();
-                ?>
-        <form method="post">
-                    <?php echo csrf_field(); ?>
-                    <?php
-                    // Brewery
-                    echo '<fieldset disabled>' . "\n";
-                    $inputBrewerID = new InputField();
-                    $inputBrewerID->name = 'brewer_id';
-                    $inputBrewerID->description = 'Brewer';
-                    $inputBrewerID->type = 'text';
-                    $inputBrewerID->required = true;
-                    $inputBrewerID->value = $brewerName;
-                    $inputBrewerID->validState = $validState['brewer_id'];
-                    $inputBrewerID->validMsg = $validMsg['brewer_id'];
-                    echo $inputBrewerID->display();
-                    echo '</fieldset>' . "\n";
-                    
-                    if($disabled){
-                        echo '<fieldset disabled>' . "\n";
-                    }
-                    
-                    // Name
-                    $inputName = new InputField();
-                    $inputName->name = 'name';
-                    $inputName->description = 'Name';
-                    $inputName->type = 'text';
-                    $inputName->required = true;
-                    $inputName->autofocus = true;
-                    $inputName->autocomplete = 'off';  // beer name, not the user's name — suppress autofill
-                    $inputName->value = $name;
-                    $inputName->validState = $validState['name'];
-                    $inputName->validMsg = $validMsg['name'];
-                    echo $inputName->display();
-                    
-                    // Style (guided)
-                    $guidedStyle = new GuidedStyleField();
-                    $guidedStyle->required = true;
-                    $guidedStyle->value = $styleLabel;
-                    $guidedStyle->styleId = $styleID;
-                    $guidedStyle->parent = $styleParent;
-                    $guidedStyle->class = $styleClass;
-                    $guidedStyle->beverageType = $beverageType;
-                    $guidedStyle->styleConfidence = $styleConfidence;
-                    $guidedStyle->validState = $validState['style'];
-                    $guidedStyle->validMsg = $validMsg['style'];
-                    echo $guidedStyle->display();
-                    
-                    // Description
-                    $textarea = new Textarea();
-                    $textarea->name = 'description';
-                    $textarea->description = 'Description';
-                    $textarea->value = $description;
-                    $textarea->validState = $validState['description'];
-                    $textarea->validMsg = $validMsg['description'];
-                    echo $textarea->display();
-                    
-                    // ABV
-                    $inputAbv = new InputField();
-                    $inputAbv->name = 'abv';
-                    $inputAbv->description = 'abv';
-                    $inputAbv->required = true;
-                    $inputAbv->placeholder = '0.0';
-                    $inputAbv->value = $abv;
-                    $inputAbv->validState = $validState['abv'];
-                    $inputAbv->validMsg = $validMsg['abv'];
-                    $inputAbv->addAfter = '%';
-                    echo $inputAbv->display();
+        // Breadcrumbs
+        $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Add Beer');
+        $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerURL);
+        echo $nav->breadcrumbs();
 
-                    // IBU
-                    $inputIbu = new InputField();
-                    $inputIbu->name = 'ibu';
-                    $inputIbu->description = 'IBU';
-                    $inputIbu->placeholder = '0';
-                    $inputIbu->value = $ibu;
-                    $inputIbu->validState = $validState['ibu'];
-                    $inputIbu->validMsg = $validMsg['ibu'];
-                    echo $inputIbu->display();
-                    
-                    // Close Disabled
-                    if($disabled){
-                        echo '</fieldset>' . "\n";
-                    }
-                    ?>
-                    <button type="submit" class="btn btn-primary" name="submit">Add Beer</button>
+        // Display Alerts
+        echo $alert->display();
+        ?>
+        <form method="post">
+            <?php echo csrf_field(); ?>
+            <?php
+            // Brewery
+            echo '<fieldset disabled>' . "\n";
+            $inputBrewerID = new InputField();
+            $inputBrewerID->name = 'brewer_id';
+            $inputBrewerID->description = 'Brewer';
+            $inputBrewerID->type = 'text';
+            $inputBrewerID->required = true;
+            $inputBrewerID->value = $brewerName;
+            $inputBrewerID->validState = $validState['brewer_id'];
+            $inputBrewerID->validMsg = $validMsg['brewer_id'];
+            echo $inputBrewerID->display();
+            echo '</fieldset>' . "\n";
+            
+            if($disabled){
+                echo '<fieldset disabled>' . "\n";
+            }
+            
+            // Name
+            $inputName = new InputField();
+            $inputName->name = 'name';
+            $inputName->description = 'Name';
+            $inputName->type = 'text';
+            $inputName->required = true;
+            $inputName->autofocus = true;
+            $inputName->autocomplete = 'off';  // beer name, not the user's name — suppress autofill
+            $inputName->value = $name;
+            $inputName->validState = $validState['name'];
+            $inputName->validMsg = $validMsg['name'];
+            echo $inputName->display();
+            
+            // Style (guided)
+            $guidedStyle = new GuidedStyleField();
+            $guidedStyle->required = true;
+            $guidedStyle->value = $styleLabel;
+            $guidedStyle->styleId = $styleID;
+            $guidedStyle->parent = $styleParent;
+            $guidedStyle->class = $styleClass;
+            $guidedStyle->beverageType = $beverageType;
+            $guidedStyle->styleConfidence = $styleConfidence;
+            $guidedStyle->validState = $validState['style'];
+            $guidedStyle->validMsg = $validMsg['style'];
+            echo $guidedStyle->display();
+            
+            // Description
+            $textarea = new Textarea();
+            $textarea->name = 'description';
+            $textarea->description = 'Description';
+            $textarea->value = $description;
+            $textarea->validState = $validState['description'];
+            $textarea->validMsg = $validMsg['description'];
+            echo $textarea->display();
+            
+            // ABV
+            $inputAbv = new InputField();
+            $inputAbv->name = 'abv';
+            $inputAbv->description = 'abv';
+            $inputAbv->required = true;
+            $inputAbv->placeholder = '0.0';
+            $inputAbv->value = $abv;
+            $inputAbv->validState = $validState['abv'];
+            $inputAbv->validMsg = $validMsg['abv'];
+            $inputAbv->addAfter = '%';
+            echo $inputAbv->display();
+
+            // IBU
+            $inputIbu = new InputField();
+            $inputIbu->name = 'ibu';
+            $inputIbu->description = 'IBU';
+            $inputIbu->placeholder = '0';
+            $inputIbu->value = $ibu;
+            $inputIbu->validState = $validState['ibu'];
+            $inputIbu->validMsg = $validMsg['ibu'];
+            echo $inputIbu->display();
+            
+            // Close Disabled
+            if($disabled){
+                echo '</fieldset>' . "\n";
+            }
+            ?>
+            <button type="submit" class="btn btn-primary" name="submit">Add Beer</button>
         </form>
-      </div>
-    </div>  
-  </div>
-  <?php echo $nav->footer(); ?>
-  <?php echo StyleList::inlineScript(); ?>
-  <script src="/assets/js/guided-style.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/assets/js/guided-style.js'); ?>"></script>
+    </div>
+    <?php echo $nav->footer(); ?>
+    <?php echo StyleList::inlineScript(); ?>
+    <?php echo jsTag('/assets/js/guided-style.js'); ?>
 </body>
 </html>

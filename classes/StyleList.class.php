@@ -59,6 +59,24 @@ class StyleList {
         return $out;
     }
 
+    // Canonical display name for a family (parent) slug, e.g. 'ipa' ->
+    // 'India Pale Ale', 'amber-red-ale' -> 'Amber & Red Ale'. Slugs are lossy
+    // (acronyms, dropped ampersands) so they must be resolved through the
+    // vocabulary — never title-cased for display. Every beer.parent is a FK
+    // into style_parent, so the lookup always hits; the raw slug is returned
+    // only in the degenerate case the API vocabulary itself is unreachable.
+    // Built once per request from the session-cached parents list.
+    public static function parentName($slug){
+        static $map = null;
+        if($map === null){
+            $map = array();
+            foreach(self::parents() as $p){
+                if(!empty($p['slug'])){ $map[$p['slug']] = $p['name']; }
+            }
+        }
+        return !empty($map[$slug]) ? $map[$slug] : $slug;
+    }
+
     public static function classes(){
         if(isset($_SESSION['cb_classes']) && is_array($_SESSION['cb_classes'])){
             return $_SESSION['cb_classes'];

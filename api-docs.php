@@ -5,33 +5,18 @@ include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
 // HTML Head
 $htmlHead = new htmlHead('API Documentation');
+$htmlHead->addStylesheet('/assets/css/api-docs.css');
 echo $htmlHead->html;
 ?>
-<style>
-    .api-code {
-        background-color: #f2f2f2;
-        color: #202020;
-        border-radius: 0.5rem;
-        padding: 1rem;
-    }
-    h2, h3 {
-        margin-top:5rem;
-    }
-    h4 {
-        margin-top:2rem;
-    }
-    var {
-        color: #579a4a;
-    }
-</style>
-<body>
+<body data-bs-spy="scroll" data-bs-target="#ad-toc" data-bs-root-margin="0px 0px -55%">
     <?php
     // Navbar
     echo $nav->navbar('');
     ?>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
+    <div class="cb-page">
+        <div class="ad-layout">
+            <button class="ad-toc-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#ad-toc" aria-expanded="false" aria-controls="ad-toc">On this page</button>
+            <nav class="ad-toc collapse d-lg-block" id="ad-toc" aria-label="API reference sections">
                 <div class="list-group">
                     <a class="list-group-item list-group-item-action" href="#url"><strong>API Basics</strong></a>
                     <a class="list-group-item list-group-item-action" href="#authentication"><strong>Authentication</strong></a>
@@ -92,10 +77,10 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#users-reset-password">&gt; Request Password Reset</a>
                     <a class="list-group-item list-group-item-action" href="#users-password-reset">&gt; Reset Password</a>
                 </div>
-            </div>
-            <div class="col-md-8">
+            </nav>
+            <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p>Last Updated: June 25, 2026</p>
+                <p>Last Updated: July 24, 2026</p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
@@ -141,37 +126,39 @@ echo $htmlHead->html;
 
                 <p>The following parameters are returned in JSON format when an error occurs</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>error</var></td>
-                            <td>Boolean</td>
-                            <td><var>true</var> or <var>false</var>. Indicates an error occurred in processing your request.</td>
-                        </tr>
-                        <tr>
-                            <td><var>error_msg</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>A message relaying additional information about the error.</td>
-                        </tr>
-                        <tr>
-                            <td><var>valid_state</var><br><small class="text-muted">(optional)</small></td>
-                            <td>array</td>
-                            <td>An array containing the attribute names and their validation state. A field&#8217;s state is binary: either &#8216;valid&#8217; or &#8216;invalid&#8217;. You can use this parameter to help target which attributes are invalid.</td>
-                        </tr>
-                        <tr>
-                            <td><var>valid_msg</var><br><small class="text-muted">(optional)</small></td>
-                            <td>array</td>
-                            <td>An array containing the attribute names and the corresponding error message for that attribute. You can use this information to show help text next to the attributes that were invalid.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>error</var></td>
+                                <td>Boolean</td>
+                                <td><var>true</var> or <var>false</var>. Indicates an error occurred in processing your request.</td>
+                            </tr>
+                            <tr>
+                                <td><var>error_msg</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>A message relaying additional information about the error.</td>
+                            </tr>
+                            <tr>
+                                <td><var>valid_state</var><br><small class="text-muted">(optional)</small></td>
+                                <td>array</td>
+                                <td>An array containing the attribute names and their validation state. A field&#8217;s state is binary: either &#8216;valid&#8217; or &#8216;invalid&#8217;. You can use this parameter to help target which attributes are invalid.</td>
+                            </tr>
+                            <tr>
+                                <td><var>valid_msg</var><br><small class="text-muted">(optional)</small></td>
+                                <td>array</td>
+                                <td>An array containing the attribute names and the corresponding error message for that attribute. You can use this information to show help text next to the attributes that were invalid.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <p>Sample error JSON returned for a POST request to /brewer:</p>
 <pre class="api-code">
 {
@@ -198,36 +185,38 @@ echo $htmlHead->html;
 
                 <p>The Catalog.beer API supports the following HTTP methods for creating, reading, updating, and deleting resources.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Method</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>GET</strong></td>
-                            <td>Retrieve a resource or list of resources.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>POST</strong></td>
-                            <td>Create a new resource.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>PUT</strong></td>
-                            <td>Full replacement of a resource. All required fields must be present. Omitted optional fields are <strong>cleared to null</strong>. If the resource does not exist, it will be created (returns <var>201 Created</var>). If the resource already exists, it will be replaced (returns <var>200 OK</var>).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>PATCH</strong></td>
-                            <td>Partial update of a resource. Only the fields you provide will be modified; all other fields remain unchanged. The resource must already exist (returns <var>404 Not Found</var> otherwise).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>DELETE</strong></td>
-                            <td>Remove a resource. Returns <var>204 No Content</var> with no response body on success.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Method</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GET</strong></td>
+                                <td>Retrieve a resource or list of resources.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>POST</strong></td>
+                                <td>Create a new resource.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PUT</strong></td>
+                                <td>Full replacement of a resource. All required fields must be present. Omitted optional fields are <strong>cleared to null</strong>. If the resource does not exist, it will be created (returns <var>201 Created</var>). If the resource already exists, it will be replaced (returns <var>200 OK</var>).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PATCH</strong></td>
+                                <td>Partial update of a resource. Only the fields you provide will be modified; all other fields remain unchanged. The resource must already exist (returns <var>404 Not Found</var> otherwise).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DELETE</strong></td>
+                                <td>Remove a resource. Returns <var>204 No Content</var> with no response body on success.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <p>If you send a request using an HTTP method that is not supported by the endpoint, the API will return a <var>405 Method Not Allowed</var> response. The <code>Allow</code> header on the response will list the methods that the endpoint does support.</p>
 
@@ -242,62 +231,64 @@ echo $htmlHead->html;
 
                 <p>Whether you&#8217;re retrieving information on a specific brewer, adding a new brewer, or updating an existing brewer, successful requests will return the brewer object in JSON format. That object has the following parameters.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>id</var></td>
-                            <td>string</td>
-                            <td>The brewer_id; a unique identifier for the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>object</var></td>
-                            <td>string</td>
-                            <td>The name of the object. In this case: &#8220;brewer&#8221;.</td>
-                        </tr>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>description</var></td>
-                            <td>string</td>
-                            <td>A description of the brewer. Note that this field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
-                        </tr>
-                        <tr>
-                            <td><var>short_description</var></td>
-                            <td>string</td>
-                            <td>A short, max 160 character, description of the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var></td>
-                            <td>string</td>
-                            <td>The URL of the brewer&#8217;s website.</td>
-                        </tr>
-                        <tr>
-                            <td><var>cb_verified</var></td>
-                            <td>Boolean</td>
-                            <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer&#8217;s information.</td>
-                        </tr>
-                        <tr>
-                            <td><var>brewer_verified</var></td>
-                            <td>Boolean</td>
-                            <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
-                        </tr>
-                        <tr>
-                            <td><var>last_modified</var></td>
-                            <td>integer</td>
-                            <td>A Unix timestamp indicating when the brewer was last modified.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>id</var></td>
+                                <td>string</td>
+                                <td>The brewer_id; a unique identifier for the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object. In this case: &#8220;brewer&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>name</var></td>
+                                <td>string</td>
+                                <td>The name of the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>description</var></td>
+                                <td>string</td>
+                                <td>A description of the brewer. Note that this field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
+                            </tr>
+                            <tr>
+                                <td><var>short_description</var></td>
+                                <td>string</td>
+                                <td>A short, max 160 character, description of the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var></td>
+                                <td>string</td>
+                                <td>The URL of the brewer&#8217;s website.</td>
+                            </tr>
+                            <tr>
+                                <td><var>cb_verified</var></td>
+                                <td>Boolean</td>
+                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer&#8217;s information.</td>
+                            </tr>
+                            <tr>
+                                <td><var>brewer_verified</var></td>
+                                <td>Boolean</td>
+                                <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
+                            </tr>
+                            <tr>
+                                <td><var>last_modified</var></td>
+                                <td>integer</td>
+                                <td>A Unix timestamp indicating when the brewer was last modified.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample</h4>
 
@@ -322,37 +313,39 @@ echo $htmlHead->html;
 
                 <pre class="api-code">POST https://api.catalog.beer/brewer</pre>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>description</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>A description of the brewer. This should be like the &#8220;About&#8221; page posted by the brewer. A brief origin story coupled with who they are. This field supports <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>A short description of the brewer; max 160 characters. Describe the brewer as you might in a tweet. Short and sweet.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>The URL of the brewer&#8217;s website.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>name</var></td>
+                                <td>string</td>
+                                <td>The name of the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>description</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>A description of the brewer. This should be like the &#8220;About&#8221; page posted by the brewer. A brief origin story coupled with who they are. This field supports <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>A short description of the brewer; max 160 characters. Describe the brewer as you might in a tweet. Short and sweet.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>The URL of the brewer&#8217;s website.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 
@@ -372,37 +365,39 @@ curl -X POST \
 
                 <pre class="api-code">PUT https://api.catalog.beer/brewer/{brewer_id}</pre>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>description</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>A description of the brewer. Cleared if omitted.</td>
-                        </tr>
-                        <tr>
-                            <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>A short description of the brewer; max 160 characters. Cleared if omitted.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>The URL of the brewer&#8217;s website. Cleared if omitted.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>name</var></td>
+                                <td>string</td>
+                                <td>The name of the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>description</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>A description of the brewer. Cleared if omitted.</td>
+                            </tr>
+                            <tr>
+                                <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>A short description of the brewer; max 160 characters. Cleared if omitted.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>The URL of the brewer&#8217;s website. Cleared if omitted.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 
@@ -422,37 +417,39 @@ curl -X PUT \
 
                 <pre class="api-code">PATCH https://api.catalog.beer/brewer/{brewer_id}</pre>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>name</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>The name of the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>description</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>A description of the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>A short description of the brewer; max 160 characters.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>The URL of the brewer&#8217;s website.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>name</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>The name of the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>description</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>A description of the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>A short description of the brewer; max 160 characters.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>The URL of the brewer&#8217;s website.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 
@@ -507,27 +504,29 @@ curl -X GET \
                 <pre class="api-code">GET https://api.catalog.beer/brewer</pre>
 
                 <h4>Query Parameters</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-                        </tr>
-                        <tr>
-                            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-                            <td>integer</td>
-                            <td>The number of results you would like returned from your request. The default value is 500.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                            </tr>
+                            <tr>
+                                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>The number of results you would like returned from your request. The default value is 500.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
 
@@ -537,57 +536,59 @@ curl -X GET \
 
                 <p>This request returns a list object with the following parameters.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>object</var></td>
-                            <td>string</td>
-                            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var></td>
-                            <td>string</td>
-                            <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>has_more</var></td>
-                            <td>Boolean</td>
-                            <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
-                        </tr>
-                        <tr>
-                            <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
-                        </tr>
-                        <tr>
-                            <td><var>data</var></td>
-                            <td>array</td>
-                            <td>An array containing all the brewers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
-                        </tr>
-                        <tr>
-                            <td><var>id</var></td>
-                            <td>string</td>
-                            <td>The <var>brewer_id</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>last_modified</var></td>
-                            <td>integer</td>
-                            <td>A Unix timestamp representing the date and time the brewer was last modified.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var></td>
+                                <td>string</td>
+                                <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>has_more</var></td>
+                                <td>Boolean</td>
+                                <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
+                            </tr>
+                            <tr>
+                                <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
+                            </tr>
+                            <tr>
+                                <td><var>data</var></td>
+                                <td>array</td>
+                                <td>An array containing all the brewers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
+                            </tr>
+                            <tr>
+                                <td><var>id</var></td>
+                                <td>string</td>
+                                <td>The <var>brewer_id</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>name</var></td>
+                                <td>string</td>
+                                <td>The name of the brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>last_modified</var></td>
+                                <td>integer</td>
+                                <td>A Unix timestamp representing the date and time the brewer was last modified.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 
@@ -628,32 +629,34 @@ curl -X GET \
 
                 <pre class="api-code">GET https://api.catalog.beer/brewer/count</pre>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>object</var></td>
-                            <td>string</td>
-                            <td>The name of the object. In this case: &#8220;count&#8221;.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var></td>
-                            <td>string</td>
-                            <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/count</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>value</var></td>
-                            <td>integer</td>
-                            <td>The number of brewers in the database.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object. In this case: &#8220;count&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var></td>
+                                <td>string</td>
+                                <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/count</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>value</var></td>
+                                <td>integer</td>
+                                <td>The number of brewers in the database.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 
@@ -682,32 +685,34 @@ curl -X GET \
                 <pre class="api-code">GET https://api.catalog.beer/brewer/search?q={query}</pre>
 
                 <h4>Query Parameters</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>q</var></td>
-                            <td>string</td>
-                            <td>The search query string. Maximum 255 characters.</td>
-                        </tr>
-                        <tr>
-                            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-                            <td>integer</td>
-                            <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
-                        </tr>
-                        <tr>
-                            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>q</var></td>
+                                <td>string</td>
+                                <td>The search query string. Maximum 255 characters.</td>
+                            </tr>
+                            <tr>
+                                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+                            </tr>
+                            <tr>
+                                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
 
@@ -717,47 +722,49 @@ curl -X GET \
 
                 <p>This request returns a list object with the following parameters. Results are sorted by relevance to the search query.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>object</var></td>
-                            <td>string</td>
-                            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var></td>
-                            <td>string</td>
-                            <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/search</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>query</var></td>
-                            <td>string</td>
-                            <td>The search query that was submitted.</td>
-                        </tr>
-                        <tr>
-                            <td><var>has_more</var></td>
-                            <td>Boolean</td>
-                            <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
-                        </tr>
-                        <tr>
-                            <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>data</var></td>
-                            <td>array</td>
-                            <td>An array of <a href="#brewer-object">brewer objects</a> matching the search query, sorted by relevance.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var></td>
+                                <td>string</td>
+                                <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/search</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>query</var></td>
+                                <td>string</td>
+                                <td>The search query that was submitted.</td>
+                            </tr>
+                            <tr>
+                                <td><var>has_more</var></td>
+                                <td>Boolean</td>
+                                <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+                            </tr>
+                            <tr>
+                                <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>data</var></td>
+                                <td>array</td>
+                                <td>An array of <a href="#brewer-object">brewer objects</a> matching the search query, sorted by relevance.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 
@@ -800,92 +807,94 @@ curl -X GET \
 
                 <p>This request returns a list object with the following parameters.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>object</var></td>
-                            <td>string</td>
-                            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var></td>
-                            <td>string</td>
-                            <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/{brewer_id}/beer</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>has_more</var></td>
-                            <td>Boolean</td>
-                            <td>As of this writing, this will always return <var>false</var>. In the future, if pagination of results is required, this value may become <var>true</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>brewer</var></td>
-                            <td>object</td>
-                            <td>A <a href="#brewer-object">brewer object</a> containing information for the requested <var>{brewer_id}</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>data</var></td>
-                            <td>array</td>
-                            <td>An array containing all the beers associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, <var>style</var>, <var>style_id</var>, <var>parent</var>, <var>class</var>, <var>beverage_type</var>, <var>abv</var>, <var>cb_verified</var>, and <var>brewer_verified</var> described below.</td>
-                        </tr>
-                        <tr>
-                            <td><var>id</var></td>
-                            <td>string</td>
-                            <td>The <var>beer_id</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>style</var></td>
-                            <td>string</td>
-                            <td>The style of the beer (human-readable label).</td>
-                        </tr>
-                        <tr>
-                            <td><var>style_id</var></td>
-                            <td>string</td>
-                            <td>The canonical <a href="#styles">style</a> id, or <var>null</var> if filed at the family/class level.</td>
-                        </tr>
-                        <tr>
-                            <td><var>parent</var></td>
-                            <td>string</td>
-                            <td>The canonical family id (e.g. <var>porter</var>).</td>
-                        </tr>
-                        <tr>
-                            <td><var>class</var></td>
-                            <td>string</td>
-                            <td>The super-class (<var>ale</var>/<var>lager</var>), or <var>null</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>beverage_type</var></td>
-                            <td>string</td>
-                            <td><var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>abv</var></td>
-                            <td>number</td>
-                            <td>The alcohol by volume (ABV) of the beer, expressed as a percentage.</td>
-                        </tr>
-                        <tr>
-                            <td><var>cb_verified</var></td>
-                            <td>Boolean</td>
-                            <td>Whether the beer&#8217;s information has been verified by Catalog.beer against the brewery&#8217;s website.</td>
-                        </tr>
-                        <tr>
-                            <td><var>brewer_verified</var></td>
-                            <td>Boolean</td>
-                            <td>Whether the beer&#8217;s information was provided by the brewery (first-party data).</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var></td>
+                                <td>string</td>
+                                <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/{brewer_id}/beer</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>has_more</var></td>
+                                <td>Boolean</td>
+                                <td>As of this writing, this will always return <var>false</var>. In the future, if pagination of results is required, this value may become <var>true</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>brewer</var></td>
+                                <td>object</td>
+                                <td>A <a href="#brewer-object">brewer object</a> containing information for the requested <var>{brewer_id}</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>data</var></td>
+                                <td>array</td>
+                                <td>An array containing all the beers associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, <var>style</var>, <var>style_id</var>, <var>parent</var>, <var>class</var>, <var>beverage_type</var>, <var>abv</var>, <var>cb_verified</var>, and <var>brewer_verified</var> described below.</td>
+                            </tr>
+                            <tr>
+                                <td><var>id</var></td>
+                                <td>string</td>
+                                <td>The <var>beer_id</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>name</var></td>
+                                <td>string</td>
+                                <td>The name of the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>style</var></td>
+                                <td>string</td>
+                                <td>The style of the beer (human-readable label).</td>
+                            </tr>
+                            <tr>
+                                <td><var>style_id</var></td>
+                                <td>string</td>
+                                <td>The canonical <a href="#styles">style</a> id, or <var>null</var> if filed at the family/class level.</td>
+                            </tr>
+                            <tr>
+                                <td><var>parent</var></td>
+                                <td>string</td>
+                                <td>The canonical family id (e.g. <var>porter</var>).</td>
+                            </tr>
+                            <tr>
+                                <td><var>class</var></td>
+                                <td>string</td>
+                                <td>The super-class (<var>ale</var>/<var>lager</var>), or <var>null</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>beverage_type</var></td>
+                                <td>string</td>
+                                <td><var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>abv</var></td>
+                                <td>number</td>
+                                <td>The alcohol by volume (ABV) of the beer, expressed as a percentage.</td>
+                            </tr>
+                            <tr>
+                                <td><var>cb_verified</var></td>
+                                <td>Boolean</td>
+                                <td>Whether the beer&#8217;s information has been verified by Catalog.beer against the brewery&#8217;s website.</td>
+                            </tr>
+                            <tr>
+                                <td><var>brewer_verified</var></td>
+                                <td>Boolean</td>
+                                <td>Whether the beer&#8217;s information was provided by the brewery (first-party data).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 <pre class="api-code">
@@ -963,42 +972,44 @@ curl -X GET \
 
                 <p>This request returns a list object with the following parameters.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>object</var></td>
-                            <td>string</td>
-                            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
-                        </tr>
-                        <tr>
-                            <td><var>url</var></td>
-                            <td>string</td>
-                            <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/{brewer_id}/locations</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>has_more</var></td>
-                            <td>Boolean</td>
-                            <td>As of this writing, this will always return <var>false</var>. In the future, if pagination of results is required, this value may become <var>true</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>brewer</var></td>
-                            <td>object</td>
-                            <td>A <a href="#brewer-object">brewer object</a> for the requested brewer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>data</var></td>
-                            <td>array</td>
-                            <td>An array containing all the locations associated with this brewer in the database sorted alphabetically by name. Each array object is a <a href="#location-object">location object</a> &#8212; including its <var>address</var> block, <var>latitude</var>, and <var>longitude</var> &#8212; without the nested <var>brewer</var> object (the list&#8217;s top-level <var>brewer</var> already carries it).</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>url</var></td>
+                                <td>string</td>
+                                <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer/{brewer_id}/locations</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>has_more</var></td>
+                                <td>Boolean</td>
+                                <td>As of this writing, this will always return <var>false</var>. In the future, if pagination of results is required, this value may become <var>true</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>brewer</var></td>
+                                <td>object</td>
+                                <td>A <a href="#brewer-object">brewer object</a> for the requested brewer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>data</var></td>
+                                <td>array</td>
+                                <td>An array containing all the locations associated with this brewer in the database sorted alphabetically by name. Each array object is a <a href="#location-object">location object</a> &#8212; including its <var>address</var> block, <var>latitude</var>, and <var>longitude</var> &#8212; without the nested <var>brewer</var> object (the list&#8217;s top-level <var>brewer</var> already carries it).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h4>Sample Request</h4>
 <pre class="api-code">
@@ -1090,92 +1101,94 @@ curl -X GET \
 
                 <p>When you add a new beer, are looking for information on a specific beer, or are updating a beer in the database, successful requests will return the beer object in JSON format. That object has the following parameters.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>id</var></td>
-                            <td>string</td>
-                            <td>The beer_id; a unique identifier for the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>object</var></td>
-                            <td>string</td>
-                            <td>The name of the object; in this case: &#8220;beer&#8221;.</td>
-                        </tr>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>style</var></td>
-                            <td>string</td>
-                            <td>The style of the beer as a human-readable label &#8212; the brewer&#8217;s own wording, preserved exactly (e.g. &#8220;West Coast IPA&#8221;).</td>
-                        </tr>
-                        <tr>
-                            <td><var>style_id</var></td>
-                            <td>string</td>
-                            <td>The canonical <a href="#styles">style</a> the label resolved to (e.g. <var>american-ipa</var>), or <var>null</var> when the beer is filed at the family or class level rather than a specific style.</td>
-                        </tr>
-                        <tr>
-                            <td><var>parent</var></td>
-                            <td>string</td>
-                            <td>The canonical family (e.g. <var>ipa</var>) the beer belongs to. Derived from <var>style_id</var>, or set directly when filed at the family level.</td>
-                        </tr>
-                        <tr>
-                            <td><var>class</var></td>
-                            <td>string</td>
-                            <td>The super-class the beer rolls up to: <var>ale</var> or <var>lager</var>, or <var>null</var> for families that do not roll up to one (wheat, sour, cider, mead, etc.).</td>
-                        </tr>
-                        <tr>
-                            <td><var>beverage_type</var></td>
-                            <td>string</td>
-                            <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>. Derived from the resolved style; never trusted from client input.</td>
-                        </tr>
-                        <tr>
-                            <td><var>description</var></td>
-                            <td>string</td>
-                            <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
-                        </tr>
-                        <tr>
-                            <td><var>abv</var></td>
-                            <td>float</td>
-                            <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>ibu</var></td>
-                            <td>integer</td>
-                            <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>cb_verified</var></td>
-                            <td>Boolean</td>
-                            <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer's information.</td>
-                        </tr>
-                        <tr>
-                            <td><var>brewer_verified</var></td>
-                            <td>Boolean</td>
-                            <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
-                        </tr>
-                        <tr>
-                            <td><var>last_modified</var></td>
-                            <td>integer</td>
-                            <td>A Unix timestamp indicating when the beer was last modified.</td>
-                        </tr>
-                        <tr>
-                            <td><var>brewer</var></td>
-                            <td>object</td>
-                            <td>A <a href="#brewer-object">brewer object</a> containing information on the brewer.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>id</var></td>
+                                <td>string</td>
+                                <td>The beer_id; a unique identifier for the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object; in this case: &#8220;beer&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>name</var></td>
+                                <td>string</td>
+                                <td>The name of the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>style</var></td>
+                                <td>string</td>
+                                <td>The style of the beer as a human-readable label &#8212; the brewer&#8217;s own wording, preserved exactly (e.g. &#8220;West Coast IPA&#8221;).</td>
+                            </tr>
+                            <tr>
+                                <td><var>style_id</var></td>
+                                <td>string</td>
+                                <td>The canonical <a href="#styles">style</a> the label resolved to (e.g. <var>american-ipa</var>), or <var>null</var> when the beer is filed at the family or class level rather than a specific style.</td>
+                            </tr>
+                            <tr>
+                                <td><var>parent</var></td>
+                                <td>string</td>
+                                <td>The canonical family (e.g. <var>ipa</var>) the beer belongs to. Derived from <var>style_id</var>, or set directly when filed at the family level.</td>
+                            </tr>
+                            <tr>
+                                <td><var>class</var></td>
+                                <td>string</td>
+                                <td>The super-class the beer rolls up to: <var>ale</var> or <var>lager</var>, or <var>null</var> for families that do not roll up to one (wheat, sour, cider, mead, etc.).</td>
+                            </tr>
+                            <tr>
+                                <td><var>beverage_type</var></td>
+                                <td>string</td>
+                                <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>. Derived from the resolved style; never trusted from client input.</td>
+                            </tr>
+                            <tr>
+                                <td><var>description</var></td>
+                                <td>string</td>
+                                <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
+                            </tr>
+                            <tr>
+                                <td><var>abv</var></td>
+                                <td>float</td>
+                                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>ibu</var></td>
+                                <td>integer</td>
+                                <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>cb_verified</var></td>
+                                <td>Boolean</td>
+                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer's information.</td>
+                            </tr>
+                            <tr>
+                                <td><var>brewer_verified</var></td>
+                                <td>Boolean</td>
+                                <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
+                            </tr>
+                            <tr>
+                                <td><var>last_modified</var></td>
+                                <td>integer</td>
+                                <td>A Unix timestamp indicating when the beer was last modified.</td>
+                            </tr>
+                            <tr>
+                                <td><var>brewer</var></td>
+                                <td>object</td>
+                                <td>A <a href="#brewer-object">brewer object</a> containing information on the brewer.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
 <h4>Sample</h4>
 
@@ -1218,62 +1231,64 @@ curl -X GET \
 
                 <p>The <var>style</var> you submit is kept exactly as you wrote it and matched to the catalog&#8217;s standard list of styles &#8212; for example, &#8220;West Coast IPA&#8221; resolves to the <var>west-coast-ipa</var> style, &#8220;IPA&#8221; to the <var>ipa</var> family, and &#8220;Lager&#8221; to the <var>lager</var> class. To name the classification yourself, send <var>style_id</var>, <var>parent</var>, or <var>class</var>; if you send more than one, the most specific wins. If the label doesn&#8217;t match and no classification is given, the request returns a <var>400 Bad Request</var> error. See <a href="#styles">Styles</a>.</p>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parameter</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>brewer_id</var></td>
-                            <td>string</td>
-                            <td>The brewer_id for the brewer who makes the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>name</var></td>
-                            <td>string</td>
-                            <td>The name of the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>style</var></td>
-                            <td>string</td>
-                            <td>The brewer&#8217;s style label, resolved to a canonical style/family/class (see note above). Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
-                        </tr>
-                        <tr>
-                            <td><var>class</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
-                        </tr>
-                        <tr>
-                            <td><var>description<br><small class="text-muted">(optional)</small></var></td>
-                            <td>string</td>
-                            <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> and new line characters.</td>
-                        </tr>
-                        <tr>
-                            <td><var>abv</var></td>
-                            <td>float</td>
-                            <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
-                        </tr>
-                        <tr>
-                            <td><var>ibu<br><small class="text-muted">(optional)</small></var></td>
-                            <td>integer</td>
-                            <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>brewer_id</var></td>
+                                <td>string</td>
+                                <td>The brewer_id for the brewer who makes the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>name</var></td>
+                                <td>string</td>
+                                <td>The name of the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>style</var></td>
+                                <td>string</td>
+                                <td>The brewer&#8217;s style label, resolved to a canonical style/family/class (see note above). Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
+                            </tr>
+                            <tr>
+                                <td><var>class</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>description<br><small class="text-muted">(optional)</small></var></td>
+                                <td>string</td>
+                                <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> and new line characters.</td>
+                            </tr>
+                            <tr>
+                                <td><var>abv</var></td>
+                                <td>float</td>
+                                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+                            </tr>
+                            <tr>
+                                <td><var>ibu<br><small class="text-muted">(optional)</small></var></td>
+                                <td>integer</td>
+                                <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
 <h4>Sample Request</h4>
 
@@ -1296,62 +1311,64 @@ curl -X POST \
 
 <p>The style fields work the same as when <a href="#beer-create">adding a beer</a>: send the label as <var>style</var>, or name the classification with <var>style_id</var>, <var>parent</var>, or <var>class</var>. If the label doesn&#8217;t match and no classification is given, the request returns a <var>400 Bad Request</var> error &#8212; unless the label is unchanged from the beer&#8217;s current <var>style</var>, in which case the update succeeds and the beer keeps its current classification. See <a href="#styles">Styles</a>.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>brewer_id</var></td>
-            <td>string</td>
-            <td>The brewer_id for the brewer who makes the beer.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The name of the beer.</td>
-        </tr>
-        <tr>
-            <td><var>style</var></td>
-            <td>string</td>
-            <td>The brewer&#8217;s style label, resolved to a canonical style/family/class. Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
-        </tr>
-        <tr>
-            <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
-        </tr>
-        <tr>
-            <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
-        </tr>
-        <tr>
-            <td><var>class</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
-        </tr>
-        <tr>
-            <td><var>abv</var></td>
-            <td>float</td>
-            <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
-        </tr>
-        <tr>
-            <td><var>description</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>A description of the beer. Cleared if omitted.</td>
-        </tr>
-        <tr>
-            <td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The International Bitterness/Bittering Units (IBU) value of the beer. Cleared if omitted.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>brewer_id</var></td>
+                <td>string</td>
+                <td>The brewer_id for the brewer who makes the beer.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The name of the beer.</td>
+            </tr>
+            <tr>
+                <td><var>style</var></td>
+                <td>string</td>
+                <td>The brewer&#8217;s style label, resolved to a canonical style/family/class. Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
+            </tr>
+            <tr>
+                <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
+            </tr>
+            <tr>
+                <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
+            </tr>
+            <tr>
+                <td><var>class</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
+            </tr>
+            <tr>
+                <td><var>abv</var></td>
+                <td>float</td>
+                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+            </tr>
+            <tr>
+                <td><var>description</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>A description of the beer. Cleared if omitted.</td>
+            </tr>
+            <tr>
+                <td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The International Bitterness/Bittering Units (IBU) value of the beer. Cleared if omitted.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -1374,62 +1391,64 @@ curl -X PUT \
 
 <p>To change a beer&#8217;s style, send any of <var>style</var>, <var>style_id</var>, <var>parent</var>, or <var>class</var>. The style is re-resolved and all of the beer&#8217;s classification fields are updated together. Resending the beer&#8217;s current <var>style</var> unchanged never fails &#8212; the beer keeps its current classification. See <a href="#styles">Styles</a>.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>brewer_id</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The brewer_id for the brewer who makes the beer.</td>
-        </tr>
-        <tr>
-            <td><var>name</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The name of the beer.</td>
-        </tr>
-        <tr>
-            <td><var>style</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The brewer&#8217;s style label, re-resolved to a canonical style/family/class.</td>
-        </tr>
-        <tr>
-            <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>).</td>
-        </tr>
-        <tr>
-            <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>File at a family (e.g. <var>ipa</var>).</td>
-        </tr>
-        <tr>
-            <td><var>class</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
-        </tr>
-        <tr>
-            <td><var>description</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>A description of the beer.</td>
-        </tr>
-        <tr>
-            <td><var>abv</var><br><small class="text-muted">(optional)</small></td>
-            <td>float</td>
-            <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
-        </tr>
-        <tr>
-            <td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>brewer_id</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The brewer_id for the brewer who makes the beer.</td>
+            </tr>
+            <tr>
+                <td><var>name</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The name of the beer.</td>
+            </tr>
+            <tr>
+                <td><var>style</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The brewer&#8217;s style label, re-resolved to a canonical style/family/class.</td>
+            </tr>
+            <tr>
+                <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>).</td>
+            </tr>
+            <tr>
+                <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>File at a family (e.g. <var>ipa</var>).</td>
+            </tr>
+            <tr>
+                <td><var>class</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
+            </tr>
+            <tr>
+                <td><var>description</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>A description of the beer.</td>
+            </tr>
+            <tr>
+                <td><var>abv</var><br><small class="text-muted">(optional)</small></td>
+                <td>float</td>
+                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+            </tr>
+            <tr>
+                <td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -1487,84 +1506,88 @@ curl -X GET \
 <pre class="api-code">GET https://api.catalog.beer/beer</pre>
 
                 <h4>Query Parameters</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-                            <td>string</td>
-                            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-                        </tr>
-                        <tr>
-                            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-                            <td>integer</td>
-                            <td>The number of results you would like returned from your request. The default value is 500.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                            </tr>
+                            <tr>
+                                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>The number of results you would like returned from your request. The default value is 500.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except -_.</p>
                 <pre class="api-code">GET https://api.catalog.beer/beer?count=5&amp;cursor=NQ%3D%3D</pre>
 
                 <h4>Response</h4>
 <p>This request returns a list object with the following parameters.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object. In this case: “list”.</td>
-        </tr>
-        <tr>
-            <td><var>url</var></td>
-            <td>string</td>
-            <td>The API endpoint accessed to retrieve this object. In this case: <code>/beer</code>.</td>
-        </tr>
-        <tr>
-            <td><var>has_more</var></td>
-            <td>Boolean</td>
-            <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
-        </tr>
-        <tr>
-            <td><var>next_cursor</var></td>
-            <td>string</td>
-            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
-        </tr>
-        <tr>
-            <td><var>data</var></td>
-            <td>array</td>
-            <td>An array containing all the beers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
-        </tr>
-        <tr>
-            <td><var>id</var></td>
-            <td>string</td>
-            <td>The <var>beer_id</var>.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The name of the beer.</td>
-        </tr>
-        <tr>
-            <td><var>last_modified</var></td>
-            <td>integer</td>
-            <td>A Unix timestamp representing the date and time the beer was last modified.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: “list”.</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The API endpoint accessed to retrieve this object. In this case: <code>/beer</code>.</td>
+            </tr>
+            <tr>
+                <td><var>has_more</var></td>
+                <td>Boolean</td>
+                <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
+            </tr>
+            <tr>
+                <td><var>next_cursor</var></td>
+                <td>string</td>
+                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
+            </tr>
+            <tr>
+                <td><var>data</var></td>
+                <td>array</td>
+                <td>An array containing all the beers in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
+            </tr>
+            <tr>
+                <td><var>id</var></td>
+                <td>string</td>
+                <td>The <var>beer_id</var>.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The name of the beer.</td>
+            </tr>
+            <tr>
+                <td><var>last_modified</var></td>
+                <td>integer</td>
+                <td>A Unix timestamp representing the date and time the beer was last modified.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -1639,32 +1662,34 @@ curl -X GET \
 <pre class="api-code">GET https://api.catalog.beer/beer/search?q={query}</pre>
 
 <h4>Query Parameters</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>q</var></td>
-            <td>string</td>
-            <td>The search query string. Maximum 255 characters.</td>
-        </tr>
-        <tr>
-            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
-        </tr>
-        <tr>
-            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>q</var></td>
+                <td>string</td>
+                <td>The search query string. Maximum 255 characters.</td>
+            </tr>
+            <tr>
+                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+            </tr>
+            <tr>
+                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
 
@@ -1674,47 +1699,49 @@ curl -X GET \
 
 <p>This request returns a list object with the following parameters. Results are sorted by relevance to the search query. Each result is a full <a href="#beer-object">beer object</a> including the nested <a href="#brewer-object">brewer object</a>, so you can display results without making additional API calls.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>url</var></td>
-            <td>string</td>
-            <td>The API endpoint accessed to retrieve this object. In this case: <code>/beer/search</code>.</td>
-        </tr>
-        <tr>
-            <td><var>query</var></td>
-            <td>string</td>
-            <td>The search query that was submitted.</td>
-        </tr>
-        <tr>
-            <td><var>has_more</var></td>
-            <td>Boolean</td>
-            <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
-        </tr>
-        <tr>
-            <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
-        </tr>
-        <tr>
-            <td><var>data</var></td>
-            <td>array</td>
-            <td>An array of <a href="#beer-object">beer objects</a> matching the search query, sorted by relevance. Each beer object includes a nested <a href="#brewer-object">brewer object</a>.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The API endpoint accessed to retrieve this object. In this case: <code>/beer/search</code>.</td>
+            </tr>
+            <tr>
+                <td><var>query</var></td>
+                <td>string</td>
+                <td>The search query that was submitted.</td>
+            </tr>
+            <tr>
+                <td><var>has_more</var></td>
+                <td>Boolean</td>
+                <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+            </tr>
+            <tr>
+                <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+            </tr>
+            <tr>
+                <td><var>data</var></td>
+                <td>array</td>
+                <td>An array of <a href="#beer-object">beer objects</a> matching the search query, sorted by relevance. Each beer object includes a nested <a href="#brewer-object">brewer object</a>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -1775,32 +1802,34 @@ curl -X GET \
 
 <p>The vocabulary has three tiers, from broadest to most specific. Each tier corresponds to a field on the <a href="#beer-object">beer object</a>.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Tier</th>
-            <th scope="col">Beer Field</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Class</td>
-            <td><var>class</var></td>
-            <td>The broadest grouping: <var>ale</var> or <var>lager</var>. Some families (e.g. wheat beers, sours, ciders, meads) do not roll up to a class; for those, <var>class</var> is <var>null</var>.</td>
-        </tr>
-        <tr>
-            <td>Family</td>
-            <td><var>parent</var></td>
-            <td>A group of related styles, such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var>.</td>
-        </tr>
-        <tr>
-            <td>Style</td>
-            <td><var>style_id</var></td>
-            <td>One specific style, such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Tier</th>
+                <th scope="col">Beer Field</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Class</td>
+                <td><var>class</var></td>
+                <td>The broadest grouping: <var>ale</var> or <var>lager</var>. Some families (e.g. wheat beers, sours, ciders, meads) do not roll up to a class; for those, <var>class</var> is <var>null</var>.</td>
+            </tr>
+            <tr>
+                <td>Family</td>
+                <td><var>parent</var></td>
+                <td>A group of related styles, such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var>.</td>
+            </tr>
+            <tr>
+                <td>Style</td>
+                <td><var>style_id</var></td>
+                <td>One specific style, such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <p>A beer may be filed at any tier. The API derives the broader tiers from the one you provide &#8212; file a beer as <var>west-coast-ipa</var> and its <var>parent</var> is set to <var>ipa</var> and its <var>class</var> to <var>ale</var>. The API never fills in a more specific tier than the one you gave it.</p>
 
@@ -1821,56 +1850,60 @@ curl -X GET \
 
 <p>The <code>/style</code> endpoints return style objects. <a href="#style-list">List Styles</a> returns a compact form of each; <a href="#style-detail">Retrieve a Style</a> returns the full object, adding <var>parent_name</var>, <var>source</var>, and <var>specs</var>.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Field</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr><td><var>id</var></td><td>string</td><td>The style&#8217;s slug (e.g. <var>american-ipa</var>) &#8212; the value used as <var>style_id</var> on a beer.</td></tr>
-        <tr><td><var>object</var></td><td>string</td><td>Always <var>style</var>.</td></tr>
-        <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. &#8220;American-Style India Pale Ale&#8221;).</td></tr>
-        <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
-        <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) &#8212; the canonical family tier you can file a beer at.</td></tr>
-        <tr><td><var>class</var></td><td>string</td><td>The slug of the <a href="#style-classes">class</a> the style rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> for families that do not roll up to one.</td></tr>
-        <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family (e.g. &#8220;India Pale Ale&#8221;).</td></tr>
-        <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
-        <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard &#8220;catch-all&#8221; styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits. Use it to separate fallback buckets from standard styles &#8212; for example, keeping catch-alls out of a picker&#8217;s ranked matches.</td></tr>
-        <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side &#8212; for example, in a typeahead &#8212; without an API request per keystroke.</td></tr>
-        <tr><td><var>srm</var><br><small class="text-muted">(list only)</small></td><td>object</td><td>The style&#8217;s <a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">SRM</a> color range as a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline gives no color (cider, mead, perry, and catch-alls). The one spec included in list rows &#8212; enough to render color swatches without a request per style. On the detail endpoint the same range lives in <var>specs.srm</var>.</td></tr>
-        <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">the <var>specs</var> field</a> below.</td></tr>
-        <tr><td><var>description</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>An editorial description of the style &#8212; what it is and what to expect in the glass. Plain prose; paragraphs separated by blank lines.</td></tr>
-        <tr><td><var>appearance</var>, <var>aroma</var>, <var>flavor</var>, <var>mouthfeel</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Short tasting-note fields describing the style in the glass. <var>null</var> for catch-all styles, which have no fixed sensory profile.</td></tr>
-        <tr><td><var>history</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The style&#8217;s origin and evolution &#8212; editorial prose with claims anchored to the citations in <var>sources.history_sources</var>.</td></tr>
-        <tr><td><var>notes</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Occasional editorial notes &#8212; e.g. how this entry relates to neighboring styles. <var>null</var> when there&#8217;s nothing to add.</td></tr>
-        <tr><td><var>commercial_examples</var><br><small class="text-muted">(detail only)</small></td><td>array</td><td>Classic or defining commercial examples of the style, as beer names (strings). Curated &#8212; not derived from the Catalog.beer database.</td></tr>
-        <tr><td><var>sources</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>Provenance: the style&#8217;s entry in each guideline it appears in (<var>brewers_association</var>, <var>bjcp</var> with year and code, <var>naba_2024</var>; the one marked <code>"primary": true</code> supplies the canonical name), plus <var>history_sources</var> &#8212; an array of <code>{ "citation", "url" }</code> objects backing the <var>history</var> prose.</td></tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><var>id</var></td><td>string</td><td>The style&#8217;s slug (e.g. <var>american-ipa</var>) &#8212; the value used as <var>style_id</var> on a beer.</td></tr>
+            <tr><td><var>object</var></td><td>string</td><td>Always <var>style</var>.</td></tr>
+            <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. &#8220;American-Style India Pale Ale&#8221;).</td></tr>
+            <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
+            <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) &#8212; the canonical family tier you can file a beer at.</td></tr>
+            <tr><td><var>class</var></td><td>string</td><td>The slug of the <a href="#style-classes">class</a> the style rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> for families that do not roll up to one.</td></tr>
+            <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family (e.g. &#8220;India Pale Ale&#8221;).</td></tr>
+            <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
+            <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard &#8220;catch-all&#8221; styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits. Use it to separate fallback buckets from standard styles &#8212; for example, keeping catch-alls out of a picker&#8217;s ranked matches.</td></tr>
+            <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side &#8212; for example, in a typeahead &#8212; without an API request per keystroke.</td></tr>
+            <tr><td><var>srm</var><br><small class="text-muted">(list only)</small></td><td>object</td><td>The style&#8217;s <a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">SRM</a> color range as a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline gives no color (cider, mead, perry, and catch-alls). The one spec included in list rows &#8212; enough to render color swatches without a request per style. On the detail endpoint the same range lives in <var>specs.srm</var>.</td></tr>
+            <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">the <var>specs</var> field</a> below.</td></tr>
+            <tr><td><var>description</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>An editorial description of the style &#8212; what it is and what to expect in the glass. Plain prose; paragraphs separated by blank lines.</td></tr>
+            <tr><td><var>appearance</var>, <var>aroma</var>, <var>flavor</var>, <var>mouthfeel</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Short tasting-note fields describing the style in the glass. <var>null</var> for catch-all styles, which have no fixed sensory profile.</td></tr>
+            <tr><td><var>history</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The style&#8217;s origin and evolution &#8212; editorial prose with claims anchored to the citations in <var>sources.history_sources</var>.</td></tr>
+            <tr><td><var>notes</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Occasional editorial notes &#8212; e.g. how this entry relates to neighboring styles. <var>null</var> when there&#8217;s nothing to add.</td></tr>
+            <tr><td><var>commercial_examples</var><br><small class="text-muted">(detail only)</small></td><td>array</td><td>Classic or defining commercial examples of the style, as beer names (strings). Curated &#8212; not derived from the Catalog.beer database.</td></tr>
+            <tr><td><var>sources</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>Provenance: the style&#8217;s entry in each guideline it appears in (<var>brewers_association</var>, <var>bjcp</var> with year and code, <var>naba_2024</var>; the one marked <code>"primary": true</code> supplies the canonical name), plus <var>history_sources</var> &#8212; an array of <code>{ "citation", "url" }</code> objects backing the <var>history</var> prose.</td></tr>
+        </tbody>
+    </table>
+</div>
 
 <h4 id="style-specs">The <var>specs</var> Field</h4>
 
 <p>The <var>specs</var> field (detail only) holds the style&#8217;s guideline ranges, drawn from the same <var>source</var> as the style. Each field is a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline doesn&#8217;t specify that measurement. An individual <var>min</var> or <var>max</var> may also be <var>null</var> when the guideline gives only one bound.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Field</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr><td><var>abv</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Alcohol_by_volume" target="_blank" rel="noopener">Alcohol by Volume</a> range, as a percentage (e.g. <code>6.3</code> means 6.3%).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-        <tr><td><var>ibu</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Beer_measurement#Bitterness" target="_blank" rel="noopener">International Bitterness Units</a> range &#8212; the measure of hop bitterness.<br><span class="text-muted"><var>min</var> and <var>max</var> are integers.</span></td></tr>
-        <tr><td><var>srm</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">Standard Reference Method</a> range &#8212; beer color, from pale straw (low) to black (high).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-        <tr><td><var>og</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Original Gravity</a> range &#8212; the wort&#8217;s specific gravity before fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-        <tr><td><var>fg</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Final Gravity</a> range &#8212; the beer&#8217;s specific gravity after fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><var>abv</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Alcohol_by_volume" target="_blank" rel="noopener">Alcohol by Volume</a> range, as a percentage (e.g. <code>6.3</code> means 6.3%).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+            <tr><td><var>ibu</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Beer_measurement#Bitterness" target="_blank" rel="noopener">International Bitterness Units</a> range &#8212; the measure of hop bitterness.<br><span class="text-muted"><var>min</var> and <var>max</var> are integers.</span></td></tr>
+            <tr><td><var>srm</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">Standard Reference Method</a> range &#8212; beer color, from pale straw (low) to black (high).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+            <tr><td><var>og</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Original Gravity</a> range &#8212; the wort&#8217;s specific gravity before fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+            <tr><td><var>fg</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Final Gravity</a> range &#8212; the beer&#8217;s specific gravity after fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample</h4>
 
@@ -2025,32 +2058,34 @@ curl -X GET \
 <pre class="api-code">GET https://api.catalog.beer/style/search?q={query}</pre>
 
 <h4>Query Parameters</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>q</var></td>
-            <td>string</td>
-            <td>The search query string. Maximum 255 characters.</td>
-        </tr>
-        <tr>
-            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
-        </tr>
-        <tr>
-            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>q</var></td>
+                <td>string</td>
+                <td>The search query string. Maximum 255 characters.</td>
+            </tr>
+            <tr>
+                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+            </tr>
+            <tr>
+                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
 
@@ -2071,52 +2106,54 @@ curl -X GET \
 
 <p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query exactly names a style family, by slug, name, or alias, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it. Searching &#8220;ipa&#8221; returns the <var>ipa</var> family alongside the individual IPA styles.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object. In this case: &#8220;list&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>url</var></td>
-            <td>string</td>
-            <td>The API endpoint accessed to retrieve this object. In this case: <code>/style/search</code>.</td>
-        </tr>
-        <tr>
-            <td><var>query</var></td>
-            <td>string</td>
-            <td>The search query that was submitted.</td>
-        </tr>
-        <tr>
-            <td><var>has_more</var></td>
-            <td>Boolean</td>
-            <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
-        </tr>
-        <tr>
-            <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
-        </tr>
-        <tr>
-            <td><var>families</var></td>
-            <td>array</td>
-            <td>An array of <a href="#style-parents">style family objects</a> whose slug, name, or alias <em>exactly</em> matches the query. Empty when no family matches. Families are never paginated &#8212; there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. They are returned on the first page only, so an empty array on a later page means &#8220;not repeated here&#8221;, not &#8220;no family matched&#8221;. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
-        </tr>
-        <tr>
-            <td><var>data</var></td>
-            <td>array</td>
-            <td>An array of compact <a href="#style-object">style objects</a> matching the search query, in ranked order &#8212; the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The API endpoint accessed to retrieve this object. In this case: <code>/style/search</code>.</td>
+            </tr>
+            <tr>
+                <td><var>query</var></td>
+                <td>string</td>
+                <td>The search query that was submitted.</td>
+            </tr>
+            <tr>
+                <td><var>has_more</var></td>
+                <td>Boolean</td>
+                <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+            </tr>
+            <tr>
+                <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+            </tr>
+            <tr>
+                <td><var>families</var></td>
+                <td>array</td>
+                <td>An array of <a href="#style-parents">style family objects</a> whose slug, name, or alias <em>exactly</em> matches the query. Empty when no family matches. Families are never paginated &#8212; there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. They are returned on the first page only, so an empty array on a later page means &#8220;not repeated here&#8221;, not &#8220;no family matched&#8221;. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
+            </tr>
+            <tr>
+                <td><var>data</var></td>
+                <td>array</td>
+                <td>An array of compact <a href="#style-object">style objects</a> matching the search query, in ranked order &#8212; the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2187,57 +2224,59 @@ curl -X GET \
 
 <pre class="api-code">GET https://api.catalog.beer/style/parent</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>slug</var></td>
-            <td>string</td>
-            <td>The family&#8217;s slug (e.g. <var>ipa</var>) &#8212; the value used as <var>parent</var> on a beer.</td>
-        </tr>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object; in this case: &#8220;style_parent&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The name of the family (e.g. &#8220;India Pale Ale&#8221;).</td>
-        </tr>
-        <tr>
-            <td><var>beverage_type</var></td>
-            <td>string</td>
-            <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
-        </tr>
-        <tr>
-            <td><var>class</var></td>
-            <td>string</td>
-            <td>The slug of the <a href="#style-classes">class</a> this family rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> if it does not roll up to one.</td>
-        </tr>
-        <tr>
-            <td><var>description</var></td>
-            <td>string</td>
-            <td>A brief description of the family.</td>
-        </tr>
-        <tr>
-            <td><var>sort_order</var></td>
-            <td>integer</td>
-            <td>The family&#8217;s position in display order.</td>
-        </tr>
-        <tr>
-            <td><var>aliases</var></td>
-            <td>array</td>
-            <td>Names and spellings that resolve to this family when sent as a beer&#8217;s <var>style</var>.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>slug</var></td>
+                <td>string</td>
+                <td>The family&#8217;s slug (e.g. <var>ipa</var>) &#8212; the value used as <var>parent</var> on a beer.</td>
+            </tr>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object; in this case: &#8220;style_parent&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The name of the family (e.g. &#8220;India Pale Ale&#8221;).</td>
+            </tr>
+            <tr>
+                <td><var>beverage_type</var></td>
+                <td>string</td>
+                <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+            </tr>
+            <tr>
+                <td><var>class</var></td>
+                <td>string</td>
+                <td>The slug of the <a href="#style-classes">class</a> this family rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> if it does not roll up to one.</td>
+            </tr>
+            <tr>
+                <td><var>description</var></td>
+                <td>string</td>
+                <td>A brief description of the family.</td>
+            </tr>
+            <tr>
+                <td><var>sort_order</var></td>
+                <td>integer</td>
+                <td>The family&#8217;s position in display order.</td>
+            </tr>
+            <tr>
+                <td><var>aliases</var></td>
+                <td>array</td>
+                <td>Names and spellings that resolve to this family when sent as a beer&#8217;s <var>style</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2279,47 +2318,49 @@ curl -X GET \
 
 <pre class="api-code">GET https://api.catalog.beer/style/class</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>slug</var></td>
-            <td>string</td>
-            <td>The class&#8217;s slug (e.g. <var>ale</var>) &#8212; the value used as <var>class</var> on a beer.</td>
-        </tr>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object; in this case: &#8220;style_class&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The name of the class (e.g. &#8220;Ale&#8221;).</td>
-        </tr>
-        <tr>
-            <td><var>beverage_type</var></td>
-            <td>string</td>
-            <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
-        </tr>
-        <tr>
-            <td><var>sort_order</var></td>
-            <td>integer</td>
-            <td>The class&#8217;s position in display order.</td>
-        </tr>
-        <tr>
-            <td><var>aliases</var></td>
-            <td>array</td>
-            <td>Names and spellings that resolve to this class when sent as a beer&#8217;s <var>style</var>.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>slug</var></td>
+                <td>string</td>
+                <td>The class&#8217;s slug (e.g. <var>ale</var>) &#8212; the value used as <var>class</var> on a beer.</td>
+            </tr>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object; in this case: &#8220;style_class&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The name of the class (e.g. &#8220;Ale&#8221;).</td>
+            </tr>
+            <tr>
+                <td><var>beverage_type</var></td>
+                <td>string</td>
+                <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+            </tr>
+            <tr>
+                <td><var>sort_order</var></td>
+                <td>integer</td>
+                <td>The class&#8217;s position in display order.</td>
+            </tr>
+            <tr>
+                <td><var>aliases</var></td>
+                <td>array</td>
+                <td>Names and spellings that resolve to this class when sent as a beer&#8217;s <var>style</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2367,82 +2408,84 @@ curl -X GET \
 
 <p>When you add an address to a location, are looking for information on a specific location, or are updating a location in the database, successful requests will return the location object in JSON format. That object has the following parameters.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>id</var></td>
-            <td>string</td>
-            <td>The location_id; a unique identifier for the location.</td>
-        </tr>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object; in this case: &#8220;location&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The name of the location.</td>
-        </tr>
-        <tr>
-            <td><var>url</var></td>
-            <td>string</td>
-            <td>A URL that is specific to the location.</td>
-        </tr>
-        <tr>
-            <td><var>country_code</var></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
-        </tr>
-        <tr>
-            <td><var>country_short_name</var></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;1 short name for the country, in title case. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
-        </tr>
-        <tr>
-            <td><var>latitude</var><br><small class="text-muted">(optional)</small></td>
-            <td>float</td>
-            <td>The latitude of the location.</td>
-        </tr>
-        <tr>
-            <td><var>longitude</var><br><small class="text-muted">(optional)</small></td>
-            <td>float</td>
-            <td>The longitude of the location.</td>
-        </tr>
-        <tr>
-            <td><var>cb_verified</var></td>
-            <td>Boolean</td>
-            <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the location&#8217;s information.</td>
-        </tr>
-        <tr>
-            <td><var>brewer_verified</var></td>
-            <td>Boolean</td>
-            <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified the location&#8217;s information.</td>
-        </tr>
-        <tr>
-            <td><var>last_modified</var></td>
-            <td>integer</td>
-            <td>A Unix timestamp indicating when the location was last modified.</td>
-        </tr>
-        <tr>
-            <td><var>address</var><br><small class="text-muted">(optional)</small></td>
-            <td>object</td>
-            <td>At this time, the database supports addresses for locations in the United States. See the <a href="#us-address-object">US Addresses</a> object. The <var>telephone</var> field is included within this object.</td>
-        </tr>
-        <tr>
-            <td><var>brewer</var></td>
-            <td>object</td>
-            <td>A <a href="#brewer-object">brewer object</a> containing information on the brewer associated with this location.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>id</var></td>
+                <td>string</td>
+                <td>The location_id; a unique identifier for the location.</td>
+            </tr>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object; in this case: &#8220;location&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string or null</td>
+                <td>The name of the location, or <var>null</var> when the location has no name of its own. Most taprooms aren&#8217;t named separately from the brewer and the community they sit in, so expect <var>null</var> here and compose a label from the nested <var>brewer</var> object and the <var>address</var> block (for example, &#8220;Avery Brewing &#8211; Boulder&#8221;).</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>A URL that is specific to the location.</td>
+            </tr>
+            <tr>
+                <td><var>country_code</var></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
+            </tr>
+            <tr>
+                <td><var>country_short_name</var></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;1 short name for the country, in title case. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
+            </tr>
+            <tr>
+                <td><var>latitude</var><br><small class="text-muted">(optional)</small></td>
+                <td>float</td>
+                <td>The latitude of the location.</td>
+            </tr>
+            <tr>
+                <td><var>longitude</var><br><small class="text-muted">(optional)</small></td>
+                <td>float</td>
+                <td>The longitude of the location.</td>
+            </tr>
+            <tr>
+                <td><var>cb_verified</var></td>
+                <td>Boolean</td>
+                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the location&#8217;s information.</td>
+            </tr>
+            <tr>
+                <td><var>brewer_verified</var></td>
+                <td>Boolean</td>
+                <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified the location&#8217;s information.</td>
+            </tr>
+            <tr>
+                <td><var>last_modified</var></td>
+                <td>integer</td>
+                <td>A Unix timestamp indicating when the location was last modified.</td>
+            </tr>
+            <tr>
+                <td><var>address</var><br><small class="text-muted">(optional)</small></td>
+                <td>object</td>
+                <td>At this time, the database supports addresses for locations in the United States. See the <a href="#us-address-object">US Addresses</a> object. The <var>telephone</var> field is included within this object.</td>
+            </tr>
+            <tr>
+                <td><var>brewer</var></td>
+                <td>object</td>
+                <td>A <a href="#brewer-object">brewer object</a> containing information on the brewer associated with this location.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample</h4>
 
@@ -2494,37 +2537,39 @@ curl -X GET \
 
 <pre class="api-code">POST https://api.catalog.beer/location</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>brewer_id</var></td>
-            <td>string</td>
-            <td>The brewer_id for the brewer you would like to associate the location with.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The name of the location. This can be generic and mirror the name of the city in which it is located or can be specific.</td>
-        </tr>
-        <tr>
-            <td><var>url</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>A URL specific to the location. This URL should provide visitors additional information on the beer tasting location (e.g. address, hours, or more information). It should not be the same as the brewer&#8217;s URL.</td>
-        </tr>
-        <tr>
-            <td><var>country_code</var></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>brewer_id</var></td>
+                <td>string</td>
+                <td>The brewer_id for the brewer you would like to associate the location with.</td>
+            </tr>
+            <tr>
+                <td><var>name</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The name of the location, if it has one of its own. Omit it for a taproom that simply goes by its brewer and city &#8212; don&#8217;t repeat the city here, since the address already records it.</td>
+            </tr>
+            <tr>
+                <td><var>url</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>A URL specific to the location. This URL should provide visitors additional information on the beer tasting location (e.g. address, hours, or more information). It should not be the same as the brewer&#8217;s URL.</td>
+            </tr>
+            <tr>
+                <td><var>country_code</var></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2573,37 +2618,39 @@ curl -X POST \
 
 <pre class="api-code">PUT https://api.catalog.beer/location/{location_id}</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>brewer_id</var></td>
-            <td>string</td>
-            <td>The brewer_id for the brewer you would like to associate the location with.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The name of the location.</td>
-        </tr>
-        <tr>
-            <td><var>country_code</var></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
-        </tr>
-        <tr>
-            <td><var>url</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>A URL specific to the location. Cleared if omitted.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>brewer_id</var></td>
+                <td>string</td>
+                <td>The brewer_id for the brewer you would like to associate the location with.</td>
+            </tr>
+            <tr>
+                <td><var>name</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The name of the location, if it has one of its own. As with any optional field on a <strong>PUT</strong>, omitting it clears the stored name to <var>null</var>.</td>
+            </tr>
+            <tr>
+                <td><var>country_code</var></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
+            </tr>
+            <tr>
+                <td><var>url</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>A URL specific to the location. Cleared if omitted.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2624,37 +2671,39 @@ curl -X PUT \
 
 <pre class="api-code">PATCH https://api.catalog.beer/location/{location_id}</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>brewer_id</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The brewer_id for the brewer you would like to associate the location with.</td>
-        </tr>
-        <tr>
-            <td><var>name</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The name of the location.</td>
-        </tr>
-        <tr>
-            <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
-        </tr>
-        <tr>
-            <td><var>url</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>A URL specific to the location.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>brewer_id</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The brewer_id for the brewer you would like to associate the location with.</td>
+            </tr>
+            <tr>
+                <td><var>name</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The name of the location. Send <var>null</var> or an empty string to clear a name that&#8217;s already stored.</td>
+            </tr>
+            <tr>
+                <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
+            </tr>
+            <tr>
+                <td><var>url</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>A URL specific to the location.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2696,52 +2745,54 @@ curl -X DELETE \
 
 <pre class="api-code">POST https://api.catalog.beer/address/{location_id}</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The suite or unit number of the location (if applicable - e.g. Suite 101).</td>
-        </tr>
-        <tr>
-            <td><var>address2</var></td>
-            <td>string</td>
-            <td>The street address of the location.</td>
-        </tr>
-        <tr>
-            <td><var>city</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
-            <td>string</td>
-            <td>The name of the city.</td>
-        </tr>
-        <tr>
-            <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
-        </tr>
-        <tr>
-            <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
-            <td>string</td>
-            <td>The traditional 5-digit ZIP Code for the location.</td>
-        </tr>
-        <tr>
-            <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
-        </tr>
-        <tr>
-            <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The 10-digit telephone number for the location. You may submit the number with formatting (e.g. (555) 444&#8211;3333) or as an integer. Formatting will be stripped when the data is processed and an integer will be returned.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The suite or unit number of the location (if applicable - e.g. Suite 101).</td>
+            </tr>
+            <tr>
+                <td><var>address2</var></td>
+                <td>string</td>
+                <td>The street address of the location.</td>
+            </tr>
+            <tr>
+                <td><var>city</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td>string</td>
+                <td>The name of the city.</td>
+            </tr>
+            <tr>
+                <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
+            </tr>
+            <tr>
+                <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td>string</td>
+                <td>The traditional 5-digit ZIP Code for the location.</td>
+            </tr>
+            <tr>
+                <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
+            </tr>
+            <tr>
+                <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The 10-digit telephone number for the location. You may submit the number with formatting (e.g. (555) 444&#8211;3333) or as an integer. Formatting will be stripped when the data is processed and an integer will be returned.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2802,52 +2853,54 @@ curl -X POST \
 
 <pre class="api-code">PUT https://api.catalog.beer/address/{location_id}</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The suite or unit number of the location (if applicable - e.g. Suite 101). Cleared if omitted.</td>
-        </tr>
-        <tr>
-            <td><var>address2</var></td>
-            <td>string</td>
-            <td>The street address of the location.</td>
-        </tr>
-        <tr>
-            <td><var>city</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
-            <td>string</td>
-            <td>The name of the city.</td>
-        </tr>
-        <tr>
-            <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
-        </tr>
-        <tr>
-            <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
-            <td>string</td>
-            <td>The traditional 5-digit ZIP Code for the location.</td>
-        </tr>
-        <tr>
-            <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The additional ZIP+4 Code used by the US Postal Service. Cleared if omitted.</td>
-        </tr>
-        <tr>
-            <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The 10-digit telephone number for the location. Cleared if omitted.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The suite or unit number of the location (if applicable - e.g. Suite 101). Cleared if omitted.</td>
+            </tr>
+            <tr>
+                <td><var>address2</var></td>
+                <td>string</td>
+                <td>The street address of the location.</td>
+            </tr>
+            <tr>
+                <td><var>city</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td>string</td>
+                <td>The name of the city.</td>
+            </tr>
+            <tr>
+                <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
+            </tr>
+            <tr>
+                <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td>string</td>
+                <td>The traditional 5-digit ZIP Code for the location.</td>
+            </tr>
+            <tr>
+                <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The additional ZIP+4 Code used by the US Postal Service. Cleared if omitted.</td>
+            </tr>
+            <tr>
+                <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The 10-digit telephone number for the location. Cleared if omitted.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -2890,47 +2943,49 @@ curl -X GET \
 <p>To retrieve a location, send a <strong>GET</strong> request to the <code>/location/nearby </code> endpoint with the <var>{latitude}</var> and <var>{longitude}</var> query parameters appended to the path.</p>
 
 <h4>Query Parameters</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>latitude</var></td>
-            <td>float</td>
-            <td>The latitude of the location where you would like to search around. Combined with longitude, this pair describes the center of your search radius.</td>
-        </tr>
-        <tr>
-            <td><var>longitude</var></td>
-            <td>float</td>
-            <td>The longitude of the location where you would like to search around. Combined with latitude, this pair describes the center of your search radius.</td>
-        </tr>
-        <tr>
-            <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The radius of the search circle, centered at the provided latitude and longitude. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
-        </tr>
-        <tr>
-            <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
-            <td>boolean</td>
-            <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles, though you can state it explicitly.</td>
-        </tr>
-        <tr>
-            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-        </tr>
-        <tr>
-            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The number of results you would like returned from your request. The default value is 100.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>latitude</var></td>
+                <td>float</td>
+                <td>The latitude of the location where you would like to search around. Combined with longitude, this pair describes the center of your search radius.</td>
+            </tr>
+            <tr>
+                <td><var>longitude</var></td>
+                <td>float</td>
+                <td>The longitude of the location where you would like to search around. Combined with latitude, this pair describes the center of your search radius.</td>
+            </tr>
+            <tr>
+                <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The radius of the search circle, centered at the provided latitude and longitude. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+            </tr>
+            <tr>
+                <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
+                <td>boolean</td>
+                <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles, though you can state it explicitly.</td>
+            </tr>
+            <tr>
+                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            </tr>
+            <tr>
+                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The number of results you would like returned from your request. The default value is 100.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <p>A sample request with query parameters.</p>
 
@@ -2939,59 +2994,61 @@ curl -X GET \
 <h4>Response</h4>
 <p>This request returns a list object with the following parameters.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object. In this case: “list”.</td>
-        </tr>
-        <tr>
-            <td><var>url</var></td>
-            <td>string</td>
-            <td>The API endpoint accessed to retrieve this object. In this case: <code>/location/nearby</code>.</td>
-        </tr>
-        <tr>
-            <td><var>has_more</var></td>
-            <td>Boolean</td>
-            <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
-        </tr>
-        <tr>
-            <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
-        </tr>
-        <tr>
-            <td><var>data</var></td>
-            <td>array</td>
-            <td>
-                <p>An array containing all the locations that match your query parameters. Each result contains three objects:</p>
-                <ul>
-                    <li>A <var>location</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var>, <var>telephone</var>, and a nested <var>address</var> object</li>
-                    <li>A <var>distance</var> object described below</li>
-                    <li>A <var>brewer</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td><var>distance</var></td>
-            <td>float</td>
-            <td>The straight line distance from the query <var>latitude</var> and <var>longitude</var> to the brewery, rounded to the tenths place (a single decimal place).</td>
-        </tr>
-        <tr>
-            <td><var>units</var></td>
-            <td>string</td>
-            <td>The unit of distance. The value of this field will be either &#8220;miles&#8221; (the default value) or &#8220;kilometers&#8221; if the <var>metric</var> query parameter is set to <var>true</var>.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: “list”.</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The API endpoint accessed to retrieve this object. In this case: <code>/location/nearby</code>.</td>
+            </tr>
+            <tr>
+                <td><var>has_more</var></td>
+                <td>Boolean</td>
+                <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
+            </tr>
+            <tr>
+                <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+            </tr>
+            <tr>
+                <td><var>data</var></td>
+                <td>array</td>
+                <td>
+                    <p>An array containing all the locations that match your query parameters. Each result contains three objects:</p>
+                    <ul>
+                        <li>A <var>location</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var>, <var>telephone</var>, and a nested <var>address</var> object</li>
+                        <li>A <var>distance</var> object described below</li>
+                        <li>A <var>brewer</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><var>distance</var></td>
+                <td>float</td>
+                <td>The straight line distance from the query <var>latitude</var> and <var>longitude</var> to the brewery, rounded to the tenths place (a single decimal place).</td>
+            </tr>
+            <tr>
+                <td><var>units</var></td>
+                <td>string</td>
+                <td>The unit of distance. The value of this field will be either &#8220;miles&#8221; (the default value) or &#8220;kilometers&#8221; if the <var>metric</var> query parameter is set to <var>true</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -3064,42 +3121,44 @@ curl -X GET \
 <p>Send a <strong>GET</strong> request to the <code>/location/zip</code> endpoint with the <var>zip_code</var> query parameter.</p>
 
 <h4>Query Parameters</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>zip_code</var></td>
-            <td>string</td>
-            <td>A 5-digit US ZIP code (e.g., <var>92104</var>).</td>
-        </tr>
-        <tr>
-            <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The radius of the search circle, centered at the provided ZIP code. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
-        </tr>
-        <tr>
-            <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
-            <td>boolean</td>
-            <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
-        </tr>
-        <tr>
-            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-        </tr>
-        <tr>
-            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The number of results you would like returned from your request. The default value is 100.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>zip_code</var></td>
+                <td>string</td>
+                <td>A 5-digit US ZIP code (e.g., <var>92104</var>).</td>
+            </tr>
+            <tr>
+                <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The radius of the search circle, centered at the provided ZIP code. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+            </tr>
+            <tr>
+                <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
+                <td>boolean</td>
+                <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
+            </tr>
+            <tr>
+                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            </tr>
+            <tr>
+                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The number of results you would like returned from your request. The default value is 100.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Response</h4>
 <p>The response format is identical to the <a href="#nearby-locations">Find Nearby Locations</a> endpoint, returning a list object with <var>location</var>, <var>distance</var>, and <var>brewer</var> objects for each result. The <var>url</var> field will be <code>/location/zip</code>.</p>
@@ -3175,47 +3234,49 @@ curl -X GET \
 <p>Send a <strong>GET</strong> request to the <code>/location/city</code> endpoint with the <var>city</var> and <var>state</var> query parameters.</p>
 
 <h4>Query Parameters</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>city</var></td>
-            <td>string</td>
-            <td>The name of the city to search around (e.g., <var>San Diego</var>).</td>
-        </tr>
-        <tr>
-            <td><var>state</var></td>
-            <td>string</td>
-            <td>The state name or abbreviation (e.g., <var>California</var> or <var>CA</var>).</td>
-        </tr>
-        <tr>
-            <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The radius of the search circle, centered at the provided city. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
-        </tr>
-        <tr>
-            <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
-            <td>boolean</td>
-            <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
-        </tr>
-        <tr>
-            <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-        </tr>
-        <tr>
-            <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The number of results you would like returned from your request. The default value is 100.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>city</var></td>
+                <td>string</td>
+                <td>The name of the city to search around (e.g., <var>San Diego</var>).</td>
+            </tr>
+            <tr>
+                <td><var>state</var></td>
+                <td>string</td>
+                <td>The state name or abbreviation (e.g., <var>California</var> or <var>CA</var>).</td>
+            </tr>
+            <tr>
+                <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The radius of the search circle, centered at the provided city. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+            </tr>
+            <tr>
+                <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
+                <td>boolean</td>
+                <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
+            </tr>
+            <tr>
+                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            </tr>
+            <tr>
+                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The number of results you would like returned from your request. The default value is 100.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Response</h4>
 <p>The response format is identical to the <a href="#nearby-locations">Find Nearby Locations</a> endpoint, returning a list object with <var>location</var>, <var>distance</var>, and <var>brewer</var> objects for each result. The <var>url</var> field will be <code>/location/city</code>.</p>
@@ -3292,62 +3353,64 @@ curl -X GET \
 
 <h3 id="usage-object">The Usage Object</h3>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object. In this case: &#8220;usage&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>api_key</var></td>
-            <td>string</td>
-            <td>The API key associated with this usage record.</td>
-        </tr>
-        <tr>
-            <td><var>year</var></td>
-            <td>integer</td>
-            <td>The year of the current billing period (e.g. 2026).</td>
-        </tr>
-        <tr>
-            <td><var>month</var></td>
-            <td>integer</td>
-            <td>The month of the current billing period (1&#8211;12).</td>
-        </tr>
-        <tr>
-            <td><var>count</var></td>
-            <td>integer</td>
-            <td>The number of API requests made during the current billing period.</td>
-        </tr>
-        <tr>
-            <td><var>request_limit</var></td>
-            <td>integer</td>
-            <td>The maximum number of requests allowed per month for this API key.</td>
-        </tr>
-        <tr>
-            <td><var>request_buffer</var></td>
-            <td>integer</td>
-            <td>A grace zone beyond the request limit. Requests will not be blocked until <var>count</var> exceeds <var>request_limit</var> + <var>request_buffer</var>.</td>
-        </tr>
-        <tr>
-            <td><var>resets_on</var></td>
-            <td>string</td>
-            <td>The date your usage count resets, formatted as <var>YYYY-MM-DD</var> (always the first of the next month).</td>
-        </tr>
-        <tr>
-            <td><var>last_updated</var></td>
-            <td>integer</td>
-            <td>Unix timestamp of the last time the usage counter was updated. Returns <var>0</var> if no requests have been made this month.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: &#8220;usage&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>api_key</var></td>
+                <td>string</td>
+                <td>The API key associated with this usage record.</td>
+            </tr>
+            <tr>
+                <td><var>year</var></td>
+                <td>integer</td>
+                <td>The year of the current billing period (e.g. 2026).</td>
+            </tr>
+            <tr>
+                <td><var>month</var></td>
+                <td>integer</td>
+                <td>The month of the current billing period (1&#8211;12).</td>
+            </tr>
+            <tr>
+                <td><var>count</var></td>
+                <td>integer</td>
+                <td>The number of API requests made during the current billing period.</td>
+            </tr>
+            <tr>
+                <td><var>request_limit</var></td>
+                <td>integer</td>
+                <td>The maximum number of requests allowed per month for this API key.</td>
+            </tr>
+            <tr>
+                <td><var>request_buffer</var></td>
+                <td>integer</td>
+                <td>A grace zone beyond the request limit. Requests will not be blocked until <var>count</var> exceeds <var>request_limit</var> + <var>request_buffer</var>.</td>
+            </tr>
+            <tr>
+                <td><var>resets_on</var></td>
+                <td>string</td>
+                <td>The date your usage count resets, formatted as <var>YYYY-MM-DD</var> (always the first of the next month).</td>
+            </tr>
+            <tr>
+                <td><var>last_updated</var></td>
+                <td>integer</td>
+                <td>Unix timestamp of the last time the usage counter was updated. Returns <var>0</var> if no requests have been made this month.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -3404,62 +3467,64 @@ curl -X GET \
 
 <p>Addresses for the United States are stored in an object with the following parameters.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The apartment, suite, or unit number of the location (if applicable).</td>
-        </tr>
-        <tr>
-            <td><var>address2</var></td>
-            <td>string</td>
-            <td>The street address of the location.</td>
-        </tr>
-        <tr>
-            <td><var>city</var></td>
-            <td>string</td>
-            <td>The name of the city</td>
-        </tr>
-        <tr>
-            <td><var>sub_code</var></td>
-            <td>string</td>
-            <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. US-CA)</td>
-        </tr>
-        <tr>
-            <td><var>state_short</var></td>
-            <td>string</td>
-            <td>The two character all-caps notation for the state (e.g. CA).</td>
-        </tr>
-        <tr>
-            <td><var>state_long</var></td>
-            <td>string</td>
-            <td>The full name of the state or district (e.g. California)</td>
-        </tr>
-        <tr>
-            <td><var>zip5</var></td>
-            <td>integer</td>
-            <td>The traditional 5-digit ZIP Code for the location.</td>
-        </tr>
-        <tr>
-            <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
-        </tr>
-        <tr>
-            <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
-            <td>integer</td>
-            <td>An unformatted integer representing the telephone number of the location. Does not include the country code. For example, a US telephone number written in the international format as +1 (555) 444&#8211;3333 is stored as 5554443333 in our database.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The apartment, suite, or unit number of the location (if applicable).</td>
+            </tr>
+            <tr>
+                <td><var>address2</var></td>
+                <td>string</td>
+                <td>The street address of the location.</td>
+            </tr>
+            <tr>
+                <td><var>city</var></td>
+                <td>string</td>
+                <td>The name of the city</td>
+            </tr>
+            <tr>
+                <td><var>sub_code</var></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. US-CA)</td>
+            </tr>
+            <tr>
+                <td><var>state_short</var></td>
+                <td>string</td>
+                <td>The two character all-caps notation for the state (e.g. CA).</td>
+            </tr>
+            <tr>
+                <td><var>state_long</var></td>
+                <td>string</td>
+                <td>The full name of the state or district (e.g. California)</td>
+            </tr>
+            <tr>
+                <td><var>zip5</var></td>
+                <td>integer</td>
+                <td>The traditional 5-digit ZIP Code for the location.</td>
+            </tr>
+            <tr>
+                <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
+            </tr>
+            <tr>
+                <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>An unformatted integer representing the telephone number of the location. Does not include the country code. For example, a US telephone number written in the international format as +1 (555) 444&#8211;3333 is stored as 5554443333 in our database.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -3476,57 +3541,59 @@ curl -X GET \
 
 <p>Successful requests to user endpoints will return the user object in JSON format. That object has the following parameters.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>id</var></td>
-            <td>string</td>
-            <td>The user_id; a unique identifier for the user.</td>
-        </tr>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object. In this case: &#8220;users&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>name</var></td>
-            <td>string</td>
-            <td>The user&#8217;s name.</td>
-        </tr>
-        <tr>
-            <td><var>email</var></td>
-            <td>string</td>
-            <td>The user&#8217;s email address.</td>
-        </tr>
-        <tr>
-            <td><var>email_verified</var></td>
-            <td>Boolean</td>
-            <td>A <var>true</var> or <var>false</var> value denoting whether the user&#8217;s email address has been verified.</td>
-        </tr>
-        <tr>
-            <td><var>email_auth</var></td>
-            <td>string/null</td>
-            <td>The email verification code, or <var>null</var> if the email has already been verified.</td>
-        </tr>
-        <tr>
-            <td><var>email_auth_sent</var></td>
-            <td>integer/null</td>
-            <td>A Unix timestamp indicating when the email verification was sent, or <var>null</var>.</td>
-        </tr>
-        <tr>
-            <td><var>admin</var></td>
-            <td>Boolean</td>
-            <td>A <var>true</var> or <var>false</var> value denoting whether the user has administrator privileges.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>id</var></td>
+                <td>string</td>
+                <td>The user_id; a unique identifier for the user.</td>
+            </tr>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: &#8220;users&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The user&#8217;s name.</td>
+            </tr>
+            <tr>
+                <td><var>email</var></td>
+                <td>string</td>
+                <td>The user&#8217;s email address.</td>
+            </tr>
+            <tr>
+                <td><var>email_verified</var></td>
+                <td>Boolean</td>
+                <td>A <var>true</var> or <var>false</var> value denoting whether the user&#8217;s email address has been verified.</td>
+            </tr>
+            <tr>
+                <td><var>email_auth</var></td>
+                <td>string/null</td>
+                <td>The email verification code, or <var>null</var> if the email has already been verified.</td>
+            </tr>
+            <tr>
+                <td><var>email_auth_sent</var></td>
+                <td>integer/null</td>
+                <td>A Unix timestamp indicating when the email verification was sent, or <var>null</var>.</td>
+            </tr>
+            <tr>
+                <td><var>admin</var></td>
+                <td>Boolean</td>
+                <td>A <var>true</var> or <var>false</var> value denoting whether the user has administrator privileges.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample</h4>
 
@@ -3576,32 +3643,34 @@ curl -X GET \
 
 <h4>Response</h4>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>object</var></td>
-            <td>string</td>
-            <td>The name of the object. In this case: &#8220;api_key&#8221;.</td>
-        </tr>
-        <tr>
-            <td><var>user_id</var></td>
-            <td>string</td>
-            <td>The user_id associated with the API key.</td>
-        </tr>
-        <tr>
-            <td><var>api_key</var></td>
-            <td>string/null</td>
-            <td>The API key, or <var>null</var> if the user&#8217;s email has not been verified.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: &#8220;api_key&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>user_id</var></td>
+                <td>string</td>
+                <td>The user_id associated with the API key.</td>
+            </tr>
+            <tr>
+                <td><var>api_key</var></td>
+                <td>string/null</td>
+                <td>The API key, or <var>null</var> if the user&#8217;s email has not been verified.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -3632,32 +3701,34 @@ curl -X GET \
 
 <pre class="api-code">PATCH https://api.catalog.beer/users/{user_id}</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>name</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The user&#8217;s name. Max 255 characters.</td>
-        </tr>
-        <tr>
-            <td><var>email</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>The user&#8217;s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain.</td>
-        </tr>
-        <tr>
-            <td><var>password</var><br><small class="text-muted">(optional)</small></td>
-            <td>string</td>
-            <td>A new password for the account. Must be at least 8 characters.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>name</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The user&#8217;s name. Max 255 characters.</td>
+            </tr>
+            <tr>
+                <td><var>email</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The user&#8217;s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain.</td>
+            </tr>
+            <tr>
+                <td><var>password</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>A new password for the account. Must be at least 8 characters.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -3718,22 +3789,24 @@ curl -X POST \
 
 <pre class="api-code">POST https://api.catalog.beer/users/password-reset/{password_reset_key}</pre>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Parameter</th>
-            <th scope="col">Type</th>
-            <th scope="col">Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><var>password</var></td>
-            <td>string</td>
-            <td>The new password. Must be at least 8 characters.</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>password</var></td>
+                <td>string</td>
+                <td>The new password. Must be at least 8 characters.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <h4>Sample Request</h4>
 
@@ -3749,7 +3822,7 @@ curl -X POST \
 
             </div>
         </div>
-  </div>
-  <?php echo $nav->footer(); ?>
+    </div>
+    <?php echo $nav->footer(); ?>
 </body>
 </html>

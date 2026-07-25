@@ -14,6 +14,26 @@ echo $nav->breadcrumbs();
 <?php echo $nav->footer(); ?>
 --- */
 class Navigation {
+    /* Number of styles, stated in the homepage lede. Not a navbar badge.
+
+    Hard-coded on purpose. There is no /style/count endpoint, and the only other
+    way to get the number is to pull the whole vocabulary from GET /style — an
+    extra blocking API call for the many visitors who arrive without a session to
+    cache it in (initialize.php starts one only if a cookie is already present).
+    The vocabulary changes a few times a year, so a constant someone bumps is the
+    better trade.
+
+    Bump this whenever styles are added or removed. The true figure is the one
+    the Styles index prints in its headline ($beerStyleCount in style-list.php,
+    counted live off the vocabulary) — if the two ever disagree, that page is
+    right and this number is stale.
+
+    Beer only, deliberately: the headline a visitor lands on after clicking
+    through says "N beer styles", and the two numbers should match. The full
+    vocabulary is larger — style-list.php closes with $otherStyleCount more
+    styles of cider, perry and mead under "Beyond Beer". */
+    const STYLE_COUNT = 171;
+
     // Public Variables
     public $currentURI;
     public $breadcrumbHTML;
@@ -23,6 +43,7 @@ class Navigation {
     // Private Variables
     private $URIArray = array();
     private $topNavSection = '';
+    private $countsCache = null;
     
     // Startup
     function __construct(){
@@ -99,6 +120,11 @@ class Navigation {
             $staging = '';
         }
         $html = str_replace('##STAGING##', $staging, $html);
+
+        // Bootstrap bundle, self-hosted and versioned (see htmlHead for the why).
+        // Emitted here because plain-footer.html is static and can't run jsTag().
+        $html = str_replace('##BOOTSTRAPJS##', jsTag('/assets/js/bootstrap.bundle.min.js'), $html);
+
         return $html;
     }
     
@@ -107,7 +133,8 @@ class Navigation {
         // Get Navbar
         $html = file_get_contents(ROOT . '/classes/resources/navbar.html');
         
-        // Generate Links (with cached counts for Brewers + Beer)
+        // Generate Links (with cached counts for Brewers + Beer). Styles carries no
+        // badge — the number isn't one a reader is browsing by.
         $counts = $this->counts();
         $links = $this->activeNav($section, '/brewer', 'Brewers', $counts['brewers']);
         $links .= $this->activeNav($section, '/beer', 'Beer', $counts['beers']);
@@ -116,7 +143,22 @@ class Navigation {
         
         // Add in Links
         $html = str_replace('##ITEMS##', $links, $html);
-        
+
+        // Global search placeholder — reflects the section + cached counts.
+        // (The field is wired to Algolia separately; this is copy only.)
+        if($section == 'Beer'){
+            $searchPlaceholder = ($counts['beers'] !== null)
+                ? 'Search ' . number_format($counts['beers']) . ' beers…'
+                : 'Search beers…';
+        }elseif($section == 'Brewers'){
+            $searchPlaceholder = ($counts['brewers'] !== null)
+                ? 'Search ' . number_format($counts['brewers']) . ' brewers…'
+                : 'Search brewers…';
+        }else{
+            $searchPlaceholder = 'Search Catalog.beer…';
+        }
+        $html = str_replace('##SEARCHPLACEHOLDER##', htmlspecialchars($searchPlaceholder, ENT_QUOTES), $html);
+
         // Sign In / Sign Out
         if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
             $signIn = '<li><a class="dropdown-item" href="/account">My Account</a></li>' . "\n";
@@ -154,12 +196,40 @@ class Navigation {
         return $html;
     }
 
-    // Brewer + beer counts for the navbar. Cached per-session (short TTL) because
-    // the navbar renders on every page; each count is a blocking API call.
-    // Cache is busted on add (see beer-add.php / brewer-add.php) for instant freshness.
-    private function counts(){
+    // Brewer, beer + style counts. Brewers and beers come from the API and are
+    // cached per-session (short TTL) because the navbar badges them on every page
+    // and each count is a blocking API call. Cache is busted on add (see
+    // beer-add.php / brewer-add.php) for instant freshness.
+    //
+    // Public because the homepage states all three numbers in its lede — it reads
+    // brewers and beers from here rather than counting again, so the page costs
+    // nothing the navbar wasn't already paying for. Either may be null (API down).
+    public function counts(){
+        // Per-request memo. Anonymous visitors have no session at all (see
+        // initialize.php), so the session cache below can't hold anything for
+        // them — without this the homepage, which asks for the counts before it
+        // renders the navbar, would fetch them twice on every hit.
+        if($this->countsCache !== null){
+            return $this->countsCache;
+        }
+
+        $out = $this->fetchCounts();
+
+        // Styles are not fetched — see STYLE_COUNT. Stamped on every read rather
+        // than stored, so bumping the constant takes effect immediately instead
+        // of waiting out every live session's cached copy.
+        $out['styles'] = self::STYLE_COUNT;
+
+        $this->countsCache = $out;
+        return $out;
+    }
+
+    // The API-backed half of counts(): brewers + beers, session-cached.
+    private function fetchCounts(){
         if(isset($_SESSION['cb_counts']['ts']) && (time() - $_SESSION['cb_counts']['ts']) < 600){
-            return $_SESSION['cb_counts'];
+            // Fill any key a session cached before this shape grew, so a live
+            // session mid-deploy reads null (no badge) rather than warning.
+            return $_SESSION['cb_counts'] + array('brewers' => null, 'beers' => null);
         }
 
         $out = array('brewers' => null, 'beers' => null, 'ts' => time());
@@ -181,52 +251,68 @@ class Navigation {
         return $out;
     }
     
-    // ----- Pagination -----
-    public function pagination($page, $totalPages, $baseURL){
-        $pageNav = '<nav aria-label="Page navigation">';
-        $pageNav .= '<ul class="pagination justify-content-center">';
-        
+    // ----- Editorial Pager (catalog A-Z index pages) -----
+    // Mono chip pagination for the beer/brewer index: chevron Prev/Next, a
+    // 5-wide window centered on the current page, and first/last with ellipses.
+    // The only pager on the site — it replaced a Bootstrap-markup pagination()
+    // (.pagination/.page-item/.page-link, ±10 jumps) that was left behind with no
+    // call sites and has been deleted. Styles: .cx-pager* (styles-pages.css).
+    public function catalogPager($page, $totalPages, $baseURL){
+        $page = intval($page);
+        $totalPages = intval($totalPages);
+        if($totalPages <= 1){
+            return '';
+        }
+
+        $chevronLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>';
+        $chevronRight = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>';
+
+        $html = '<nav class="cx-pager" aria-label="Page navigation">';
+
+        // Prev
         if($page > 1){
-            // Previous
-            $previous = $page - 1;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $previous . '" aria-label="Previous" title="Previous Page"><span aria-hidden="true">&lt;</span><span class="visually-hidden">Previous</span></a></li>';
+            $html .= '<a class="cx-pager__chip" href="' . $baseURL . '?page=' . ($page - 1) . '" rel="prev" aria-label="Previous page">' . $chevronLeft . ' Prev</a>';
         }
-        
-        if($page >= 15){
-            // Jump 10 back
-            $minusTen = $page - 10;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $minusTen . '" aria-label="Jump Back 10" title="Jump Back 10"><span aria-hidden="true">-10</span><span class="visually-hidden">Jump Back 10</span></a></li>';
+
+        // 5-wide window, clamped so it never overruns either end
+        $window = 5;
+        $start = max(1, min($page - 2, $totalPages - ($window - 1)));
+        $end = min($totalPages, $start + $window - 1);
+
+        // Leading: first page + ellipsis when the window has moved off the start
+        if($start > 1){
+            $html .= $this->pagerNum(1, $page, $baseURL);
+            if($start > 2){
+                $html .= '<span class="cx-pager__gap" aria-hidden="true">&hellip;</span>';
+            }
         }
-        
-        // Starting Page Number
-        if($page-5 > 0){$start = $page-5;}
-        else{$start = 1;}
-        
-        // Display Navigation
-        for($i=$start; $i<=$start+9; $i++){
-            // Active State?
-            if($i == $page){$classAdd = ' active';}
-            else{$classAdd = '';}
-            
-            // Display HTML
-            $pageNav .= '<li class="page-item' . $classAdd . '"><a class="page-link" href="' . $baseURL . '?page=' . $i . '">' . $i . '</a></li>';
+
+        for($i = $start; $i <= $end; $i++){
+            $html .= $this->pagerNum($i, $page, $baseURL);
         }
-        
-        if($page+14 < $totalPages){
-            // Jump forward 10
-            $plusTen = $page + 10;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $plusTen . '" aria-label="Jump Forward 10" title="Jump Forward 10"><span aria-hidden="true">+10</span><span class="visually-hidden">Jump Forward 10</span></a></li>';
+
+        // Trailing: ellipsis + last page when the window stops short of the end
+        if($end < $totalPages){
+            if($end < $totalPages - 1){
+                $html .= '<span class="cx-pager__gap" aria-hidden="true">&hellip;</span>';
+            }
+            $html .= $this->pagerNum($totalPages, $page, $baseURL);
         }
-        
+
+        // Next
         if($page < $totalPages){
-            // Next
-            $next = $page + 1;
-            $pageNav .= '<li class="page-item"><a class="page-link" href="' . $baseURL . '?page=' . $next . '" aria-label="Next" title="Next Page"><span aria-hidden="true">&gt;</span><span class="visually-hidden">Next</span></a></li>';
+            $html .= '<a class="cx-pager__chip" href="' . $baseURL . '?page=' . ($page + 1) . '" rel="next" aria-label="Next page">Next ' . $chevronRight . '</a>';
         }
-        
-        $pageNav .= '</ul>';        // Close pagination
-        $pageNav .= '</nav>';       // Close nav
-        return $pageNav;
+
+        $html .= '</nav>';
+        return $html;
+    }
+
+    private function pagerNum($i, $page, $baseURL){
+        if($i == $page){
+            return '<a class="cx-pager__num is-current" href="' . $baseURL . '?page=' . $i . '" aria-current="page">' . $i . '</a>';
+        }
+        return '<a class="cx-pager__num" href="' . $baseURL . '?page=' . $i . '">' . $i . '</a>';
     }
 }
 ?>
