@@ -54,6 +54,14 @@ class htmlHead {
         $this->html = str_replace('</head>', $meta . '</head>', $this->html);
     }
 
+    // Embed a JSON-LD structured-data block before </head>. JSON_HEX_TAG so a
+    // literal "</script>" in any value can't break out of the script element.
+    function addJsonLd(array $data){
+        $json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+        $script = "\t" . '<script type="application/ld+json">' . $json . '</script>' . "\n";
+        $this->html = str_replace('</head>', $script . '</head>', $this->html);
+    }
+
     function addDescription($description){
         if(!empty($description)){
             $text = new Text(false, false, true);

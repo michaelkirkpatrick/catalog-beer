@@ -111,16 +111,23 @@ echo $htmlHead->html;
         });
 
         // Render the 3-column A-Z index (CSS multi-column; groups stay intact).
-        echo '<div class="cx-cols">';
+        // The grid doubles as a schema.org ItemList (summary-page pattern: each
+        // ListItem carries name + url + position). Positions are page-relative
+        // — each page of 500 is its own list.
+        echo '<div class="cx-cols" itemscope itemtype="https://schema.org/ItemList">';
+        echo '<meta itemprop="numberOfItems" content="' . count($brewerData->data) . '" />';
+        $position = 0;
         foreach($groups as $letter => $rows){
             echo '<div class="cx-grp">';
             echo '<div class="cx-letter">' . htmlspecialchars($letter) . '</div>';
             foreach($rows as $row){
                 $brewerName = $text->get($row->name);
                 $brewerID = $textID->get($row->id);
+                $position++;
 
-                echo '<a class="cx-row" href="/brewer/' . $brewerID . '">';
-                echo '<span class="cx-name">' . $brewerName . '</span>';
+                echo '<a class="cx-row" href="/brewer/' . $brewerID . '" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
+                echo '<meta itemprop="position" content="' . $position . '" /><link itemprop="url" href="/brewer/' . $brewerID . '" />';
+                echo '<span class="cx-name" itemprop="name">' . $brewerName . '</span>';
                 // Trailing value: beer count (where present in the enriched shape).
                 if(property_exists($row, 'beer_count')){
                     echo '<span class="cx-value">' . number_format(intval($row->beer_count)) . '</span>';

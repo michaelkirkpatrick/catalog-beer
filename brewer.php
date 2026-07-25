@@ -159,7 +159,7 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Brewers'); ?>
-    <div class="cb-page" style="padding-top:1.25rem;" itemscope itemtype="http://schema.org/Brewery">
+    <div class="cb-page" style="padding-top:1.25rem;" itemscope itemtype="https://schema.org/Brewery">
         <?php
         // Flash message
         if($loggedIn && !empty($_SESSION['delete_location_success'])){
@@ -171,8 +171,14 @@ echo $htmlHead->html;
             $_SESSION['delete_location_success'] = false;
         }
         ?>
-        <div class="cb-eyebrow">
-            <a href="/brewer">Brewers</a> &nbsp;/&nbsp; <span aria-current="page"><?php echo $brewerName; ?></span>
+        <?php
+        /* Same BreadcrumbList treatment as location.php — itemscope without an
+           itemprop makes this a second top-level item, not a property of the
+           Brewery, and it annotates the crumbs already on screen. */
+        ?>
+        <div class="cb-eyebrow" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer"><span itemprop="name">Brewers</span></a><meta itemprop="position" content="1" /></span> &nbsp;/&nbsp;
+            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo $brewerName; ?></span><meta itemprop="position" content="2" /></span>
         </div>
 
         <div class="bp-body">
@@ -222,16 +228,19 @@ echo $htmlHead->html;
                         $locationName = $text1->get(locationShortName($loc));
                         $locationIDString = $text3->get($loc->id);
                         ?>
-                    <div class="cb-card bp-loc-card" itemprop="location" itemscope itemtype="http://schema.org/Place"><meta itemprop="publicAccess" content="true" />
+                    <div class="cb-card bp-loc-card" itemprop="location" itemscope itemtype="https://schema.org/Place"><meta itemprop="publicAccess" content="true" />
                         <h3 class="bp-loc-name" itemprop="name"><?php
-                            // Link the location name to its detail page.
-                            echo '<a href="/location/' . $locationIDString . '" itemprop="url">' . $locationName . '</a>';
+                            // Link the location name to its detail page. No
+                            // itemprop="url" — that property is reserved for the
+                            // business's own site, not a catalog entry (see the
+                            // rail here and location.php).
+                            echo '<a href="/location/' . $locationIDString . '">' . $locationName . '</a>';
                         ?></h3>
                         <div class="bp-loc-meta">
                             <?php
                             if(isset($loc->address)){
                                 // Street Address (address2 is the street line; address1 the unit)
-                                echo '<div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress"><meta itemprop="addressCountry" content="' . $text1->get($loc->country_code ?? 'US') . '" /><p><span itemprop="streetAddress">' . $text1->get($loc->address->address2);
+                                echo '<div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"><meta itemprop="addressCountry" content="' . $text1->get($loc->country_code ?? 'US') . '" /><p><span itemprop="streetAddress">' . $text1->get($loc->address->address2);
                                 if(!empty($loc->address->address1)){
                                     echo ' ' . $text1->get($loc->address->address1);
                                 }

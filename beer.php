@@ -186,7 +186,26 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Beer'); ?>
-    <div class="cb-page" style="padding-top:1.25rem;">
+    <?php
+    /* Product, because schema.org has no Beer type. The brewer rides as brand
+       (Brewery is an Organization, which brand accepts), the raw style label
+       as category, and ABV/IBU as PropertyValue pairs. The facts are stated
+       once here as metas rather than woven into the visible rail/card, which
+       render conditionally across two layouts — this keeps the item complete
+       in both states. */
+    ?>
+    <div class="cb-page" style="padding-top:1.25rem;" itemscope itemtype="https://schema.org/Product">
+        <?php
+        if($beerStyle !== ''){
+            echo '        <meta itemprop="category" content="' . htmlspecialchars($beerData->style, ENT_QUOTES) . '" />' . "\n";
+        }
+        if($abv !== null){
+            echo '        <div itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue"><meta itemprop="name" content="ABV" /><meta itemprop="value" content="' . htmlspecialchars($abvLabel, ENT_QUOTES) . '" /><meta itemprop="unitText" content="%" /></div>' . "\n";
+        }
+        if($ibu !== null){
+            echo '        <div itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue"><meta itemprop="name" content="IBU" /><meta itemprop="value" content="' . intval($ibu) . '" /></div>' . "\n";
+        }
+        ?>
         <?php
         // Flash: "just added" success
         if($loggedIn && !empty($_SESSION['add_beer_success'])){
@@ -199,8 +218,15 @@ echo $htmlHead->html;
         }
         ?>
         <div class="be-topbar">
-            <div class="cb-eyebrow">
-                <a href="/brewer">Brewers</a> &nbsp;/&nbsp; <a href="/brewer/<?php echo $brewerURL; ?>"><?php echo $brewerName; ?></a> &nbsp;/&nbsp; <span aria-current="page"><?php echo $beerName; ?></span>
+            <?php
+            /* Same BreadcrumbList treatment as location.php — itemscope
+               without an itemprop makes this a top-level item alongside the
+               Product, annotating the crumbs already on screen. */
+            ?>
+            <div class="cb-eyebrow" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer"><span itemprop="name">Brewers</span></a><meta itemprop="position" content="1" /></span> &nbsp;/&nbsp;
+                <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer/<?php echo $brewerURL; ?>"><span itemprop="name"><?php echo $brewerName; ?></span></a><meta itemprop="position" content="2" /></span> &nbsp;/&nbsp;
+                <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo $beerName; ?></span><meta itemprop="position" content="3" /></span>
             </div>
             <?php echo $editBtn; ?>
         </div>
@@ -208,12 +234,12 @@ echo $htmlHead->html;
         <?php if($stateFull){ /* ============ STATE A: RECORD ============ */ ?>
         <header class="be-hero">
             <div>
-                <h1 class="cb-title be-title"><?php echo $beerName; ?></h1>
+                <h1 class="cb-title be-title" itemprop="name"><?php echo $beerName; ?></h1>
                 <?php if($verifyText !== ''){ ?>
                 <span class="be-verify"><span class="cb-vdot <?php echo $verifyDot; ?>"></span><?php echo $verifyText; ?></span>
                 <?php } ?>
                 <?php echo $styleLine; ?>
-                <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>"><?php echo $brewerName; ?></a></div>
+                <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemprop="brand" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
             </div>
             <?php echo $glassHTML; ?>
         </header>
@@ -222,7 +248,9 @@ echo $htmlHead->html;
             <main class="cb-prose be-prose">
                 <?php
                 if($hasProse){
-                    echo $text2->get($beerData->description);
+                    // Wrapped so itemprop="description" carries the prose alone,
+                    // not the related-beers list that shares this <main>.
+                    echo '<div itemprop="description">' . $text2->get($beerData->description) . '</div>';
                 }
                 if($hasRelated){
                     echo '<h2 class="be-rel-h">More ' . $text1->get($familyLabel) . ' <span class="cb-count cb-count--bare">' . count($related) . '</span></h2>';
@@ -280,9 +308,9 @@ echo $htmlHead->html;
         <?php }else{ /* ============ STATE B: COASTER ============ */ ?>
         <div class="be-card">
             <?php echo $glassHTML; ?>
-            <h1 class="cb-title be-title"><?php echo $beerName; ?></h1>
+            <h1 class="cb-title be-title" itemprop="name"><?php echo $beerName; ?></h1>
             <?php echo $styleLine; ?>
-            <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>"><?php echo $brewerName; ?></a></div>
+            <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemprop="brand" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
             <?php if($abv !== null){ ?>
             <hr class="be-card-rule">
             <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;">

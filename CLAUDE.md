@@ -156,6 +156,16 @@ Admin landing page at `/admin/` with cards linking to sub-pages. All require `$g
 - **`admin/usage.php`** — Monthly API call counts per user (last 13 months). Consumes `GET /usage`.
 - **`admin/error-log.php`** — Error summary, trends, recent errors, resolve-all. Consumes `GET /error-log`.
 
+### Structured Data (schema.org)
+
+Inline **microdata** on the catalog pages, always with `https://schema.org/` type URLs (never `http://`):
+
+- **brewer.php** — `Brewery` (page scope) with each taproom as `location` → `Place`/`PostalAddress`; **location.php** — `Brewery` (deliberately: it descends from both Place and LocalBusiness); **beer.php** — `Product` (schema.org has no Beer type) with `brand` → the Brewery, `category` = raw style label, and ABV/IBU as meta-only `additionalProperty` → `PropertyValue` pairs.
+- All three detail pages annotate the eyebrow crumbs as a `BreadcrumbList` — itemscope without itemprop, so it's a top-level item beside the page entity, and it annotates the visible crumbs rather than restating them in JSON-LD that could drift.
+- `itemprop="url"` is reserved for the entity's own website (brewer's site, taproom's site) — never a Catalog.beer detail-page link.
+- **brewer-list.php / beer-list.php** — the `.cx-cols` grid is an `ItemList`; each row is a `ListItem` with page-relative `position`, `url` (via `<link>`), and `name`.
+- **index.php** — `Organization` + `WebSite` JSON-LD graph (site identity + CC BY 4.0 license), injected via `htmlHead->addJsonLd(array)`; this is the only JSON-LD on the site.
+
 ### Error Logging Convention
 
 Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15`). Each error is logged with a filename reference to the originating file.

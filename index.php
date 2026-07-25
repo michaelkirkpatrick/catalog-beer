@@ -57,6 +57,30 @@ $markCells = array(
 $htmlHead = new htmlHead('Catalog.beer: The Internet\'s Beer Database');
 $htmlHead->addStylesheet('/assets/css/styles-pages.css');
 $htmlHead->addDescription('The Internet\'s Beer Database — an open catalog of the world\'s brewers, beers and beer styles, free to use and free to build on.');
+// Organization + WebSite as one JSON-LD graph, homepage only — the site-level
+// identity search engines hang the per-page microdata (Brewery, Product,
+// BreadcrumbList) off of. license = the CC BY 4.0 note in the pitch.
+$htmlHead->addJsonLd(array(
+    '@context' => 'https://schema.org',
+    '@graph' => array(
+        array(
+            '@type' => 'Organization',
+            '@id' => 'https://catalog.beer/#organization',
+            'name' => 'Catalog.beer',
+            'url' => 'https://catalog.beer/',
+            'logo' => 'https://catalog.beer/images/logo-black.svg',
+            'description' => 'An open catalog of the world\'s brewers, beers and beer styles, free to use and free to build on.'
+        ),
+        array(
+            '@type' => 'WebSite',
+            '@id' => 'https://catalog.beer/#website',
+            'name' => 'Catalog.beer',
+            'url' => 'https://catalog.beer/',
+            'publisher' => array('@id' => 'https://catalog.beer/#organization'),
+            'license' => 'https://creativecommons.org/licenses/by/4.0/'
+        )
+    )
+));
 echo $htmlHead->html;
 ?>
 <body>
