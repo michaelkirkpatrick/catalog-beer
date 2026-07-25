@@ -124,6 +124,13 @@
   --cb-measure:  1080px;    /* standard content max-width     */
   --cb-measure-narrow: 720px; /* forms, prose, single-column  */
 
+  /* Rail padding is a token, not a literal, because full-bleed children
+     (.cb-label--band) must cancel it with a negative margin. Two magic
+     numbers that have to agree will eventually disagree. */
+  --cb-rail-pad-x: 1.15rem;
+  --cb-rail-pad-t: 1.1rem;
+  --cb-rail-pad-b: 1.25rem;
+
   /* ======================================================================
      4 · RADIUS  (replaces .25–.75rem scattered per component)
      ====================================================================== */

@@ -73,8 +73,22 @@
 .cb-card { background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); padding: var(--cb-space-4); }
 .cb-card--interactive { transition: border-color var(--cb-dur), box-shadow var(--cb-dur); }
 .cb-card--interactive:hover { border-color: var(--cb-amber); box-shadow: var(--cb-shadow-md); }
-.cb-rail { background: var(--cb-paper-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-xl); padding: 1.1rem 1.15rem 1.25rem; }
+.cb-rail { background: var(--cb-paper-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-xl); padding: var(--cb-rail-pad-t) var(--cb-rail-pad-x) var(--cb-rail-pad-b); }
 .cb-rail > .cb-label { display: block; margin-bottom: .6rem; }
+/* section band — a label that fills the rail edge to edge, so a rail holding
+   more than one block reads as distinct sections instead of one long list of
+   keys. Bleeds out through the rail's own padding. */
+.cb-rail .cb-label--band {
+  display: block;
+  margin: 0 calc(-1 * var(--cb-rail-pad-x)) .8rem;
+  padding: .4rem var(--cb-rail-pad-x);
+  background: var(--cb-paper-3); color: var(--cb-ink-2);
+}
+/* the first band caps the rail: to the top edge, corners matched */
+.cb-rail > :first-child > .cb-label--band {
+  margin-top: calc(-1 * var(--cb-rail-pad-t));
+  border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
+}
 /* buttons at the foot of a rail block — equal width, side by side */
 .cb-rail-actions { display: flex; gap: .6rem; margin-top: 1.25rem; }
 .cb-rail-actions .cb-btn { flex: 1; justify-content: center; }

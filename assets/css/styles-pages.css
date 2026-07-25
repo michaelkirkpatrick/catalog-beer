@@ -155,7 +155,9 @@
    (see the note in brewer.php). The address block there is the shared
    .cb-addr primitive, same as the location page's rail. */
 .bp-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.6rem; }
-.bp-rail .cb-label { display: block; margin-bottom: .6rem; }
+/* :not(--band) — this rule is more specific than .cb-label--band and loads
+   after it, so without the guard it would cancel the band's bleed margins. */
+.bp-rail .cb-label:not(.cb-label--band) { display: block; margin-bottom: .6rem; }
 /* rail: a mono line out of a block, reading as one more fact row. Tightens the
    gap to the edit button below it so the two don't read as separate groups. */
 .bp-rail-link { margin-top: 1.1rem; }
