@@ -55,6 +55,8 @@
     // search listener treats our own write as typing and re-opens the list on
     // top of the address it just chose.
     var filling = false;
+    // What the last selection wrote, keyed by field name. See setValue().
+    var written = {};
 
     /* ---------- small helpers ---------- */
 
@@ -62,10 +64,27 @@
         return form ? form.querySelector('[name="' + name + '"]') : null;
     }
 
+    /* Write a field on behalf of a selection, and remember we wrote it.
+       An empty value means the chosen place doesn't have this component, which
+       has to CLEAR the field rather than skip it: pick a place with a unit
+       number, then one without, and a skip would leave the first place's unit
+       sitting in the second place's address. Half of one address and half of
+       another is the one outcome worse than an incomplete form.
+       Only our own leftovers get cleared, though — `written` holds what we last
+       put in each field, so a value that no longer matches has been edited by
+       the person filling the form and is theirs to keep. */
     function setValue(name, value) {
         var el = field(name);
-        if (!el || value === '') { return; }
+        if (!el) { return; }
+        if (value === '' && (!written.hasOwnProperty(name) || el.value !== written[name])) {
+            return;
+        }
+        if (el.value === value) {
+            written[name] = value;
+            return;
+        }
         el.value = value;
+        written[name] = value;
         // Anything watching the field (validation, other scripts) should see this
         // as a real edit, not a value that appeared from nowhere.
         el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -259,37 +278,37 @@
             || component(components, 'neighborhood');
         setValue('city', longText(city));
 
-        // "US-OR". Only when the state is one the dropdown actually offers —
-        // a value it doesn't have would silently select nothing.
+        // "US-OR". Only when the state is one the dropdown actually offers — a
+        // value it doesn't have would silently select nothing. The shape test
+        // comes first: `state` is Google's string, and interpolating one that
+        // held a quote would throw out of querySelector and abandon the fields
+        // below. Two letters is also exactly what the dropdown's values are.
         var country = shortText(component(components, 'country'));
         var state = shortText(component(components, 'administrative_area_level_1'));
         var stateField = field('sub_code');
-        if (country === 'US' && state !== '' && stateField) {
-            var subCode = 'US-' + state;
-            if (stateField.querySelector('option[value="' + subCode + '"]')) {
-                setValue('sub_code', subCode);
-            }
+        var subCode = '';
+        if (country === 'US' && /^[A-Za-z]{2}$/.test(state) && stateField
+            && stateField.querySelector('option[value="US-' + state.toUpperCase() + '"]')) {
+            subCode = 'US-' + state.toUpperCase();
         }
+        // '' clears to the dropdown's "-- Choose --" option, which is a real
+        // option with an empty value, so this can't leave it unselectable.
+        setValue('sub_code', subCode);
 
         var zip = longText(component(components, 'postal_code'));
         var zip4 = longText(component(components, 'postal_code_suffix'));
-        if (zip !== '') {
-            setValue('zip', zip4 !== '' ? zip + '-' + zip4 : zip);
-        }
+        setValue('zip', (zip !== '' && zip4 !== '') ? zip + '-' + zip4 : zip);
 
         // Stored as ten digits — strip the formatting Google returns.
-        if (place.nationalPhoneNumber) {
-            var digits = place.nationalPhoneNumber.replace(/\D/g, '');
-            if (digits.length === 10) {
-                setValue('telephone', digits);
-            }
-        }
+        var digits = place.nationalPhoneNumber ? place.nationalPhoneNumber.replace(/\D/g, '') : '';
+        setValue('telephone', digits.length === 10 ? digits : '');
 
-        // Only into an empty box. Someone who typed a taproom-specific URL meant
-        // it, and Places would hand back the brewery's front page.
+        // Only into an empty box, or over one a previous suggestion filled.
+        // Someone who typed a taproom-specific URL meant it, and Places would
+        // hand back the brewery's front page.
         var urlField = field('url');
-        if (urlField && urlField.value.trim() === '' && place.websiteUri) {
-            setValue('url', place.websiteUri);
+        if (urlField && (urlField.value.trim() === '' || urlField.value === written.url)) {
+            setValue('url', place.websiteUri || '');
         }
 
         announce('Address filled in. Please check it before saving.');
