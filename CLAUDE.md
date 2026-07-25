@@ -54,7 +54,7 @@ Reference: the "Design System" doc (`Design System.html`) in the design bundle �
 
 ### Asset Versioning (cache-busting)
 
-Local CSS/JS link through helpers in `classes/helpers/assets.php` (required from `initialize.php`): `cssTag($path)`, `jsTag($path)`, and the underlying `assetUrl($path)`, which appends `?v=<filemtime>`. The `.htaccess` block serves `.css`/`.js` as `immutable` for a year **only** when that `?v=` token is present; an unversioned URL falls back to one hour so a stale copy self-heals. Editing a file is what busts its cache (mtime changes) — and mtime survives `deploy.sh`'s `rsync -a`, so the token matches on every environment. `htmlHead::addStylesheet()` and the design-system links (via the `##DESIGNSYSTEMCSS##` token in `head.html`) already route through these; use `cssTag`/`jsTag` for any new **local** asset. Leave the remaining CDN URL (Algolia) alone — it's versioned in its path.
+Local CSS/JS link through helpers in `classes/helpers/assets.php` (required from `initialize.php`): `cssTag($path)`, `jsTag($path)`, and the underlying `assetUrl($path)`, which appends `?v=<filemtime>`. The `.htaccess` block serves `.css`/`.js` as `immutable` for a year **only** when that `?v=` token is present; an unversioned URL falls back to one hour so a stale copy self-heals. Editing a file is what busts its cache (mtime changes) — and mtime survives `deploy.sh`'s `rsync -a`, so the token matches on every environment. `htmlHead::addStylesheet()` and the design-system links (via the `##DESIGNSYSTEMCSS##` token in `head.html`) already route through these; use `cssTag`/`jsTag` for any new **local** asset. (No CDN-loaded CSS/JS remains — Bootstrap is vendored and the Algolia SiteSearch assets are gone.)
 
 ### Bootstrap is vendored, not CDN
 
@@ -162,7 +162,7 @@ Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15
 
 ### External Integrations
 
-- **Algolia SiteSearch** — Homepage search (`algolia/search-init.php`). CSS/JS loaded from CDN. Secrets (`ALGOLIA_APPLICATION_ID`, `ALGOLIA_SEARCH_API_KEY`) in `passwords.php`. Indexing managed in the API repo via `generateSearchObject()` methods and `algolia/batch-upload.php`.
+- **Algolia search** — Server-rendered results page at `/search` (`search.php`), the destination for the nav search form. Queries go through `Search.class.php` (cURL to Algolia's multi-query REST endpoint) using `ALGOLIA_APPLICATION_ID` / `ALGOLIA_SEARCH_API_KEY` from `passwords.php` — the search-only key that used to ship to browsers; no client-side Algolia JS remains (the old SiteSearch modal and its CDN assets are gone). Indexing, index settings, and synonyms are managed in the API repo (`generateSearchObject()` methods, `algolia/settings.php`, `algolia/synonyms.php`, `algolia/batch-upload.php`).
 - **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
 - **Google reCAPTCHA v3** — Form protection (`recaptcha.php`). Public site key in `config.php`, `RECAPTCHA_SECRET_KEY` in `passwords.php`.
 - **Google Maps JavaScript API** — Maps on brewer / location / brewery-map. `GOOGLE_MAPS_KEY` in **`passwords.php`**; `GOOGLE_MAPS_MAP_ID` (public by design, configures the vector renderer and style in the Cloud Console) in `config.php`.

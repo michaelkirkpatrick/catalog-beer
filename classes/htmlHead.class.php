@@ -47,6 +47,13 @@ class htmlHead {
         $this->html = str_replace('</head>', $link . '</head>', $this->html);
     }
 
+    // Mark the page noindex,follow — for thin/derived pages (search results)
+    // that shouldn't compete with the real pages in search engines.
+    function noindex(){
+        $meta = "\t" . '<meta name="robots" content="noindex,follow">' . "\n";
+        $this->html = str_replace('</head>', $meta . '</head>', $this->html);
+    }
+
     function addDescription($description){
         if(!empty($description)){
             $text = new Text(false, false, true);
