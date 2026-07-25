@@ -289,7 +289,7 @@ echo $htmlHead->html;
                         $urlHost = preg_replace('/^www\./', '', $urlHost);
                         // itemprop="url" — the taproom's own page is the canonical URL
                         // for the business in schema.org's sense, not this catalog entry.
-                        echo '<div class="cb-fact"><span class="cb-fact__k">Location Info</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($locationData->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>' . "\n";
+                        echo '<div class="cb-fact"><span class="cb-fact__k">Taproom site</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($locationData->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>' . "\n";
                     }
                 }
                 ?>

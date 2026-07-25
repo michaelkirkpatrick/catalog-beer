@@ -200,9 +200,8 @@ echo $htmlHead->html;
                     echo $text2->get($brewerData->brewer->description);
                     echo '</div>';
                 }
-                if($loggedIn){
-                    echo '<p style="margin-top:1rem;"><a href="/brewer/' . $brewerIDString . '/edit" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg> Edit Brewer</a></p>';
-                }
+                // Editing the brewer record lives at the foot of the rail's
+                // Facts block now — the block it edits.
                 ?>
 
                 <?php
@@ -212,7 +211,7 @@ echo $htmlHead->html;
                 ?>
                 <h2 class="cb-label cb-label--rule bp-sec" id="locations">
                     <span><?php echo $taproomsLabel; if($locationCount > 0){ echo ' &middot; ' . $locationCount; } ?></span>
-                    <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add Location</a>
+                    <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add location</a>
                 </h2>
                 <?php if($locationCount > 0){ ?>
                 <?php if($showMap){ echo '<div id="map" class="bp-map"></div>' . "\n"; } ?>
@@ -356,6 +355,14 @@ echo $htmlHead->html;
                         }
                     }
                     ?>
+                    <?php if($loggedIn){ ?>
+                    <div class="cb-rail-actions">
+                        <a href="/brewer/<?php echo $brewerIDString; ?>/edit" class="cb-btn cb-btn--ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
+                            Edit brewer
+                        </a>
+                    </div>
+                    <?php } ?>
                 </div>
 
                 <?php if($singleLocation !== null){ ?>
@@ -367,10 +374,7 @@ echo $htmlHead->html;
                 <div itemprop="location" itemscope itemtype="https://schema.org/Place">
                     <meta itemprop="name" content="<?php echo htmlspecialchars($singleLocationName, ENT_QUOTES); ?>" />
                     <meta itemprop="publicAccess" content="true" />
-                    <div class="bp-rail-h">
-                        <span class="cb-label">Location</span>
-                        <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add</a>
-                    </div>
+                    <div class="cb-label">Location</div>
 
                     <div class="cb-fact cb-fact--addr" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
                         <meta itemprop="addressCountry" content="<?php echo $text1->get($singleLocation->country_code ?? 'US'); ?>" />
@@ -417,20 +421,28 @@ echo $htmlHead->html;
                         $locationHost = parse_url($singleLocation->url, PHP_URL_HOST);
                         if(!empty($locationHost)){
                             $locationHost = preg_replace('/^www\./', '', $locationHost);
-                            echo '                    <div class="cb-fact"><span class="cb-fact__k">Location Info</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($singleLocation->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($locationHost) . ' &#8599;</a></span></div>' . "\n";
+                            // "Taproom site", not "Location Info" — this is the
+                            // taproom's own website. The Catalog.beer record is
+                            // the separate "Location details" line below.
+                            echo '                    <div class="cb-fact"><span class="cb-fact__k">Taproom site</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($singleLocation->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($locationHost) . ' &#8599;</a></span></div>' . "\n";
                         }
                     }
                     ?>
 
-                    <div class="cb-rail-actions">
-                        <a href="/location/<?php echo $singleLocationID; ?>" class="cb-btn cb-btn--ghost">Location Details</a>
-                        <?php if($loggedIn){ ?>
-                        <a href="/location/<?php echo $singleLocationID; ?>/edit" class="cb-btn cb-btn--ghost" title="Edit Location">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
-                            Edit
-                        </a>
-                        <?php } ?>
+                    <div class="bp-rail-link">
+                        <a href="/location/<?php echo $singleLocationID; ?>" class="cb-action">Location details &rarr;</a>
                     </div>
+                    <?php if($loggedIn){ ?>
+                    <div class="cb-rail-actions">
+                        <a href="/location/<?php echo $singleLocationID; ?>/edit" class="cb-btn cb-btn--ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
+                            Edit location
+                        </a>
+                    </div>
+                    <div class="bp-rail-add">
+                        <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add another location</a>
+                    </div>
+                    <?php } ?>
                 </div>
                 <?php } ?>
             </aside>

@@ -156,9 +156,13 @@
    .cb-addr primitive, same as the location page's rail. */
 .bp-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.6rem; }
 .bp-rail .cb-label { display: block; margin-bottom: .6rem; }
-/* label + its inline action share one line */
-.bp-rail-h { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; margin-bottom: .6rem; }
-.bp-rail-h .cb-label { margin-bottom: 0; }
+/* rail: a mono line out of a block, reading as one more fact row. Tightens the
+   gap to the edit button below it so the two don't read as separate groups. */
+.bp-rail-link { margin-top: 1.1rem; }
+.bp-rail-link + .cb-rail-actions { margin-top: .75rem; }
+/* rail: the quiet "add" line under a block's edit button */
+.bp-rail-add { margin-top: .7rem; text-align: center; }
+.bp-rail-add .cb-action { color: var(--cb-muted); }
 
 @media (max-width: 860px){
     .bp-body { grid-template-columns: 1fr; }
