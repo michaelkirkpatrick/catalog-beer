@@ -53,6 +53,49 @@ if ! git diff --quiet HEAD 2>/dev/null; then
 	fi
 fi
 
+# --- What does and does not ship ---
+#
+# One list, used twice: the preflight below asks rsync what this list would
+# actually send, and the real transfer at the bottom uses the same array.
+# Defining it once is what lets the preflight tell "this file will be
+# published" apart from "this file is excluded" without reimplementing rsync's
+# pattern matching -- see the preflight for why imitating it is unsafe.
+#
+# Comments are legal inside an array literal. They are NOT legal inside a
+# backslash-continued command: the continuation joins the comment onto the
+# command and the '#' then swallows the rest of it, silently dropping every
+# remaining argument including the source and destination. `bash -n` does not
+# catch that. This array shape removes the footgun.
+#
+# Notes on why individual patterns are here live at the rsync call at the
+# bottom, alongside the rest of the transfer commentary.
+#
+# Project-specific excludes belong in this array too. An exclude that can only
+# be built later (one that probes the remote, say) has to be appended at the
+# rsync call instead; the preflight then over-reports for those paths, which is
+# the safe direction to be wrong in.
+EXCLUDES=(
+	--exclude '.git'
+	--exclude '.claude'
+	--exclude '.editorconfig'
+	--exclude '.nova'
+	--exclude '.gitignore'
+	--exclude '.gitattributes'
+	--exclude '.DS_Store'
+	--exclude 'scratch/'
+	--exclude 'CLAUDE.md'
+	--exclude 'deploy.sh'
+	--exclude 'deploy.conf'
+	--exclude 'deploy.conf.example'
+	--exclude '*.sh'
+	--exclude '*.sql'
+	--exclude 'maintenance.html'
+	--exclude 'README.md'
+	--exclude 'sitemap*.xml'
+	--exclude '*.p8'
+	--exclude 'php-errors-*.txt'
+)
+
 # --- Preflight: untracked files are deployed too ---
 #
 # rsync copies the working tree, not the git index, so a file git has never
@@ -67,25 +110,66 @@ fi
 # PROTECTS excluded files on the receiver, so anything already published stays
 # until someone removes it by hand. Catching it here is the cheap moment.
 #
-# Scratch work belongs in scratch/ (gitignored, and excluded from rsync below).
+# Scratch work belongs in scratch/ (gitignored, and excluded from rsync above).
+#
+# Which untracked files actually ship is decided by ASKING RSYNC: a dry run
+# with the same EXCLUDES against an empty local directory, so no network and
+# no writes. Do not be tempted to filter the list with grep patterns mirroring
+# the excludes instead. That reimplements rsync's matching (anchoring, trailing
+# slashes, '**', --filter protect rules), and a bug there does not produce a
+# noisy warning -- it produces a silent one, suppressing the alert for a file
+# that really does publish. Loud and wrong is recoverable; quiet and wrong is
+# the incident this check exists to prevent. For the same reason, a dry run
+# that fails falls back to treating every untracked file as deployable.
+#
+# The dry run targets an empty directory, so it lists everything the excludes
+# allow rather than only what differs from the server. That over-reports
+# relative to a real incremental transfer, which is again the safe direction.
 #
 # Blind spot worth knowing: gitignored files are not listed here, because those
 # are the ones excluded from rsync on purpose (the secrets include). If you add
-# a .gitignore entry, add a matching --exclude below or it will deploy.
+# a .gitignore entry, add a matching exclude above or it will deploy.
 if git rev-parse --git-dir >/dev/null 2>&1; then
-	UNTRACKED=$(git ls-files --others --exclude-standard -- . | grep -v '^scratch/' || true)
+	UNTRACKED=$(git ls-files --others --exclude-standard -- . || true)
 	if [[ -n "$UNTRACKED" ]]; then
-		echo "WARNING: these files are NOT in git but WILL be deployed:"
-		echo "$UNTRACKED" | sed 's/^/  /'
-		echo ""
-		if [[ -n "$1" ]]; then
-			echo "Aborting non-interactive deploy. Commit them, delete them, or move them to scratch/."
-			exit 1
+		DRYRUN_DEST=$(mktemp -d)
+		DRYRUN_STATUS=0
+		DRYRUN_RAW=$(rsync -an --itemize-changes "${EXCLUDES[@]}" ./ "$DRYRUN_DEST/" 2>&1) || DRYRUN_STATUS=$?
+		rm -rf "$DRYRUN_DEST"
+
+		if [[ $DRYRUN_STATUS -ne 0 ]]; then
+			echo "WARNING: could not work out what would ship (rsync dry run failed):"
+			echo "$DRYRUN_RAW"
+			echo "Treating every untracked file as deployable."
+			SHIPPABLE="$UNTRACKED"
+		else
+			SHIPPABLE=$(echo "$DRYRUN_RAW" | awk '/^[<>]f/ { sub(/^[^ ]+ +/, ""); print }')
 		fi
-		read -p "Deploy them anyway? (y/n): " confirm
-		if [[ $confirm != "y" ]]; then
-			echo "Aborted."
-			exit 0
+
+		WILL_SHIP=$(comm -12 <(echo "$UNTRACKED" | LC_ALL=C sort) <(echo "$SHIPPABLE" | LC_ALL=C sort))
+		WONT_SHIP=$(comm -23 <(echo "$UNTRACKED" | LC_ALL=C sort) <(echo "$SHIPPABLE" | LC_ALL=C sort))
+
+		# Listed, not silenced: if an exclude is ever wrong, the file stays
+		# visible here instead of dropping out of both checks at once.
+		if [[ -n "$WONT_SHIP" ]]; then
+			echo "Untracked, but excluded from deploy (will NOT be published):"
+			echo "$WONT_SHIP" | sed 's/^/  /'
+			echo ""
+		fi
+
+		if [[ -n "$WILL_SHIP" ]]; then
+			echo "WARNING: these files are NOT in git but WILL be deployed:"
+			echo "$WILL_SHIP" | sed 's/^/  /'
+			echo ""
+			if [[ -n "$1" ]]; then
+				echo "Aborting non-interactive deploy. Commit them, delete them, or move them to scratch/."
+				exit 1
+			fi
+			read -p "Deploy them anyway? (y/n): " confirm
+			if [[ $confirm != "y" ]]; then
+				echo "Aborted."
+				exit 0
+			fi
 		fi
 	fi
 fi
@@ -164,31 +248,17 @@ trap 'ssh -S "$SOCKET" -O exit "$REMOTE" 2>/dev/null' EXIT
 # script. The root .htaccess also denies .sh, but excluding here keeps them off
 # the server in the first place.
 #
-# Comments cannot go inside the backslash-continued exclude list below -- the
-# continuation joins the comment onto the command and the '#' then swallows the
-# rest of it, silently dropping every remaining argument including the source
-# and destination. `bash -n` does not catch this.
+# Excludes live in the EXCLUDES array near the top of this script, so the
+# preflight and this transfer are guaranteed to agree on what ships. Add
+# project-specific excludes there, not here.
+#
+# Still true of the line below: comments cannot go inside a backslash-continued
+# command. The continuation joins the comment onto the command and the '#' then
+# swallows the rest of it, silently dropping every remaining argument including
+# the source and destination. `bash -n` does not catch this.
 RSYNC_OUTPUT=$(rsync -azOi --no-perms --delete \
 	-e "ssh -S '$SOCKET'" \
-	--exclude '.git' \
-	--exclude '.claude' \
-    --exclude '.editorconfig' \
-	--exclude '.nova' \
-	--exclude '.gitignore' \
-	--exclude '.gitattributes' \
-	--exclude '.DS_Store' \
-	--exclude 'scratch/' \
-	--exclude 'CLAUDE.md' \
-	--exclude 'deploy.sh' \
-	--exclude 'deploy.conf' \
-	--exclude 'deploy.conf.example' \
-	--exclude '*.sh' \
-	--exclude '*.sql' \
-	--exclude 'maintenance.html' \
-	--exclude 'README.md' \
-	--exclude 'sitemap*.xml' \
-	--exclude '*.p8' \
-	--exclude 'php-errors-*.txt' \
+	"${EXCLUDES[@]}" \
 	--filter 'P classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/***' \
 	./ "$REMOTE:$REMOTE_PATH/" 2>&1)
 
