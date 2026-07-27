@@ -89,6 +89,7 @@ EXCLUDES=(
 	--exclude 'deploy.conf.example'
 	--exclude '*.sh'
 	--exclude '*.sql'
+	--exclude 'migrations/'
 	--exclude 'maintenance.html'
 	--exclude 'README.md'
 	--exclude 'sitemap*.xml'
