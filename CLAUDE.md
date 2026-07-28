@@ -31,6 +31,19 @@ Two things to know about `--exclude`:
 - It doubles as a **protect** rule — it stops a file uploading *and* stops `--delete` removing the server's copy. So excluding an already-deployed file does **not** clean it up; remove it from the server manually.
 - That protect behavior is load-bearing for **server-generated files**. `sitemap*.xml` is built on the server by weekly cron (`generate-sitemap.php`), doesn't exist locally, and was being deleted on every deploy until it was excluded.
 
+## Agent Skill mirror (`skills/`)
+
+`skills/catalog-beer/` is a **read-only mirror** of the
+[catalog-beer-skills](https://github.com/michaelkirkpatrick/catalog-beer-skills)
+repo (checked out next to this one), served publicly at
+`https://catalog.beer/skills/catalog-beer/SKILL.md` and linked from
+`llms.txt`. **Never edit the mirrored files here** — edit in
+`../catalog-beer-skills/`, then run its `./sync-to-frontend.sh` (its
+`--delete` discards local edits in this repo), then commit + deploy here.
+`skills/.htaccess` (which the sync never touches) grants public access to
+`.md` files in this directory only, overriding the root `.htaccess` site-wide
+`.md` deny — keep both rules in mind if either file changes.
+
 ## Database Schema (canonical repo)
 
 The DB schema lives in a separate, public repo: [catalog-beer-mysql](https://github.com/michaelkirkpatrick/catalog-beer-mysql) (`catalog-beer-schema.sql`). This frontend only consumes the API, so it rarely drives schema changes — but if a change here implies one (e.g. a new field the API must persist, like the Guided Style Field's `style_confidence`), update `catalog-beer-schema.sql` too, in the same change, and keep it in step with the API repo, adding migration DDL under `migrations/` in that repo. A stale canonical schema misleads everyone who reads it.

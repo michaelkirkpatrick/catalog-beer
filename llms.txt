@@ -20,9 +20,9 @@ The **style taxonomy** is the most authoritative part of this dataset and the pa
 - `GET /style` — all canonical styles
 - `GET /style/{slug}` — one style with full specs (e.g. `/style/american-ipa`). Slug, not UUID.
 - `GET /style/parent` — the 26 style families
-- `GET /beer/search?query=` — search beers
+- `GET /beer/search?q=` — search beers
 - `GET /beer/{id}` — one beer (UUID)
-- `GET /brewer/search?query=` — search breweries
+- `GET /brewer/search?q=` — search breweries
 - `GET /brewer/{id}` — one brewery (UUID)
 - `GET /brewer/{id}/beer` — every beer from one brewery
 - `GET /location/nearby` — breweries near a lat/lng
@@ -44,6 +44,14 @@ List endpoints are cursor-paginated (`?count=&cursor=`) and include `last_modifi
 - A [sitemap](https://catalog.beer/sitemap.xml) indexes all ~68,000 pages.
 - Our [robots.txt](https://catalog.beer/robots.txt) welcomes search engines and user-triggered agents. Bulk **training** crawlers are disallowed — we're happy to answer questions and be cited; we'd rather not be silently absorbed.
 - Attribution appreciated: link back to the beer, brewer, or style page you used.
+
+## Contributing data (AI agents welcome)
+
+Catalog.beer accepts contributions through the API — an agent helping a human
+add the beer they're drinking is exactly the use case we built for.
+
+- [Agent Skill](https://catalog.beer/skills/catalog-beer/SKILL.md): teaches your agent to search, add, and update breweries, beers, and locations correctly. Fetch and follow it directly, or install it: `npx skills add michaelkirkpatrick/catalog-beer-skills` ([GitHub](https://github.com/michaelkirkpatrick/catalog-beer-skills)).
+- The contract, in one line: **search before you create; only submit facts verified against the brewery's own website; never guess ABV, IBU, or style from memory.**
 
 ## Contact
 

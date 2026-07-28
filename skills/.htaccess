@@ -1,0 +1,15 @@
+# The agent-skill markdown under skills/ is DELIBERATELY public — it is the
+# machine-readable contributor guide linked from llms.txt. This overrides the
+# root .htaccess rule that denies .md site-wide; that rule guards against
+# stray docs and data dumps, which these are not.
+#
+# Content is MIRRORED from github.com/michaelkirkpatrick/catalog-beer-skills
+# via its sync-to-frontend.sh. Do not edit the .md files here — the next
+# sync's --delete will discard local edits. (This .htaccess sits above the
+# synced catalog-beer/ folder, so the sync never touches it.)
+<FilesMatch "\.md$">
+	Require all granted
+</FilesMatch>
+
+# Serve as readable text (default would download as octet-stream)
+AddType "text/plain; charset=utf-8" .md
