@@ -177,28 +177,11 @@ function addressPut($api, string $locationID, array $fields): array {
 function addressFormFields(array $fields, array $validState, array $validMsg, bool $autofocus = false): string {
     $html = '';
 
-    /* Autofill is switched off on every control below, which is the opposite of
-       what you'd want on a checkout. The person filling this in is cataloguing a
-       BREWERY's address, not their own, so their saved home address is never the
-       right answer — at best noise, at worst a contributor's home address in a
-       public database.
-
-       autocomplete="off" alone doesn't achieve it: Chrome has ignored it on
-       address fields for years, and where the attribute means nothing to it, it
-       classifies the field by name instead — and ours are named city, zip,
-       telephone, which is exactly what those heuristics look for. An
-       unrecognised token leaves the field unclassifiable, and a DIFFERENT token
-       per field also stops Chrome treating the group as one address section.
-       That the tokens aren't spec-legal values is the point. data-1p-ignore and
-       data-lpignore are the documented opt-outs for 1Password and LastPass,
-       which read the field names too.
-
-       None of this is a guarantee — no method is, short of the browser vendors
-       agreeing on one — but it's the strongest signal a page can send. */
-    $noFill = function($name){
-        return 'cb-no-autofill-' . $name;
-    };
-    $noFillData = array('1p-ignore' => '', 'lpignore' => 'true', 'form-type' => 'other');
+    /* Every control below opts out of autofill via suppressAutofill()
+       (classes/helpers/forms.php holds the how and why): the person filling
+       this in is cataloguing a BREWERY's address, not their own, so their
+       saved home address is never the right answer — at best noise, at worst
+       a contributor's home address in a public database. */
 
     // Grid (catalog-forms.css): street full width, then Unit/City, then
     // State/ZIP/Telephone. grid2 collapses on its own; grid3 breaks at 560px.
@@ -213,11 +196,11 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputAddress2->autofocus = $autofocus;
     $inputAddress2->validState = $validState['address2'] ?? '';
     $inputAddress2->validMsg = $validMsg['address2'] ?? '';
-    $inputAddress2->autocomplete = $noFill('address2');
     // The hook address-autocomplete.js looks for. It also rewrites the label and
     // placeholder once it's running — the server-rendered pair has to stay true
     // for the no-JS case, where this is just a street address box.
-    $inputAddress2->dataAttributes = $noFillData + array('cb-address-autocomplete' => '');
+    $inputAddress2->dataAttributes = array('cb-address-autocomplete' => '');
+    suppressAutofill($inputAddress2);
     $html .= $inputAddress2->display();
 
     $html .= '<div class="cbf-grid2">' . "\n";
@@ -231,8 +214,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputAddress1->value = $fields['address1'];
     $inputAddress1->validState = $validState['address1'] ?? '';
     $inputAddress1->validMsg = $validMsg['address1'] ?? '';
-    $inputAddress1->autocomplete = $noFill('address1');
-    $inputAddress1->dataAttributes = $noFillData;
+    suppressAutofill($inputAddress1);
     $html .= $inputAddress1->display();
 
     // City
@@ -244,8 +226,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputCity->value = $fields['city'];
     $inputCity->validState = $validState['city'] ?? '';
     $inputCity->validMsg = $validMsg['city'] ?? '';
-    $inputCity->autocomplete = $noFill('city');
-    $inputCity->dataAttributes = $noFillData;
+    suppressAutofill($inputCity);
     $html .= $inputCity->display();
 
     $html .= '</div>' . "\n";
@@ -262,7 +243,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $dropDown->currentValue = $fields['sub_code'];
     $dropDown->validState = $validState['sub_code'] ?? '';
     $dropDown->validMsg = $validMsg['sub_code'] ?? '';
-    $dropDown->autocomplete = $noFill('sub_code');
+    suppressAutofill($dropDown);
     $html .= $dropDown->display();
 
     // ZIP
@@ -274,8 +255,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputZIP->value = $fields['zip'];
     $inputZIP->validState = $validState['zip'] ?? '';
     $inputZIP->validMsg = $validMsg['zip'] ?? '';
-    $inputZIP->autocomplete = $noFill('zip');
-    $inputZIP->dataAttributes = $noFillData;
+    suppressAutofill($inputZIP);
     $html .= $inputZIP->display();
 
     // Telephone
@@ -287,8 +267,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputTelephone->value = $fields['telephone'];
     $inputTelephone->validState = $validState['telephone'] ?? '';
     $inputTelephone->validMsg = $validMsg['telephone'] ?? '';
-    $inputTelephone->autocomplete = $noFill('telephone');
-    $inputTelephone->dataAttributes = $noFillData;
+    suppressAutofill($inputTelephone);
     $html .= $inputTelephone->display();
 
     $html .= '</div>' . "\n";

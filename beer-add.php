@@ -130,7 +130,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $inputName->type = 'text';
             $inputName->required = true;
             $inputName->autofocus = true;
-            $inputName->autocomplete = 'off';  // beer name, not the user's name — suppress autofill
+            suppressAutofill($inputName);  // beer name, not the user's name
             $inputName->value = $name;
             $inputName->validState = $validState['name'];
             $inputName->validMsg = $validMsg['name'];

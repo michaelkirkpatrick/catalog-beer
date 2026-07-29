@@ -206,6 +206,7 @@ echo $htmlHead->html;
             $inputName->autofocus = $autofocus;
             $inputName->validState = $validState['name'];
             $inputName->validMsg = $validMsg['name'];
+            suppressAutofill($inputName);  // the taproom's name, not the contributor's
             echo $inputName->display();
 
             // URL
@@ -217,6 +218,7 @@ echo $htmlHead->html;
             $inputURL->value = $url;
             $inputURL->validState = $validState['url'];
             $inputURL->validMsg = $validMsg['url'];
+            suppressAutofill($inputURL);
             echo $inputURL->display();
 
             echo '</div>' . "\n";

@@ -50,11 +50,13 @@ require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
 //   http.php    — serve503
 //   location.php— labels for an unnamed location, plus the address / maps-link
 //                 formatting shared by the location and brewer facts rails
+//   forms.php   — suppressAutofill: no-fill attributes for catalog fields
 //   address.php — the address fieldset shared by location-add and location-edit
 require_once ROOT . '/classes/helpers/assets.php';
 require_once ROOT . '/classes/helpers/session.php';
 require_once ROOT . '/classes/helpers/http.php';
 require_once ROOT . '/classes/helpers/location.php';
+require_once ROOT . '/classes/helpers/forms.php';
 require_once ROOT . '/classes/helpers/address.php';
 
 // Navigation

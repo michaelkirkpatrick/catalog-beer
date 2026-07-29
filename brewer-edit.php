@@ -92,6 +92,7 @@ echo $htmlHead->html;
             $inputName->value = $name;
             $inputName->validState = $validState['name'];
             $inputName->validMsg = $validMsg['name'];
+            suppressAutofill($inputName);  // the brewer's name, not the contributor's
             echo $inputName->display();
 
             // Description
@@ -128,6 +129,7 @@ echo $htmlHead->html;
             $inputURL->value = $url;
             $inputURL->validState = $validState['url'];
             $inputURL->validMsg = $validMsg['url'];
+            suppressAutofill($inputURL);
             echo $inputURL->display();
             ?>
             </div>
