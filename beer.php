@@ -187,25 +187,23 @@ echo $htmlHead->html;
 <body>
     <?php echo $nav->navbar('Beer'); ?>
     <?php
-    /* Product, because schema.org has no Beer type. The brewer rides as brand
-       (Brewery is an Organization, which brand accepts), the raw style label
-       as category, and ABV/IBU as PropertyValue pairs. The facts are stated
-       once here as metas rather than woven into the visible rail/card, which
-       render conditionally across two layouts — this keeps the item complete
-       in both states. */
+    /* Thing, not Product. schema.org still has no Beer type, but Product was
+       the wrong shelter: it carries a commerce requirement (one of offers,
+       review, or aggregateRating) that a reference catalog with no prices,
+       reviews or ratings can never meet, so Search Console flagged every beer
+       page as invalid for the Product snippet. Nothing was gained in return —
+       the one audience that reliably harvests microdata is bulk structured-
+       data extraction, which robots.txt already turns away.
+
+       What went with it: category, and ABV/IBU as additionalProperty, all of
+       which are Product-only properties. They're already stated in the visible
+       rail and card, so any crawler still reads them off the page. The brewer
+       likewise loses its brand edge (Product-only) and instead rides as a
+       top-level Brewery item — itemscope with no itemprop, the same treatment
+       the BreadcrumbList gets below. name and description stay; both are valid
+       on Thing. */
     ?>
-    <div class="cb-page" style="padding-top:1.25rem;" itemscope itemtype="https://schema.org/Product">
-        <?php
-        if($beerStyle !== ''){
-            echo '        <meta itemprop="category" content="' . htmlspecialchars($beerData->style, ENT_QUOTES) . '" />' . "\n";
-        }
-        if($abv !== null){
-            echo '        <div itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue"><meta itemprop="name" content="ABV" /><meta itemprop="value" content="' . htmlspecialchars($abvLabel, ENT_QUOTES) . '" /><meta itemprop="unitText" content="%" /></div>' . "\n";
-        }
-        if($ibu !== null){
-            echo '        <div itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue"><meta itemprop="name" content="IBU" /><meta itemprop="value" content="' . intval($ibu) . '" /></div>' . "\n";
-        }
-        ?>
+    <div class="cb-page" style="padding-top:1.25rem;" itemscope itemtype="https://schema.org/Thing">
         <?php
         // Flash: "just added" success
         if($loggedIn && !empty($_SESSION['add_beer_success'])){
@@ -221,7 +219,10 @@ echo $htmlHead->html;
             <?php
             /* Same BreadcrumbList treatment as location.php — itemscope
                without an itemprop makes this a top-level item alongside the
-               Product, annotating the crumbs already on screen. */
+               Thing, annotating the crumbs already on screen. This is the one
+               supported rich result these pages qualify for; it's evaluated
+               independently of the page entity, so it was never affected by
+               the Product-snippet errors. */
             ?>
             <div class="cb-eyebrow" itemscope itemtype="https://schema.org/BreadcrumbList">
                 <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer"><span itemprop="name">Brewers</span></a><meta itemprop="position" content="1" /></span> &nbsp;/&nbsp;
@@ -239,7 +240,7 @@ echo $htmlHead->html;
                 <span class="be-verify"><span class="cb-vdot <?php echo $verifyDot; ?>"></span><?php echo $verifyText; ?></span>
                 <?php } ?>
                 <?php echo $styleLine; ?>
-                <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemprop="brand" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
+                <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
             </div>
             <?php echo $glassHTML; ?>
         </header>
@@ -310,7 +311,7 @@ echo $htmlHead->html;
             <?php echo $glassHTML; ?>
             <h1 class="cb-title be-title" itemprop="name"><?php echo $beerName; ?></h1>
             <?php echo $styleLine; ?>
-            <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemprop="brand" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
+            <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
             <?php if($abv !== null){ ?>
             <hr class="be-card-rule">
             <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;">
