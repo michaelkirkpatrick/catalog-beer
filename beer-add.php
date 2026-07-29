@@ -102,36 +102,27 @@ echo (strpos($htmlHead->html, '</head>') !== false)
 ?>
 <body>
     <?php echo $nav->navbar('Beer'); ?>
-    <div class="cb-page">
+    <div class="cb-page cb-page--form">
         <?php
-        // Breadcrumbs
+        // Breadcrumbs — these carry the brewer context; no disabled Brewer input
         $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Add Beer');
         $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerURL);
         echo $nav->breadcrumbs();
-
-        // Display Alerts
-        echo $alert->display();
         ?>
-        <form method="post">
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1">Add a beer</h1>
+        </div>
+        <?php echo $alert->display(); ?>
+        <p class="cbf-legend"><span aria-hidden="true">*</span> Required</p>
+        <form method="post" class="cbf-panel<?php if($disabled){echo ' cbf-inert';} ?>">
             <?php echo csrf_field(); ?>
             <?php
-            // Brewery
-            echo '<fieldset disabled>' . "\n";
-            $inputBrewerID = new InputField();
-            $inputBrewerID->name = 'brewer_id';
-            $inputBrewerID->description = 'Brewer';
-            $inputBrewerID->type = 'text';
-            $inputBrewerID->required = true;
-            $inputBrewerID->value = $brewerName;
-            $inputBrewerID->validState = $validState['brewer_id'];
-            $inputBrewerID->validMsg = $validMsg['brewer_id'];
-            echo $inputBrewerID->display();
-            echo '</fieldset>' . "\n";
-            
             if($disabled){
                 echo '<fieldset disabled>' . "\n";
             }
-            
+
+            echo '<div class="cbf-sec">' . "\n";
+
             // Name
             $inputName = new InputField();
             $inputName->name = 'name';
@@ -144,7 +135,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $inputName->validState = $validState['name'];
             $inputName->validMsg = $validMsg['name'];
             echo $inputName->display();
-            
+
             // Style (guided)
             $guidedStyle = new GuidedStyleField();
             $guidedStyle->required = true;
@@ -157,20 +148,14 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $guidedStyle->validState = $validState['style'];
             $guidedStyle->validMsg = $validMsg['style'];
             echo $guidedStyle->display();
-            
-            // Description
-            $textarea = new Textarea();
-            $textarea->name = 'description';
-            $textarea->description = 'Description';
-            $textarea->value = $description;
-            $textarea->validState = $validState['description'];
-            $textarea->validMsg = $validMsg['description'];
-            echo $textarea->display();
-            
+
+            echo '</div>' . "\n";
+            echo '<div class="cbf-sec"><div class="cbf-grid2">' . "\n";
+
             // ABV
             $inputAbv = new InputField();
             $inputAbv->name = 'abv';
-            $inputAbv->description = 'abv';
+            $inputAbv->description = 'ABV';
             $inputAbv->required = true;
             $inputAbv->placeholder = '0.0';
             $inputAbv->value = $abv;
@@ -187,14 +172,35 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $inputIbu->value = $ibu;
             $inputIbu->validState = $validState['ibu'];
             $inputIbu->validMsg = $validMsg['ibu'];
+            $inputIbu->addAfter = 'IBU';
             echo $inputIbu->display();
-            
+
+            echo '</div></div>' . "\n";
+            echo '<div class="cbf-sec">' . "\n";
+
+            // Description
+            $textarea = new Textarea();
+            $textarea->name = 'description';
+            $textarea->description = 'Description';
+            $textarea->hint = 'Markdown supported.';
+            $textarea->value = $description;
+            $textarea->validState = $validState['description'];
+            $textarea->validMsg = $validMsg['description'];
+            echo $textarea->display();
+
+            echo '</div>' . "\n";
+
             // Close Disabled
             if($disabled){
                 echo '</fieldset>' . "\n";
             }
             ?>
-            <button type="submit" class="btn btn-primary" name="submit">Add Beer</button>
+            <div class="cbf-actions">
+                <button type="submit" class="cbf-btn" name="submit"<?php if($disabled){echo ' disabled';} ?>>Add Beer</button>
+                <?php if(!$disabled){ ?>
+                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo htmlspecialchars($brewerURL); ?>">Cancel</a>
+                <?php } ?>
+            </div>
         </form>
     </div>
     <?php echo $nav->footer(); ?>

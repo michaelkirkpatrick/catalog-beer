@@ -14,7 +14,7 @@
 
    Markup contract (GuidedStyleField.class.php):
      <div class="sf" data-sf>
-       <input class="form-control sf-input" name="style" autocomplete="off">
+       <input class="cbf-input sf-input" name="style" autocomplete="off">
        <input type="hidden" name="style_id">
        <input type="hidden" name="parent">           <!-- family slug -->
        <input type="hidden" name="class">            <!-- super-class slug -->
@@ -351,7 +351,7 @@
 
     function buildPicker(mount, label, inline, includeCatch) {
       mount.innerHTML =
-        '<input type="text" class="form-control form-control-sm sf-pick-input" placeholder="Search styles…" autocomplete="off">' +
+        '<input type="text" class="cbf-input sf-pick-input" placeholder="Search styles…" autocomplete="off">' +
         '<div class="sf-menu" hidden></div>';
       var pInput = mount.querySelector('.sf-pick-input');
       var menu = mount.querySelector('.sf-menu');

@@ -100,26 +100,24 @@ $htmlHead = new htmlHead('Sign In');
 echo $htmlHead->html;
 ?>
 <body>
-    <div class="cb-page cb-page--narrow">
-        <div class="text-center"><a href="/"><img src="/images/logo-black.svg" alt="Catalog.beer" style="margin-top:2em; margin-bottom:2em; width:100px;"></a></div>
-        <?php
-        // Breadcrumbs
-        $nav->breadcrumbText = array('Home', 'Sign In');
-        $nav->breadcrumbLink = array('/');
-        echo $nav->breadcrumbs();
-
-        // Display Alerts
-        echo $alert->display();
-        ?>
-        <form method="post">
+    <div class="cb-page cb-page--xs">
+        <div class="cbf-authmark"><a class="cb-wordmark" href="/">Catalog<span class="tld">.beer</span></a></div>
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1 cbf-h1--sm">Sign in</h1>
+        </div>
+        <?php echo $alert->display(); ?>
+        <form method="post" class="cbf-panel">
             <?php
+            // Both fields required — marking them individually says nothing,
+            // so the asterisks and legend are omitted here.
             // Email
             $inputEmail = new InputField();
             $inputEmail->name = 'email';
             $inputEmail->description = 'Email address';
             $inputEmail->type = 'email';
             $inputEmail->required = true;
-            $inputEmail->placeholder = 'e.g., hannah@acme.beer';
+            $inputEmail->markRequired = false;
+            $inputEmail->autocomplete = 'email';
             $inputEmail->value = $email;
             $inputEmail->validState = $validState['email'];
             $inputEmail->validMsg = $validMsg['email'];
@@ -131,15 +129,18 @@ echo $htmlHead->html;
             $inputPassword->description = 'Password';
             $inputPassword->type = 'password';
             $inputPassword->required = true;
-            $inputPassword->placeholder = 'e.g., &middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;';
+            $inputPassword->markRequired = false;
+            $inputPassword->autocomplete = 'current-password';
             $inputPassword->value = $password;
             $inputPassword->validState = $validState['password'];
             $inputPassword->validMsg = $validMsg['password'];
             echo $inputPassword->display();
             ?>
-            <button type="submit" class="btn btn-primary" name="submit">Sign in</button>
-            <p class="text-center"><a href="/signup">Create an account</a></p>
+            <div class="cbf-actions">
+                <button type="submit" class="cbf-btn cbf-btn--wide" name="submit">Sign In</button>
+            </div>
         </form>
+        <p class="cbf-authfoot">New here? <a href="/signup">Create an account</a></p>
     </div>
     <?php echo $nav->footer(); ?>
 </body>

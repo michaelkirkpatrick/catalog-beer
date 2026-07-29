@@ -2,6 +2,8 @@
 /* ---
 Copyright 2017 Michael Eason Kirkpatrick. All rights reserved.
 
+Renders a .cbf-field select (.cbf-input.cbf-select, catalog-forms.css).
+
 name - Field Name
 values - (array) Values for the option
 descriptions - (array) Descriptions for the options
@@ -10,6 +12,7 @@ showLabel - Default False
 currentValue
 validState
 validMsg
+markRequired
 
 $dropDown = new DropDown();
 $dropDown->name = '';
@@ -37,9 +40,10 @@ class DropDown {
     public $validMsg = '';
     public $disabled = false;
     public $required = false;
+    public $markRequired = true;    // false on all-required forms
 
     public function display(){
-        
+
         // Selected Value Tagged?
         $selectedShown = false;
 
@@ -48,29 +52,25 @@ class DropDown {
             $this->showLabel = false;
         }
 
-        // Error Class
-        // Validation class for select element
-        $selectClassAdd = '';
-        if(!empty($this->validState)){
-            if($this->validState === 'success' || $this->validState === 'valid'){$selectClassAdd = ' is-valid';}
-            if($this->validState === 'warning' || $this->validState === 'error' || $this->validState === 'invalid'){$selectClassAdd = ' is-invalid';}
-        }
+        // Invalid? ('warning'/'error' arrive from older callers; treat as invalid)
+        $invalid = in_array($this->validState, array('warning', 'error', 'invalid'), true);
 
-        // Start Div
-        $return = '<div class="mb-3">' . "\n";
+        // Start Field
+        $return = '<div class="cbf-field">' . "\n";
 
-        // Label
+        // Label Row
         if($this->showLabel){
-            $return .= '<label for="' . htmlspecialchars($this->name) . 'Field" class="form-label">' . htmlspecialchars($this->label);  
-            if(!$this->required){
-                $return .= ' <span class="text-muted" style="font-weight:400">(optional)</span>';
+            $return .= '<div class="cbf-labelrow">';
+            $return .= '<label class="cbf-label" for="' . htmlspecialchars($this->name) . 'Field">' . htmlspecialchars($this->label) . '</label>';
+            if($this->required && $this->markRequired){
+                $return .= '<span class="cbf-req" aria-hidden="true">*</span>';
             }
-            $return .= '</label>' . "\n";
+            $return .= '</div>' . "\n";
         }
 
         // Select
-        $return .= '<select class="form-select' . $selectClassAdd . '" name="' . htmlspecialchars($this->name) . '" id="' . htmlspecialchars($this->name) . 'Field"';
-        if(!empty($this->validState)){
+        $return .= '<select class="cbf-input cbf-select' . ($invalid ? ' is-invalid' : '') . '" name="' . htmlspecialchars($this->name) . '" id="' . htmlspecialchars($this->name) . 'Field"';
+        if($invalid){
             $return .= ' aria-describedby="helpMsg' . htmlspecialchars($this->name) . '"';
         }
         if(!empty($this->autocomplete)){
@@ -90,7 +90,7 @@ class DropDown {
             if($this->currentValue === $this->values[$i] && !$selectedShown){
                 // Show as selected
                 $return .= ' selected';
-                
+
                 // Erase current value to prevent future matches
                 $selectedShown = true;
             }
@@ -101,19 +101,11 @@ class DropDown {
         $return .= '</select>' . "\n";
 
         // Validation State
-        if(!empty($this->validState)){
-
-            // Validation Message
-            if($this->validState === 'success' || $this->validState === 'valid'){
-                $this->validMsg = '(success)';
-                $validation_class = 'valid-feedback';
-            }else{
-                $validation_class = 'invalid-feedback';
-            }
-            $return .= '<div class="' . $validation_class . '" id="helpMsg' . htmlspecialchars($this->name) . '">' . htmlspecialchars($this->validMsg) . '</div>' . "\n";
+        if($invalid){
+            $return .= '<div class="cbf-err" id="helpMsg' . htmlspecialchars($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><span>' . htmlspecialchars($this->validMsg) . '</span></div>' . "\n";
         }
 
-        // Close Div
+        // Close Field
         $return .= "</div>" . "\n";
 
         // Return

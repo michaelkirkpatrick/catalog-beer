@@ -1,105 +1,112 @@
 /* =============================================================================
-   guided-style.css — confidence-ladder Style field  (FINAL v1, tokenized)
+   guided-style.css — confidence-ladder Style field  (forms-redesign restyle)
    -----------------------------------------------------------------------------
-   Same rules as shipped; hard-coded values swapped for catalog.css tokens
-   (success/warn colors, radii, shadow). No layout or size changes.
-   Load after catalog.css + catalog-components.css.
+   Visual treatment from the "Beer forms redesign" mocks (catalog-forms.css §8),
+   applied onto the shipped rule set: the functional rules the mock omitted —
+   [hidden] handling, the absolute-positioned menu, the picker and catch-all
+   paths — are kept, under the class names guided-style.js actually emits
+   (sf-chip-back, sf-search-all, sf-pick-input …).
+   Load after catalog.css + catalog-components.css + catalog-forms.css.
    ========================================================================== */
 
 .sf { position: relative; }
 
 /* the label input is the hero — slightly larger, calm */
-.sf-input { font-size: 1.05rem; }
+.sf-input { font-size: 1.0625rem; }
 
 /* --- resolution card ------------------------------------------------------ */
 .sf-card {
-  display: flex; gap: .6rem; align-items: flex-start;
-  margin-top: .55rem; padding: .65rem .8rem;
-  border: 1px solid; border-radius: var(--cb-radius-md); font-size: .92rem; line-height: 1.45;
+  display: flex; gap: .65rem; align-items: flex-start;
+  margin-top: .55rem; padding: .7rem .85rem;
+  border: 1px solid; border-radius: var(--cb-radius-md); font-size: .9rem; line-height: 1.45;
 }
 .sf-card[hidden] { display: none; }
 .sf-ico {
-  flex: 0 0 auto; width: 1.4rem; height: 1.4rem; border-radius: var(--cb-radius-circle);
-  display: grid; place-items: center; font-size: .85rem; font-weight: var(--cb-fw-bold);
+  flex: 0 0 auto; width: 1.45rem; height: 1.45rem; border-radius: var(--cb-radius-circle);
+  display: grid; place-items: center; font-size: .8rem; font-weight: var(--cb-fw-bold);
   margin-top: .05rem;
 }
 .sf-body { flex: 1 1 auto; min-width: 0; }
 .sf-line { color: var(--cb-ink); }
 .sf-line strong { font-weight: var(--cb-fw-semibold); }
-.sf-fam { color: var(--cb-muted); font-weight: var(--cb-fw-regular); }
-.sf-sub { font-size: .82rem; color: var(--cb-muted); margin-top: .15rem; }
+.sf-fam { color: #5C564C; font-weight: var(--cb-fw-regular); }
+.sf-sub { font-size: .8125rem; color: #5C564C; margin-top: .22rem; line-height: 1.5; }
 
-/* state palettes — quiet, legible, confidence shown by color not shouting. */
-.sf-ok       { background: var(--cb-success-bg); border-color: var(--cb-success-border); }
-.sf-ok    .sf-ico { background: var(--cb-success-border); color: var(--cb-success); }
-.sf-fam-card { background: var(--cb-paper-2); border-color: var(--cb-line-2); }
-.sf-fam-card .sf-ico { background: var(--cb-paper-3); color: var(--cb-amber-deep); }
-.sf-new      { background: var(--cb-paper-2); border-color: var(--cb-line-2); }
+/* state palettes — resolved on the success wash; the open/undecided states sit
+   on white so they read as part of the field, not a verdict. */
+.sf-ok       { background: var(--cb-success-bg); border-color: #A2C4AC; }
+.sf-ok    .sf-ico { background: var(--cb-success); color: var(--cb-success-bg); }
+.sf-fam-card { background: var(--cb-white); border-color: var(--cb-line-3); }
+.sf-fam-card .sf-ico { background: var(--cb-warn-bg); color: var(--cb-amber-ink); border: 1px solid rgba(178,107,30,.35); }
+.sf-new      { background: var(--cb-white); border-color: var(--cb-line-3); }
 .sf-new   .sf-ico { background: var(--cb-paper-3); color: var(--cb-link); }
-.sf-edit     { background: var(--cb-paper-2); border-color: var(--cb-line); }
-.sf-edit  .sf-ico { background: var(--cb-paper-3); color: var(--cb-muted); }
+.sf-edit     { background: var(--cb-white); border-color: var(--cb-ink); }
+.sf-edit  .sf-ico { background: var(--cb-ink); color: var(--cb-paper); }
 .sf-edit-head {
   display: flex; justify-content: space-between; align-items: baseline;
   font-family: var(--cb-mono);
-  font-size: var(--cb-fs-label); letter-spacing: .04em; color: var(--cb-muted); margin-bottom: .5rem;
+  font-size: var(--cb-fs-label); letter-spacing: .08em; text-transform: uppercase;
+  color: #5C564C; margin-bottom: .5rem;
 }
 
 /* --- inline actions / change link ----------------------------------------- */
 .sf-change {
   flex: 0 0 auto; align-self: flex-start;
   background: none; border: 0; padding: .1rem .15rem;
-  color: var(--cb-link); font-size: .82rem; font-weight: var(--cb-fw-medium); cursor: pointer;
+  color: var(--cb-link); font-size: .8125rem; font-weight: var(--cb-fw-medium); cursor: pointer;
   text-decoration: underline; text-underline-offset: 2px;
 }
 .sf-change:hover { color: var(--cb-link-hover); }
 .sf-actions { display: flex; gap: .5rem; align-items: center; margin-top: .5rem; flex-wrap: wrap; }
 .sf-accept {
-  border: 1px solid var(--cb-amber); background: var(--cb-surface); color: var(--cb-amber-deep);
-  font-size: .82rem; font-weight: var(--cb-fw-semibold); padding: .25rem .75rem; border-radius: var(--cb-radius-sm); cursor: pointer; white-space: nowrap;
+  border: 1px solid var(--cb-amber); background: var(--cb-white); color: var(--cb-amber-deep);
+  font-size: .8125rem; font-weight: var(--cb-fw-semibold); padding: .25rem .75rem; border-radius: var(--cb-radius-sm); cursor: pointer; white-space: nowrap;
 }
 .sf-accept:hover { background: var(--cb-warn-bg); }
-.sf-link { background: none; border: 0; color: var(--cb-muted); font-size: .82rem; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
-.sf-link:hover { color: var(--cb-ink-2); }
+.sf-link { background: none; border: 0; padding: 0; color: var(--cb-ink-2); font-size: .8125rem; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+.sf-link:hover { color: var(--cb-ink); }
 
 /* --- family chips --------------------------------------------------------- */
 .sf-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
 .sf-chip {
-  border: 1px solid var(--cb-line-2); background: var(--cb-surface); color: var(--cb-ink-2);
-  font-size: .82rem; padding: .3rem .65rem; border-radius: var(--cb-radius-pill); cursor: pointer;
-  white-space: nowrap; line-height: 1.2;
+  font-family: var(--cb-sans);
+  border: 1px solid var(--cb-line-3); background: var(--cb-white); color: var(--cb-ink-2);
+  font-size: .8125rem; padding: .32rem .68rem; border-radius: var(--cb-radius-pill); cursor: pointer;
+  white-space: nowrap; line-height: 1.25;
 }
-.sf-chip:hover { background: var(--cb-paper-2); border-color: var(--cb-amber); color: var(--cb-ink); }
-.sf-chip-back { color: var(--cb-muted); border-style: dashed; }
+.sf-chip:hover { background: var(--cb-paper-2); border-color: var(--cb-amber-deep); color: var(--cb-ink); }
+.sf-chip-back { color: #5C564C; border-style: dashed; }
 .sf-chip-back:hover { color: var(--cb-ink-2); }
 
 /* --- override / required picker ------------------------------------------- */
 .sf-picker { margin-top: .5rem; position: relative; }
 .sf-picker-mount { position: relative; }
 .sf-picker[hidden] { display: none; }
-.sf-pick-input { font-size: .92rem; }
+.sf-pick-input { font-size: .9rem; }
 .sf-menu {
   position: absolute; z-index: 1000; left: 0; right: 0; top: calc(100% + 2px);
-  background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-sm);
+  background: var(--cb-white); border: 1px solid var(--cb-line-3); border-radius: var(--cb-radius-sm);
   box-shadow: var(--cb-shadow-lg); max-height: 300px; overflow-y: auto; padding: .25rem 0;
 }
 .sf-menu[hidden] { display: none; }
 .sf-group {
   font-family: var(--cb-mono);
-  font-size: var(--cb-fs-label-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--cb-muted);
+  font-size: var(--cb-fs-label-xs); text-transform: uppercase; letter-spacing: .08em; color: #5C564C;
   padding: .5rem .75rem .25rem;
 }
 .sf-opt {
-  display: flex; align-items: baseline; gap: .5rem; width: 100%; text-align: left;
-  border: 0; background: none; padding: .4rem .75rem; font-size: .92rem; color: var(--cb-ink-2); cursor: pointer;
+  display: flex; align-items: center; gap: .5rem; width: 100%; text-align: left;
+  border: 0; background: none; padding: .42rem .75rem;
+  font-family: var(--cb-sans); font-size: .9rem; color: var(--cb-ink-2); cursor: pointer;
 }
 .sf-opt:hover, .sf-opt.sf-active { background: var(--cb-paper-2); }
-.sf-opt mark { padding: 0; background: rgba(212,154,61,.28); color: inherit; border-radius: 2px; } /* --cb-amber @ .28 (matches focus ring) */
-.sf-opt-alias { font-size: .78rem; color: var(--cb-muted-2); }
+.sf-opt mark { padding: 0; background: rgba(212,154,61,.34); color: inherit; border-radius: 2px; } /* --cb-amber @ .34 (matches focus ring) */
+.sf-opt-alias { font-size: .78rem; color: #6B6660; }
 .sf-opt-catch .sf-opt-name { font-weight: 550; }
 .sf-catch-badge {
   margin-left: auto; font-family: var(--cb-mono);
   font-size: .6rem; text-transform: uppercase; letter-spacing: .05em;
-  color: var(--cb-muted); background: var(--cb-paper-3); border-radius: var(--cb-radius-xs); padding: .08rem .4rem; align-self: center;
+  color: #5C564C; background: var(--cb-paper-3); border-radius: var(--cb-radius-xs); padding: .1rem .4rem; align-self: center;
 }
 
 /* secondary catch-all path in the "not found" state — deliberate, not default */

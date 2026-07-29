@@ -40,14 +40,18 @@ class GuidedStyleField {
         $text = new Text(false, false, true);
 
         $invalid = ($this->validState === 'invalid');
-        $inputClass = 'form-control sf-input' . ($invalid ? ' is-invalid' : ($this->validState === 'valid' ? ' is-valid' : ''));
+        $inputClass = 'cbf-input sf-input' . ($invalid ? ' is-invalid' : '');
 
-        $return  = '<div class="mb-3">';
-        $return .= '<label class="form-label" for="styleField">' . $text->get($this->description) . '</label>';
+        $return  = '<div class="cbf-field">';
+        $return .= '<div class="cbf-labelrow">';
+        $return .= '<label class="cbf-label" for="styleField">' . $text->get($this->description) . '</label>';
+        if($this->required){
+            $return .= '<span class="cbf-req" aria-hidden="true">*</span>';
+        }
+        $return .= '</div>';
         $return .= '<div class="sf" data-sf>';
         $return .= '<input type="text" class="' . $inputClass . '" id="styleField" name="style" autocomplete="off"'
                  . ' placeholder="' . $attr($this->placeholder) . '"'
-                 . ' data-hint="' . $attr($this->hint) . '"'
                  . ' value="' . $attr($this->value) . '"'
                  . ($this->required ? ' required' : '') . '>';
         $return .= '<input type="hidden" name="style_id" value="' . $attr($this->styleId) . '">';
@@ -59,10 +63,15 @@ class GuidedStyleField {
         $return .= '<div class="sf-picker" hidden></div>';
         $return .= '</div>';
 
-        // Validation message (forced visible — the input isn't a direct sibling here)
+        // Hint — persistent, visible guidance (was a data-hint attribute nothing read)
+        if($this->hint !== ''){
+            $return .= '<p class="cbf-hint">' . $text->get($this->hint) . '</p>';
+        }
+
+        // Validation message
         if($invalid){
             $text2 = new Text(true, true, true);
-            $return .= '<div class="invalid-feedback d-block">' . $text2->get($this->validMsg) . '</div>';
+            $return .= '<div class="cbf-err"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $text2->get($this->validMsg) . '</div></div>';
         }
 
         $return .= '</div>';

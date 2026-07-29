@@ -150,21 +150,26 @@ echo $htmlHead->html;
     <?php
     echo $nav->navbar('');
     ?>
-    <div class="cb-page cb-page--narrow">
-        <h1>Get in Touch</h1>
+    <div class="cb-page cb-page--xs">
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1 cbf-h1--sm">Get in touch</h1>
+            <p class="cbf-lede">Our team will get back to you within 24 hours.</p>
+        </div>
         <?php
         // Display Alerts
         echo $alert->display();
         ?>
-        <form method="post" id="contact-form">
+        <form method="post" id="contact-form" class="cbf-panel">
             <input type="hidden" name="signupFormHidden" value="set" />
             <?php
+            // Everything here is required — no asterisks, no legend.
             // Name
             $inputName = new InputField();
             $inputName->name = 'name';
             $inputName->description = 'Name';
             $inputName->required = true;
-            $inputName->placeholder = 'e.g., Hannah Brewer';
+            $inputName->markRequired = false;
+            $inputName->autocomplete = 'name';
             $inputName->value = $name;
             $inputName->validState = $validState['name'];
             $inputName->validMsg = $validMsg['name'];
@@ -176,7 +181,8 @@ echo $htmlHead->html;
             $inputEmail->description = 'Email';
             $inputEmail->type = 'email';
             $inputEmail->required = true;
-            $inputEmail->placeholder = 'e.g., hannah@catalog.beer';
+            $inputEmail->markRequired = false;
+            $inputEmail->autocomplete = 'email';
             $inputEmail->value = $email;
             $inputEmail->validState = $validState['email'];
             $inputEmail->validMsg = $validMsg['email'];
@@ -187,6 +193,8 @@ echo $htmlHead->html;
             $inputSubject->name = 'subject';
             $inputSubject->description = 'Subject';
             $inputSubject->required = true;
+            $inputSubject->markRequired = false;
+            $inputSubject->autocomplete = 'off';
             $inputSubject->value = $subject;
             $inputSubject->validState = $validState['subject'];
             $inputSubject->validMsg = $validMsg['subject'];
@@ -198,13 +206,16 @@ echo $htmlHead->html;
             $textarea->description = 'Message';
             $textarea->value = $message;
             $textarea->required = true;
+            $textarea->markRequired = false;
             $textarea->validState = $validState['message'];
             $textarea->validMsg = $validMsg['message'];
-            $textarea->rows = 8;
+            $textarea->rows = 7;
             echo $textarea->display();
             ?>
             <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
-            <input type="submit" class="btn btn-primary" value="Send Message" />
+            <div class="cbf-actions">
+                <button type="submit" class="cbf-btn">Send Message</button>
+            </div>
         </form>
     </div>
     <?php echo $nav->footer(); ?>

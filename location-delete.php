@@ -69,23 +69,29 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Brewers'); ?>
-    <div class="cb-page">
+    <div class="cb-page cb-page--form">
         <?php
         // Breadcrumbs
         $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Delete ' . $locationName);
         $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerID);
         echo $nav->breadcrumbs();
-
+        ?>
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1">Delete this location?</h1>
+        </div>
+        <?php
         // Display Alerts
         if(isset($alert)){
             echo $alert->display();
         }
         ?>
-        <p class="lead">Are you sure you want to delete the location <strong><?php echo $locationName; ?></strong> from <?php echo $brewerName; ?>? This action cannot be undone.</p>
+        <p class="cbf-confirm">You&#8217;re about to delete <strong><?php echo $locationName; ?></strong> from <?php echo $brewerName; ?>. This can&#8217;t be undone.</p>
         <form method="post">
             <?php echo csrf_field(); ?>
-            <button type="submit" class="btn btn-danger" name="submit">Delete Location</button>
-            <a href="/brewer/<?php echo htmlspecialchars($brewerID); ?>" class="btn btn-outline-secondary">Cancel</a>
+            <div class="cbf-actions cbf-actions--bare">
+                <button type="submit" class="cbf-btn cbf-btn--danger" name="submit">Delete Location</button>
+                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo htmlspecialchars($brewerID); ?>">Cancel</a>
+            </div>
         </form>
     </div>
     <?php echo $nav->footer(); ?>

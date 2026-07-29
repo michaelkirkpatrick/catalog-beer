@@ -71,36 +71,28 @@ class Navigation {
         $numItems = count($this->breadcrumbText);
         $html = '';
         if($numItems > 0){
-            // Start HTML
-            $html .= '<nav aria-label="breadcrumb"><ol class="breadcrumb">';
+            // Start HTML — mono crumb trail (.cbf-crumbs, catalog-forms.css)
+            $html .= '<nav class="cbf-crumbs" aria-label="breadcrumb">';
 
             // Loop through crumbs
             for($i=0; $i<=$numItems-1; $i++){
-                // Start LI Tag
-                $html .= '<li class="breadcrumb-item';
-
-                // Add Link
-                if($i != $numItems-1 && !empty($this->breadcrumbLink[$i])){
-                    $html .= '"><a href="'. $this->breadcrumbLink[$i] . '">';
-                }else{
-                    $html .= ' active">';
+                // Separator between crumbs
+                if($i > 0){
+                    $html .= '<span aria-hidden="true">/</span>';
                 }
 
                 // Breadcrumb Text
-                $text = htmlspecialchars($this->breadcrumbText[$i] ?? '');
-                $html .= SmartyPants::defaultTransform($text);
+                $text = SmartyPants::defaultTransform(htmlspecialchars($this->breadcrumbText[$i] ?? ''));
 
-                // Close Link
                 if($i != $numItems-1 && !empty($this->breadcrumbLink[$i])){
-                    $html .= '</a>';
+                    $html .= '<a href="'. $this->breadcrumbLink[$i] . '">' . $text . '</a>';
+                }else{
+                    $html .= '<span class="is-current">' . $text . '</span>';
                 }
-
-                // Close LI
-                $html .= '</li>';
             }
 
             // End HTML
-            $html .= '</ol></nav>';
+            $html .= '</nav>';
 
             // Update Public Variable
             $this->breadcrumbHTML = $html;

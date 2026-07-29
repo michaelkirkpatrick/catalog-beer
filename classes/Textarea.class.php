@@ -1,10 +1,12 @@
 <?php
 /* ---
-Text Fields: $this->name, $this->description, $this->value, $this->validMsg
+Renders a .cbf-field textarea (catalog-forms.css).
 
-TRUE/FALSE Fields: $this->required
+Text Fields: $this->name, $this->description, $this->value, $this->validMsg, $this->hint
 
-Options: $this->validState = 'success', 'warning', 'error'
+TRUE/FALSE Fields: $this->required, $this->markRequired
+
+Options: $this->validState = 'valid', 'invalid'
 
 Numeric: $this->rows
 
@@ -12,6 +14,7 @@ Numeric: $this->rows
 $textarea = new Textarea();
 $textarea->name = '';
 $textarea->description = '';
+$textarea->hint = '';
 $textarea->value = $var;
 $textarea->validState = $var;
 $textarea->validMsg = $var;
@@ -20,41 +23,35 @@ echo $textarea->display();
 --- */
 
 class Textarea {
-    
+
     public $name = '';
     public $description = '';
+    public $hint = '';              // guidance under the field (e.g. "Markdown supported.")
     public $value = '';
     public $required = false;
+    public $markRequired = true;    // false on all-required forms
     public $validState = '';
     public $validMsg = '';
     public $rows = 3;
 
     public function display(){
 
-        // Error Class
-        $feedbackStates = array('valid', 'invalid');
-        if(in_array($this->validState, $feedbackStates)){
-            $validation = true;
-            if($this->validState == 'valid'){$classAdd = ' is-valid';}
-            if($this->validState == 'invalid'){$classAdd = ' is-invalid';}
-        }else{
-            $validation = false;
-            $classAdd = '';
-        }
+        $invalid = ($this->validState === 'invalid');
 
-        // Start Div
-        $return = '<div class="mb-3">';
+        // Start Field
+        $return = '<div class="cbf-field">';
 
-        // Label
-        $return .= '<label for="' . htmlspecialchars($this->name) . 'Field" class="form-label">' . $this->description;
-        if(!$this->required){
-            $return .= ' <span class="text-muted" style="font-weight:400">(optional)</span>';
+        // Label Row
+        $return .= '<div class="cbf-labelrow">';
+        $return .= '<label class="cbf-label" for="' . htmlspecialchars($this->name) . 'Field">' . $this->description . '</label>';
+        if($this->required && $this->markRequired){
+            $return .= '<span class="cbf-req" aria-hidden="true">*</span>';
         }
-        $return .= '</label>';
+        $return .= '</div>';
 
         // Textarea Field Start
-        $return .= '<textarea class="form-control' . $classAdd . '" id="' . htmlspecialchars($this->name) . 'Field" name="' . $this->name . '" rows="' . $this->rows . '"';
-        if($validation){
+        $return .= '<textarea class="cbf-input' . ($invalid ? ' is-invalid' : '') . '" id="' . htmlspecialchars($this->name) . 'Field" name="' . $this->name . '" rows="' . $this->rows . '"';
+        if($invalid){
             $return .= ' aria-describedby="helpMsg' . htmlspecialchars($this->name) . '"';
         }
         if($this->required){
@@ -70,16 +67,21 @@ class Textarea {
         // Close Textarea
         $return .= '</textarea>';
 
-
-        // Validation State
-        if($this->validState == 'invalid'){
-            // Message
-            $text = new Text(true, true, true);
-            $message = $text->get($this->validMsg);
-            $return .= '<div class="invalid-feedback">' . $message . '</div>';
+        // Hint
+        if($this->hint !== ''){
+            $text = new Text(false, false, true);
+            $return .= '<p class="cbf-hint">' . $text->get($this->hint) . '</p>';
         }
 
-        // Close Div
+        // Validation State
+        if($invalid){
+            // Message — a div, not a p: the Markdown pass wraps it in <p> tags
+            $text2 = new Text(true, true, true);
+            $message = $text2->get($this->validMsg);
+            $return .= '<div class="cbf-err" id="helpMsg' . htmlspecialchars($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>';
+        }
+
+        // Close Field
         $return .= "</div>";
 
         // Return Data

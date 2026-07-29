@@ -16,6 +16,8 @@
 /* ============================ measure / editorial ============================ */
 .cb-page   { max-width: var(--cb-measure); margin: 0 auto; padding: 0 var(--cb-space-5); }
 .cb-page--narrow { max-width: var(--cb-measure-narrow); }
+.cb-page--form   { max-width: 760px; }   /* single-column add/edit forms (catalog-forms.css) */
+.cb-page--xs     { max-width: 560px; }   /* signed-out auth panels, contact */
 /* Bootstrap .row cancels .container's 12px padding with a -12px margin; inside
    .cb-page (20px padding) that bleeds. Neutralize for pages still using a grid. */
 .cb-page > .row { margin-inline: 0; }

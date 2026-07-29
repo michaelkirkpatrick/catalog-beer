@@ -172,45 +172,36 @@ echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar('Brewer'); ?>
-    <div class="cb-page">
+    <div class="cb-page cb-page--form">
         <?php
-        // Breadcrumbs
+        // Breadcrumbs — these carry the brewer context; no disabled Brewer input
         $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, 'Add a Location');
         $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerURL);
         echo $nav->breadcrumbs();
-
-        // Display Alerts
-        echo $alert->display();
         ?>
-        <form method="post">
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1">Add a location</h1>
+        </div>
+        <?php echo $alert->display(); ?>
+        <p class="cbf-legend"><span aria-hidden="true">*</span> Required</p>
+        <form method="post" class="cbf-panel<?php if($disabled){echo ' cbf-inert';} ?>">
             <?php echo csrf_field(); ?>
             <?php
-            // Brewery
-            echo '<fieldset disabled>' . "\n";
-            $inputBrewerID = new InputField();
-            $inputBrewerID->name = 'brewer_id';
-            $inputBrewerID->description = 'Brewer';
-            $inputBrewerID->type = 'text';
-            $inputBrewerID->required = true;
-            $inputBrewerID->value = $brewerName;
-            $inputBrewerID->validState = $validState['brewer_id'];
-            $inputBrewerID->validMsg = $validMsg['brewer_id'];
-            echo $inputBrewerID->display();
-            echo '</fieldset>' . "\n";
-
             if($disabled){
                 echo '<fieldset disabled>' . "\n";
             }
 
+            echo '<div class="cbf-sec">' . "\n";
+
             // Name — optional. Most taprooms aren't named separately from
-            // the community they sit in; the placeholder says so, because
-            // while this field was required people filled it with the city.
+            // the community they sit in; the hint says so, because while
+            // this field was required people filled it with the city.
             $inputName = new InputField();
             $inputName->name = 'name';
             $inputName->description = 'Name';
+            $inputName->hint = 'Only if this taproom has a unique name of its own.';
             $inputName->type = 'text';
             $inputName->required = false;
-            $inputName->placeholder = 'Only if this taproom has a name of its own';
             $inputName->value = $name;
             $inputName->autofocus = $autofocus;
             $inputName->validState = $validState['name'];
@@ -220,7 +211,7 @@ echo $htmlHead->html;
             // URL
             $inputURL = new InputField();
             $inputURL->name = 'url';
-            $inputURL->description = 'Location Specific URL';
+            $inputURL->description = 'Location URL';
             $inputURL->type = 'url';
             $inputURL->required = false;
             $inputURL->value = $url;
@@ -228,28 +219,25 @@ echo $htmlHead->html;
             $inputURL->validMsg = $validMsg['url'];
             echo $inputURL->display();
 
-            // Country
-            echo '<div class="mb-3">' . "\n";
-            echo '<label for="CountryCodeField" class="form-label">Country</label>' . "\n";
-            echo '<fieldset disabled>' . "\n";
-            echo '<select name="country_code" class="form-select" id="CountryCodeField">' . "\n";
-            echo '<option value="US">United States of America</option>' . "\n";
-            echo '</select>' . "\n";
-            echo '</fieldset>' . "\n";
             echo '</div>' . "\n";
 
-            // Address
-            echo '<hr class="my-4">' . "\n";
-            echo '<h2 class="h5 mb-3">Address</h2>' . "\n";
+            // Address — the dead US-only Country select became the note here
+            echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span><span class="cbf-subhead__n">United States only, for now</span></div>' . "\n";
+            echo '<div class="cbf-sec">' . "\n";
             echo addressFormFields($addressFields, $validState, $validMsg);
+            echo '</div>' . "\n";
 
             // Close Disabled
             if($disabled){
                 echo '</fieldset>' . "\n";
             }
             ?>
-            <button type="submit" class="btn btn-primary" name="submit">Add Location</button>
-            <a href="/brewer/<?php echo htmlspecialchars($brewerURL); ?>" class="btn btn-outline-secondary">Cancel</a>
+            <div class="cbf-actions">
+                <button type="submit" class="cbf-btn" name="submit"<?php if($disabled){echo ' disabled';} ?>>Add Location</button>
+                <?php if(!$disabled){ ?>
+                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo htmlspecialchars($brewerURL); ?>">Cancel</a>
+                <?php } ?>
+            </div>
         </form>
     </div>
     <?php echo $nav->footer(); ?>

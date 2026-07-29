@@ -1,7 +1,9 @@
 <?php
 /*
+Warm alert family (.cbf-alert, catalog-forms.css): rust error / amber warning
+and info / green success. One icon dot, message body alongside.
+
 $alert->type = 'success/info/warning/error';
-$alert->dismissible = true;
 
 $alert = new Alert();
 $alert->msg = '';
@@ -9,38 +11,39 @@ echo $alert->display();
 */
 
 class Alert {
-    
+
     // Public
     public $type = 'error';
-    public $dismissible = false;
+    public $dismissible = false;   // kept for back-compat; alerts no longer dismiss
     public $msg = '';
-    
+
     public function display(){
 
         if(!empty($this->msg)){
-            // Save as 'danger' per Bootstrap
-            if($this->type == 'error'){$class = 'danger';}
-            else{$class = $this->type;}
+            // Variant + icon per type. Error is the base class; warning and info
+            // share the amber wash so only success and failure read differently.
+            $class = 'cbf-alert';
+            $icon = '!';
+            if($this->type == 'success'){
+                $class .= ' cbf-alert--ok';
+                $icon = '&#10003;';   // ✓
+            }elseif($this->type == 'warning' || $this->type == 'info'){
+                $class .= ' cbf-alert--warn';
+            }
 
             // ----- Message -----
             $text = new Text(true, true, true);
-            
+
             // ----- HTML Output -----
-            $return = '<div class="alert alert-' . $class;
-            if($this->dismissible){
-                $return .= ' alert-dismissible fade show';
-            }
-            $return .= '" role="alert" style="margin-bottom:1em;">';
-            $return .= $text->get($this->msg);
-            if($this->dismissible){
-                $return .= "\n" . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';   
-            }
+            $return = '<div class="' . $class . '" role="alert">';
+            $return .= '<span class="cbf-alert__i" aria-hidden="true">' . $icon . '</span>';
+            $return .= '<div>' . $text->get($this->msg) . '</div>';
             $return .= '</div>';
         }else{
             // No Message
-            $return = '';    
+            $return = '';
         }
-        
+
         // Return
         return $return;
     }

@@ -1,0 +1,150 @@
+/* ==========================================================================
+   catalog-forms.css — Catalog.beer form primitives (.cbf-*)
+   ==========================================================================
+   Consolidated from the approved "Beer forms redesign" mocks. Replaces
+   Bootstrap form styling site-wide: form-control, form-label, form-select,
+   input-group, invalid-feedback, alert, btn btn-primary /
+   btn-outline-secondary / btn-danger. The matching guided Style field
+   restyle lives in guided-style.css (loaded only on beer add/edit).
+
+   Load order: catalog.css (tokens) → catalog-components.css → this file.
+   The --cb-* tokens this file leans on (--cb-line-3, --cb-amber-ink,
+   --cb-error*, --cb-placeholder) are defined in catalog.css.
+
+   Applies to: beer-add/edit, brewer-add/edit, location-add/edit/delete,
+   login, create-account, contact. search.php keeps .cb-search.
+
+   Decisions baked in (see mocks for alternatives):
+   - Mono uppercase labels (the spec-key voice from the beer page rails).
+   - Required marked with an amber asterisk + one right-aligned legend line;
+     on forms where EVERY field is required (login, signup, contact) both are
+     omitted — marking everything says nothing.
+   - No placeholders. Guidance lives in .cbf-hint, which doesn't vanish on focus.
+   - No disabled context inputs (Brewer) — breadcrumbs carry that context.
+   - 2px ink rule above the action row (page-level rule); 1px hairline for
+     sub-sections inside a form (e.g. Address).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Page furniture: breadcrumbs, page head, required legend
+   -------------------------------------------------------------------------- */
+.cbf-crumbs{font-family:var(--cb-mono);font-size:var(--cb-fs-xs);letter-spacing:.02em;color:var(--cb-muted);display:flex;flex-wrap:wrap;gap:.45rem;padding:1.4rem 0 0;margin:0;}
+.cbf-crumbs a{color:var(--cb-link);text-decoration:none;}
+.cbf-crumbs a:hover{text-decoration:underline;}
+.cbf-crumbs span[aria-hidden]{color:#B0A794;}
+.cbf-crumbs .is-current{color:var(--cb-ink);}
+
+.cbf-pagehead{padding:1.5rem 0 1.35rem;}
+.cbf-h1{font-family:var(--cb-serif);font-size:var(--cb-fs-title);line-height:1.02;letter-spacing:var(--cb-track-tight);color:var(--cb-ink);margin:0;}
+.cbf-h1--sm{font-size:2rem;}   /* narrow columns: auth panels, contact */
+.cbf-lede{font-family:var(--cb-serif);font-style:italic;font-size:1.125rem;line-height:1.45;color:#4A453D;margin:.55rem 0 0;max-width:50ch;}
+
+/* One line, right-aligned, directly above the panel. Omit on all-required forms. */
+.cbf-legend{display:flex;justify-content:flex-end;align-items:baseline;gap:.28rem;font-family:var(--cb-mono);font-size:var(--cb-fs-label-xs);letter-spacing:.08em;text-transform:uppercase;color:#5C564C;margin:0 0 .6rem;}
+.cbf-legend span{color:var(--cb-amber-ink);font-size:.875rem;line-height:1;}
+
+/* Signed-out pages (login, signup): centered wordmark above the narrow column,
+   and the centered "New here? …" line under the panel. */
+.cbf-authmark{display:flex;justify-content:center;padding:2.4rem 0 .2rem;}
+.cbf-authfoot{text-align:center;font-size:.9375rem;color:#4A453D;margin:1.15rem 0 2rem;}
+
+/* --------------------------------------------------------------------------
+   2. Panel, sections, fields
+   -------------------------------------------------------------------------- */
+.cbf-panel{background:var(--cb-paper-2);border:1px solid var(--cb-line-2);border-radius:var(--cb-radius-xl);padding:1.6rem 1.75rem 1.5rem;}
+
+.cbf-sec + .cbf-sec{margin-top:1.15rem;}
+
+/* Sub-section head inside a form (e.g. Address). 1px hairline — the 2px ink
+   rule is reserved for the page level. */
+.cbf-subhead{display:flex;align-items:baseline;gap:.75rem;margin:1.5rem 0 1.15rem;padding-top:1.25rem;border-top:1px solid var(--cb-line-2);}
+.cbf-subhead__t{font-family:var(--cb-mono);font-size:var(--cb-fs-label);letter-spacing:var(--cb-track-label);text-transform:uppercase;color:var(--cb-ink);}
+.cbf-subhead__n{margin-left:auto;font-size:.8125rem;color:#5C564C;}
+
+.cbf-field{margin-bottom:1.15rem;}
+.cbf-field:last-child{margin-bottom:0;}
+.cbf-labelrow{display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;}
+.cbf-label{font-family:var(--cb-mono);font-size:var(--cb-fs-label);letter-spacing:var(--cb-track-label);text-transform:uppercase;color:var(--cb-ink-2);}
+.cbf-req{color:var(--cb-amber-ink);font-size:1rem;line-height:1;}
+/* Live character count (e.g. Short description 0 / 160) */
+.cbf-count{margin-left:auto;font-family:var(--cb-mono);font-size:var(--cb-fs-label-xs);letter-spacing:.06em;color:#5C564C;}
+
+/* Field grids. grid2 collapses to one column on its own via auto-fit. */
+.cbf-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.15rem;}
+.cbf-grid3{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1.2fr) minmax(0,1fr);gap:1.15rem;}
+@media (max-width:560px){.cbf-grid3{grid-template-columns:1fr;}}
+
+/* --------------------------------------------------------------------------
+   3. Controls
+   -------------------------------------------------------------------------- */
+.cbf-input{display:block;width:100%;font-family:var(--cb-sans);font-size:1rem;line-height:1.45;color:var(--cb-ink);background:var(--cb-white);border:1px solid var(--cb-line-3);border-radius:var(--cb-radius-md);padding:.6rem .75rem;transition:border-color var(--cb-dur) var(--cb-ease),box-shadow var(--cb-dur) var(--cb-ease);}
+.cbf-input::placeholder{color:var(--cb-placeholder);}   /* unit examples only — no prose placeholders */
+.cbf-input:hover{border-color:#7F7461;}
+.cbf-input:focus{outline:0;border-color:var(--cb-amber-deep);box-shadow:0 0 0 3px rgba(212,154,61,.34);}
+.cbf-input.is-invalid{border-color:var(--cb-error);background:var(--cb-error-bg);}
+.cbf-input.is-invalid:focus{box-shadow:0 0 0 3px rgba(142,35,24,.24);}
+textarea.cbf-input{min-height:6rem;line-height:1.6;resize:vertical;}
+
+.cbf-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3e%3cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2339352F' stroke-width='1.6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right .8rem center;background-size:.7rem;padding-right:2.3rem;cursor:pointer;}
+
+/* Native checkbox — no custom control to maintain */
+.cbf-checkrow{display:flex;gap:.65rem;align-items:flex-start;}
+.cbf-checkrow input{width:1.1rem;height:1.1rem;margin:.2rem 0 0;accent-color:var(--cb-amber-deep);flex:0 0 auto;}
+.cbf-checkrow label{font-size:.9375rem;line-height:1.55;color:var(--cb-ink-2);}
+.cbf-checkrow label p{margin:0;}   /* label copy arrives Markdown-wrapped in <p> */
+
+/* Unit-suffixed input (ABV %, IBU). Focus ring moves to the wrapper. */
+.cbf-unitwrap{display:flex;align-items:stretch;background:var(--cb-white);border:1px solid var(--cb-line-3);border-radius:var(--cb-radius-md);transition:border-color var(--cb-dur) var(--cb-ease),box-shadow var(--cb-dur) var(--cb-ease);}
+.cbf-unitwrap:hover{border-color:#7F7461;}
+.cbf-unitwrap:focus-within{border-color:var(--cb-amber-deep);box-shadow:0 0 0 3px rgba(212,154,61,.34);}
+.cbf-unitwrap .cbf-input{border:0;background:none;box-shadow:none;border-radius:0;font-family:var(--cb-mono);font-size:1.0625rem;padding-right:.4rem;}
+.cbf-unitwrap .cbf-input:focus{box-shadow:none;}
+.cbf-unitwrap.is-invalid{border-color:var(--cb-error);background:var(--cb-error-bg);}
+.cbf-unitwrap.is-invalid .cbf-unit{background:var(--cb-error-bg);border-left-color:var(--cb-error-border);color:#7A1D14;}
+.cbf-unit{display:flex;align-items:center;padding:0 .85rem;font-family:var(--cb-mono);font-size:var(--cb-fs-label);letter-spacing:.06em;color:#5C564C;background:var(--cb-paper-2);border-left:1px solid var(--cb-line-2);border-radius:0 var(--cb-radius-md) var(--cb-radius-md) 0;}
+
+/* Hints and field-level errors */
+.cbf-hint{margin:.42rem 0 0;font-size:.8125rem;line-height:1.5;color:#5C564C;}
+.cbf-err{display:flex;gap:.42rem;align-items:flex-start;margin:.42rem 0 0;font-size:.8125rem;font-weight:500;line-height:1.45;color:var(--cb-error);}
+.cbf-err__m{font-family:var(--cb-mono);}
+.cbf-err p{margin:0;}   /* validMsg arrives Markdown-wrapped in <p> */
+
+/* --------------------------------------------------------------------------
+   4. Actions
+   -------------------------------------------------------------------------- */
+.cbf-actions{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-top:1.6rem;padding-top:1.15rem;border-top:2px solid var(--cb-ink);}
+.cbf-actions--bare{margin-top:0;}   /* actions not preceded by a panel (delete confirmation) */
+.cbf-btn{font-family:var(--cb-sans);font-size:.9375rem;font-weight:600;padding:.62rem 1.35rem;border-radius:var(--cb-radius-md);border:1px solid var(--cb-ink);background:var(--cb-ink);color:var(--cb-paper);cursor:pointer;text-decoration:none;display:inline-block;}
+.cbf-btn:hover{background:var(--cb-amber-deep);border-color:var(--cb-amber-deep);color:#fff;}
+.cbf-btn--ghost{background:none;border-color:var(--cb-line-3);color:var(--cb-ink-2);}
+.cbf-btn--ghost:hover{background:var(--cb-paper-3);border-color:var(--cb-ink);color:var(--cb-ink);}
+/* Destructive only (location-delete). Same rust as field errors. */
+.cbf-btn--danger{background:var(--cb-error);border-color:var(--cb-error);color:var(--cb-error-bg);}
+.cbf-btn--danger:hover{background:#6E1B12;border-color:#6E1B12;color:#fff;}
+/* Sole button on a narrow form (Sign In / Sign Up / Send Message) fills the row */
+.cbf-btn--wide{flex:1 1 auto;}
+.cbf-actnote{margin-left:auto;font-size:.8125rem;color:#5C564C;}
+
+/* Delete-confirmation question (serif, amber-underlined subject) */
+.cbf-confirm{font-family:var(--cb-serif);font-style:italic;font-size:1.25rem;line-height:1.5;color:var(--cb-ink);max-width:44ch;margin:0 0 1.5rem;}
+.cbf-confirm strong{font-style:normal;font-weight:400;border-bottom:2px solid var(--cb-amber);}
+
+/* --------------------------------------------------------------------------
+   5. Alerts — one warm family: rust error / amber warning / green success
+   -------------------------------------------------------------------------- */
+.cbf-alert{display:flex;gap:.7rem;align-items:flex-start;padding:.85rem 1rem;border:1px solid var(--cb-error-border);border-left:3px solid var(--cb-error);background:var(--cb-error-bg);border-radius:var(--cb-radius-md);color:#5E1A12;font-size:.9375rem;line-height:1.55;margin-bottom:1.5rem;}
+.cbf-alert__i{flex:0 0 auto;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--cb-error);color:var(--cb-error-bg);display:grid;place-items:center;font-family:var(--cb-mono);font-size:.8rem;font-weight:700;margin-top:.06rem;}
+.cbf-alert a{color:#7A1D14;}
+.cbf-alert p:last-child{margin-bottom:0;}
+.cbf-alert--warn{border-color:rgba(178,107,30,.38);border-left-color:var(--cb-amber-deep);background:var(--cb-warn-bg);color:#4A3213;}
+.cbf-alert--warn .cbf-alert__i{background:var(--cb-amber-deep);color:var(--cb-warn-bg);}
+.cbf-alert--warn a{color:var(--cb-link);}
+.cbf-alert--ok{border-color:#A2C4AC;border-left-color:var(--cb-success);background:var(--cb-success-bg);color:#1E4A2C;}
+.cbf-alert--ok .cbf-alert__i{background:var(--cb-success);color:var(--cb-success-bg);}
+
+/* --------------------------------------------------------------------------
+   6. Inert form (missing/invalid brewer — fieldset[disabled] wrap)
+   -------------------------------------------------------------------------- */
+.cbf-inert .cbf-input,.cbf-inert .cbf-unitwrap{background:var(--cb-paper-3);border-color:var(--cb-line-2);color:#5C564C;}
+.cbf-inert .cbf-btn{background:#6B6660;border-color:#6B6660;color:var(--cb-paper-2);cursor:not-allowed;}
+.cbf-inert .cbf-label{color:#5C564C;}

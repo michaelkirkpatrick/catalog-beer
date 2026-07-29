@@ -87,31 +87,23 @@ echo (strpos($htmlHead->html, '</head>') !== false)
 ?>
 <body>
     <?php echo $nav->navbar('Beer'); ?>
-    <div class="cb-page">
+    <div class="cb-page cb-page--form">
         <?php
-        // Breadcrumbs
+        // Breadcrumbs — these carry the brewer context; no disabled Brewer input
         $nav->breadcrumbText = array('Home', 'Brewers', $brewerName, $beerName, 'Edit');
         $nav->breadcrumbLink = array('/', '/brewer', '/brewer/' . $brewerURL, '/beer/' . $beerID);
         echo $nav->breadcrumbs();
-
-        // Display Alerts
-        echo $alert->display();
         ?>
-        <form method="post">
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1">Edit <em><?php echo $beerName; ?></em></h1>
+            <p class="cbf-lede">Changes go live as soon as you save.</p>
+        </div>
+        <?php echo $alert->display(); ?>
+        <p class="cbf-legend"><span aria-hidden="true">*</span> Required</p>
+        <form method="post" class="cbf-panel">
             <?php echo csrf_field(); ?>
             <?php
-            // Brewery (disabled, display only)
-            echo '<fieldset disabled>' . "\n";
-            $inputBrewerID = new InputField();
-            $inputBrewerID->name = 'brewer_id';
-            $inputBrewerID->description = 'Brewer';
-            $inputBrewerID->type = 'text';
-            $inputBrewerID->required = true;
-            $inputBrewerID->value = $brewerName;
-            $inputBrewerID->validState = $validState['brewer_id'];
-            $inputBrewerID->validMsg = $validMsg['brewer_id'];
-            echo $inputBrewerID->display();
-            echo '</fieldset>' . "\n";
+            echo '<div class="cbf-sec">' . "\n";
 
             // Name
             $inputName = new InputField();
@@ -139,19 +131,13 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $guidedStyle->validMsg = $validMsg['style'];
             echo $guidedStyle->display();
 
-            // Description
-            $textarea = new Textarea();
-            $textarea->name = 'description';
-            $textarea->description = 'Description';
-            $textarea->value = $description;
-            $textarea->validState = $validState['description'];
-            $textarea->validMsg = $validMsg['description'];
-            echo $textarea->display();
+            echo '</div>' . "\n";
+            echo '<div class="cbf-sec"><div class="cbf-grid2">' . "\n";
 
             // ABV
             $inputAbv = new InputField();
             $inputAbv->name = 'abv';
-            $inputAbv->description = 'abv';
+            $inputAbv->description = 'ABV';
             $inputAbv->required = true;
             $inputAbv->placeholder = '0.0';
             $inputAbv->value = $abv;
@@ -168,10 +154,39 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $inputIbu->value = $ibu;
             $inputIbu->validState = $validState['ibu'];
             $inputIbu->validMsg = $validMsg['ibu'];
+            $inputIbu->addAfter = 'IBU';
             echo $inputIbu->display();
+
+            echo '</div></div>' . "\n";
+            echo '<div class="cbf-sec">' . "\n";
+
+            // Description
+            $textarea = new Textarea();
+            $textarea->name = 'description';
+            $textarea->description = 'Description';
+            $textarea->hint = 'Markdown supported.';
+            $textarea->value = $description;
+            $textarea->validState = $validState['description'];
+            $textarea->validMsg = $validMsg['description'];
+            echo $textarea->display();
+
+            echo '</div>' . "\n";
             ?>
-            <button type="submit" class="btn btn-primary" name="submit">Save Changes</button>
-            <a href="/beer/<?php echo htmlspecialchars($beerID); ?>" class="btn btn-outline-secondary">Cancel</a>
+            <div class="cbf-actions">
+                <button type="submit" class="cbf-btn" name="submit">Save Changes</button>
+                <a class="cbf-btn cbf-btn--ghost" href="/beer/<?php echo htmlspecialchars($beerID); ?>">Cancel</a>
+                <?php
+                // "Last edited …" — recent edits read relative, older ones as a date
+                if(isset($beerData->last_modified) && is_numeric($beerData->last_modified)){
+                    $daysAgo = (int)floor((time() - (int)$beerData->last_modified) / 86400);
+                    if($daysAgo <= 0){ $lastEdited = 'today'; }
+                    elseif($daysAgo === 1){ $lastEdited = 'yesterday'; }
+                    elseif($daysAgo < 30){ $lastEdited = $daysAgo . ' days ago'; }
+                    else{ $lastEdited = date('M j, Y', (int)$beerData->last_modified); }
+                    echo '<span class="cbf-actnote">Last edited ' . $lastEdited . '</span>';
+                }
+                ?>
+            </div>
         </form>
     </div>
     <?php echo $nav->footer(); ?>

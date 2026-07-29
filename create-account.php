@@ -98,35 +98,37 @@ $htmlHead = new htmlHead('Create an Account');
 echo $htmlHead->html;
 ?>
 <body>
-    <div class="cb-page cb-page--narrow">
-        <div class="text-center"><a href="/"><img src="/images/logo-black.svg" alt="Catalog.beer" style="margin-top:2em; margin-bottom:2em; width:100px;"></a></div>
-        <?php
-        // Breadcrumbs
-        $nav->breadcrumbText = array('Home', 'Create an account');
-        $nav->breadcrumbLink = array('/');
-        echo $nav->breadcrumbs();
-
-        if($success){ ?>
-        <div class="p-5 mb-4 bg-light rounded-3">
-            <h1>Account Created!</h1>
-            <p class="lead">Before you can contribute to the database, or obtain an API key, you&#8217;ll need to verify your email address.</p>
-            <hr>
-            <p>Check your inbox for an email with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Click the link in that email and you&#8217;ll be all set!</p>
-            <a class="btn btn-primary btn-lg" href="/" role="button">Go to Homepage</a>
+    <div class="cb-page cb-page--xs">
+        <div class="cbf-authmark"><a class="cb-wordmark" href="/">Catalog<span class="tld">.beer</span></a></div>
+        <?php if($success){ ?>
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1 cbf-h1--sm">Account created!</h1>
+            <p class="cbf-lede">Before you can contribute to the database, or obtain an API key, you&#8217;ll need to verify your email address.</p>
         </div>
-        <?php }else{
+        <div class="cbf-panel">
+            <p>Check your inbox for an email with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Click the link in that email and you&#8217;ll be all set!</p>
+            <a class="cbf-btn" href="/" role="button">Go to Homepage</a>
+        </div>
+        <?php }else{ ?>
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1 cbf-h1--sm">Create an account</h1>
+            <p class="cbf-lede">Free to use, free to build on.</p>
+        </div>
+        <?php
         // Display Alerts
         echo $alert->display();
         ?>
-        <form method="POST" id="signup-form">
+        <form method="POST" id="signup-form" class="cbf-panel">
             <input type="hidden" name="signupFormHidden" value="set" />
             <?php
+            // Everything here is required — no asterisks, no legend.
             // Name
             $inputName = new InputField();
             $inputName->name = 'name';
             $inputName->description = 'Name';
             $inputName->required = true;
-            $inputName->placeholder = 'e.g., Hannah Brewer';
+            $inputName->markRequired = false;
+            $inputName->autocomplete = 'name';
             $inputName->value = $name;
             $inputName->validState = $validState['name'];
             $inputName->validMsg = $validMsg['name'];
@@ -136,9 +138,11 @@ echo $htmlHead->html;
             $inputEmail = new InputField();
             $inputEmail->name = 'email';
             $inputEmail->description = 'Email address';
+            $inputEmail->hint = 'You&#8217;ll need to verify your email address before contributing or getting an API key.';
             $inputEmail->type = 'email';
             $inputEmail->required = true;
-            $inputEmail->placeholder = 'e.g., hannah@acme.beer';
+            $inputEmail->markRequired = false;
+            $inputEmail->autocomplete = 'email';
             $inputEmail->value = $email;
             $inputEmail->validState = $validState['email'];
             $inputEmail->validMsg = $validMsg['email'];
@@ -150,7 +154,8 @@ echo $htmlHead->html;
             $inputPassword->description = 'Password';
             $inputPassword->type = 'password';
             $inputPassword->required = true;
-            $inputPassword->placeholder = 'e.g., &middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;';
+            $inputPassword->markRequired = false;
+            $inputPassword->autocomplete = 'new-password';
             $inputPassword->value = $password;
             $inputPassword->validState = $validState['password'];
             $inputPassword->validMsg = $validMsg['password'];
@@ -161,10 +166,12 @@ echo $htmlHead->html;
             $checkbox->validState = $validState['terms_agreement'];
             echo $checkbox->display('terms_agreement', 'I agree to the [Terms & Conditions](/terms) for using this site.', true, $termsAgreement);
             ?>
-            <button class="btn btn-primary" style="margin-top:1rem;" data-callback="onSubmit" >Sign Up</button>
+            <div class="cbf-actions">
+                <button class="cbf-btn cbf-btn--wide" data-callback="onSubmit">Sign Up</button>
+            </div>
             <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
-            <p class="text-center"><a href="/login">Sign in</a></p>
         </form>
+        <p class="cbf-authfoot">Already have an account? <a href="/login">Sign in</a></p>
         <?php } ?>
     </div>
     <?php echo $nav->footer(); ?>

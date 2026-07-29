@@ -28,7 +28,8 @@ class htmlHead {
         // layering in CLAUDE.md). Emitted here because head.html is static and
         // can't run cssTag() itself.
         $designSystemCSS = cssTag('/assets/css/catalog.css') . "\n\t"
-            . cssTag('/assets/css/catalog-components.css');
+            . cssTag('/assets/css/catalog-components.css') . "\n\t"
+            . cssTag('/assets/css/catalog-forms.css');
         $html = str_replace('##DESIGNSYSTEMCSS##', $designSystemCSS, $html);
 
         // Fathom Analytics (production only)

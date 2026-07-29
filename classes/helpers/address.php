@@ -200,6 +200,9 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     };
     $noFillData = array('1p-ignore' => '', 'lpignore' => 'true', 'form-type' => 'other');
 
+    // Grid (catalog-forms.css): street full width, then Unit/City, then
+    // State/ZIP/Telephone. grid2 collapses on its own; grid3 breaks at 560px.
+
     // Street Address — address2 in the API's naming
     $inputAddress2 = new InputField();
     $inputAddress2->name = 'address2';
@@ -216,6 +219,8 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     // for the no-JS case, where this is just a street address box.
     $inputAddress2->dataAttributes = $noFillData + array('cb-address-autocomplete' => '');
     $html .= $inputAddress2->display();
+
+    $html .= '<div class="cbf-grid2">' . "\n";
 
     // Unit / Suite — address1
     $inputAddress1 = new InputField();
@@ -242,6 +247,9 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputCity->autocomplete = $noFill('city');
     $inputCity->dataAttributes = $noFillData;
     $html .= $inputCity->display();
+
+    $html .= '</div>' . "\n";
+    $html .= '<div class="cbf-grid3">' . "\n";
 
     // State
     $dropDown = new DropDown();
@@ -273,7 +281,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     // Telephone
     $inputTelephone = new InputField();
     $inputTelephone->name = 'telephone';
-    $inputTelephone->description = 'Telephone Number';
+    $inputTelephone->description = 'Telephone';
     $inputTelephone->type = 'tel';
     $inputTelephone->required = false;
     $inputTelephone->value = $fields['telephone'];
@@ -282,6 +290,8 @@ function addressFormFields(array $fields, array $validState, array $validMsg, bo
     $inputTelephone->autocomplete = $noFill('telephone');
     $inputTelephone->dataAttributes = $noFillData;
     $html .= $inputTelephone->display();
+
+    $html .= '</div>' . "\n";
 
     return $html;
 }
