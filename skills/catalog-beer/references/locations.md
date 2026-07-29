@@ -27,7 +27,7 @@ request** after the location is created. Addresses are US-only for now.
 | `brewer_id` | **yes** | |
 | `country_code` | **yes** | ISO 3166-1 alpha-2 |
 | `name` | no | only if the venue has a real name (e.g. "The Barrel House") |
-| `url` | no | location-specific URL |
+| `url` | no | location-specific URL — subject to the same **live reachability check** as the brewer's `url` (see [brewers.md](brewers.md)); an unreachable URL 400s the whole write, so retry once then send without `url` |
 
 ## PATCH /location/{location_id}
 

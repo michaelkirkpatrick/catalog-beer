@@ -21,10 +21,46 @@
 | `name` | **yes** | |
 | `description` | no | markdown supported |
 | `short_description` | no | max 160 characters |
-| `url` | no | brewery's website URL |
+| `url` | no | brewery's website URL — **fetched live**, see below |
 
 Returns the created brewer object (grab `id` for subsequent beer/location
 creates).
+
+### The `url` reachability check
+
+`url` is validated in two stages, on POST, PUT **and** PATCH:
+
+1. **Syntax.** A bare host gets `http://` prepended; then
+   `FILTER_VALIDATE_URL`. Max 255 bytes.
+2. **Live fetch.** A `HEAD` request from the API server — 10s timeout, up to
+   10 redirects, strict TLS verification, user agent
+   `api.catalog.beer/1.0`. Any transport error, or a final status outside
+   200–399, is treated as an invalid URL.
+
+On success the **post-redirect** URL is stored, upgraded to `https://` if the
+https variant also answers. The host (minus `www.`) is also recorded as the
+brewer's domain, which is what lets brewery staff claim the record.
+
+On failure: `400`, with `valid_state.url = "invalid"` and a generic
+`valid_msg.url` ("something seems to be wrong with your URL") that does not
+distinguish bad syntax from an unreachable host. **The whole write is
+rejected** — no brewer is created or updated.
+
+Correct URLs that fail this check: sites behind bot protection / a WAF
+answering `403` to a non-browser user agent, servers that reject `HEAD` but
+serve `GET`, sites slower than 10s, expired or self-signed certificates,
+geo-blocked hosts. A brewery in this position cannot have *any* URL stored,
+and an incorrect URL already on the record cannot be replaced with the
+correct one.
+
+Handling: retry once with the exact URL a browser resolves to, then resend
+the request **without `url`** so the rest of the record still lands, and tell
+the user the field was left unset and why. Don't substitute a different URL
+(social page, old domain) to satisfy the validator.
+
+Dropping `url` is safe on POST and PATCH. On **PUT** it is not — an omitted
+`url` is cleared to null, so retrying a PUT without it wipes whatever URL the
+record already had. Retry as a PATCH instead.
 
 ## PATCH /brewer/{brewer_id} — partial update
 

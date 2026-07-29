@@ -45,6 +45,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#beer-count">&gt; Number of Beers</a>
                     <a class="list-group-item list-group-item-action" href="#beer-search">&gt; Search Beer</a>
                     <a class="list-group-item list-group-item-action" href="#styles"><strong>Styles</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#style-confidence">&gt; Style Confidence</a>
                     <a class="list-group-item list-group-item-action" href="#style-object">&gt; The Style Object</a>
                     <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
                     <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
@@ -156,6 +157,11 @@ echo $htmlHead->html;
                                 <td><var>valid_msg</var><br><small class="text-muted">(optional)</small></td>
                                 <td>array</td>
                                 <td>An array containing the attribute names and the corresponding error message for that attribute. You can use this information to show help text next to the attributes that were invalid.</td>
+                            </tr>
+                            <tr>
+                                <td><var>suggestions</var><br><small class="text-muted">(optional)</small></td>
+                                <td>array</td>
+                                <td>Keyed by attribute name, like <var>valid_state</var> and <var>valid_msg</var>. Where we can work out what an invalid value probably meant, this carries the values that would fix it, so you can retry without a second lookup. Present only when we have candidates &mdash; always treat it as optional. Currently returned for <var>style</var> on <a href="#beer">/beer</a> writes; see <a href="#styles">Styles</a>.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1273,6 +1279,11 @@ curl -X GET \
                                 <td>File at a super-class: <var>ale</var> or <var>lager</var>.</td>
                             </tr>
                             <tr>
+                                <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>How sure you are of the classification, used to prioritise editorial review. Usually omit it &#8212; we derive it. Send it only to record <em>less</em> certainty than the request implies. See <a href="#style-confidence">Style Confidence</a>.</td>
+                            </tr>
+                            <tr>
                                 <td><var>description<br><small class="text-muted">(optional)</small></var></td>
                                 <td>string</td>
                                 <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> and new line characters.</td>
@@ -1843,7 +1854,68 @@ curl -X GET \
 
 <p>If the label doesn&#8217;t match anything in the vocabulary and no classification is given, the request returns a <var>400 Bad Request</var> error. The vocabulary includes catch-all styles (<var>catch_all: true</var> &#8212; e.g. <var>specialty-beer</var>) for beers that don&#8217;t fit a more specific style. One exception: when updating an existing beer, resending its current label unchanged never fails &#8212; the beer keeps its current classification, even if that label wouldn&#8217;t resolve on its own.</p>
 
+<p>That <var>400</var> comes back with a <var>suggestions</var> object holding the closest styles and families, so you can recover without a second lookup. Resend the same label alongside one of the suggested values: the classification comes from the field you name, and your label is stored exactly as you wrote it.</p>
+
+<pre class="api-code">
+{
+  "error": true,
+  "valid_state": {
+    "style": "invalid"
+  },
+  "valid_msg": {
+    "style": "We couldn't match \"Cali Pilsner\" to a known style, family, or class. Choose the closest match, or a catch-all so nothing is lost, and send it back with your label unchanged."
+  },
+  "suggestions": {
+    "style": {
+      "styles": [
+        {
+          "style_id": "german-pilsner",
+          "name": "German-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false
+        },
+        {
+          "style_id": "contemporary-american-pilsner",
+          "name": "Contemporary American-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false
+        }
+      ],
+      "families": []
+    }
+  }
+}
+</pre>
+
+<p>Retrying the example above as <code>{"style": "Cali Pilsner", "style_id": "contemporary-american-pilsner"}</code> succeeds, and the beer keeps &#8220;Cali Pilsner&#8221; as its label. Sending <var>style_id</var>, <var>parent</var>, or <var>class</var> <em>without</em> <var>style</var> stores our canonical name as the label instead of the brewery&#8217;s own wording, so send both.</p>
+
 <p>The beer&#8217;s <var>beverage_type</var> (<var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>) is set from the resolved classification. It cannot be set directly.</p>
+
+<h3 id="style-confidence">Style Confidence</h3>
+
+<p>Classifying a beer sometimes means a judgement call, and those are the ones worth a second look. The optional <var>style_confidence</var> field on <a href="#beer-create">POST</a>, <a href="#beer-update">PUT</a>, and <a href="#beer-patch">PATCH</a> records how firm the classification is, so editorial review can go where it&#8217;s needed instead of everywhere. It is stored for our own review and is never returned in a beer object.</p>
+
+<p><strong>In most cases, leave it out.</strong> We derive it from what we can check &#8212; whether your label matched the vocabulary on its own, and whether you filed under a catch-all:</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr><th scope="col">Value</th><th scope="col">Derived when</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><var>confident</var></td><td>Your label matched a canonical name or alias, whether or not you also named a tier.</td></tr>
+            <tr><td><var>override</var></td><td>You named a specific <var>style_id</var> for a label that doesn&#8217;t match it &#8212; a mapping only you can vouch for.</td></tr>
+            <tr><td><var>catch-all</var></td><td>As above, but the style you chose is a catch-all (<var>catch_all: true</var>).</td></tr>
+            <tr><td><var>family</var></td><td>You filed at the family or class tier rather than at a specific style.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<p>Send the field yourself only to record <strong>less</strong> certainty than we would otherwise assume &#8212; for example, you inferred the style from the beer&#8217;s name rather than a stated one, or picked the least-wrong of two plausible families. Sending <var>catch-all</var> or <var>family</var> where we would have derived <var>override</var> is an honest downgrade, and we keep it.</p>
+
+<p>You cannot use the field to claim more certainty than the request supports. Whether your label matches the vocabulary is something we check rather than take on trust, so pairing an unmatched label with <var>style_confidence: confident</var> is reduced to <var>override</var>. This happens silently &#8212; your write still succeeds.</p>
 
 <p>The <code>/style</code> endpoints are read-only. Use them to browse the vocabulary, build a style picker, or check a label before submitting a beer.</p>
 

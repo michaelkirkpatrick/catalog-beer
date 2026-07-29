@@ -85,7 +85,8 @@ The most common task. Order of operations:
 
 Step 2 — create the brewery (verify name/URL/description from their site).
 `short_description` is a subtitle shown in search results and is **limited to
-160 characters** — exceeding it returns a 400:
+160 characters** — exceeding it returns a 400. `url` is **fetched live by the
+API** and rejects far more than bad syntax — see "The URL field bites" below:
 
 ```bash
 curl -X POST https://api.catalog.beer/brewer \
@@ -123,21 +124,88 @@ The taxonomy has three tiers — **class** (`ale`/`lager`) → **family** (26,
 e.g. `ipa`, `stout`) → **style** (~200, e.g. `west-coast-ipa`). A beer may be
 filed at any tier; the API derives the broader tiers automatically.
 
-- **Default: pass the brewery's own label as `style`** (it's preserved
-  verbatim and matched against canonical names + aliases — "NEIPA", "New
-  England IPA", and "Juicy IPA" all resolve to the same style).
-- If the label doesn't resolve, the API returns `400`. Then look it up:
-  `GET /style/search?q={label}`, or list families via `GET /style/parent`.
-  Pass an explicit `style_id` (style slug), `parent` (family slug), or
-  `class` (`ale`/`lager`) alongside the verbatim `style` label. The most
-  specific field you send wins.
+- **Default: pass the brewery's own label as `style`.** It's matched against
+  canonical names + aliases — "NEIPA", "New England IPA", and "Juicy IPA" all
+  resolve to the same style — and stored verbatim alongside the match.
+- **A label that doesn't resolve is rejected, not stored.** There is no
+  "keep the label with a null `style_id`" fallback: the API returns `400`
+  and writes *nothing*. Marketing names ("Cali Pilsner",
+  "Margarita-inspired Gose") hit this constantly.
+- **Recovery: resend the same verbatim label *plus* an explicit tier, in one
+  request.** The explicit field classifies the beer; the label is stored
+  exactly as you sent it, so the brewery's own words survive:
+
+  ```json
+  {"style": "Margarita-inspired Gose", "style_id": "contemporary-gose"}
+  ```
+
+  **The 400 tells you what to send.** It carries a `suggestions.style`
+  object — `styles[]` (each with `style_id`, `name`, `parent`, `catch_all`)
+  and `families[]` — ranked best-first. Retry with the top candidate that
+  fits; no second lookup needed. `GET /style/search?q={label}` and
+  `GET /style/parent` are there if you want to look further afield.
+  Send `style_id` (style slug), `parent` (family slug), or `class`
+  (`ale`/`lager`) — the most specific field you send wins. When no real
+  style fits, use the nearest **catch-all style** (`catch_all: true` —
+  `wild-beer`, `experimental-ipa`, `specialty-beer`, …). It keeps the beer
+  in the right family and filed at style tier, which a bare `parent`
+  doesn't.
+- **Always send the label with the tier, never the tier alone.** With
+  `style_id` and no `style`, the API substitutes the canonical style name —
+  "Margarita-inspired Gose" is stored as "Contemporary-Style Gose" and the
+  brewery's wording is lost.
 - **File at the tier the evidence supports.** Brewery says "IPA" → send
-  `parent: "ipa"`, not a guessed sub-style.
+  `parent: "ipa"`, not a guessed sub-style. Picking the tier is a mapping
+  judgment, not a fact you're inventing — but the label you send must be the
+  brewery's, verbatim.
+- **If you had to guess, say so.** `style_confidence` flags a classification
+  for review. Omit it normally — the API derives it. Send `"catch-all"` or
+  `"family"` when your mapping is shakier than the request looks (style
+  inferred from the beer's *name*, ambiguous brewery page). You can only
+  claim *less* certainty this way, never more: an unmatched label sent as
+  `"confident"` is silently reduced. See `references/beers.md`.
 - `beverage_type` (beer/cider/perry/mead) is derived — never send it.
 
 Style specs are also the API's best read feature: `GET /style/{slug}`
 returns curated ABV/IBU/SRM/OG/FG ranges sourced from BA/BJCP guidelines —
 use it instead of recalling specs from memory.
+
+## The URL field bites
+
+`url` (on brewers and locations) is not just syntax-checked — **the API
+fetches it live** before accepting the write: a `HEAD` request, 10s timeout,
+up to 10 redirects, strict TLS verification, sent with the user agent
+`api.catalog.beer/1.0`. Anything other than a final 2xx/3xx is treated as a
+bad URL.
+
+That produces false rejections on URLs that are perfectly correct:
+
+- **Bot protection / WAF** (Cloudflare et al.) answering `403` to a
+  non-browser user agent — common for breweries on hosted platforms
+- Servers that answer `405` to `HEAD` but serve `GET` fine
+- Sites slower than 10s, expired/self-signed certs, geo-blocked hosts
+
+Two consequences worth knowing before you start:
+
+- **A refused URL fails the entire request** — `POST /brewer` with an
+  unreachable `url` creates *no brewer at all*, not a brewer without a URL.
+- **A wrong URL already in the catalog can't be corrected** if the correct
+  one is bot-protected: the PATCH 400s and the wrong URL stays.
+
+When a write fails with `valid_msg.url` set (the message says "something
+seems to be wrong with your URL" regardless of cause — it is not evidence
+the URL is wrong):
+
+1. Retry **once** with the exact URL a browser lands on — `https://`,
+   correct `www.` or bare host, no tracking params.
+2. If it fails again, **resend without `url`** so the rest of the record is
+   still created or updated. Never let the URL sink the write. (If the
+   original was a PUT, retry as a PATCH — an omitted `url` on PUT clears the
+   URL already on the record.)
+3. Tell the user plainly: the URL is correct, the API's reachability check
+   refused it, and the field was left unset. Don't record a substitute URL
+   (a Facebook page, an old domain) just to fill the field — a wrong URL is
+   worse than none.
 
 ## Endpoint quick reference
 
@@ -163,6 +231,15 @@ present when `has_more` is true.
 - Writing a brewer `short_description` longer than **160 characters** →
   400. Compose it as a one-line subtitle; put anything longer in
   `description`.
+- Treating a `valid_msg.url` 400 as "the URL is wrong" and abandoning the
+  write, or swapping in a different URL. The API fetched the site and
+  something answered non-2xx — usually bot protection. Retry once, then
+  send the record **without** `url`.
+- Assuming an unmatched `style` label is stored verbatim with a null
+  `style_id`. It isn't — it's a `400` and nothing is written. Resend the
+  label **plus** `style_id`/`parent`/`class` together.
+- Sending `style_id` without `style`, which overwrites the brewery's label
+  with the canonical style name.
 - Verifying a write against a list endpoint. List and nested rows are
   **compact** — e.g. `GET /brewer/{id}/beer` rows omit `description` — so a
   missing field there is not a failed write. Verify with the single-object
