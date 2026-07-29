@@ -460,3 +460,51 @@ a.be-lede:hover { text-decoration: underline; }
     .sr-rail { position: static; order: 2; border-top: 2px solid var(--cb-ink); margin-top: 1.5rem; padding-top: .5rem; }
     .sr-title { font-size: 2rem; }
 }
+
+/* =============================================================================
+   ACCOUNT — "My Account" settings page (account.php)
+
+   Row-per-fact profile list with one inline editor open at a time (?edit=…),
+   an API key bar with show/copy + usage meter, and a delete-account
+   confirmation. The meter fill width is data-driven and set inline by PHP.
+   ========================================================================== */
+
+.ac-page { padding-bottom: 3rem; }
+.ac-pagehead { padding-bottom: .5rem; }
+.ac-sec { margin-top: 2.25rem; }
+.ac-sec--first { margin-top: 1.25rem; }
+
+/* ---- profile rows ---- */
+.ac-row { display: flex; align-items: baseline; gap: 1rem; padding: .85rem .2rem; border-bottom: 1px solid var(--cb-line); }
+.ac-row--bare { border-bottom: 0; }
+.ac-row__label { flex: 0 0 110px; }
+.ac-row__value { flex: 1; color: var(--cb-ink); font-weight: var(--cb-fw-medium); }
+.ac-row__note { flex: 1; font-size: var(--cb-fs-sm); color: var(--cb-text-muted); }
+.ac-pw-dots { flex: 1; color: var(--cb-muted); font-family: var(--cb-mono); font-size: var(--cb-fs-sm); letter-spacing: .1em; }
+.ac-tag { margin-left: .45rem; }
+.ac-tag--ok { color: var(--cb-success); background: var(--cb-success-bg); }
+.ac-tag--warn { color: var(--cb-amber-ink); background: var(--cb-warn-bg); }
+.ac-danger { color: var(--cb-error); }
+.ac-danger:hover { color: var(--cb-error); }
+
+/* ---- inline editor card ---- */
+.ac-card { background: var(--cb-paper-2); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-xl); padding: 1.1rem 1.25rem; margin: .35rem 0 .75rem; }
+.ac-actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.1rem; }
+.ac-confirm { margin-top: .75rem; }
+.ac-confirm .ac-actions { margin-top: 0; }   /* .cbf-confirm above it already carries the gap */
+
+/* ---- API key bar + usage meter ---- */
+.ac-keybar { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem 1rem; background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); padding: .8rem 1rem; margin-top: .35rem; }
+.ac-keybar__label { flex: 0 0 96px; }
+.ac-key { flex: 1; min-width: 200px; font-family: var(--cb-mono); font-size: var(--cb-fs-sm); color: var(--cb-ink-2); }
+.ac-keybar__btns { display: flex; gap: .5rem; }
+.ac-minibtn { padding: .35rem .75rem; font-size: var(--cb-fs-xs); }
+.ac-usage { margin-top: 1.5rem; }
+.ac-usage__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.ac-usage__nums { font-family: var(--cb-mono); font-size: var(--cb-fs-xs); color: var(--cb-ink-2); }
+.ac-meter { position: relative; height: 6px; background: var(--cb-paper-3); border-radius: var(--cb-radius-pill); margin-top: .55rem; }
+.ac-meter__fill { position: absolute; top: 0; bottom: 0; left: 0; border-radius: var(--cb-radius-pill); background: var(--cb-amber); }
+.ac-meter__fill--warn { background: var(--cb-amber-deep); }
+.ac-meter__fill--danger { background: var(--cb-error); }
+.ac-note { margin-top: .5rem; }
+.ac-apidocs { margin: 1.25rem 0 0; font-size: var(--cb-fs-sm); color: var(--cb-text-muted); }
