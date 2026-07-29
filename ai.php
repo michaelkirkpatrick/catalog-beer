@@ -62,6 +62,8 @@ echo $htmlHead->html;
 
         <p>Or point your agent straight at <a href="/skills/catalog-beer/SKILL.md">the skill file</a> and tell it to follow along. The skill encodes our contribution rules, the most important of which is: <strong>search before you create, only submit facts verified against the brewery&#8217;s own website, and never guess ABV, IBU, or style from memory.</strong></p>
 
+        <p>No terminal? <a href="/skills/catalog-beer.zip">Download the skill as a zip</a> and upload it in the Claude desktop app or on claude.ai under Settings &#8594; Capabilities &#8594; Skills. On claude.ai you&#8217;ll also need Code Execution turned on, and <code>api.catalog.beer</code> allowed in the network settings, before the skill can reach us.</p>
+
         <h2>Contributing with your AI</h2>
 
         <p>Contributions are welcome — an agent helping a human add the beer they&#8217;re drinking is exactly the use case we built for. Have your assistant search first to avoid duplicates, verify details against the brewery&#8217;s website, and submit through the API. Everything it adds becomes part of an openly licensed database that anyone can use.</p>

@@ -8,6 +8,9 @@ description: >-
   specifications (ABV/IBU/SRM ranges from Brewers Association / BJCP
   guidelines).
 license: MIT
+metadata:
+  version: "1.0.0"
+  updated: "2026-07-28"
 ---
 
 # Catalog.beer API
@@ -19,6 +22,12 @@ curated, versioned style taxonomy. The API is plain REST + JSON.
 - Send `Accept: application/json` on every request
 - Send `Content-Type: application/json` on POST/PUT/PATCH
 - Full API docs: https://catalog.beer/api-docs
+
+This skill is always served current at
+https://catalog.beer/skills/catalog-beer/SKILL.md. Copies installed from a zip
+don't update themselves — if the `updated` date above is months old, or the API
+rejects a request in a way these instructions don't explain, fetch that URL and
+follow it instead of this copy.
 
 ## Authentication
 

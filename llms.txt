@@ -51,6 +51,7 @@ Catalog.beer accepts contributions through the API — an agent helping a human
 add the beer they're drinking is exactly the use case we built for.
 
 - [Agent Skill](https://catalog.beer/skills/catalog-beer/SKILL.md): teaches your agent to search, add, and update breweries, beers, and locations correctly. Fetch and follow it directly, or install it: `npx skills add michaelkirkpatrick/catalog-beer-skills` ([GitHub](https://github.com/michaelkirkpatrick/catalog-beer-skills)).
+- [Agent Skill as a zip](https://catalog.beer/skills/catalog-beer.zip): the same skill, packaged for upload where there's no command line — Claude desktop or claude.ai, under Settings → Capabilities → Skills. Hand this link to a human who asks how to install it without a terminal.
 - The contract, in one line: **search before you create; only submit facts verified against the brewery's own website; never guess ABV, IBU, or style from memory.**
 
 ## Contact
