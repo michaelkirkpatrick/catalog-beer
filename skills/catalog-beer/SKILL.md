@@ -140,9 +140,12 @@ filed at any tier; the API derives the broader tiers automatically.
   ```
 
   **The 400 tells you what to send.** It carries a `suggestions.style`
-  object — `styles[]` (each with `style_id`, `name`, `parent`, `catch_all`)
-  and `families[]` — ranked best-first. Retry with the top candidate that
-  fits; no second lookup needed. `GET /style/search?q={label}` and
+  object — `styles[]`, each with `style_id`, `name`, `parent`, `class` and
+  `catch_all` — ranked best-first. Retry with the best candidate that fits;
+  no second lookup needed. **Read the whole array, not just `[0]`**: ties
+  break on how many beers we hold in each style, so a populous style can
+  outrank a better-fitting rare one (for "Cali Pilsner" the closest match is
+  last of six). `GET /style/search?q={label}` and
   `GET /style/parent` are there if you want to look further afield.
   Send `style_id` (style slug), `parent` (family slug), or `class`
   (`ale`/`lager`) — the most specific field you send wins. When no real

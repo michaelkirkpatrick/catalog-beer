@@ -75,19 +75,25 @@
       "styles": [
         {"style_id": "contemporary-gose", "name": "Contemporary-Style Gose",
          "parent": "sour-wild", "class": null, "catch_all": false}
-      ],
-      "families": [{"parent": "sour-wild", "name": "Sour & Wild Ale", "class": null}]
+      ]
     }
   }
   ```
 
   Ranked best-first: exact name/alias hits, then all-terms matches, then
-  partial, with catch-alls below real styles at each level. `families[]` is
-  populated when the label names a family outright ("IPA"), which is usually
-  the right answer for a broad label. Both arrays carry only what's needed to
-  retry — call `GET /style/{id}` for specs. Treat the key as **optional**:
-  it's absent when nothing matched, so fall back to `GET /style/search?q=`
-  rather than assuming it's there.
+  partial, with catch-alls below real styles at each level. **Read the whole
+  array, not just `[0]`** — within a tier the order falls to how many beers
+  we hold in each style, so a populous style outranks a better-fitting rare
+  one. For "Cali Pilsner" the closest match,
+  `contemporary-american-pilsner`, comes back last of six. Rows carry only
+  what's needed to retry — call `GET /style/{id}` for specs. Treat the key as
+  **optional**: it's absent when nothing matched, so fall back to
+  `GET /style/search?q=` rather than assuming it's there.
+
+  There is no `families[]` here. A label that names a family outright — by
+  slug, display name, or alias — resolves instead of failing, so it never
+  reaches this path. `GET /style/search` does return `families`; that's a
+  different response.
 - **Never send an explicit tier without `style`.** When `style` is empty the
   API fills the label with the resolved style's canonical name, silently
   replacing the brewery's wording ("Cali Pilsner" → "Contemporary

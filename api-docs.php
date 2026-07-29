@@ -1854,7 +1854,7 @@ curl -X GET \
 
 <p>If the label doesn&#8217;t match anything in the vocabulary and no classification is given, the request returns a <var>400 Bad Request</var> error. The vocabulary includes catch-all styles (<var>catch_all: true</var> &#8212; e.g. <var>specialty-beer</var>) for beers that don&#8217;t fit a more specific style. One exception: when updating an existing beer, resending its current label unchanged never fails &#8212; the beer keeps its current classification, even if that label wouldn&#8217;t resolve on its own.</p>
 
-<p>That <var>400</var> comes back with a <var>suggestions</var> object holding the closest styles and families, so you can recover without a second lookup. Resend the same label alongside one of the suggested values: the classification comes from the field you name, and your label is stored exactly as you wrote it.</p>
+<p>That <var>400</var> comes back with a <var>suggestions</var> object holding the closest styles, so you can recover without a second lookup. Resend the same label alongside one of the suggested values: the classification comes from the field you name, and your label is stored exactly as you wrote it.</p>
 
 <pre class="api-code">
 {
@@ -1876,18 +1876,47 @@ curl -X GET \
           "catch_all": false
         },
         {
+          "style_id": "pre-prohibition-lager",
+          "name": "Pre-Prohibition Lager",
+          "parent": "historical",
+          "class": null,
+          "catch_all": false
+        },
+        {
+          "style_id": "czech-pilsner",
+          "name": "Czech-Style Pale Lager",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false
+        },
+        {
+          "style_id": "international-pilsner",
+          "name": "International-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false
+        },
+        {
+          "style_id": "italian-pilsner",
+          "name": "Italian-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false
+        },
+        {
           "style_id": "contemporary-american-pilsner",
           "name": "Contemporary American-Style Pilsener",
           "parent": "pilsner",
           "class": "lager",
           "catch_all": false
         }
-      ],
-      "families": []
+      ]
     }
   }
 }
 </pre>
+
+<p><strong>Read the whole list, not just the first entry.</strong> Candidates are ordered by how well they match your label and then by how many beers we hold in each &#8212; so a populous style outranks a better-fitting rare one. That is the real response above: the closest style to &#8220;Cali Pilsner&#8221; is <var>contemporary-american-pilsner</var>, and it comes back <em>last</em>, behind five more populous siblings. <var>class</var> may be <var>null</var> where the family sits outside the ale/lager split.</p>
 
 <p>Retrying the example above as <code>{"style": "Cali Pilsner", "style_id": "contemporary-american-pilsner"}</code> succeeds, and the beer keeps &#8220;Cali Pilsner&#8221; as its label. Sending <var>style_id</var>, <var>parent</var>, or <var>class</var> <em>without</em> <var>style</var> stores our canonical name as the label instead of the brewery&#8217;s own wording, so send both.</p>
 
