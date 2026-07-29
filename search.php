@@ -447,7 +447,14 @@ function srRenderHit($hit){
         if(isset($hit['ibu']) && is_numeric($hit['ibu'])){ $bits[] = intval($hit['ibu']) . ' IBU'; }
         $value = h(implode(' · ', $bits));
     }elseif($hitType === 'brewer'){
-        if(!empty($hit['subtitle'])){ $context[] = h($hit['subtitle']); }
+        // A brewer's subtitle is "City, ST" — but older index records fall back
+        // to the short description when the brewer has no located taproom, and
+        // that same prose renders as the snippet below. Compare against the
+        // source attributes, not the snippet, which arrives ellipsised.
+        $subtitle = (string)($hit['subtitle'] ?? '');
+        if($subtitle !== '' && $subtitle !== (string)($hit['short_description'] ?? '') && $subtitle !== (string)($hit['description'] ?? '')){
+            $context[] = h($subtitle);
+        }
         $bits = array();
         if(isset($hit['beer_count']) && intval($hit['beer_count']) > 0){
             $bits[] = number_format(intval($hit['beer_count'])) . (intval($hit['beer_count']) === 1 ? ' beer' : ' beers');
