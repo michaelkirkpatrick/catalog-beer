@@ -240,13 +240,52 @@ a:hover { color: var(--cb-link-hover); }
 /* navbar count badge — base .cb-count lives in catalog-components.css */
 .navbar-nav .cb-count { font-size: .62rem; margin-left: .3rem; vertical-align: 1px; }
 
-.cb-footer { background: var(--cb-paper-2); }
+/* ---- footer ----
+   Framework-free: plain-footer.html carries no Bootstrap grid or utility
+   classes, and no inline style= — everything the footer needs is here. */
+.cb-footer {
+  background: var(--cb-paper-2);
+  margin-top: var(--cb-space-12);
+  padding: var(--cb-space-6) 0;
+}
+/* Mirrors Bootstrap's .container widths so the footer keeps aligning with
+   page content while the rest of the site is still on .container. */
+.cb-footer__inner { width: 100%; margin-inline: auto; padding-inline: var(--cb-space-3); }
+@media (min-width: 576px)  { .cb-footer__inner { max-width: 540px; } }
+@media (min-width: 768px)  { .cb-footer__inner { max-width: 720px; } }
+@media (min-width: 992px)  { .cb-footer__inner { max-width: 960px; } }
+@media (min-width: 1200px) { .cb-footer__inner { max-width: 1140px; } }
+@media (min-width: 1400px) { .cb-footer__inner { max-width: 1320px; } }
+
+.cb-footer__cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-6); align-items: start; }
+.cb-footer__col--wide { grid-column: 1 / -1; }              /* full width until lg */
+@media (min-width: 992px) {
+  /* 2 / 2 / 1 / 7 of a 12-column bed — the third track is a deliberate gutter,
+     so the license block lines up where it always has. */
+  .cb-footer__cols { grid-template-columns: 2fr 2fr 1fr 7fr; }
+  .cb-footer__col--wide { grid-column: 4; }
+}
+
 .cb-footer .cb-label { margin-bottom: 10px; }   /* footer column headers use the shared .cb-label primitive */
-.cb-foot-links { list-style: none; padding: 0; margin: 0; }
-.cb-foot-links li { margin-bottom: 5px; }
-.cb-foot-links a { text-decoration: none; }
-.cb-cc svg { fill: var(--cb-ink-2); }
-.cb-foot-lead { font-family: var(--cb-serif); font-size: var(--cb-fs-lg); color: var(--cb-ink); }
+.cb-footer__links { list-style: none; padding: 0; margin: 0; }
+.cb-footer__links li { margin-bottom: 5px; }
+.cb-footer__links a { text-decoration: none; }
+
+.cb-footer__license { display: flex; gap: var(--cb-space-4); align-items: flex-start; }
+.cb-cc { display: flex; gap: var(--cb-space-1); flex-shrink: 0; }
+.cb-cc svg { width: 24px; fill: var(--cb-ink-2); }
+.cb-footer__lead { font-family: var(--cb-serif); font-size: var(--cb-fs-lg); color: var(--cb-ink); }
+.cb-footer__fine { margin: 0; font-size: var(--cb-fs-sm); color: var(--cb-text-muted); }
+
+.cb-footer__bar {
+  display: flex; flex-wrap: wrap; gap: var(--cb-space-2);
+  justify-content: space-between; align-items: center;
+  margin-top: var(--cb-space-6); padding-top: var(--cb-space-4);
+  border-top: 1px solid var(--cb-line);
+}
+.cb-footer__bar .cb-wordmark { font-size: var(--cb-fs-base); }
+.cb-footer__tagline { font-size: var(--cb-fs-sm); color: var(--cb-text-muted); }
+.cb-footer__staging { background-color: rgba(255, 238, 85, 0.54); }  /* staging-only highlight */
 
 /* ---- navbar global search (icon + rounded input) ----
    Reuses the .cb-search primitive (catalog-components.css); the nav-scoped

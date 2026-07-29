@@ -115,7 +115,7 @@ class Navigation {
         
         // Staging
         if(ENVIRONMENT == 'staging'){
-            $staging = ' <span style="background-color: rgba(255, 238, 85, 0.54);">[Staging]</span>';
+            $staging = ' <span class="cb-footer__staging">[Staging]</span>';
         }else{
             $staging = '';
         }
