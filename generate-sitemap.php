@@ -114,6 +114,7 @@ $pages = [
     'map'       => ['file' => 'brewery-map.php',    'priority' => 0.5],
     'api-docs'  => ['file' => 'api-docs.php',       'priority' => 0.3],
     'api-usage' => ['file' => 'api-usage.php',      'priority' => 0.3],
+    'ai'        => ['file' => 'ai.php',             'priority' => 0.3],
     'whats-new' => ['file' => 'whats-new.php',      'priority' => 0.3],
     'contact'   => ['file' => 'contact.php',        'priority' => 0.3],
     'privacy'   => ['file' => 'privacy.php',        'priority' => 0.3],
