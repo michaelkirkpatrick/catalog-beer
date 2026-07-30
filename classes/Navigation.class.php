@@ -154,6 +154,7 @@ class Navigation {
         // Sign In / Sign Out
         if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
             $signIn = '<li><a class="dropdown-item" href="/account">My Account</a></li>' . "\n";
+            $signIn .= '<li><a class="dropdown-item" href="/billing">Billing</a></li>' . "\n";
             $signIn .= '<li><hr class="dropdown-divider"></li>' . "\n";
             $signIn .= '<li><a class="dropdown-item" href="/logout">Log out</a></li>' . "\n";
         }else{

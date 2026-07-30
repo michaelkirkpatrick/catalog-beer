@@ -69,6 +69,13 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#usage"><strong>Usage</strong></a>
                     <a class="list-group-item list-group-item-action" href="#usage-object">&gt; The Usage Object</a>
                     <a class="list-group-item list-group-item-action" href="#usage-my-usage">&gt; Get My Usage</a>
+                    <a class="list-group-item list-group-item-action" href="#billing"><strong>Billing</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#billing-object">&gt; The Billing Object</a>
+                    <a class="list-group-item list-group-item-action" href="#billing-retrieve">&gt; Get Billing Status</a>
+                    <a class="list-group-item list-group-item-action" href="#billing-checkout-session">&gt; Create a Checkout Session</a>
+                    <a class="list-group-item list-group-item-action" href="#billing-portal-session">&gt; Create a Portal Session</a>
+                    <a class="list-group-item list-group-item-action" href="#billing-update">&gt; Update Spend Cap</a>
+                    <a class="list-group-item list-group-item-action" href="#billing-disable">&gt; Disable Billing</a>
                     <a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
                     <a class="list-group-item list-group-item-action" href="#us-address-object">&gt; The US Address Object</a>
                     <a class="list-group-item list-group-item-action" href="#users"><strong>Users</strong></a>
@@ -83,7 +90,7 @@ echo $htmlHead->html;
             </nav>
             <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p>Last Updated: July 24, 2026</p>
+                <p>Last Updated: July 29, 2026</p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
@@ -3754,7 +3761,315 @@ curl -X GET \
 
 <h4>Rate Limiting</h4>
 
-<p>When your usage exceeds your <var>request_limit</var> + <var>request_buffer</var>, the API will return a <var>429 Too Many Requests</var> response for all non-usage endpoints. Your count resets on the first of each month. To request a higher limit, <a href="/contact">contact us</a>.</p>
+<p>When your usage exceeds your <var>request_limit</var> + <var>request_buffer</var>, the API will return a <var>429 Too Many Requests</var> response for all endpoints except <code>/usage</code> and <code>/billing</code>. Your count resets on the first of each month. To keep going past the free tier, add a payment method&#8212;see <a href="#billing">Billing</a>.</p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!---------- BILLING ---------->
+
+<h2 id="billing">Billing</h2>
+
+<p>Every account includes 1,000 free API requests per month. With a payment method on file, your key keeps working past the free tier and usage is billed at <strong>$1 per 1,000 requests</strong>, rounded up to whole blocks of 1,000. Billing is powered by Stripe: cards are collected on a Stripe-hosted checkout page and never touch Catalog.beer&#8217;s servers.</p>
+
+<p>A few things to know:</p>
+
+<ul>
+    <li><strong>Invoicing.</strong> Overage is invoiced on the first of the following month and charged automatically to your saved card. Balances under $5 roll forward to a later invoice rather than being charged immediately.</li>
+    <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month&#8217;s usage would cost more than the cap, further requests receive a <var>429</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage.</li>
+    <li><strong>Exempt endpoints.</strong> The <code>/billing</code> and <code>/usage</code> endpoints are never rate limited and don&#8217;t count toward your usage, so you can always check your status and manage billing&#8212;even when your key is over its cap.</li>
+</ul>
+
+<!----- BILLING: OBJECT ----->
+
+<h3 id="billing-object">The Billing Object</h3>
+
+<p>Your billing status is represented as an object with the following parameters.</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The type of object returned. Value will be <code>billing</code>.</td>
+            </tr>
+            <tr>
+                <td><var>api_key</var></td>
+                <td>string</td>
+                <td>The API key this billing status applies to.</td>
+            </tr>
+            <tr>
+                <td><var>billing_enabled</var></td>
+                <td>boolean</td>
+                <td>Whether usage past the free tier is enabled for this key. Becomes <code>true</code> automatically once a payment method has been saved.</td>
+            </tr>
+            <tr>
+                <td><var>monthly_spend_cap_cents</var></td>
+                <td>integer</td>
+                <td>Your monthly spend cap, in cents. Each $1 of cap covers 1,000 requests past the free tier.</td>
+            </tr>
+            <tr>
+                <td><var>card</var></td>
+                <td>object</td>
+                <td>The default payment method on file (<var>brand</var>, <var>last4</var>, <var>exp_month</var>, <var>exp_year</var>), or <code>null</code> when billing is not enabled.</td>
+            </tr>
+            <tr>
+                <td><var>year</var>, <var>month</var></td>
+                <td>integer</td>
+                <td>The current usage period.</td>
+            </tr>
+            <tr>
+                <td><var>count</var></td>
+                <td>integer</td>
+                <td>Requests made so far this month.</td>
+            </tr>
+            <tr>
+                <td><var>request_limit</var></td>
+                <td>integer</td>
+                <td>Free requests included each month.</td>
+            </tr>
+            <tr>
+                <td><var>billable_requests</var></td>
+                <td>integer</td>
+                <td>Requests past the free tier so far this month.</td>
+            </tr>
+            <tr>
+                <td><var>estimated_charge_cents</var></td>
+                <td>integer</td>
+                <td>What this month&#8217;s usage would cost so far, in cents ($1 per 1,000 billable requests, rounded up, capped at your spend cap). <code>0</code> when billing is not enabled.</td>
+            </tr>
+            <tr>
+                <td><var>unbilled_balance_cents</var></td>
+                <td>integer</td>
+                <td>Charges from earlier months that haven&#8217;t been invoiced yet because they&#8217;re under the $5 invoice minimum.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- BILLING: RETRIEVE ----->
+
+<h3 id="billing-retrieve">Get Billing Status</h3>
+
+<p>To retrieve your billing status, send a <strong>GET</strong> request to the <code>/billing</code> endpoint. No special permissions are required&#8212;the endpoint returns data for the authenticated API key.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/billing</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/billing \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}'
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "billing",
+  "api_key": "cadcbe6f-a80d-4e33-9f20-b53c2ed83845",
+  "billing_enabled": true,
+  "monthly_spend_cap_cents": 5000,
+  "card": {
+    "brand": "visa",
+    "last4": "4242",
+    "exp_month": 12,
+    "exp_year": 2034
+  },
+  "year": 2026,
+  "month": 7,
+  "count": 4215,
+  "request_limit": 1000,
+  "billable_requests": 3215,
+  "estimated_charge_cents": 400,
+  "unbilled_balance_cents": 0
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- BILLING: CHECKOUT SESSION ----->
+
+<h3 id="billing-checkout-session">Create a Checkout Session</h3>
+
+<p>To add a payment method, send a <strong>POST</strong> request to the <code>/billing/checkout-session</code> endpoint, then redirect the user to the returned <var>url</var>&#8212;a Stripe-hosted checkout page that collects the card. Nothing is charged at checkout; once the card is saved, billing is enabled for your key automatically.</p>
+
+<pre class="api-code">POST https://api.catalog.beer/billing/checkout-session</pre>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>success_url</var></td>
+                <td>string</td>
+                <td>Where Stripe sends the user after a card is saved. Must be an HTTPS URL on catalog.beer or one of its subdomains.</td>
+            </tr>
+            <tr>
+                <td><var>cancel_url</var></td>
+                <td>string</td>
+                <td>Where Stripe sends the user if they back out of checkout. Same URL restrictions as <var>success_url</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X POST \
+  https://api.catalog.beer/billing/checkout-session \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{
+  "success_url": "https://catalog.beer/billing?checkout=success",
+  "cancel_url": "https://catalog.beer/billing?checkout=cancelled"
+}'
+</pre>
+
+<h4>Sample Response</h4>
+
+<p>Returns <var>201 Created</var> on success.</p>
+
+<pre class="api-code">
+{
+  "object": "checkout_session",
+  "id": "cs_live_a1b2c3...",
+  "url": "https://checkout.stripe.com/c/pay/cs_live_a1b2c3..."
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- BILLING: PORTAL SESSION ----->
+
+<h3 id="billing-portal-session">Create a Portal Session</h3>
+
+<p>To let a user manage their saved payment methods and view past invoices, send a <strong>POST</strong> request to the <code>/billing/portal-session</code> endpoint and redirect them to the returned <var>url</var>&#8212;a Stripe-hosted billing portal. Requires that a billing account already exists (i.e., a checkout session has been created before).</p>
+
+<pre class="api-code">POST https://api.catalog.beer/billing/portal-session</pre>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>return_url</var></td>
+                <td>string</td>
+                <td>Where Stripe sends the user when they leave the portal. Must be an HTTPS URL on catalog.beer or one of its subdomains.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Response</h4>
+
+<p>Returns <var>201 Created</var> on success.</p>
+
+<pre class="api-code">
+{
+  "object": "portal_session",
+  "url": "https://billing.stripe.com/p/session/..."
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- BILLING: UPDATE ----->
+
+<h3 id="billing-update">Update Spend Cap</h3>
+
+<p>To change your monthly spend cap, send a <strong>PATCH</strong> request to the <code>/billing</code> endpoint.</p>
+
+<pre class="api-code">PATCH https://api.catalog.beer/billing</pre>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>monthly_spend_cap_cents</var></td>
+                <td>integer</td>
+                <td>The new cap, in cents. Either <code>0</code> (block all usage past the free tier) or a value between <code>100</code> ($1) and <code>100000</code> ($1,000).</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PATCH \
+  https://api.catalog.beer/billing \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{
+  "monthly_spend_cap_cents": 10000
+}'
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "billing",
+  "api_key": "cadcbe6f-a80d-4e33-9f20-b53c2ed83845",
+  "billing_enabled": true,
+  "monthly_spend_cap_cents": 10000
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- BILLING: DISABLE ----->
+
+<h3 id="billing-disable">Disable Billing</h3>
+
+<p>To turn off billing and return your key to the free tier, send a <strong>DELETE</strong> request to the <code>/billing</code> endpoint. Your card stays saved with Stripe, and usage already accrued past the free tier will still be invoiced. To re-enable billing, complete a new <a href="#billing-checkout-session">checkout session</a>.</p>
+
+<pre class="api-code">DELETE https://api.catalog.beer/billing</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "billing",
+  "api_key": "cadcbe6f-a80d-4e33-9f20-b53c2ed83845",
+  "billing_enabled": false,
+  "monthly_spend_cap_cents": 5000
+}
+</pre>
 
 <p><a href="#top">^ Return to top</a></p>
 
