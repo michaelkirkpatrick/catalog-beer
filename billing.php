@@ -138,7 +138,7 @@ echo $htmlHead->html;
         </div>
         <?php echo $alert->display(); ?>
 
-        <p class="cbf-hint ac-note">Every account includes 1,000 free API requests per month. With a payment method on file, usage past the free tier is billed at <strong>$1 per 1,000 requests</strong> (rounded up), invoiced monthly. Charges under $5 roll forward to a later invoice. <a href="/api-usage">Learn more.</a></p>
+        <p class="cbf-hint ac-note">Every account includes 1,000 free API requests per month. With a payment method on file, usage past the free tier is billed at <strong>$1 per 1,000 requests</strong> (rounded up), invoiced monthly. Charges under $5 roll forward to a later invoice. <a href="/api-pricing">Learn more.</a></p>
 
         <?php if($billingLoaded){ ?>
 

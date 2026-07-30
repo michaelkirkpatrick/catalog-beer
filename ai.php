@@ -46,7 +46,7 @@ echo $htmlHead->html;
 
         <h2>In a coding or agent session: use the API</h2>
 
-        <p>If you&#8217;re working with a coding assistant like Claude Code, Cursor, or Copilot — or building your own app — your AI can call the <a href="/api-docs">Catalog.beer API</a> directly. It&#8217;s free to start (1,000 requests per month), returns clean JSON, and covers search, styles, breweries, beers, and locations. Try a prompt like:</p>
+        <p>If you&#8217;re working with a coding assistant like Claude Code, Cursor, or Copilot — or building your own app — your AI can call the <a href="/api-docs">Catalog.beer API</a> directly. It&#8217;s free to start (<a href="/api-pricing">1,000 requests per month</a>), returns clean JSON, and covers search, styles, breweries, beers, and locations. Try a prompt like:</p>
 
         <ul>
             <li>&#8220;Read https://catalog.beer/llms.txt and then find every brewery within 20 miles of me using the Catalog.beer API.&#8221;</li>

@@ -138,20 +138,28 @@ if($userInfo->email_verified){
     if(isset($apiKeyData->api_key)){
         $apiKey = $apiKeyData->api_key;
 
-        // Fetch usage data
-        $usageResp = $api->request('GET', '/usage/my-usage', '');
-        $usageData = json_decode($usageResp);
-        if(isset($usageData->count) && isset($usageData->request_limit)){
-            $usageCount = intval($usageData->count);
-            $usageLimit = intval($usageData->request_limit);
+        // Fetch usage + billing status in one call
+        $billingResp = $api->request('GET', '/billing', '');
+        $billingData = json_decode($billingResp);
+        if(isset($billingData->count) && isset($billingData->request_limit)){
+            $billingEnabled = !empty($billingData->billing_enabled);
+            $estimatedCents = intval($billingData->estimated_charge_cents ?? 0);
+            $usageCount = intval($billingData->count);
+            $usageLimit = intval($billingData->request_limit);
             $usagePercent = $usageLimit > 0 ? min(round(($usageCount / $usageLimit) * 100), 100) : 0;
-            $usageMonth = date('F Y', mktime(0, 0, 0, intval($usageData->month), 1, intval($usageData->year)));
-            if($usagePercent >= 90){
+            $usageMonth = date('F Y', mktime(0, 0, 0, intval($billingData->month), 1, intval($billingData->year)));
+            if($billingEnabled){
+                // Past the line is billed, not blocked — no alarm colors.
+                $meterClass = '';
+            }elseif($usagePercent >= 90){
                 $meterClass = ' ac-meter__fill--danger';
             }elseif($usagePercent >= 75){
                 $meterClass = ' ac-meter__fill--warn';
             }else{
                 $meterClass = '';
+            }
+            if(isset($billingData->card->last4)){
+                $billingCard = ucfirst($billingData->card->brand) . ' &#8226;&#8226;&#8226;&#8226; ' . $billingData->card->last4;
             }
         }
     }
@@ -311,9 +319,18 @@ echo $htmlHead->html;
             <div class="ac-meter" role="progressbar" aria-label="API usage" aria-valuenow="<?php echo $usagePercent; ?>" aria-valuemin="0" aria-valuemax="100">
                 <div class="ac-meter__fill<?php echo $meterClass; ?>" style="width: <?php echo $usagePercent; ?>%;"></div>
             </div>
-            <p class="cbf-hint ac-note">Usage resets on the first of each month. <a href="/api-usage">Learn more.</a></p>
+            <?php if(!empty($billingEnabled) && $usageCount > $usageLimit){ ?>
+            <p class="cbf-hint ac-note">You&#8217;re past the free tier&#8212;estimated charge so far: $<?php echo number_format($estimatedCents / 100, 2); ?>. Usage resets on the first of each month.</p>
+            <?php }else{ ?>
+            <p class="cbf-hint ac-note">Usage resets on the first of each month. <a href="/api-pricing">See API pricing.</a></p>
+            <?php } ?>
         </div>
         <?php } ?>
+        <div class="ac-row">
+            <span class="cbf-label ac-row__label">Billing</span>
+            <span class="ac-row__value"><?php if(!empty($billingEnabled)){ echo '<span class="cb-tag ac-tag ac-tag--ok">Enabled</span>' . (isset($billingCard) ? ' <span class="ac-row__note">' . $billingCard . '</span>' : ''); }else{ echo '<span class="cb-tag ac-tag">Free tier</span>'; } ?></span>
+            <a class="cb-action" href="/billing">Manage</a>
+        </div>
         <p class="ac-apidocs">Want to use the Catalog.beer API? Check out our <a href="/api-docs">API Documentation</a>.</p>
         <?php }else{ ?>
         <div class="cbf-alert ac-note">

@@ -33,17 +33,7 @@ echo $htmlHead->html;
 
         <h2>Pricing</h2>
 
-        <p>Catalog.beer was created to enable anyone to access brewery and beer information. Whether you want to poke around, contribute to the database, or build an application, we want to make it easy to get started.</p>
-
-        <h3>Free Tier</h3>
-
-        <p>Every Catalog.beer account includes <strong>1,000 API requests per month</strong> at no cost. This resets on the first of each month. For most hobbyists, students, and personal projects, this is more than enough to build something cool.</p>
-
-        <h3>Need More?</h3>
-
-        <p>If you&#8217;re building something that requires more than 1,000 requests per month, add a payment method on your <a href="/billing">Billing page</a> and keep going&#8212;usage past the free tier is <strong>$1 per 1,000 requests</strong> (rounded up to the nearest 1,000), billed monthly through Stripe. You only pay for what you use, and a monthly spend cap ($50 by default, adjustable from $1 to $1,000) protects you from surprise bills. Charges under $5 roll forward to a later invoice, so light overage may take a few months to appear on a bill.</p>
-
-        <p>Questions about pricing, or need something bigger? Reach out via our <a href="/contact">contact form</a> or email <a href="mailto:michael@catalog.beer">michael@catalog.beer</a>. Our goal is to cover our operating costs while keeping the API accessible.</p>
+        <p>Catalog.beer was created to enable anyone to access brewery and beer information. Every account includes <strong>1,000 free API requests per month</strong>, and usage past the free tier is billed at <strong>$1 per 1,000 requests</strong>. Full details&#8212;including the monthly spend cap and how invoicing works&#8212;are on our <a href="/api-pricing">API Pricing</a> page.</p>
 
         <h2>Basic Rules</h2>
 

@@ -113,6 +113,7 @@ $pages = [
     'style'     => ['file' => 'style-list.php',     'priority' => 1],
     'map'       => ['file' => 'brewery-map.php',    'priority' => 0.5],
     'api-docs'  => ['file' => 'api-docs.php',       'priority' => 0.3],
+    'api-pricing' => ['file' => 'api-pricing.php',  'priority' => 0.3],
     'api-usage' => ['file' => 'api-usage.php',      'priority' => 0.3],
     'ai'        => ['file' => 'ai.php',             'priority' => 0.3],
     'whats-new' => ['file' => 'whats-new.php',      'priority' => 0.3],
