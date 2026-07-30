@@ -9,8 +9,8 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.0.0"
-  updated: "2026-07-28"
+  version: "1.1.0"
+  updated: "2026-07-29"
 ---
 
 # Catalog.beer API
@@ -265,8 +265,12 @@ present when `has_more` is true.
   the location (needs `brewer_id` + `country_code`, ISO 3166-1 alpha-2);
   `POST /address/{location_id}` adds the street address (US only; needs
   `address2` = street, plus either `city`+`sub_code` or `zip5`).
-- Giving a location a `name` that's just the city — leave `name` empty
-  unless the venue has a real name of its own (e.g. "The Barrel House").
+- Giving a location a `name` that's just the city, or leaving `name` null when
+  a brewer runs several venues in one city. `name` is for what the address
+  doesn't already say: a venue with its own name uses it ("The Barrel House"),
+  siblings in one city use the **neighborhood** ("South Park", "Bay Park"), and
+  a brewer's only location in a city needs no `name`. Read the neighborhood off
+  the brewery's page — never supply one from your own knowledge of the city.
 - Error responses use `error`, `error_msg`, and per-field
   `valid_state`/`valid_msg` objects — read `valid_msg` to see exactly which
   field failed and why.

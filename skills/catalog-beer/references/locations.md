@@ -10,7 +10,7 @@ request** after the location is created. Addresses are US-only for now.
 |---|---|---|
 | `id` | string | location UUID |
 | `object` | string | `"location"` |
-| `name` | string \| null | most taprooms have no name of their own — leave null; never just repeat the city |
+| `name` | string \| null | what the address can't convey — the venue's own name, or its neighborhood when the brewer has siblings in one city; null when the city already identifies it. See "Naming a location" |
 | `url` | string \| null | location-specific page; should differ from the brewer's main URL |
 | `country_code` | string | ISO 3166-1 alpha-2 (e.g. `US`) |
 | `country_short_name` | string | e.g. `United States` |
@@ -26,8 +26,33 @@ request** after the location is created. Addresses are US-only for now.
 |---|---|---|
 | `brewer_id` | **yes** | |
 | `country_code` | **yes** | ISO 3166-1 alpha-2 |
-| `name` | no | only if the venue has a real name (e.g. "The Barrel House") |
+| `name` | no | the venue's own name, or its neighborhood — see "Naming a location"; never the bare city |
 | `url` | no | location-specific URL — subject to the same **live reachability check** as the brewer's `url` (see [brewers.md](brewers.md)); an unreachable URL 400s the whole write, so retry once then send without `url` |
+
+## Naming a location
+
+`name` earns its place only by saying something the address does not. Work down
+this list and stop at the first match:
+
+1. **The venue has a name of its own** — "The Barrel House", "The Harland
+   Clubhouse". Use it.
+2. **The brewer has more than one location in the same city** — use the
+   **neighborhood** or district: "South Park", "Bay Park", "Scripps Ranch".
+   This is what tells six San Diego taprooms apart in a list where every
+   address already reads "San Diego".
+3. **Otherwise** — leave `name` null. The address already identifies a brewer's
+   only venue in a city; repeating the city name adds nothing.
+
+Never the bare city, and never a neighborhood you *recalled* rather than read —
+that is rule 1 (*no source, no write*) applied to a name, and city geography is
+exactly the kind of fact that feels safe to supply from memory. The brewery's
+own wording is the source: prefer the short form it uses in a footer or
+locations list ("Scripps Ranch") over a longer page heading ("Scripps Ranch
+Tasting Room"). A development or center the brewery treats as the venue's
+identity ("One Paseo") counts under 1.
+
+A location already in the catalog with a null or city-only `name` is corrected
+with `PATCH /location/{location_id}` — see below.
 
 ## PATCH /location/{location_id}
 
