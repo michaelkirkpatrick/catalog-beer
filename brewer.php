@@ -113,13 +113,18 @@ foreach($locations as $loc){
             'lat' => (float)$loc->latitude,
             'lng' => (float)$loc->longitude,
             'id' => $loc->id,
-            // The location's own name only — cbMapPopup() leads with the brewer
-            // when a taproom isn't named separately, so there's nothing to
-            // stand in for here.
-            'name' => trim($loc->name ?? ''),
+            // locationShortName(), the same label the cards below carry — NOT the
+            // raw name. Most taprooms have no name of their own, and on a map of
+            // one brewer's seven pins, "Mike Hess Brewing" seven times identifies
+            // nothing and links only back to the page you're already on. The city
+            // is what tells the pins apart, so it's the title and it carries the
+            // link to /location/{id}. No 'city' key for the same reason: it feeds
+            // cbMapPopup()'s name-equals-city dedupe, which would throw this label
+            // away exactly when it's the only one we have.
+            'name' => locationShortName($loc),
             'brewerID' => $brewerData->brewer->id,
             'brewerName' => $brewerData->brewer->name,
-            'city' => $loc->address->city ?? ''
+            'meta' => locationRawAddressLines($loc)
         );
     }
 }

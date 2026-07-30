@@ -16,6 +16,12 @@
  * pin's own position. Pass the location's OWN name, never a composed
  * "{brewer} – {city}" stand-in, or the repeat won't be recognised.
  *
+ * One deliberate exception: brewer.php passes locationShortName() (the city when
+ * a taproom is unnamed) and omits `city`, opting out of that dedupe. On a map of
+ * one brewer's taprooms the brewer line is the same on every pin, so the city is
+ * the only thing that tells them apart — and the only line that can carry the
+ * link to /location/{id}.
+ *
  * SAFETY: every name is written with textContent, never innerHTML, so a value
  * containing markup renders as text. The maps used to concatenate names straight
  * into an HTML string; the catalog is publicly editable, so that was a real
