@@ -9,7 +9,7 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   updated: "2026-07-29"
 ---
 
@@ -109,7 +109,10 @@ curl -X POST https://api.catalog.beer/brewer \
 ```
 
 Step 4 — create the beer (`brewer_id`, `name`, `abv`, and a style are
-required; `abv` is a float, `ibu` an integer):
+required; `abv` is a float **stored rounded to one decimal place**, `ibu` an
+integer). Send the brewery's exact figure and let the API round it — and when a
+label publishes a bound instead of a number ("Less than 0.5% ABV"), record the
+bound (`0.5`). See `references/beers.md` → "Recording ABV":
 
 ```bash
 curl -X POST https://api.catalog.beer/beer \
@@ -240,6 +243,15 @@ present when `has_more` is true.
 
 - Guessing ABV/IBU because the brewery's site doesn't list them. Don't —
   omit `ibu` (optional) and ask the user for `abv` (required).
+- Reading an `abv` rounding as stale data. `abv` is stored to **one decimal
+  place**, so a record holding `13.9` where the brewery says `13.89%` is
+  already right. Compare site figures to stored ones at one decimal before
+  deciding a field needs a PATCH, or a reconcile run fills up with writes that
+  change nothing.
+- Skipping a non-alcoholic beer because the label says "Less than 0.5% ABV"
+  rather than a number. Record the published bound — `<0.5%` → `abv: 0.5`,
+  "Under 4%" → `4.0` — and say in your report that the stored figure is an
+  upper bound. Never pick an interior value like `0.4`; that one *is* invented.
 - Writing a brewer `short_description` longer than **160 characters** →
   400. Compose it as a one-line subtitle; put anything longer in
   `description`.

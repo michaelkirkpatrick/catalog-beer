@@ -13,7 +13,7 @@
 | `class` | string \| null | `ale` \| `lager` \| null |
 | `beverage_type` | string | `beer` \| `cider` \| `perry` \| `mead` — derived, never settable |
 | `description` | string \| null | markdown/newlines allowed |
-| `abv` | float | ABV percentage |
+| `abv` | float | ABV percentage — **stored rounded to one decimal place** |
 | `ibu` | integer \| null | |
 | `cb_verified` | boolean | server-controlled |
 | `brewer_verified` | boolean | server-controlled |
@@ -31,9 +31,47 @@
 | `parent` | no | family slug (e.g. `ipa`) |
 | `class` | no | `ale` or `lager` |
 | `style_confidence` | no | usually omit — see "Recording how sure you are" |
-| `abv` | **yes** | float |
+| `abv` | **yes** | float — rounded to one decimal place on write; see "Recording ABV" |
 | `ibu` | no | integer |
 | `description` | no | markdown |
+
+### Recording ABV
+
+**`abv` is stored to one decimal place.** A more precise figure is rounded on
+write, so the value you read back may not be the value you sent:
+
+| Sent | Stored |
+|---|---|
+| `7.25` | `7.3` |
+| `11.65` | `11.7` |
+| `13.46` | `13.5` |
+| `14.29` | `14.3` |
+
+Two consequences:
+
+- **Send the brewery's exact figure anyway.** Rounding is the API's job, not
+  yours — don't pre-round, and don't treat the rounded result as a failed write.
+- **Don't mistake rounding for stale data.** A record holding `13.9` where the
+  brewery now says `13.89%` is already correct; PATCHing it changes nothing.
+  Compare a site figure against a stored one **at one decimal place**, or you
+  will "fix" fields that were never wrong.
+
+#### When the brewery publishes a bound, not a figure
+
+Labels often give a limit rather than a number — "Less than 0.5% ABV" on
+non-alcoholic beer, "Under 4%" on a light lager. `abv` is a required float and
+cannot express "less than", so **record the bound itself**: `<0.5%` → `0.5`,
+`Less than 4%` → `4.0`.
+
+This is a reading of a published number, not a guess, so it doesn't breach rule
+1 (*no source, no write*) — but it does overstate slightly, and it is the one
+place the stored `abv` is knowingly not the beer's actual strength. Say so when
+you report the write. Where a brewery publishes both a bound and a headline
+figure (a "4% ABV" banner above a "Less than 4%" spec), they agree at one
+decimal anyway.
+
+Never convert a bound into a plausible-looking interior value — `<0.5%` is
+`0.5`, never `0.4`. That would be inventing a fact.
 
 ### Style resolution on write
 
@@ -129,7 +167,10 @@ tier you send says what you decided, this says how well you knew it.
 ## PATCH /beer/{beer_id} — partial update
 
 All fields optional: `brewer_id`, `name`, `style`, `style_id`, `parent`,
-`class`, `style_confidence`, `description`, `abv`, `ibu`. Sending any of
+`class`, `style_confidence`, `description`, `abv`, `ibu`. A PATCHed `abv` is
+rounded to one decimal like any other write, so diff site figures against stored
+ones at that precision before deciding this beer needs updating at all — see
+"Recording ABV". Sending any of
 `style`/`style_id`/`parent`/`class` re-resolves and updates **all four**
 classification fields together. Resending the beer's current `style`
 unchanged never fails, and a re-resolve that lands on the same tier keeps the
