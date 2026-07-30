@@ -82,7 +82,7 @@ openssl dgst -sha384 -binary assets/js/bootstrap.bundle.min.js | openssl base64 
 # YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz
 ```
 
-Consequence of that choice: both files keep their `sourceMappingURL` comment and the `.map` files are **not** vendored, so opening devtools logs a 404 for `bootstrap.min.css.map`. That's deliberate — a harmless devtools-only notice, traded for being able to re-verify the bytes above. Don't "fix" it by editing the vendored files.
+Both files keep their `sourceMappingURL` comment, and the upstream `.map` files are vendored alongside them (`bootstrap.min.css.map`, `bootstrap.bundle.min.js.map`) so devtools doesn't log 404s. Never silence a map 404 by editing the vendored files — vendor the map instead. The same applies to `assets/js/index.min.js.map` (markerclusterer's map): that one is *not* byte-identical to upstream, deliberately — `markerclusterer-2.6.2.js` carries a 21-line provenance banner, so the map's `mappings` string is shifted by 21 leading `;` to compensate. If the banner's line count ever changes, re-shift the map.
 
 Bootstrap is being retired incrementally as pages are redesigned onto `.cb-*` rather than as a migration project; see `../Claude Ideas/bootstrap-removal.md`.
 
