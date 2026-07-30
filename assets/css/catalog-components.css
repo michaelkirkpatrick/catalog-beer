@@ -55,11 +55,11 @@
 /* destructive tail action — mono, quiet, sits centred under the rail's
    primary actions (promoted from location's .lv-delete once brewer and
    beer grew the same affordance) */
-.cb-delete-link { align-self: center; margin-top: .85rem; font-family: var(--cb-mono);
+.cb-delete-link { margin: .85rem auto 0; width: max-content; font-family: var(--cb-mono);
   font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase;
-  display: inline-flex; align-items: center; gap: .4rem; color: var(--cb-muted); text-decoration: none; }
+  display: flex; align-items: center; gap: .4rem; color: var(--cb-muted); text-decoration: none; }
 .cb-delete-link:hover { color: var(--cb-error); }
-.cb-delete-link--inline { margin-top: 0; align-self: auto; }   /* sits in a toolbar row, not a rail tail */
+.cb-delete-link--inline { margin: 0; }   /* sits in a toolbar row, not a rail tail */
 
 /* ============================ count + tag ============================ */
 .cb-count { font-family: var(--cb-mono); font-size: var(--cb-fs-label-xs); color: var(--cb-muted); background: var(--cb-paper-3); border-radius: var(--cb-radius-pill); padding: .05rem .45rem; }
