@@ -58,6 +58,7 @@ require_once ROOT . '/classes/helpers/http.php';
 require_once ROOT . '/classes/helpers/location.php';
 require_once ROOT . '/classes/helpers/forms.php';
 require_once ROOT . '/classes/helpers/address.php';
+require_once ROOT . '/classes/helpers/permissions.php';
 
 // Navigation
 $nav = new Navigation();

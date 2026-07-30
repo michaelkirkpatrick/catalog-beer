@@ -34,6 +34,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#brewer-search">&gt; Search Brewers</a>
                     <a class="list-group-item list-group-item-action" href="#brewer-beers">&gt; List all Beers made by a Brewer</a>
                     <a class="list-group-item list-group-item-action" href="#brewer-locations">&gt; List all the Locations for a Brewer</a>
+                    <a class="list-group-item list-group-item-action" href="#brewer-permissions">&gt; Your Permissions for a Brewer</a>
                     <a class="list-group-item list-group-item-action" href="#beer"><strong>Beer</strong></a>
                     <a class="list-group-item list-group-item-action" href="#beer-object">&gt; Beer Object</a>
                     <a class="list-group-item list-group-item-action" href="#beer-create">&gt; Add a Beer</a>
@@ -472,7 +473,7 @@ curl -X PATCH \
 
                 <h3 id="brewer-delete">Delete a Brewer</h3>
 
-                <p>To delete a brewer, send a <strong>DELETE</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body.</p>
+                <p>To delete a brewer, send a <strong>DELETE</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting a brewer also permanently deletes all of its beers and locations. Deleting is limited to brewery staff &#8212; check <a href="#brewer-permissions">your permissions</a> before attempting it.</p>
 
                 <pre class="api-code">DELETE https://api.catalog.beer/brewer/{brewer_id}</pre>
 
@@ -1099,6 +1100,77 @@ curl -X GET \
                 <p><small class="text-muted">Response truncated for documentation &#8212; this brewer has 9 locations in its <var>data</var> array.</small></p>
                 <p><a href="#top">^ Return to top</a></p>
 
+                <h3 id="brewer-permissions">Your Permissions for a Brewer</h3>
+
+                <p>Before attempting to update or delete a brewer &#8212; or any of its beers or locations &#8212; you can ask what your API key is allowed to do by sending a <strong>GET</strong> request to the <code>/brewer/{brewer_id}/permissions</code> endpoint. This is the polite alternative to attempting a write and handling the <var>403</var>: agents and applications should preflight destructive or gated operations here.</p>
+
+                <pre class="api-code">GET https://api.catalog.beer/brewer/{brewer_id}/permissions</pre>
+
+                <p>The response is computed for the API key making the request, at the time of the request. Different keys receive different answers for the same brewer, and your answer can change (for example, if the brewer becomes verified, or your account is granted brewery-staff privileges) &#8212; so don&#8217;t cache it across keys or for long periods.</p>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>object</var></td>
+                                <td>string</td>
+                                <td>The name of the object. In this case: &#8220;permissions&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>brewer_id</var></td>
+                                <td>string</td>
+                                <td>The unique identifier of the brewer these permissions apply to.</td>
+                            </tr>
+                            <tr>
+                                <td><var>role</var></td>
+                                <td>string</td>
+                                <td>Your relationship to this brewer. Possible values include <var>staff</var> (your account is associated with the brewery &#8212; e.g., your verified email address is at the brewery&#8217;s domain) and <var>general</var> (no association). Other values may be added over time; treat any value you don&#8217;t recognize as <var>general</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>edit</var></td>
+                                <td>Boolean</td>
+                                <td>Whether your key may <strong>PUT</strong>/<strong>PATCH</strong> this brewer. <var>staff</var> may always edit; <var>general</var> users may edit only while the brewer is neither <var>cb_verified</var> nor <var>brewer_verified</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>delete</var></td>
+                                <td>Boolean</td>
+                                <td>Whether your key may <strong>DELETE</strong> this brewer. Deleting is limited to <var>staff</var>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>The same rules extend to everything under the brewer. If your role is <var>staff</var>, you may edit and delete the brewer&#8217;s beers and locations as well. If your role is <var>general</var>, you may edit a beer or location only while that specific entity is unverified (check its own <var>cb_verified</var> / <var>brewer_verified</var> flags), and you may not delete anything. <var>edit</var> and <var>delete</var> in this response describe the brewer itself.</p>
+
+                <h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/brewer/5b58ea77-62f1-e677-9d16-a4a25d68e37c/permissions \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+                <h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "permissions",
+  "brewer_id": "5b58ea77-62f1-e677-9d16-a4a25d68e37c",
+  "role": "general",
+  "edit": true,
+  "delete": false
+}
+</pre>
+                <p><a href="#top">^ Return to top</a></p>
+
                 <h2 id="beer">Beer</h2>
                 <hr>
 
@@ -1477,7 +1549,7 @@ curl -X PATCH \
 
 <h3 id="beer-delete">Delete a Beer</h3>
 
-<p>To delete a beer, send a <strong>DELETE</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body.</p>
+<p>To delete a beer, send a <strong>DELETE</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting is limited to brewery staff &#8212; check <a href="#brewer-permissions">your permissions for the beer&#8217;s brewer</a> before attempting it.</p>
 
 <pre class="api-code">DELETE https://api.catalog.beer/beer/{beer_id}</pre>
 
@@ -2822,7 +2894,7 @@ curl -X PATCH \
 
 <h3 id="location-delete">Delete a Location</h3>
 
-<p>To delete a location, send a <strong>DELETE</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body.</p>
+<p>To delete a location, send a <strong>DELETE</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting is limited to brewery staff &#8212; check <a href="#brewer-permissions">your permissions for the location&#8217;s brewer</a> before attempting it.</p>
 
 <pre class="api-code">DELETE https://api.catalog.beer/location/{location_id}</pre>
 

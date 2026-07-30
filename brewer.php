@@ -41,6 +41,13 @@ $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'
 $brewerName = $text1->get($brewerData->brewer->name);
 $brewerIDString = $text3->get($brewerData->brewer->id);
 
+// ----- Permissions -----
+// Per-key verdict from the API; gates which affordances we draw. The API
+// still enforces on submit — this is cosmetic only.
+$perms = $loggedIn ? brewerPermissions($api, $brewerData->brewer->id) : null;
+$canManage = permissionsCanManage($perms);
+$canEditBrewer = permissionsCanEdit($perms, !empty($brewerData->brewer->cb_verified), !empty($brewerData->brewer->brewer_verified));
+
 // ----- Locations -----
 $locationResp = $api->request('GET', '/brewer/' . $brewerID . '/locations', '');
 $locationData = json_decode($locationResp);
@@ -81,6 +88,7 @@ $taproomsLabel = ($locationCount === 1) ? 'Taproom' : 'Taprooms';
 // location page's own rail — address, phone, site — and links through to that
 // page, which is where the map and the rest of the record live.
 $singleLocation = ($locationCount === 1) ? $locations[0] : null;
+$canEditSingleLocation = ($singleLocation !== null) && permissionsCanEdit($perms, !empty($singleLocation->cb_verified), !empty($singleLocation->brewer_verified));
 $singleAddress = locationAddressFacts(null, $text1);   // blank shape
 $singleMaps = array('google' => '', 'apple' => '');
 $singleLocationID = '';
@@ -168,7 +176,15 @@ echo $htmlHead->html;
             $alert->type = 'success';
             $alert->dismissible = true;
             echo $alert->display();
-            $_SESSION['delete_location_success'] = false;
+            unset($_SESSION['delete_location_success']);
+        }
+        if($loggedIn && !empty($_SESSION['delete_beer_success'])){
+            $alert = new Alert();
+            $alert->msg = 'Beer has been deleted.';
+            $alert->type = 'success';
+            $alert->dismissible = true;
+            echo $alert->display();
+            unset($_SESSION['delete_beer_success']);
         }
         ?>
         <?php
@@ -357,13 +373,19 @@ echo $htmlHead->html;
                         }
                     }
                     ?>
-                    <?php if($loggedIn){ ?>
+                    <?php if($canEditBrewer){ ?>
                     <div class="cb-rail-actions">
                         <a href="/brewer/<?php echo $brewerIDString; ?>/edit" class="cb-btn cb-btn--ghost">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
                             Edit brewer
                         </a>
                     </div>
+                    <?php } ?>
+                    <?php if($canManage){ ?>
+                    <a href="/brewer/<?php echo $brewerIDString; ?>/delete" class="cb-delete-link" title="Delete brewer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
+                        Delete brewer
+                    </a>
                     <?php } ?>
                 </div>
 
@@ -405,7 +427,7 @@ echo $htmlHead->html;
                                 }
                             }else{
                                 echo '<span class="cb-addr__region">Not on file</span>';
-                                if($loggedIn){
+                                if($canEditSingleLocation){
                                     // The location editor carries the address now.
                                     echo ' <a href="/location/' . $singleLocationID . '/edit" class="cb-action">Add</a>';
                                 }
@@ -434,13 +456,15 @@ echo $htmlHead->html;
                     <div class="bp-rail-link">
                         <a href="/location/<?php echo $singleLocationID; ?>" class="cb-action">Location details &rarr;</a>
                     </div>
-                    <?php if($loggedIn){ ?>
+                    <?php if($canEditSingleLocation){ ?>
                     <div class="cb-rail-actions">
                         <a href="/location/<?php echo $singleLocationID; ?>/edit" class="cb-btn cb-btn--ghost">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
                             Edit location
                         </a>
                     </div>
+                    <?php } ?>
+                    <?php if($loggedIn){ ?>
                     <div class="bp-rail-add">
                         <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add another location</a>
                     </div>

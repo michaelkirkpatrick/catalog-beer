@@ -20,6 +20,14 @@ if(isset($locationData->error) || !isset($locationData->id)){
     exit();
 }
 
+// Permissions — deleting is admin/staff only; everyone else goes back to the
+// location page rather than being shown a confirm the API would refuse.
+$perms = brewerPermissions($api, $locationData->brewer->id);
+if(!permissionsCanManage($perms)){
+    header('location: /location/' . urlencode($locationID));
+    exit();
+}
+
 // Brewer Info
 $text1 = new Text(false, true, true);
 $text2 = new Text(false, false, true);
@@ -50,7 +58,7 @@ if(isset($_POST['submit'])){
 
                 // Log Error
                 $errorLog = new LogError();
-                $errorLog->errorNumber = 'C16';
+                $errorLog->errorNumber = 'C26';   // C16 was already taken by SendEmail.class.php
                 $errorLog->errorMsg = 'Unexpected response when deleting location';
                 $errorLog->badData = "locationID: $locationID\nhttpcode: " . $api->httpcode . "\nresponse: $deleteResponse";
                 $errorLog->filename = 'location-delete.php';

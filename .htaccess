@@ -68,11 +68,13 @@ RewriteRule ^admin/error-log/?$	admin/error-log.php	[L]
 
 # Redirect Pages
 RewriteRule ^beer/add/([-0-9a-f]{36})$ beer-add.php?brewerID=$1 [L]
+RewriteRule ^beer/([-0-9a-f]{36})/delete$ beer-delete.php?beerID=$1 [L]
 RewriteRule ^beer/([-0-9a-f]{36})/edit$ beer-edit.php?beerID=$1 [L]
 RewriteRule ^beer/([-0-9a-f]{36})$ beer.php?beerID=$1 [L]
 RewriteRule ^beer/?$ beer-list.php [L]
 
 RewriteRule ^brewer/([-0-9a-f]{36})/add-location$ location-add.php?brewerID=$1 [L]
+RewriteRule ^brewer/([-0-9a-f]{36})/delete$ brewer-delete.php?brewerID=$1 [L]
 RewriteRule ^brewer/([-0-9a-f]{36})/edit$ brewer-edit.php?brewerID=$1 [L]
 RewriteRule ^brewer/([-0-9a-f]{36})$ brewer.php?brewerID=$1 [L]
 RewriteRule ^brewer/add$ brewer-add.php [L]

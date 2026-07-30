@@ -36,6 +36,14 @@ if(isset($locationData->error) || !isset($locationData->id)){
     exit();
 }
 
+// Permissions — verified locations are staff/admin-editable only; bounce back
+// to the location page rather than showing a form the API would refuse.
+$perms = brewerPermissions($api, $locationData->brewer->id);
+if(!permissionsCanEdit($perms, !empty($locationData->cb_verified), !empty($locationData->brewer_verified))){
+    header('location: /location/' . urlencode($locationID));
+    exit();
+}
+
 // Brewer Info
 $text1 = new Text(false, true, true);
 $text2 = new Text(false, false, true);

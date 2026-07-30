@@ -181,6 +181,7 @@
    .sp-glass. State A is the two-column record; State B the centered coaster
    card for beers with only a name / style / ABV. */
 .be-topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .25rem; }
+.be-topbar-actions { display: flex; align-items: center; gap: 1rem; }
 .be-hero { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start;
     border-bottom: 2px solid var(--cb-ink); padding: 1.25rem 0 1.75rem; margin: .5rem 0 2rem; }
 .be-title { font-size: 3.4rem; max-width: 16ch; }
@@ -313,12 +314,8 @@ a.be-lede:hover { text-decoration: underline; }
 /* facts rail — the address block itself is the shared .cb-addr primitive */
 .lv-rail { position: sticky; top: 1rem; display: flex; flex-direction: column; }
 .lv-rail .cb-label { display: block; margin-bottom: .7rem; }
-.lv-edit { color: var(--cb-muted); text-decoration: none; }
-.lv-edit:hover { color: var(--cb-amber-deep); }
-/* delete is the destructive tail action — mono, quiet, centred under Edit */
-.lv-delete { align-self: center; margin-top: .85rem; font-family: var(--cb-mono);
-    font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase;
-    display: inline-flex; align-items: center; gap: .4rem; }
+/* edit/delete links promoted to .cb-btn--ghost / .cb-delete-link
+   (catalog-components.css) when brewer and beer pages grew the same affordances */
 
 @media (max-width: 860px){
     .lv-body { grid-template-columns: 1fr; gap: 1.75rem; }

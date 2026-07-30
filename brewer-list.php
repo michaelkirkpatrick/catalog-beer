@@ -81,6 +81,16 @@ echo $htmlHead->html;
         echo '<a class="btn btn-primary cx-add" href="/brewer/add" role="button" title="Add a brewer"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Add a brewer</a>';
         echo '</div>';
 
+        // Flash: brewer just deleted (set by brewer-delete.php)
+        if(!empty($_SESSION['delete_brewer_success'])){
+            $flashAlert = new Alert();
+            $flashAlert->msg = 'Brewer has been deleted.';
+            $flashAlert->type = 'success';
+            $flashAlert->dismissible = true;
+            echo $flashAlert->display();
+            unset($_SESSION['delete_brewer_success']);
+        }
+
         // Invalid-page notice, if any
         echo $alert->display();
 

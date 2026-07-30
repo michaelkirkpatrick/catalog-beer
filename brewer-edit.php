@@ -21,6 +21,14 @@ if(isset($brewerData->error) || !isset($brewerData->id)){
     exit();
 }
 
+// Permissions — verified brewers are staff/admin-editable only; bounce back
+// to the brewer page rather than showing a form the API would refuse.
+$perms = brewerPermissions($api, $brewerID);
+if(!permissionsCanEdit($perms, !empty($brewerData->cb_verified), !empty($brewerData->brewer_verified))){
+    header('location: /brewer/' . urlencode($brewerID));
+    exit();
+}
+
 // Default Values from Existing Data
 $validState = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'');
 $validMsg = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'');
