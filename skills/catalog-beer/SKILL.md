@@ -9,7 +9,7 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   updated: "2026-07-29"
 ---
 
@@ -46,9 +46,14 @@ Getting a key (there is no signup API — accounts are created on the website):
 3. The key is shown at https://catalog.beer/account
 
 Ask the user for their key and read it from the `CATALOG_BEER_API_KEY`
-environment variable. Never hardcode or commit it. Keys include 1,000
-requests/month; a `429` means the monthly limit was exceeded (check
-`GET /usage/my-usage` — it doesn't count against the limit).
+environment variable. Never hardcode or commit it. Keys include 1,000 free
+requests/month; past that, usage bills at $1 per 1,000 requests **only if
+the user has added a payment method** at https://catalog.beer/billing —
+otherwise a `429` ends the month's access. `GET /usage/my-usage` and
+`GET /billing` report status without counting against the limit. See
+`references/api-basics.md` → "Rate limiting & billing" — and never call the
+billing endpoints (checkout, spend cap, disable) unless the user explicitly
+asks; they spend the user's money.
 
 ## The contribution rules (non-negotiable)
 
@@ -233,7 +238,7 @@ the URL is wrong):
 | Create | `POST /brewer` · `/beer` · `/location`, then `POST /address/{location_id}` |
 | Edit | `PATCH /beer/{id}` etc. (partial) · `PUT` (full replace — clears omitted fields) |
 | Styles | `GET /style` (all, with `version`) · `/style/parent` (families) · `/style/class` |
-| My usage | `GET /usage/my-usage` (not counted against limit) |
+| My usage / billing status | `GET /usage/my-usage` · `GET /billing` (never rate limited, not counted) |
 
 All entity IDs are 36-char UUIDs; style IDs are slugs. List endpoints use
 cursor pagination: pass `next_cursor` back as `cursor`; `next_cursor` is only
@@ -283,6 +288,11 @@ present when `has_more` is true.
   siblings in one city use the **neighborhood** ("South Park", "Bay Park"), and
   a brewer's only location in a city needs no `name`. Read the neighborhood off
   the brewery's page — never supply one from your own knowledge of the city.
+- Calling billing endpoints (`POST /billing/checkout-session`,
+  `PATCH /billing`, `DELETE /billing`) without the user explicitly asking.
+  They spend the user's money. On a free-tier `429`, report the options —
+  wait for the monthly reset, or add a payment method at
+  https://catalog.beer/billing — and let the user decide.
 - Error responses use `error`, `error_msg`, and per-field
   `valid_state`/`valid_msg` objects — read `valid_msg` to see exactly which
   field failed and why.

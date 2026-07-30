@@ -59,14 +59,39 @@ Example (invalid POST /brewer):
 
 Read `valid_msg` for the failing field — it says exactly what to fix.
 
-## Rate limiting
+## Rate limiting & billing
 
-- Each key: 1,000 requests/month by default, plus a small grace buffer.
-- Exceeding limit + buffer → `429 Too Many Requests` on all non-usage
-  endpoints. Counter resets on the 1st of each month.
-- `GET /usage/my-usage` returns the usage object (`count`, `request_limit`,
-  `request_buffer`, `resets_on`) and is **not** counted against the limit.
-- Need a higher limit? Email michael@catalog.beer.
+- Each key includes **1,000 free requests/month**, plus a small grace
+  buffer. The counter resets on the 1st of each month (Pacific time).
+- With a payment method on file (added by the user at
+  https://catalog.beer/billing), the key keeps working past the free tier at
+  **$1 per 1,000 requests**, rounded up to whole blocks and invoiced monthly
+  — bounded by a per-key monthly spend cap ($50 by default).
+- Without a payment method, exceeding limit + buffer → `429 Too Many
+  Requests` until the month resets. With one, a `429` appears only once the
+  month's usage would cost more than the spend cap. The `error_msg`
+  says which case applies.
+- `GET /usage/my-usage` (usage object: `count`, `request_limit`,
+  `request_buffer`, `resets_on`) and everything under `/billing` are never
+  rate limited and don't count toward usage — always safe to check.
+- Pricing details: https://catalog.beer/api-pricing
+
+### Billing endpoints
+
+| Endpoint | What it does |
+|---|---|
+| `GET /billing` | Billing status for the key: `billing_enabled`, `monthly_spend_cap_cents`, `card` (brand/last4, or `null`), plus this month's `count`, `request_limit`, `billable_requests`, `estimated_charge_cents`, `unbilled_balance_cents` |
+| `POST /billing/checkout-session` | Body: `success_url` + `cancel_url` (HTTPS URLs on catalog.beer or a subdomain). Returns a Stripe-hosted `url` — give it to the user to add their card in a browser. Nothing is charged at checkout; billing enables automatically once the card is saved |
+| `POST /billing/portal-session` | Body: `return_url`. Returns a Stripe portal `url` where the user manages saved cards and sees invoices |
+| `PATCH /billing` | Body: `monthly_spend_cap_cents` — `0` (block all paid usage) or `100`–`100000` ($1–$1,000) |
+| `DELETE /billing` | Turns billing off; the key returns to the free-tier cap. The card stays saved with Stripe |
+
+**These endpoints spend the user's money — only call them when the user
+explicitly asks.** Never start a checkout session, raise a spend cap, or
+disable billing on your own initiative. If a key hits its free-tier `429`
+mid-task, stop and tell the user their options — wait for the monthly reset,
+or add a payment method at https://catalog.beer/billing — rather than
+"fixing" it yourself.
 
 ## Pagination
 
