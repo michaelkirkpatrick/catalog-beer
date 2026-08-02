@@ -1952,42 +1952,62 @@ curl -X GET \
           "name": "German-Style Pilsener",
           "parent": "pilsner",
           "class": "lager",
-          "catch_all": false
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["German Pils", "German Pilsner"]
         },
         {
           "style_id": "pre-prohibition-lager",
           "name": "Pre-Prohibition Lager",
           "parent": "historical",
           "class": null,
-          "catch_all": false
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Classic American Pilsner", "CAP"]
         },
         {
           "style_id": "czech-pilsner",
           "name": "Czech-Style Pale Lager",
           "parent": "pilsner",
           "class": "lager",
-          "catch_all": false
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Bohemian Pilsner", "Czech Pilsner"]
         },
         {
           "style_id": "international-pilsner",
           "name": "International-Style Pilsener",
           "parent": "pilsner",
           "class": "lager",
-          "catch_all": false
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Euro Pale Lager", "International Pilsner"]
         },
         {
           "style_id": "italian-pilsner",
           "name": "Italian-Style Pilsener",
           "parent": "pilsner",
           "class": "lager",
-          "catch_all": false
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Italian Pils", "Italian Pilsner"]
         },
         {
           "style_id": "contemporary-american-pilsner",
           "name": "Contemporary American-Style Pilsener",
           "parent": "pilsner",
           "class": "lager",
-          "catch_all": false
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["American Hoppy Pilsner", "Craft American Pilsner"]
+        }
+      ],
+      "families": [
+        {
+          "parent": "pilsner",
+          "name": "Pilsner",
+          "class": "lager",
+          "beverage_type": "beer"
         }
       ]
     }
@@ -1995,7 +2015,44 @@ curl -X GET \
 }
 </pre>
 
-<p><strong>Read the whole list, not just the first entry.</strong> Candidates are ordered by how well they match your label and then by how many beers we hold in each &#8212; so a populous style outranks a better-fitting rare one. That is the real response above: the closest style to &#8220;Cali Pilsner&#8221; is <var>contemporary-american-pilsner</var>, and it comes back <em>last</em>, behind five more populous siblings. <var>class</var> may be <var>null</var> where the family sits outside the ale/lager split.</p>
+<p><small class="text-muted">Alias lists are abridged in the sample above; the API returns all of them.</small></p>
+
+<p><strong>Check <var>match</var> before you trust the order.</strong> It tells you how each candidate was reached, and it is the difference between a recommendation and a guess:</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Meaning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>exact</var></td>
+                <td>Your label is this style&#8217;s name or one of its aliases. Safe to take as the answer.</td>
+            </tr>
+            <tr>
+                <td><var>all_terms</var></td>
+                <td>Every word in your label appears in this style&#8217;s name or aliases. Usually right; worth a glance.</td>
+            </tr>
+            <tr>
+                <td><var>partial</var></td>
+                <td>Some of your words matched. <strong>Do not take the first entry on faith.</strong> Read the list, and consider filing at <var>parent</var> or <var>class</var> instead.</td>
+            </tr>
+            <tr>
+                <td><var>description</var></td>
+                <td>Nothing matched the name or aliases &#8212; only our written description of the style. The weakest signal we return.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>Within a <var>match</var> level, candidates are ordered by how well they match and then by how many beers we hold in each, so a populous style can still outrank a better-fitting rare one. That is the response above: every candidate for &#8220;Cali Pilsner&#8221; is <var>partial</var>, and the closest one, <var>contemporary-american-pilsner</var>, comes back <em>last</em>. A list that is all <var>partial</var> is the API telling you it did not recognise your label. <var>class</var> may be <var>null</var> where the family sits outside the ale/lager split.</p>
+
+<p><var>families</var> and <var>classes</var> appear alongside <var>styles</var> when your label names a family or a super-class but no style matched it outright &#8212; &#8220;Crisp American Lager&#8221; returns the <var>lager</var> class. Filing one tier up is often the honest answer, and it is better than picking a specific style that happens to share a word with your label. Send the <var>parent</var> or <var>class</var> value back the same way you would a <var>style_id</var>.</p>
+
+<p>A <var>matched_on</var> key appears when we could not match your whole label and fell back to the last two words of it &#8212; &#8220;Crisp American Lager&#8221; is matched on &#8220;American Lager.&#8221; The candidates describe that shorter phrase, not what you sent, so read it before trusting an <var>exact</var> on the list.</p>
 
 <p>Retrying the example above as <code>{"style": "Cali Pilsner", "style_id": "contemporary-american-pilsner"}</code> succeeds, and the beer keeps &#8220;Cali Pilsner&#8221; as its label. Sending <var>style_id</var>, <var>parent</var>, or <var>class</var> <em>without</em> <var>style</var> stores our canonical name as the label instead of the brewery&#8217;s own wording, so send both.</p>
 
