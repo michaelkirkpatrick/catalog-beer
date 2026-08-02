@@ -9,8 +9,8 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.3.0"
-  updated: "2026-07-29"
+  version: "1.4.0"
+  updated: "2026-08-02"
 ---
 
 # Catalog.beer API
@@ -157,13 +157,36 @@ filed at any tier; the API derives the broader tiers automatically.
   ```
 
   **The 400 tells you what to send.** It carries a `suggestions.style`
-  object — `styles[]`, each with `style_id`, `name`, `parent`, `class` and
-  `catch_all` — ranked best-first. Retry with the best candidate that fits;
-  no second lookup needed. **Read the whole array, not just `[0]`**: ties
-  break on how many beers we hold in each style, so a populous style can
-  outrank a better-fitting rare one (for "Cali Pilsner" the closest match is
-  last of six). `GET /style/search?q={label}` and
-  `GET /style/parent` are there if you want to look further afield.
+  object — `styles[]`, each with `style_id`, `name`, `parent`, `class`,
+  `catch_all`, `aliases[]` and `match` — ranked best-first. Retry with the
+  best candidate that fits; no second lookup needed.
+
+  **Check `match` before you trust the order.** It is the difference between
+  an answer and a guess:
+
+  | `match` | What to do |
+  | --- | --- |
+  | `exact` | Your label *is* this style's name or alias. Take it. |
+  | `all_terms` | Every word of your label is in its name or aliases. Usually right. |
+  | `partial` | Only some words matched. **Never take `[0]` on faith.** Read the list; prefer `families`/`classes` or a catch-all. |
+  | `description` | Matched only our prose about the style. Weakest signal we return. |
+
+  Within a `match` level ties break on how many beers we hold in each style,
+  so a populous style can outrank a better-fitting rare one (for "Cali
+  Pilsner" every candidate is `partial` and the closest is last of six). An
+  all-`partial` list means the API did not recognise your label — that is a
+  cue to file one tier up, not to pick the first row.
+
+  **`families[]` and `classes[]` ride along** when your label names a family
+  or super-class but no style matched outright — "Crisp American Lager"
+  returns the `lager` class. Send `parent`/`class` back the same way you
+  would a `style_id`. **`matched_on`** appears when we could not match your
+  whole label and fell back to its last two words; the candidates describe
+  that shorter phrase, not what you sent.
+
+  `GET /style/search?q={label}` and `GET /style/parent` are there if you want
+  to look further afield — and dropping marketing words from the query
+  ("Crisp American Lager" → "American Lager") is usually what finds it.
   Send `style_id` (style slug), `parent` (family slug), or `class`
   (`ale`/`lager`) — the most specific field you send wins. When no real
   style fits, use the nearest **catch-all style** (`catch_all: true` —

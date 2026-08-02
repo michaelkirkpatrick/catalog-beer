@@ -112,26 +112,37 @@ Never convert a bound into a plausible-looking interior value — `<0.5%` is
     "style": {
       "styles": [
         {"style_id": "contemporary-gose", "name": "Contemporary-Style Gose",
-         "parent": "sour-wild", "class": null, "catch_all": false}
+         "parent": "sour-wild", "class": null, "catch_all": false,
+         "match": "exact", "aliases": ["Gose", "Leipzig-Style Gose"]}
       ]
     }
   }
   ```
 
-  Ranked best-first: exact name/alias hits, then all-terms matches, then
-  partial, with catch-alls below real styles at each level. **Read the whole
-  array, not just `[0]`** — within a tier the order falls to how many beers
+  Ranked best-first, and every row says how it matched in `match`:
+  `exact` (your label is the style's name or alias), `all_terms` (every word
+  of your label is in its name or aliases), `partial` (only some words), or
+  `description` (only our prose about the style). **`partial` means don't
+  trust `[0]`.** Within one `match` level the order falls to how many beers
   we hold in each style, so a populous style outranks a better-fitting rare
-  one. For "Cali Pilsner" the closest match,
-  `contemporary-american-pilsner`, comes back last of six. Rows carry only
-  what's needed to retry — call `GET /style/{id}` for specs. Treat the key as
-  **optional**: it's absent when nothing matched, so fall back to
-  `GET /style/search?q=` rather than assuming it's there.
+  one — for "Cali Pilsner" every row is `partial` and the closest match,
+  `contemporary-american-pilsner`, comes back last of six. Rows carry
+  `aliases[]` so you can recognise the right style without a second call;
+  call `GET /style/{id}` for specs. Treat the key as **optional**: it's
+  absent when nothing matched, so fall back to `GET /style/search?q=` rather
+  than assuming it's there.
 
-  There is no `families[]` here. A label that names a family outright — by
-  slug, display name, or alias — resolves instead of failing, so it never
-  reaches this path. `GET /style/search` does return `families`; that's a
-  different response.
+  `families[]` and `classes[]` are present when your label *contains* a
+  family or super-class term but matched no style outright — "Crisp American
+  Lager" returns the `lager` class. (A label that names a family and nothing
+  else resolves instead of failing, so it never reaches this path; it's the
+  term buried inside a longer label that lands here.) Filing one tier up
+  beats picking a style that merely shares a word with your label.
+
+  `matched_on` appears when the whole label matched nothing and the API fell
+  back to its last two words — "Crisp American Lager" is matched on "American
+  Lager". The candidates describe that phrase, not what you sent, so an
+  `exact` under a `matched_on` is exact for the *shorter* string.
 - **Never send an explicit tier without `style`.** When `style` is empty the
   API fills the label with the resolved style's canonical name, silently
   replacing the brewery's wording ("Cali Pilsner" → "Contemporary
