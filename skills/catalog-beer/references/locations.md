@@ -78,19 +78,34 @@ Validated and geocoded server-side (returns the full location object with
 | `address1` | no | suite/unit, e.g. "Suite 101" |
 | `city` | either/or | provide (`city` AND `sub_code`) OR `zip5` |
 | `sub_code` | either/or | ISO 3166-2 subdivision, e.g. `US-CA` |
-| `zip5` | either/or | 5-digit ZIP |
-| `zip4` | no | ZIP+4 |
+| `zip5` | either/or | 5-digit ZIP, as a **string** — keep the leading zero (`"01085"`) |
+| `zip4` | no | ZIP+4, as a string |
 | `telephone` | no | 10-digit; formatting accepted but stripped (returned as integer) |
 
 `PUT /address/{location_id}` replaces the address entirely (omitted optional
-fields cleared).
+fields cleared) — **except** `zip4`, `city` and `sub_code`, which the geocoder
+re-derives from the street address and ZIP. `address1` and `telephone` are
+passed through verbatim and *will* clear if omitted.
 
 ## The US address object (in responses)
 
 `address1` (nullable), `address2`, `city`, `sub_code` (e.g. `US-CA`),
-`state_short` (`CA`), `state_long` (`California`), `zip5` (**integer**),
-`zip4` (integer, nullable), `telephone` (integer, nullable — no country
+`state_short` (`CA`), `state_long` (`California`), `zip5` (**string**),
+`zip4` (string, nullable), `telephone` (integer, nullable — no country
 code).
+
+**ZIP codes are strings, not numbers.** They are fixed-width identifiers whose
+leading zero is significant — `00501`–`09999` covers New England, New Jersey,
+Puerto Rico and the US Virgin Islands — and nothing ever does arithmetic on
+one. Send `"01085"`, not `1085`; a 4-digit value is rejected with
+`valid_state.zip5: "invalid"`. Don't parse the response value as an integer and
+write it back, or you will strip the zero and the next write will fail.
+
+**`address1` is never normalised.** The geocoder standardises `address2`,
+`city` and `zip5`, and derives `zip4` — but Google's Geocoding API maps
+properties and street infrastructure, not destinations inside a building, so
+suite/unit/floor is stored exactly as submitted. Send it in USPS form
+(`Ste 101`) if you care how it reads.
 
 ## Finding breweries near a place
 

@@ -9,8 +9,8 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.4.0"
-  updated: "2026-08-02"
+  version: "1.5.0"
+  updated: "2026-08-03"
 ---
 
 # Catalog.beer API

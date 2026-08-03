@@ -90,7 +90,7 @@ echo $htmlHead->html;
             </nav>
             <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p>Last Updated: July 29, 2026</p>
+                <p>Last Updated: August 3, 2026</p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
@@ -1071,7 +1071,7 @@ curl -X GET \
         "sub_code": "US-IL",
         "state_short": "IL",
         "state_long": "Illinois",
-        "zip5": 60622,
+        "zip5": "60622",
         "zip4": null,
         "telephone": null
       }
@@ -1095,7 +1095,7 @@ curl -X GET \
         "sub_code": "US-CA",
         "state_short": "CA",
         "state_long": "California",
-        "zip5": 92110,
+        "zip5": "92110",
         "zip4": null,
         "telephone": 6192952337
       }
@@ -2749,8 +2749,8 @@ curl -X GET \
     "sub_code": "US-CA",
     "state_short": "CA",
     "state_long": "California",
-    "zip5": 92101,
-    "zip4": 1725,
+    "zip5": "92101",
+    "zip4": "1725",
     "telephone": 6192557213
   },
   "brewer": {
@@ -3065,8 +3065,8 @@ curl -X POST \
     "sub_code": "US-CA",
     "state_short": "CA",
     "state_long": "California",
-    "zip5": 90731,
-    "zip4": 7202,
+    "zip5": "90731",
+    "zip4": "7202",
     "telephone": 3108339330
   },
   "brewer": {
@@ -3454,8 +3454,8 @@ curl -X GET \
           "sub_code": "US-CA",
           "state_short": "CA",
           "state_long": "California",
-          "zip5": 92104,
-          "zip4": 3602
+          "zip5": "92104",
+          "zip4": "3602"
         }
       },
       "distance": {
@@ -3567,8 +3567,8 @@ curl -X GET \
           "sub_code": "US-CA",
           "state_short": "CA",
           "state_long": "California",
-          "zip5": 92104,
-          "zip4": 4221
+          "zip5": "92104",
+          "zip4": "4221"
         }
       },
       "distance": {
@@ -3685,8 +3685,8 @@ curl -X GET \
           "sub_code": "US-CA",
           "state_short": "CA",
           "state_long": "California",
-          "zip5": 92101,
-          "zip4": 6453
+          "zip5": "92101",
+          "zip4": "6453"
         }
       },
       "distance": {
@@ -4184,12 +4184,12 @@ curl -X PATCH \
             </tr>
             <tr>
                 <td><var>zip5</var></td>
-                <td>integer</td>
-                <td>The traditional 5-digit ZIP Code for the location.</td>
+                <td>string</td>
+                <td>The traditional 5-digit ZIP Code for the location. Returned as a string because ZIP Codes have significant leading zeros (e.g. <samp>01085</samp>).</td>
             </tr>
             <tr>
                 <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
-                <td>integer</td>
+                <td>string</td>
                 <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
             </tr>
             <tr>
