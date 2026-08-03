@@ -83,7 +83,6 @@ EXCLUDES=(
 	--exclude '.gitattributes'
 	--exclude '.DS_Store'
 	--exclude 'scratch/'
-	--exclude 'CLAUDE.md'
 	--exclude 'deploy.sh'
 	--exclude 'deploy.conf'
 	--exclude 'deploy.conf.example'
@@ -91,7 +90,12 @@ EXCLUDES=(
 	--exclude '*.sql'
 	--exclude 'migrations/'
 	--exclude 'maintenance.html'
-	--exclude 'README.md'
+	# Documentation is never web content. Excluding the extension rather than
+	# naming each file means a doc added later is covered without anyone
+	# remembering to come here. Nothing in this project reads a .md at runtime;
+	# if that changes, the --include for it must go ABOVE this line (rsync
+	# takes the first matching rule, so an include below never fires).
+	--exclude '*.md'
 	--exclude 'sitemap*.xml'
 	--exclude '*.p8'
 	--exclude 'php-errors-*.txt'
