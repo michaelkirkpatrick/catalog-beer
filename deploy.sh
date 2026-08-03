@@ -90,11 +90,21 @@ EXCLUDES=(
 	--exclude '*.sql'
 	--exclude 'migrations/'
 	--exclude 'maintenance.html'
+	# The agent skill IS web content: it is served as markdown at
+	# https://catalog.beer/skills/catalog-beer/SKILL.md, and the skill itself
+	# advertises that URL as the place to fetch its current copy. This include
+	# must stay ABOVE the *.md exclude -- rsync takes the first matching rule,
+	# so an include below never fires. The failure is silent rather than loud:
+	# excluded files are protected from --delete, so the copies already on the
+	# server keep being served at whatever version they last deployed at.
+	# That happened on 2026-08-03 -- the *.md exclude landed and catalog.beer
+	# went on serving skill 1.4.0 while this repo held 1.5.0, with nothing
+	# 404ing to give it away.
+	--include 'skills/***'
 	# Documentation is never web content. Excluding the extension rather than
 	# naming each file means a doc added later is covered without anyone
-	# remembering to come here. Nothing in this project reads a .md at runtime;
-	# if that changes, the --include for it must go ABOVE this line (rsync
-	# takes the first matching rule, so an include below never fires).
+	# remembering to come here. Anything that must be readable at runtime needs
+	# its own --include above this line, the way skills/ does.
 	--exclude '*.md'
 	--exclude 'sitemap*.xml'
 	--exclude '*.p8'
