@@ -1245,12 +1245,12 @@ curl -X GET \
                             <tr>
                                 <td><var>abv</var></td>
                                 <td>float</td>
-                                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+                                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Always present.</td>
                             </tr>
                             <tr>
                                 <td><var>ibu</var></td>
                                 <td>integer</td>
-                                <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
+                                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. <var>null</var> when the bitterness has never been recorded &#8212; which is a different statement from <var>0</var>, meaning a beer with no measurable bitterness.</td>
                             </tr>
                             <tr>
                                 <td><var>cb_verified</var></td>
@@ -1370,12 +1370,12 @@ curl -X GET \
                             <tr>
                                 <td><var>abv</var></td>
                                 <td>float</td>
-                                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+                                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Required &#8212; send <var>0</var> for a non-alcoholic beer. Rounded to one decimal place.</td>
                             </tr>
                             <tr>
                                 <td><var>ibu<br><small class="text-muted">(optional)</small></var></td>
                                 <td>integer</td>
-                                <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
+                                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. Whole numbers only. Omit it, or send <var>null</var>, when the bitterness is unknown; send <var>0</var> only to state that the beer has no measurable bitterness.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1445,7 +1445,7 @@ curl -X POST \
             <tr>
                 <td><var>abv</var></td>
                 <td>float</td>
-                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Required &#8212; send <var>0</var> for a non-alcoholic beer. Rounded to one decimal place.</td>
             </tr>
             <tr>
                 <td><var>description</var><br><small class="text-muted">(optional)</small></td>
@@ -1455,7 +1455,7 @@ curl -X POST \
             <tr>
                 <td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The International Bitterness/Bittering Units (IBU) value of the beer. Cleared if omitted.</td>
+                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. Whole numbers only. Cleared if omitted. Send <var>0</var> only to state that the beer has no measurable bitterness &#8212; a cleared field means the bitterness is unknown.</td>
             </tr>
         </tbody>
     </table>
@@ -1530,12 +1530,12 @@ curl -X PUT \
             <tr>
                 <td><var>abv</var><br><small class="text-muted">(optional)</small></td>
                 <td>float</td>
-                <td>The Alcohol by Volume (ABV) percentage of the beer.</td>
+                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Rounded to one decimal place. Omit the field to leave it unchanged; <var>null</var> is rejected, since every beer has an ABV on record.</td>
             </tr>
             <tr>
                 <td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The International Bitterness/Bittering Units (IBU) value of the beer.</td>
+                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. Whole numbers only. Omit the field to leave it unchanged, send <var>null</var> to clear it back to unknown, or send <var>0</var> to state that the beer has no measurable bitterness.</td>
             </tr>
         </tbody>
     </table>
