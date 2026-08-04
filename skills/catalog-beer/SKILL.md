@@ -9,8 +9,8 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.5.0"
-  updated: "2026-08-03"
+  version: "1.6.0"
+  updated: "2026-08-04"
 ---
 
 # Catalog.beer API
@@ -114,10 +114,12 @@ curl -X POST https://api.catalog.beer/brewer \
 ```
 
 Step 4 — create the beer (`brewer_id`, `name`, `abv`, and a style are
-required; `abv` is a float **stored rounded to one decimal place**, `ibu` an
-integer). Send the brewery's exact figure and let the API round it — and when a
-label publishes a bound instead of a number ("Less than 0.5% ABV"), record the
-bound (`0.5`). See `references/beers.md` → "Recording ABV":
+required; `abv` is a float `0`–`99.9` **stored rounded to one decimal place**,
+`ibu` an optional whole number `0`–`1000`). Send the brewery's exact figure and
+let the API round it — and when a label publishes a bound instead of a number
+("Less than 0.5% ABV"), record the bound (`0.5`). Omit `ibu` when the brewery
+doesn't publish one: `0` means the beer has no measurable bitterness, not that
+you don't know. See `references/beers.md` → "Recording ABV" and "Recording IBU":
 
 ```bash
 curl -X POST https://api.catalog.beer/beer \
@@ -271,6 +273,9 @@ present when `has_more` is true.
 
 - Guessing ABV/IBU because the brewery's site doesn't list them. Don't —
   omit `ibu` (optional) and ask the user for `abv` (required).
+- Sending `ibu: 0` to mean "not listed". `0` is a real, storable value meaning
+  *no measurable bitterness*; `null` (or omitting the field) means unknown.
+  Getting this backwards writes a false fact about the beer.
 - Reading an `abv` rounding as stale data. `abv` is stored to **one decimal
   place**, so a record holding `13.9` where the brewery says `13.89%` is
   already right. Compare site figures to stored ones at one decimal before

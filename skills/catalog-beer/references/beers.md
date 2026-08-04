@@ -13,8 +13,8 @@
 | `class` | string \| null | `ale` \| `lager` \| null |
 | `beverage_type` | string | `beer` \| `cider` \| `perry` \| `mead` — derived, never settable |
 | `description` | string \| null | markdown/newlines allowed |
-| `abv` | float | ABV percentage — **stored rounded to one decimal place** |
-| `ibu` | integer \| null | |
+| `abv` | float | ABV percentage, `0`–`99.9` — **stored rounded to one decimal place** |
+| `ibu` | integer \| null | `0`–`1000`. `null` means never recorded; `0` means no measurable bitterness — see "Recording IBU" |
 | `cb_verified` | boolean | server-controlled |
 | `brewer_verified` | boolean | server-controlled |
 | `last_modified` | integer | Unix timestamp |
@@ -31,8 +31,8 @@
 | `parent` | no | family slug (e.g. `ipa`) |
 | `class` | no | `ale` or `lager` |
 | `style_confidence` | no | usually omit — see "Recording how sure you are" |
-| `abv` | **yes** | float — rounded to one decimal place on write; see "Recording ABV" |
-| `ibu` | no | integer |
+| `abv` | **yes** | float `0`–`99.9` — rounded to one decimal place on write; see "Recording ABV" |
+| `ibu` | no | whole number `0`–`1000` — omit when unknown, never send `0`; see "Recording IBU" |
 | `description` | no | markdown |
 
 ### Recording ABV
@@ -72,6 +72,37 @@ decimal anyway.
 
 Never convert a bound into a plausible-looking interior value — `<0.5%` is
 `0.5`, never `0.4`. That would be inventing a fact.
+
+### Recording IBU
+
+**`0` and `null` are different claims, and you have to pick the right one.**
+
+| You know | Send | Stored |
+|---|---|---|
+| The brewery publishes an IBU | that whole number, `0`–`1000` | the number |
+| The brewery publishes "0 IBU" | `0` | `0` |
+| The brewery publishes nothing | omit the field, or send `null` | `null` |
+
+`null` says *nobody has recorded this beer's bitterness*. `0` says *this beer
+has no measurable bitterness* — a substantive claim about the beer, and one
+that is wrong for almost every beer style. **Never send `0` to mean "I don't
+know"**, and never read a stored `0` as "unknown".
+
+That distinction is new as of August 2026. Before then `0` was unstorable —
+the API accepted it, returned `201`, and silently wrote `null` — so older
+records and any client written against the old behaviour may still conflate
+the two. A `0` you did not write yourself is not evidence of a zero-IBU beer.
+
+Two more constraints:
+
+- **Whole numbers only.** `45.7` is rejected (`400`), not truncated.
+- **The ceiling is 1000**, which is above the highest independently verified
+  beer (658 IBU) and admits published label claims like Mikkeller's "1000 IBU".
+  Anything higher is rejected — a figure above ~120 is almost always a typo or
+  a marketing number, so check the source before recording it.
+
+To clear a recorded IBU back to unknown, PATCH it with `null` (PUT clears it by
+omission). PATCHing `0` sets a real zero — it does not clear the field.
 
 ### Style resolution on write
 
@@ -181,7 +212,8 @@ All fields optional: `brewer_id`, `name`, `style`, `style_id`, `parent`,
 `class`, `style_confidence`, `description`, `abv`, `ibu`. A PATCHed `abv` is
 rounded to one decimal like any other write, so diff site figures against stored
 ones at that precision before deciding this beer needs updating at all — see
-"Recording ABV". Sending any of
+"Recording ABV". `abv` cannot be `null` (`400`); `ibu` set to `null` clears it
+back to unknown, while `0` records a real zero — see "Recording IBU". Sending any of
 `style`/`style_id`/`parent`/`class` re-resolves and updates **all four**
 classification fields together. Resending the beer's current `style`
 unchanged never fails, and a re-resolve that lands on the same tier keeps the
