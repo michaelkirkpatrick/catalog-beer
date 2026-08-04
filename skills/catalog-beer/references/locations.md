@@ -13,7 +13,7 @@ request** after the location is created. Addresses are US-only for now.
 | `name` | string \| null | what the address can't convey — the venue's own name, or its neighborhood when the brewer has siblings in one city; null when the city already identifies it. See "Naming a location" |
 | `url` | string \| null | location-specific page; should differ from the brewer's main URL |
 | `country_code` | string | ISO 3166-1 alpha-2 (e.g. `US`) |
-| `country_short_name` | string | e.g. `United States` |
+| `country_short_name` | string | server-derived from `country_code`; currently always `United States of America` |
 | `latitude`, `longitude` | float \| null | geocoded server-side when an address is added |
 | `cb_verified`, `brewer_verified` | boolean | server-controlled |
 | `last_modified` | integer | Unix timestamp |
