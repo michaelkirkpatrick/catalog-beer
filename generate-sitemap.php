@@ -161,11 +161,19 @@ while(true){
         checkSitemapLimit($file, $urlCount, $sitemapNumber);
     }
 
-    if(!empty($apiData->next_cursor)){
-        $cursor = $apiData->next_cursor;
-    }else{
+    if(empty($apiData->next_cursor)){
         break;
     }
+    if($apiData->next_cursor === $cursor){
+        // A cursor that doesn't advance means the API is ignoring it (this
+        // happened when the /location rewrite lacked QSA) — without this
+        // check the loop refetches page one forever, filling sitemap files
+        // with duplicates until the disk objects.
+        echo "Error: next_cursor did not advance; aborting section.\n";
+        $hadErrors = true;
+        break;
+    }
+    $cursor = $apiData->next_cursor;
 }
 
 echo "Brewers complete\n";
@@ -202,11 +210,19 @@ while(true){
         checkSitemapLimit($file, $urlCount, $sitemapNumber);
     }
 
-    if(!empty($apiData->next_cursor)){
-        $cursor = $apiData->next_cursor;
-    }else{
+    if(empty($apiData->next_cursor)){
         break;
     }
+    if($apiData->next_cursor === $cursor){
+        // A cursor that doesn't advance means the API is ignoring it (this
+        // happened when the /location rewrite lacked QSA) — without this
+        // check the loop refetches page one forever, filling sitemap files
+        // with duplicates until the disk objects.
+        echo "Error: next_cursor did not advance; aborting section.\n";
+        $hadErrors = true;
+        break;
+    }
+    $cursor = $apiData->next_cursor;
 }
 
 echo "Locations complete\n";
@@ -241,11 +257,19 @@ while(true){
         checkSitemapLimit($file, $urlCount, $sitemapNumber);
     }
 
-    if(!empty($apiData->next_cursor)){
-        $cursor = $apiData->next_cursor;
-    }else{
+    if(empty($apiData->next_cursor)){
         break;
     }
+    if($apiData->next_cursor === $cursor){
+        // A cursor that doesn't advance means the API is ignoring it (this
+        // happened when the /location rewrite lacked QSA) — without this
+        // check the loop refetches page one forever, filling sitemap files
+        // with duplicates until the disk objects.
+        echo "Error: next_cursor did not advance; aborting section.\n";
+        $hadErrors = true;
+        break;
+    }
+    $cursor = $apiData->next_cursor;
 }
 
 echo "Beers complete\n";
