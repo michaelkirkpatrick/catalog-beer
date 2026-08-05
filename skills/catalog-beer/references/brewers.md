@@ -98,7 +98,18 @@ Only on explicit user instruction.
 - `GET /brewer/{brewer_id}` — one brewer object.
 - `GET /brewer/search?q=` — full-text over name + description. `q` required
   (max 255 chars), `count` default 25 / max 100. Returns full brewer objects
-  by relevance.
+  by relevance, each with a `match` field saying why it matched: `exact`
+  (name equals the query), `all_terms` (every query term prefix-matches the
+  name), `partial` (a *distinctive* query term hits the name — structural
+  words like Brewing/Brewery/Co don't count), or `description` (no name
+  evidence — the hit is a description mention). **When screening for
+  duplicates before creating a brewer, only `exact`/`all_terms`/`partial`
+  rows are name evidence.** A result list that is all `description` means no
+  brewer with a similar name exists — common with short or unusual names,
+  where the blended index returns breweries whose descriptions merely use
+  the words ("GOAL Brewing" once returned three unrelated breweries whose
+  descriptions contained "goal"; they now label `description`, since their
+  only name overlap was the word Brewing).
 - `GET /brewer` — all brewers, alphabetical; rows are `{id, name,
   last_modified}` only. `count` default 500, cursor-paginated.
 - `GET /brewer/count` — `{"object": "count", "value": N}`.

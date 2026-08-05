@@ -236,7 +236,11 @@ current classification.
 - `GET /beer/{beer_id}` — one beer object (with nested brewer).
 - `GET /beer/search?q=` — full-text over name, style, description. `q`
   required (max 255), `count` default 25 / max 100. Returns full beer
-  objects (each with nested `brewer`) by relevance.
+  objects (each with nested `brewer`) by relevance, each with a `match`
+  field: `exact` / `all_terms` / `partial` (the name matched, fully or in
+  part) or `description` (the name matched nothing — the hit is in the
+  style or description text). For duplicate screening, only the first three
+  count as name evidence.
 - `GET /beer` — all beers, alphabetical; rows are `{id, name,
   last_modified}`. `count` default 500, cursor-paginated.
 - `GET /beer/count` — `{"object": "count", "value": N}`.

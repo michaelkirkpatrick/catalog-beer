@@ -775,7 +775,7 @@ curl -X GET \
                             <tr>
                                 <td><var>data</var></td>
                                 <td>array</td>
-                                <td>An array of <a href="#brewer-object">brewer objects</a> matching the search query, sorted by relevance.</td>
+                                <td>An array of <a href="#brewer-object">brewer objects</a> matching the search query, sorted by relevance. Each result additionally carries a <var>match</var> field describing why it matched: <code>exact</code> (the name equals the query), <code>all_terms</code> (every query term matches the start of a word in the name), <code>partial</code> (at least one query term matches the name), or <code>description</code> (the name matched nothing &mdash; the hit is in the description text). When checking whether a brewer already exists, only the first three values are evidence of a name match.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -809,7 +809,8 @@ curl -X GET \
       "url": "http://www.stonecoast.com/",
       "cb_verified": false,
       "brewer_verified": false,
-      "last_modified": 1588448205
+      "last_modified": 1588448205,
+      "match": "all_terms"
     }
   ]
 }
@@ -1828,7 +1829,7 @@ curl -X GET \
             <tr>
                 <td><var>data</var></td>
                 <td>array</td>
-                <td>An array of <a href="#beer-object">beer objects</a> matching the search query, sorted by relevance. Each beer object includes a nested <a href="#brewer-object">brewer object</a>.</td>
+                <td>An array of <a href="#beer-object">beer objects</a> matching the search query, sorted by relevance. Each beer object includes a nested <a href="#brewer-object">brewer object</a> and a <var>match</var> field describing why it matched: <code>exact</code>, <code>all_terms</code>, or <code>partial</code> (the beer's name matched the query, fully or in part) or <code>description</code> (the name matched nothing &mdash; the hit is in the style or description text).</td>
             </tr>
         </tbody>
     </table>
@@ -1868,6 +1869,7 @@ curl -X GET \
       "cb_verified": true,
       "brewer_verified": false,
       "last_modified": 1783642824,
+      "match": "all_terms",
       "brewer": {
         "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
         "object": "brewer",
