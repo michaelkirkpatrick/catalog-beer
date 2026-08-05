@@ -88,10 +88,19 @@ Validated and geocoded server-side (returns the full location object with
 | `zip4` | no | ZIP+4, as a string |
 | `telephone` | no | 10-digit; formatting accepted but stripped (returned as integer) |
 
-`PUT /address/{location_id}` replaces the address entirely (omitted optional
-fields cleared) — **except** `zip4`, `city` and `sub_code`, which the geocoder
-re-derives from the street address and ZIP. `address1` and `telephone` are
-passed through verbatim and *will* clear if omitted.
+`PUT /address/{location_id}` replaces the address entirely: `address1` and
+`telephone` *will* clear if omitted, while `city`, `sub_code` and `zip4`
+re-derive from the street address and ZIP whether you send them or not.
+
+`PATCH /address/{location_id}` updates only the fields you send — they are
+merged with the stored address and the whole thing re-validates as one. Send
+`null` to clear `telephone`; `address1` and `zip4` re-derive from the
+validated address rather than clearing directly. One asymmetry to know:
+`city`+`sub_code` and `zip5` are two spellings of the same locality, so when
+you patch one group the stored other group is dropped and re-derived rather
+than merged — patching a new ZIP with an old stored city would otherwise hand
+the validator a contradiction. Patch whichever group you trust and let the
+other come back derived.
 
 ## The US address object (in responses)
 
@@ -107,11 +116,17 @@ one. Send `"01085"`, not `1085`; a 4-digit value is rejected with
 `valid_state.zip5: "invalid"`. Don't parse the response value as an integer and
 write it back, or you will strip the zero and the next write will fail.
 
-**`address1` is never normalised.** The geocoder standardises `address2`,
-`city` and `zip5`, and derives `zip4` — but Google's Geocoding API maps
-properties and street infrastructure, not destinations inside a building, so
-suite/unit/floor is stored exactly as submitted. Send it in USPS form
-(`Ste 101`) if you care how it reads.
+**The whole address is standardised — `address1` included.** Every write runs
+through Google Address Validation with USPS CASS. The street stores with its
+words spelled out (`Woodinville Redmond Rd NE`, even where USPS abbreviates);
+the city stores as USPS's mailing city — an unincorporated community like
+Paoli, WI stores as its post-office city, Belleville — falling back to
+Google's locality where USPS's 13-character field truncates the name; and the
+suite/unit is re-derived from the CASS secondary line, not passed through.
+Casing is normalised with directionals and unit letters intact (`Rd NE`,
+`Ste 105B`). Send whatever form you have and treat what comes back as
+canonical — a re-submit of your original spelling will standardise the same
+way, so don't retry when the stored form differs from what you sent.
 
 ## Finding breweries near a place
 
