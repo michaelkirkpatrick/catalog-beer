@@ -67,6 +67,22 @@ record already had. Retry as a PATCH instead.
 All fields optional: `name`, `description`, `short_description` (max 160),
 `url`. Only provided fields change.
 
+**To clear an optional field, PATCH it with `null`.** An absent key means
+"leave this alone"; an explicit `null` means "clear this". Clearing a lapsed
+or hijacked URL is therefore one field:
+
+```json
+{"url": null}
+```
+
+Use this rather than PUT whenever you are clearing something. PUT clears by
+*omission*, so clearing one field means resending every other optional field
+correctly in the same body — and getting that wrong silently wipes a
+description.
+
+`name` is required and cannot be cleared; `{"name": null}` returns `400` with
+`valid_msg.name` explaining the field is needed.
+
 ## PUT /brewer/{brewer_id} — full replace
 
 `name` required. **Omitted optional fields (`description`,

@@ -56,8 +56,14 @@ with `PATCH /location/{location_id}` — see below.
 
 ## PATCH /location/{location_id}
 
-All optional: `brewer_id`, `name` (send `null`/empty string to clear),
-`country_code`, `url`.
+All optional: `brewer_id`, `name`, `country_code`, `url`.
+
+**Send `null` to clear a nullable field** — `name` and `url`. An absent key
+means "leave this alone". Prefer this over PUT for clearing, since PUT clears
+by omission and will take the other optional fields with it.
+
+`brewer_id` and `country_code` are required and cannot be cleared; an explicit
+`null` on either returns `400`.
 
 ## PUT /location/{location_id}
 
