@@ -469,7 +469,10 @@ function srRenderHit($hit){
         if(!empty($hit['address']['city'])){ $place[] = $hit['address']['city']; }
         if(!empty($hit['address']['state_short'])){ $place[] = $hit['address']['state_short']; }
         if(!empty($place)){ $context[] = h(implode(', ', $place)); }
-        if(!empty($hit['address']['telephone'])){ $value = h($hit['address']['telephone']); }
+        // Not linked as tel: — the whole row is already a link to the location
+        // page, and a nested anchor is invalid HTML. The number is here to
+        // identify the taproom, not to be dialled from the results list.
+        if(!empty($hit['address']['telephone'])){ $value = h(formatTelephone($hit['address']['telephone'])); }
     }elseif($hitType === 'style'){
         if(!empty($hit['subtitle'])){ $context[] = h($hit['subtitle']); }
         $bits = array();

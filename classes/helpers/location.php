@@ -160,15 +160,32 @@ function locationAddressFacts($location, Text $text): array {
         }
     }
 
-    // Telephone — stored as 10 digits. Anything else is left unrendered rather
-    // than shown half-formatted.
     $facts['telephoneDigits'] = strval($address->telephone ?? '');
-    if(strlen($facts['telephoneDigits']) === 10){
-        $facts['telephone'] = '(' . substr($facts['telephoneDigits'], 0, 3) . ') '
-            . substr($facts['telephoneDigits'], 3, 3) . '-' . substr($facts['telephoneDigits'], 6, 4);
-    }
+    $facts['telephone'] = formatTelephone($facts['telephoneDigits']);
 
     return $facts;
+}
+
+/**
+ * A stored phone number as "(503) 555-0100".
+ *
+ * We store exactly 10 digits (NANP, no country code). Anything else — a short
+ * number, a stray extension, an empty field — returns '' so the caller renders
+ * nothing at all; a half-formatted number reads as broken data, and a raw
+ * 10-digit run reads as an ID rather than something you could dial.
+ *
+ * Takes the digits loosely typed because callers get them from different
+ * places: the API decodes JSON, so a phone arrives as an int, while the same
+ * value out of the Algolia index or a form arrives as a string.
+ *
+ * @param string|int|null $digits  The stored number, digits only
+ */
+function formatTelephone($digits): string {
+    $digits = strval($digits ?? '');
+    if(strlen($digits) !== 10 || !ctype_digit($digits)){
+        return '';
+    }
+    return '(' . substr($digits, 0, 3) . ') ' . substr($digits, 3, 3) . '-' . substr($digits, 6, 4);
 }
 
 /**

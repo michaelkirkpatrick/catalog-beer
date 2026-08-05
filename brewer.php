@@ -275,9 +275,9 @@ echo $htmlHead->html;
                                 echo '</p></div>';
 
                                 // Telephone
-                                $telephone = strval($loc->address->telephone ?? '');
-                                if(strlen($telephone) === 10){
-                                    echo '<p itemprop="telephone">(' . substr($telephone, 0, 3) . ') ' . substr($telephone, 3, 3) . '-' . substr($telephone, 6, 4) . '</p>';
+                                $telephone = formatTelephone($loc->address->telephone ?? '');
+                                if($telephone !== ''){
+                                    echo '<p itemprop="telephone">' . $telephone . '</p>';
                                 }
                             }
                             ?>
