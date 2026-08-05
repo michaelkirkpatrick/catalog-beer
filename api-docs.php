@@ -159,7 +159,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>valid_state</var><br><small class="text-muted">(optional)</small></td>
                                 <td>array</td>
-                                <td>An array containing the attribute names and their validation state. A field&#8217;s state is binary: either &#8216;valid&#8217; or &#8216;invalid&#8217;. You can use this parameter to help target which attributes are invalid.</td>
+                                <td>An array containing the attribute names and their validation state. A field&#8217;s state is binary: either &#8216;valid&#8217; or &#8216;invalid&#8217;. You can use this parameter to help target which attributes are invalid. &#8216;valid&#8217; means the field passed validation &mdash; not that it was saved. When any attribute is &#8216;invalid&#8217; the whole write is rejected and nothing is stored.</td>
                             </tr>
                             <tr>
                                 <td><var>valid_msg</var><br><small class="text-muted">(optional)</small></td>
@@ -223,7 +223,7 @@ echo $htmlHead->html;
                             </tr>
                             <tr>
                                 <td><strong>PATCH</strong></td>
-                                <td>Partial update of a resource. Only the fields you provide will be modified; all other fields remain unchanged. The resource must already exist (returns <var>404 Not Found</var> otherwise).</td>
+                                <td>Partial update of a resource. Only the fields you provide will be modified; all other fields remain unchanged. The resource must already exist (returns <var>404 Not Found</var> otherwise). A PATCH is applied <strong>all or nothing</strong>: if any field in the request fails validation, the response is a <var>400 Bad Request</var> and none of the fields are written &mdash; including the ones <var>valid_state</var> reports as valid.</td>
                             </tr>
                             <tr>
                                 <td><strong>DELETE</strong></td>

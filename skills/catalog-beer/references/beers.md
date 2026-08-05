@@ -219,6 +219,15 @@ classification fields together. Resending the beer's current `style`
 unchanged never fails, and a re-resolve that lands on the same tier keeps the
 beer's stored `style_confidence` rather than re-deriving it.
 
+**A PATCH is all-or-nothing.** If any field in the body fails validation the
+response is a `400` and *nothing* is written — the other fields in the same
+request are discarded too, even though `valid_state` marks them `"valid"`.
+That flag means "this field passed validation", not "this field was saved".
+The most common way to hit it is an unmatched bare `style` label: send a name,
+an ABV and an unresolvable style together and the name and ABV do not land
+either. Fix the field `valid_state` marks `"invalid"` and resend the whole
+body; `last_modified` on a `GET` confirms whether anything actually changed.
+
 ## PUT /beer/{beer_id} — full replace
 
 Required: `brewer_id`, `name`, `abv`, and a style (as in POST). **Omitted

@@ -9,8 +9,8 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.9.0"
-  updated: "2026-08-04"
+  version: "1.9.1"
+  updated: "2026-08-05"
 ---
 
 # Catalog.beer API
@@ -294,7 +294,11 @@ present when `has_more` is true.
   send the record **without** `url`.
 - Assuming an unmatched `style` label is stored verbatim with a null
   `style_id`. It isn't — it's a `400` and nothing is written. Resend the
-  label **plus** `style_id`/`parent`/`class` together.
+  label **plus** `style_id`/`parent`/`class` together. This applies to PATCH
+  as well, where the whole patch is discarded: a `name` and an `abv` sent
+  alongside an unresolvable `style` are not saved either, even though
+  `valid_state` marks them `"valid"` (which means "passed validation", not
+  "was written"). Fix the `"invalid"` field and resend the entire body.
 - Sending `style_id` without `style`, which overwrites the brewery's label
   with the canonical style name.
 - Verifying a write against a list endpoint. List and nested rows are
