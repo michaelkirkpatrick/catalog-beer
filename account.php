@@ -58,7 +58,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $patchData = json_decode($apiResponse);
         if($api->httpcode == 200 && isset($patchData->id)){
             if($newDomain !== $oldDomain){
-                $_SESSION['account_flash'] = 'Your email address has been updated. Because it is on a new domain, we sent a verification message to ' . $emailValue . ' and reset your API key. Verify your address to keep adding data.';
+                // h() because this flash lands in $alert->msg, which is raw HTML
+                // by contract, and $emailValue is whatever the user typed into
+                // the form. The plan listed beer.php as the only site
+                // interpolating user data into an alert; this is the second.
+                $_SESSION['account_flash'] = 'Your email address has been updated. Because it is on a new domain, we sent a verification message to ' . h($emailValue) . ' and reset your API key. Verify your address to keep adding data.';
             }else{
                 $_SESSION['account_flash'] = 'Your email address has been updated.';
             }

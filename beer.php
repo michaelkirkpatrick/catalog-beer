@@ -223,7 +223,11 @@ echo $htmlHead->html;
         // Flash: "just added" success
         if($loggedIn && !empty($_SESSION['add_beer_success'])){
             $alert = new Alert();
-            $alert->msg = '**Success!** Thanks for adding this beer to the database. [Add another beer by ' . $brewerName . '](/beer/add/' . $brewerURL . ').';
+            // $msg is raw HTML by contract (see Alert), so the two API values
+            // interpolated into it are escaped HERE, at the interpolation point.
+            // Before this, a brewer name containing "](https://evil.example)"
+            // rewrote where this link pointed.
+            $alert->msg = '<strong>Success!</strong> Thanks for adding this beer to the database. <a href="/beer/add/' . h($brewerURL) . '">Add another beer by ' . h($brewerName) . '</a>.';
             $alert->type = 'success';
             $alert->dismissible = true;
             echo $alert->display();

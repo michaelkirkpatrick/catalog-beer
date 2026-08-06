@@ -30,14 +30,14 @@ if(isset($_GET['request'])){
     switch($exploded[0]){
         case 'brewer':
             if(isset($exploded[1]) && $exploded[1] === 'add'){
-                $message = 'Hello! Before you can add a new brewer to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
+                $message = 'Hello! Before you can add a new brewer to the database, you will need to sign in. Don\'t have an account? You can <a href="/signup">create one</a>.';
             }elseif(isset($exploded[2]) && $exploded[2] === 'add-location'){
-                $message = 'Hello! Before you can add new location for this brewer to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
+                $message = 'Hello! Before you can add new location for this brewer to the database, you will need to sign in. Don\'t have an account? You can <a href="/signup">create one</a>.';
             }
             break;
         case 'beer':
             if(isset($exploded[1]) && $exploded[1] === 'add'){
-                $message = 'Hello! Before you can add a new beer to the database, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
+                $message = 'Hello! Before you can add a new beer to the database, you will need to sign in. Don\'t have an account? You can <a href="/signup">create one</a>.';
             }
             break;
         case 'location':
@@ -46,7 +46,7 @@ if(isset($_GET['request'])){
             // and edit-address now redirect into the location editor, but they're
             // still live URLs, so all three are worth a message.
             if(isset($exploded[2]) && ($exploded[2] === 'edit' || $exploded[2] === 'add-address' || $exploded[2] === 'edit-address')){
-                $message = 'Hello! Before you can edit this location, you will need to sign in. Don\'t have an account? You can [create one](/signup).';
+                $message = 'Hello! Before you can edit this location, you will need to sign in. Don\'t have an account? You can <a href="/signup">create one</a>.';
             }
             break;
         default:

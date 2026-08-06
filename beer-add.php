@@ -79,7 +79,7 @@ if(isset($_GET['brewerID'])){
     }else{
         // Invalid Brewer
         $disabled = true;
-        $alert->msg = 'Sorry, this looks like an invalid brewery. Try navigating back to this page from the [list of brewers](/brewer).';
+        $alert->msg = 'Sorry, this looks like an invalid brewery. Try navigating back to this page from the <a href="/brewer">list of brewers</a>.';
         $validState['brewer_id'] = 'invalid';
         $validMsg['brewer_id'] = 'Invalid brewer';
         $brewerName = '';
@@ -87,7 +87,7 @@ if(isset($_GET['brewerID'])){
 }else{
     // Missing Brewer ID
     $disabled = true;
-    $alert->msg = 'We seem to be missing the brewery this new beer would be associated with. Try navigating back to this page from the [list of brewers](/brewer).';
+    $alert->msg = 'We seem to be missing the brewery this new beer would be associated with. Try navigating back to this page from the <a href="/brewer">list of brewers</a>.';
     $validState['brewer_id'] = 'invalid';
     $validMsg['brewer_id'] = 'Invalid brewer';
     $brewerName = '';

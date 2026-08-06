@@ -23,7 +23,7 @@ separate, honest questions.
 
 Add to this as chunks land. Covered so far: chunk 1 (h), chunk 3 (htmlHead),
 chunk 4 (InputField, Textarea, GuidedStyleField, DropDown), chunk 5
-(Checkbox).
+(Checkbox), chunk 6 (Alert).
 
 NOT DEPLOYED: deploy.sh excludes tests/. Keep it that way — this directory is
 executable PHP and the web root is public.
@@ -42,6 +42,7 @@ require_once(ROOT . '/classes/Textarea.class.php');
 require_once(ROOT . '/classes/GuidedStyleField.class.php');
 require_once(ROOT . '/classes/DropDown.class.php');
 require_once(ROOT . '/classes/Checkbox.class.php');
+require_once(ROOT . '/classes/Alert.class.php');
 
 $verbose = in_array('-v', $argv);
 $pass = 0;
@@ -353,6 +354,59 @@ ok('unchecked when the variable is false',
 $termsOn = new Checkbox();
 ok('checked when the variable matches the value',
     str_contains($termsOn->display('terms_agreement', 'x', true, true), 'checked'));
+
+// ===========================================================================
+section('Alert — chunk 6');
+
+// The contract: developer-authored HTML renders as markup.
+$al = new Alert();
+$al->type = 'success';
+$al->msg  = '<strong>Success!</strong> Thanks. <a href="/beer/add/abc">Add another beer by Barley &amp; Hops</a>.';
+$html = $al->display();
+if($verbose){ echo "    $html\n"; }
+
+ok('alert markup is honoured — the link exists',
+    attrValue($html, '//a', 'href') === '/beer/add/abc');
+ok('alert <strong> survives', textOf($html, '//strong') === 'Success!');
+ok('alert entity renders as one character',
+    textOf($html, '//a') === 'Add another beer by Barley & Hops');
+ok('success type sets the ok variant', str_contains($html, 'cbf-alert--ok'));
+
+$empty = new Alert();
+$empty->msg = '';
+ok('empty message renders nothing at all', $empty->display() === '');
+
+// The obligation the contract creates: user data must be escaped BY THE CALLER
+// at the interpolation point. This is what beer.php:226 and account.php:61 do.
+$hostileName = 'Barley & Hops" onmouseover="alert(1)';
+$safe = new Alert();
+$safe->msg = '<a href="/beer/add/' . h('abc"><script>alert(1)</script>') . '">Add another beer by ' . h($hostileName) . '</a>.';
+$html = $safe->display();
+
+noInjectedAttrs('caller-escaped interpolation injects no attribute', $html, array(
+    'class', 'role', 'href', 'aria-hidden',
+));
+ok('no onmouseover handler materialised', !in_array('onmouseover', attrNames($html)));
+ok('no script element materialised',
+    (new DOMXPath(dom($html)))->query('//script')->length === 0);
+ok('the hostile name still reads correctly to a human',
+    textOf($html, '//a') === 'Add another beer by ' . $hostileName);
+
+// And the counter-case, documenting exactly what the contract does NOT do: an
+// UNescaped interpolation is live markup. Asserted so nobody "discovers" it as
+// a surprise. Note the payload has to OPEN A TAG — $msg lands in element body,
+// not in an attribute, so a stray quote alone is inert there. That difference
+// is the whole reason escaping is chosen by destination.
+$bodyPayload = '<img src=x onerror="alert(1)">';
+$unsafe = new Alert();
+$unsafe->msg = 'Hello ' . $bodyPayload;
+ok('UNescaped interpolation is live markup — caller escaping is mandatory',
+    in_array('onerror', attrNames($unsafe->display())));
+$escaped = new Alert();
+$escaped->msg = 'Hello ' . h($bodyPayload);
+ok('...and h() at the interpolation point makes it inert text',
+    !in_array('onerror', attrNames($escaped->display()))
+    && str_contains((string)textOf($escaped->display(), '//div/div'), $bodyPayload));
 
 // ===========================================================================
 echo "\n$pass passed, $fail failed\n";

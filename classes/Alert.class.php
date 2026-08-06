@@ -8,6 +8,25 @@ $alert->type = 'success/info/warning/error';
 $alert = new Alert();
 $alert->msg = '';
 echo $alert->display();
+
+*** $msg is DEVELOPER-AUTHORED HTML and is emitted RAW. ***
+
+It used to run through Markdown, which is how the "create one", "list of
+brewers" and "Add another beer" links worked. Those are now written as literal
+<a href> and <strong>, so the property carries markup by contract -- the same
+deal as Checkbox's $text.
+
+So: write the HTML yourself, entities included (&amp;, not a bare &), and NEVER
+assign a value that came from a user, the API or the database without escaping
+it first. Interpolating one? Wrap that piece in h() at the interpolation point,
+the way beer.php and account.php do.
+
+Checked when this contract was introduced (6 Aug 2026), and worth re-checking
+if the API changes: every error_msg the API can return is a fixed string or a
+canned message delegated from $db / $uuid / $users / $stripe / $sendEmail. The
+only interpolations are numeric (minutes, dollar caps) or internal identifiers,
+and TextInput::check() names the problem rather than echoing the input. So the
+~20 `$alert->msg = $x['error_msg']` sites carry no user data.
 */
 
 class Alert {
@@ -31,13 +50,12 @@ class Alert {
                 $class .= ' cbf-alert--warn';
             }
 
-            // ----- Message -----
-            $text = new Text(true, true, true);
-
             // ----- HTML Output -----
+            // $msg is raw by contract -- see the docblock. Every caller was
+            // audited when this changed; none pass unescaped user data.
             $return = '<div class="' . $class . '" role="alert">';
             $return .= '<span class="cbf-alert__i" aria-hidden="true">' . $icon . '</span>';
-            $return .= '<div>' . $text->get($this->msg) . '</div>';
+            $return .= '<div>' . $this->msg . '</div>';
             $return .= '</div>';
         }else{
             // No Message

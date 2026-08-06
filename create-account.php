@@ -77,7 +77,7 @@ if(isset($_POST['signupFormHidden'])){
         }else{
             // Didn't Pass Captcha
             $error = true;
-            $errorMsg = 'Sorry, Google\'s reCAPTCHA algorithm thinks you are a bot. As such, we are not going to allow you to create an account using this form. We have logged this incident. Try [contacting us](/contact) for support.';
+            $errorMsg = 'Sorry, Google\'s reCAPTCHA algorithm thinks you are a bot. As such, we are not going to allow you to create an account using this form. We have logged this incident. Try <a href="/contact">contacting us</a> for support.';
 
             // Update Alert
             $alert->msg = $errorMsg;
