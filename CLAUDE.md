@@ -8,6 +8,14 @@ Catalog.beer is a traditional PHP web application serving as the frontend for "T
 
 **Stack:** PHP 8.3, Bootstrap 5.3.3, Apache (mod_rewrite), no build system or package manager.
 
+## Writing Markdown (this file, `../Claude Ideas/*.md`, any doc)
+
+**Do not hard-wrap prose at 80 characters.** Write each paragraph as one long line and let the editor soft-wrap it. This applies to every Markdown file you author or edit for this project — `CLAUDE.md`, the planning documents in `../Claude Ideas/`, READMEs, commit-adjacent notes.
+
+Hard-wrapped Markdown looks tidy in a terminal and is miserable to maintain: every edit to a sentence reflows the whole paragraph, so a one-word change shows up as a six-line diff, and appending a clause means rebalancing lines by hand. `text-sanitization-rewrite.md` was reflowed on 6 Aug 2026 for exactly this reason and went from 1,053 lines to 473 with no content change.
+
+Line breaks are for structure, not for width: between paragraphs, list items, headings, table rows and fenced code. Inside a code fence, wrap wherever the code wants — fences are never reflowed.
+
 ## Development
 
 **No build/test/lint commands exist.** This is a traditional PHP application with no automated testing.
