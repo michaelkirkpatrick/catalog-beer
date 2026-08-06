@@ -81,11 +81,18 @@ class Navigation {
                     $html .= '<span aria-hidden="true">/</span>';
                 }
 
-                // Breadcrumb Text
-                $text = SmartyPants::defaultTransform(htmlspecialchars($this->breadcrumbText[$i] ?? ''));
+                // Breadcrumb Text. SmartyPants goes with the rest of the
+                // pipeline -- note it was called STATICALLY here, so chunk 16's
+                // `new Text(|->get(` grep would not have found it and every
+                // breadcrumbed page would have fatalled on the deletion.
+                //
+                // Callers pass RAW names. While a page still passes purified
+                // text (chunks 9-14) this shows a literal "Bob&#8217;s Brewery";
+                // that display fixing itself is the migration's own progress bar.
+                $text = h($this->breadcrumbText[$i] ?? '');
 
                 if($i != $numItems-1 && !empty($this->breadcrumbLink[$i])){
-                    $html .= '<a href="'. $this->breadcrumbLink[$i] . '">' . $text . '</a>';
+                    $html .= '<a href="'. h($this->breadcrumbLink[$i]) . '">' . $text . '</a>';
                 }else{
                     $html .= '<span class="is-current">' . $text . '</span>';
                 }
@@ -264,7 +271,7 @@ class Navigation {
 
         // Prev
         if($page > 1){
-            $html .= '<a class="cx-pager__chip" href="' . $baseURL . '?page=' . ($page - 1) . '" rel="prev" aria-label="Previous page">' . $chevronLeft . ' Prev</a>';
+            $html .= '<a class="cx-pager__chip" href="' . h($baseURL) . '?page=' . ($page - 1) . '" rel="prev" aria-label="Previous page">' . $chevronLeft . ' Prev</a>';
         }
 
         // 5-wide window, clamped so it never overruns either end
@@ -294,7 +301,7 @@ class Navigation {
 
         // Next
         if($page < $totalPages){
-            $html .= '<a class="cx-pager__chip" href="' . $baseURL . '?page=' . ($page + 1) . '" rel="next" aria-label="Next page">Next ' . $chevronRight . '</a>';
+            $html .= '<a class="cx-pager__chip" href="' . h($baseURL) . '?page=' . ($page + 1) . '" rel="next" aria-label="Next page">Next ' . $chevronRight . '</a>';
         }
 
         $html .= '</nav>';
@@ -303,9 +310,9 @@ class Navigation {
 
     private function pagerNum($i, $page, $baseURL){
         if($i == $page){
-            return '<a class="cx-pager__num is-current" href="' . $baseURL . '?page=' . $i . '" aria-current="page">' . $i . '</a>';
+            return '<a class="cx-pager__num is-current" href="' . h($baseURL) . '?page=' . $i . '" aria-current="page">' . $i . '</a>';
         }
-        return '<a class="cx-pager__num" href="' . $baseURL . '?page=' . $i . '">' . $i . '</a>';
+        return '<a class="cx-pager__num" href="' . h($baseURL) . '?page=' . $i . '">' . $i . '</a>';
     }
 }
 ?>

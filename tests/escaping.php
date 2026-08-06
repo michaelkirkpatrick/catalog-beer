@@ -23,7 +23,8 @@ separate, honest questions.
 
 Add to this as chunks land. Covered so far: chunk 1 (h), chunk 3 (htmlHead),
 chunk 4 (InputField, Textarea, GuidedStyleField, DropDown), chunk 5
-(Checkbox), chunk 6 (Alert).
+(Checkbox), chunk 6 (Alert), chunk 7
+(Navigation, Table).
 
 NOT DEPLOYED: deploy.sh excludes tests/. Keep it that way — this directory is
 executable PHP and the web root is public.
@@ -43,6 +44,13 @@ require_once(ROOT . '/classes/GuidedStyleField.class.php');
 require_once(ROOT . '/classes/DropDown.class.php');
 require_once(ROOT . '/classes/Checkbox.class.php');
 require_once(ROOT . '/classes/Alert.class.php');
+require_once(ROOT . '/classes/Navigation.class.php');
+require_once(ROOT . '/classes/Table.class.php');
+
+// Navigation::__construct() reads $_SERVER['REQUEST_URI'] with no fallback.
+// Always present under Apache, absent in CLI -- so stand in for the web context
+// rather than changing the class for the benefit of a test.
+$_SERVER['REQUEST_URI'] = '/brewer/00000000-0000-0000-0000-000000000000';
 
 $verbose = in_array('-v', $argv);
 $pass = 0;
@@ -407,6 +415,60 @@ $escaped->msg = 'Hello ' . h($bodyPayload);
 ok('...and h() at the interpolation point makes it inert text',
     !in_array('onerror', attrNames($escaped->display()))
     && str_contains((string)textOf($escaped->display(), '//div/div'), $bodyPayload));
+
+// ===========================================================================
+section('Navigation + Table — chunk 7');
+
+$nav = new Navigation();
+$nav->breadcrumbText = array('Home', $HANDLER, 'Edit');
+$nav->breadcrumbLink = array('/', '/brewer/" onmouseover="alert(1)', '');
+$html = $nav->breadcrumbs();
+if($verbose){ echo "    $html\n"; }
+
+noInjectedAttrs('no attribute injected into a breadcrumb', $html, array(
+    'class', 'href', 'aria-label', 'aria-hidden', 'itemscope', 'itemtype',
+    'itemprop', 'content',
+));
+ok('breadcrumb href is escaped',
+    attrValue($html, '//a[2]', 'href') === '/brewer/" onmouseover="alert(1)');
+ok('breadcrumb text renders as text',
+    str_contains((string)textOf($html, '//nav'), $HANDLER));
+ok('no onmouseover handler materialised', !in_array('onmouseover', attrNames($html)));
+
+// A real name must read correctly — this is the double-escape regression check.
+$navReal = new Navigation();
+$navReal->breadcrumbText = array('Home', "Bob's Brewery & Co.");
+$navReal->breadcrumbLink = array('/', '');
+ok('a real name renders once-escaped, not twice',
+    str_contains((string)textOf($navReal->breadcrumbs(), '//nav'), "Bob's Brewery & Co."));
+
+// catalogPager: $baseURL reaches four hrefs.
+$pager = $nav->catalogPager(2, 5, '/brewer" onmouseover="alert(1)');
+noInjectedAttrs('no attribute injected into the pager', $pager, array(
+    'class', 'href', 'rel', 'aria-label', 'aria-current', 'aria-hidden',
+    'xmlns', 'width', 'height', 'viewbox', 'fill', 'stroke', 'stroke-width',
+    'stroke-linecap', 'stroke-linejoin', 'd',
+));
+ok('pager href is escaped',
+    str_starts_with((string)attrValue($pager, '//a', 'href'), '/brewer" onmouseover="alert(1)?page='));
+
+// Table: the inverted conditional passed anything containing markup through raw.
+$table = new Table();
+$tHtml = $table->startTable(array('Name', '<script>alert(1)</script>', 'Barley & Hops')) . $table->closeTable();
+if($verbose){ echo "    $tHtml\n"; }
+
+ok('table heading with markup is escaped, not passed through',
+    (new DOMXPath(dom($tHtml)))->query('//script')->length === 0);
+ok('table heading text survives exactly',
+    textOf($tHtml, '//th[2]') === '<script>alert(1)</script>');
+ok('table heading ampersand renders as one character',
+    textOf($tHtml, '//th[3]') === 'Barley & Hops');
+
+// The old by-reference loop rewrote the caller's array while rendering it.
+$headings = array('Name', 'Barley & Hops');
+$table->startTable($headings);
+ok('startTable() no longer mutates the caller\'s array',
+    $headings === array('Name', 'Barley & Hops'));
 
 // ===========================================================================
 echo "\n$pass passed, $fail failed\n";
