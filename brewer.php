@@ -89,12 +89,12 @@ $taproomsLabel = ($locationCount === 1) ? 'Taproom' : 'Taprooms';
 // page, which is where the map and the rest of the record live.
 $singleLocation = ($locationCount === 1) ? $locations[0] : null;
 $canEditSingleLocation = ($singleLocation !== null) && permissionsCanEdit($perms, !empty($singleLocation->cb_verified), !empty($singleLocation->brewer_verified));
-$singleAddress = locationAddressFacts(null, $text1);   // blank shape
+$singleAddress = locationAddressFacts(null);   // blank shape
 $singleMaps = array('google' => '', 'apple' => '');
 $singleLocationID = '';
 $singleLocationName = '';
 if($singleLocation !== null){
-    $singleAddress = locationAddressFacts($singleLocation, $text1);
+    $singleAddress = locationAddressFacts($singleLocation);
     // The standalone label for the maps pin: this taproom usually has no name of
     // its own, and "Portland" alone would drop a pin on the city.
     $singleMaps = locationMapsLinks($singleLocation, locationDisplayName($singleLocation, $brewerData->brewer->name));
@@ -410,13 +410,15 @@ echo $htmlHead->html;
                         <span class="cb-fact__k">Address</span>
                         <address class="cb-addr cb-fact__v cb-fact__v--sm">
                             <?php
-                            if($singleAddress['street'] !== '' || $singleAddress['city'] !== ''){
+                            if($singleAddress['street'] !== '' || $singleAddress['cityHtml'] !== ''){
                                 $addressBlock = '';
                                 if($singleAddress['street'] !== ''){
-                                    $addressBlock .= '<span class="cb-addr__street" itemprop="streetAddress">' . $singleAddress['street'] . '</span><br>';
+                                    $addressBlock .= '<span class="cb-addr__street" itemprop="streetAddress">' . h($singleAddress['street']) . '</span><br>';
                                 }
-                                if($singleAddress['city'] !== ''){
-                                    $addressBlock .= '<span class="cb-addr__region">' . $singleAddress['city'] . '</span>';
+                                if($singleAddress['cityHtml'] !== ''){
+                                    // cityHtml, echoed as-is: it carries the schema.org
+                                    // spans and its pieces are already escaped.
+                                    $addressBlock .= '<span class="cb-addr__region">' . $singleAddress['cityHtml'] . '</span>';
                                 }
                                 if($singleMaps['google'] !== ''){
                                     // The whole address is the link target — a two-line
@@ -443,7 +445,7 @@ echo $htmlHead->html;
 
                     <?php
                     if($singleAddress['telephone'] !== ''){
-                        echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . $text3->get($singleAddress['telephoneDigits']) . '" itemprop="telephone">' . $singleAddress['telephone'] . '</a></span></div>' . "\n";
+                        echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . h($singleAddress['telephoneDigits']) . '" itemprop="telephone">' . h($singleAddress['telephone']) . '</a></span></div>' . "\n";
                     }
 
                     if(!empty($singleLocation->url)){

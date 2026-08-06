@@ -63,9 +63,9 @@ $canDeleteLocation = permissionsCanManage($perms);
 // Formatted in classes/helpers/location.php, which brewer.php's single-taproom
 // rail shares. Every piece is '' when it isn't on file — a location can exist
 // without an address at all.
-$addressFacts = locationAddressFacts($locationData, $text1);
+$addressFacts = locationAddressFacts($locationData);
 $streetLine = $addressFacts['street'];
-$cityLine = $addressFacts['city'];
+$cityLine = $addressFacts['cityHtml'];   // HTML: schema spans, pieces pre-escaped
 $cityShort = $addressFacts['cityShort'];    // "Portland, OR" — meta description
 $telephone = $addressFacts['telephone'];
 $telephoneDigits = $addressFacts['telephoneDigits'];
@@ -258,7 +258,7 @@ echo $htmlHead->html;
                         if($streetLine !== '' || $cityLine !== ''){
                             $addressBlock = '';
                             if($streetLine !== ''){
-                                $addressBlock .= '<span class="cb-addr__street" itemprop="streetAddress">' . $streetLine . '</span><br>';
+                                $addressBlock .= '<span class="cb-addr__street" itemprop="streetAddress">' . h($streetLine) . '</span><br>';
                             }
                             if($cityLine !== ''){
                                 $addressBlock .= '<span class="cb-addr__region">' . $cityLine . '</span>';
@@ -287,7 +287,7 @@ echo $htmlHead->html;
 
                 <?php
                 if($telephone !== ''){
-                    echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . $text3->get($telephoneDigits) . '" itemprop="telephone">' . $telephone . '</a></span></div>' . "\n";
+                    echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . h($telephoneDigits) . '" itemprop="telephone">' . h($telephone) . '</a></span></div>' . "\n";
                 }
 
                 if(!empty($locationData->url)){

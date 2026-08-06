@@ -24,7 +24,7 @@ separate, honest questions.
 Add to this as chunks land. Covered so far: chunk 1 (h), chunk 3 (htmlHead),
 chunk 4 (InputField, Textarea, GuidedStyleField, DropDown), chunk 5
 (Checkbox), chunk 6 (Alert), chunk 7
-(Navigation, Table).
+(Navigation, Table), chunk 8 (helpers/location.php).
 
 NOT DEPLOYED: deploy.sh excludes tests/. Keep it that way — this directory is
 executable PHP and the web root is public.
@@ -46,6 +46,7 @@ require_once(ROOT . '/classes/Checkbox.class.php');
 require_once(ROOT . '/classes/Alert.class.php');
 require_once(ROOT . '/classes/Navigation.class.php');
 require_once(ROOT . '/classes/Table.class.php');
+require_once(ROOT . '/classes/helpers/location.php');
 
 // Navigation::__construct() reads $_SERVER['REQUEST_URI'] with no fallback.
 // Always present under Apache, absent in CLI -- so stand in for the web context
@@ -469,6 +470,78 @@ $headings = array('Name', 'Barley & Hops');
 $table->startTable($headings);
 ok('startTable() no longer mutates the caller\'s array',
     $headings === array('Name', 'Barley & Hops'));
+
+// ===========================================================================
+section('helpers/location.php — chunk 8');
+
+// A location whose every address field is hostile.
+$loc = json_decode(json_encode(array(
+    'id' => 'abc',
+    'name' => '',
+    'address' => array(
+        'address2'    => '123 <script>alert(1)</script> St',
+        'address1'    => 'Ste "A"',
+        'city'        => 'Portland" onmouseover="alert(1)',
+        'state_short' => 'OR<b>',
+        'zip5'        => '97201',
+        'zip4'        => '1234',
+        'telephone'   => '5035550100',
+    ),
+    'brewer' => array('name' => 'Barley & Hops', 'id' => 'brew-1'),
+)));
+
+$facts = locationAddressFacts($loc);
+
+// The four RAW keys: untouched, so the caller must escape them.
+ok('street comes back RAW', $facts['street'] === '123 <script>alert(1)</script> St Ste "A"');
+ok('cityShort comes back RAW', $facts['cityShort'] === 'Portland" onmouseover="alert(1), OR<b>');
+ok('telephone is formatted', $facts['telephone'] === '(503) 555-0100');
+ok('telephoneDigits are the raw digits', $facts['telephoneDigits'] === '5035550100');
+
+// cityShort must stay raw: location.php feeds it to addDescription(), which
+// escapes for itself. Pre-escaping here would double-escape the meta tag.
+$metaHead = new htmlHead('T');
+$metaHead->addDescription('A taproom in ' . $facts['cityShort'] . '.');
+preg_match('~<meta name="description".*?>~s', $metaHead->html, $mm);
+ok('cityShort survives addDescription() exactly once',
+    attrValue($mm[0], '//meta[@name="description"]', 'content')
+        === 'A taproom in Portland" onmouseover="alert(1), OR<b>.');
+noInjectedAttrs('cityShort injects nothing into the meta tag', $mm[0],
+    array('content', 'name'));
+
+// The one HTML key: spans intact, every interpolated piece escaped.
+$cityHtml = $facts['cityHtml'];
+if($verbose){ echo "    $cityHtml\n"; }
+noInjectedAttrs('cityHtml carries only its itemprops', $cityHtml, array('itemprop'));
+ok('no onmouseover materialised in cityHtml', !in_array('onmouseover', attrNames($cityHtml)));
+ok('no element smuggled in via state_short',
+    (new DOMXPath(dom($cityHtml)))->query('//b')->length === 0);
+ok('addressLocality holds the exact city',
+    textOf($cityHtml, '//span[@itemprop="addressLocality"]') === 'Portland" onmouseover="alert(1)');
+ok('addressRegion holds the exact state',
+    textOf($cityHtml, '//span[@itemprop="addressRegion"]') === 'OR<b>');
+ok('postalCode is zip5-zip4',
+    textOf($cityHtml, '//span[@itemprop="postalCode"]') === '97201-1234');
+
+// A caller escaping the street the way brewer.php and location.php now do.
+$block = '<span itemprop="streetAddress">' . h($facts['street']) . '</span>';
+ok('caller-escaped street opens no element',
+    (new DOMXPath(dom($block)))->query('//script')->length === 0);
+ok('caller-escaped street reads correctly',
+    textOf($block, '//span') === '123 <script>alert(1)</script> St Ste "A"');
+
+// No address at all — a location can exist without one.
+$bare = locationAddressFacts(json_decode('{"id":"x"}'));
+ok('missing address yields the blank shape, all five keys',
+    $bare === array('street'=>'', 'cityHtml'=>'', 'cityShort'=>'', 'telephone'=>'', 'telephoneDigits'=>''));
+ok('null location yields the blank shape too',
+    locationAddressFacts(null)['cityHtml'] === '');
+
+// formatTelephone rejects anything that isn't exactly 10 digits.
+ok('9 digits formats to nothing', formatTelephone('503555010') === '');
+ok('11 digits formats to nothing', formatTelephone('15035550100') === '');
+ok('non-digits format to nothing', formatTelephone('503-555-0100') === '');
+ok('an int from json_decode still formats', formatTelephone(5035550100) === '(503) 555-0100');
 
 // ===========================================================================
 echo "\n$pass passed, $fail failed\n";

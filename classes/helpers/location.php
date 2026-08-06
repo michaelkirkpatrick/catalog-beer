@@ -17,9 +17,9 @@
  *                          that already names the brewer. Repeating it there
  *                          reads twice in one row.
  *
- * Both return a RAW string, not escaped output. Callers put it through their own
- * Text pipeline ($text1->get(...)) for HTML, or hand it to json_encode() for the
- * map popups, which write with textContent and escape for themselves.
+ * Both return a RAW string, not escaped output. Callers escape at the point of
+ * output — h() for HTML, or json_encode() for the map popups, which write with
+ * textContent and escape for themselves.
  */
 
 /**
@@ -115,48 +115,63 @@ function locationRawAddressLines($location): array {
  * The address formatted for a facts rail. Every piece is '' when that part isn't
  * on file — a location can exist without an address at all.
  *
- *   street           escaped street line, unit appended
- *   city             escaped city line carrying the schema.org spans
- *   cityShort        "Portland, OR" — the same line as plain text, for prose
- *   telephone        "(503) 555-0100", only for the 10-digit numbers we store
- *   telephoneDigits  those same digits, for a tel: href
+ * FOUR KEYS ARE RAW AND ONE IS HTML. That is not tidy, so the HTML one is named
+ * for it rather than left to be discovered:
  *
- * The spans in `city` (addressLocality / addressRegion / postalCode) expect a
- * PostalAddress scope around them — see the rail markup on location.php.
+ *   street           RAW  street line, unit appended        -> caller wraps in h()
+ *   cityShort        RAW  "Portland, OR", for prose         -> caller wraps in h()
+ *   telephone        RAW  "(503) 555-0100"                  -> caller wraps in h()
+ *   telephoneDigits  RAW  those digits, for a tel: href     -> caller wraps in h()
+ *   cityHtml         HTML the city line WITH the schema.org spans, every
+ *                         interpolated piece already escaped here -> echo as-is,
+ *                         and do NOT pass it through h() or the spans become
+ *                         visible text.
+ *
+ * `cityHtml` has to be assembled here because the markup interleaves with the
+ * data: addressLocality, addressRegion and postalCode each wrap their own piece.
+ * The alternative — handing back three raw pieces for two callers to assemble
+ * identically — duplicates the microdata contract in two places.
+ *
+ * `cityShort` must stay RAW: location.php feeds it to htmlHead::addDescription(),
+ * which escapes for itself, so pre-escaping here would double-escape the meta
+ * description.
+ *
+ * The spans expect a PostalAddress scope around them — see the rail markup on
+ * location.php.
  *
  * @param object|null $location  Decoded location object from the API
- * @param Text        $text      Display pipeline, i.e. new Text(false, true, true)
  */
-function locationAddressFacts($location, Text $text): array {
-    $facts = array('street' => '', 'city' => '', 'cityShort' => '', 'telephone' => '', 'telephoneDigits' => '');
+function locationAddressFacts($location): array {
+    $facts = array('street' => '', 'cityHtml' => '', 'cityShort' => '', 'telephone' => '', 'telephoneDigits' => '');
     if(!isset($location->address)){
         return $facts;
     }
     $address = $location->address;
 
     if(!empty($address->address2)){
-        $facts['street'] = $text->get($address->address2);
+        $facts['street'] = $address->address2;
         if(!empty($address->address1)){
-            $facts['street'] .= ' ' . $text->get($address->address1);
+            $facts['street'] .= ' ' . $address->address1;
         }
     }
 
     if(!empty($address->city)){
-        $zipCode = $text->get($address->zip5 ?? '');
+        $zipCode = strval($address->zip5 ?? '');
         if(!empty($address->zip4)){
-            $zipCode .= '-' . $text->get($address->zip4);
+            $zipCode .= '-' . $address->zip4;
         }
-        $city = $text->get($address->city);
-        $stateShort = $text->get($address->state_short ?? '');
-        $facts['city'] = '<span itemprop="addressLocality">' . $city . '</span>';
+        $city = $address->city;
+        $stateShort = strval($address->state_short ?? '');
+
+        // cityShort stays raw; cityHtml escapes each piece as it goes in.
+        $facts['cityShort'] = ($stateShort !== '') ? $city . ', ' . $stateShort : $city;
+
+        $facts['cityHtml'] = '<span itemprop="addressLocality">' . h($city) . '</span>';
         if($stateShort !== ''){
-            $facts['city'] .= ', <span itemprop="addressRegion">' . $stateShort . '</span>';
-            $facts['cityShort'] = $city . ', ' . $stateShort;
-        }else{
-            $facts['cityShort'] = $city;
+            $facts['cityHtml'] .= ', <span itemprop="addressRegion">' . h($stateShort) . '</span>';
         }
         if($zipCode !== ''){
-            $facts['city'] .= ' <span itemprop="postalCode">' . $zipCode . '</span>';
+            $facts['cityHtml'] .= ' <span itemprop="postalCode">' . h($zipCode) . '</span>';
         }
     }
 
