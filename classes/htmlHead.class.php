@@ -11,9 +11,11 @@ class htmlHead {
     function __construct($pageTitle){
         // HTML Header
         $html = file_get_contents(ROOT . '/classes/resources/head.html');
-        $text = new Text(false, false, true);
-        $pageTitle = $text->get($pageTitle);
-        $html = str_replace('##PAGETITLE##', $pageTitle, $html);
+        // <title> is RCDATA: "<" and "&" are the characters that matter, and
+        // character references are still decoded, so h()'s escaped quotes render
+        // as the quotes the brewery typed. Callers pass RAW API values — do not
+        // hand this pre-escaped text or the title reads "Bob&#8217;s Brewery".
+        $html = str_replace('##PAGETITLE##', h($pageTitle), $html);
 
         // Bootstrap, self-hosted rather than CDN: same bytes, but no DNS+TLS
         // handshake to a third party on the render-blocking path, and it rides the
@@ -63,12 +65,25 @@ class htmlHead {
         $this->html = str_replace('</head>', $script . '</head>', $this->html);
     }
 
+    // Set the meta description. THIS is where the stored attribute-injection
+    // lived: it ran the value through HTML Purifier, whose generator escapes text
+    // nodes with ENT_NOQUOTES — right for element content, wrong here, because
+    // the value lands in an attribute. A brewer short_description of
+    //   0;url=https://evil.example" http-equiv="refresh
+    // closed content="" and hung a second attribute on the same tag, and browsers
+    // honour http-equiv even when name is present: the page redirected. h()'s
+    // ENT_QUOTES is the whole fix.
     function addDescription($description){
         if(!empty($description)){
-            $text = new Text(false, false, true);
-            $description = $text->get($description);
-            $metaDescription = '<meta charset="UTF-8">' . "\n\t" . '<meta name="description" content="' . $description . '" />';
-            $this->html = str_replace('<meta charset="utf-8">', $metaDescription, $this->html);
+            $meta = "\t" . '<meta name="description" content="' . h($description) . '" />' . "\n";
+            // Insert before </head>, like every other method here. This used to
+            // str_replace the charset tag with an uppercased copy of itself plus
+            // the description — which left the charset intact but meant a second
+            // addDescription() call silently did nothing (the lowercase needle was
+            // gone), and it kept the charset declaration hostage to an unrelated
+            // method. The charset stays where head.html puts it, first in <head>
+            // and well inside the 1024 bytes browsers sniff.
+            $this->html = str_replace('</head>', $meta . '</head>', $this->html);
         }
     }
 }
