@@ -326,11 +326,18 @@ echo $htmlHead->html;
     <?php echo jsTag('/assets/js/map-popup.js'); ?>
     <script>
     function initMap() {
-        var position = { lat: <?php echo json_encode($mapLatitude); ?>, lng: <?php echo json_encode($mapLongitude); ?> };
+        // JSON_HEX_TAG is the load-bearing flag on the sinks below that carry raw
+        // names and address lines: inside a <script> the parser is looking for
+        // "<", not for quotes. Default json_encode escapes "/", so the classic
+        // "</script>" breakout already fails — but "<!--<script" puts the
+        // tokenizer in the script-data-double-escaped state and swallows the rest
+        // of the page. Applied to every encode in this block so there's nothing to
+        // decide per line. See classes/helpers/html.php.
+        var position = { lat: <?php echo json_encode($mapLatitude, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>, lng: <?php echo json_encode($mapLongitude, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?> };
         var map = new google.maps.Map(document.getElementById('map'), {
             center: position,
             zoom: 15,
-            mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID); ?>,
+            mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
             // Explicit, not the 'auto' default: auto only picks cooperative while
             // the page happens to be scrollable, and flips to greedy — wheel zooms
             // the map, one finger drags it — on a short page or a tall window.
@@ -353,7 +360,7 @@ echo $htmlHead->html;
         var marker = new google.maps.marker.AdvancedMarkerElement({
             position: position,
             map: map,
-            title: <?php echo json_encode($locationRawName); ?>,
+            title: <?php echo json_encode($locationRawName, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
             gmpClickable: true
         });
         var infoWindow = new google.maps.InfoWindow({
@@ -363,11 +370,11 @@ echo $htmlHead->html;
             // "{brewer} – {city}" stand-in would print a line that just repeats
             // the brewer line and the address under it.
             content: cbMapPopup({
-                name: <?php echo json_encode(trim($locationData->name ?? '')); ?>,
-                city: <?php echo json_encode($locationData->address->city ?? ''); ?>,
-                brewerID: <?php echo json_encode($locationData->brewer->id); ?>,
-                brewerName: <?php echo json_encode($locationData->brewer->name); ?>,
-                meta: <?php echo json_encode($rawAddressLines); ?>
+                name: <?php echo json_encode(trim($locationData->name ?? ''), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+                city: <?php echo json_encode($locationData->address->city ?? '', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+                brewerID: <?php echo json_encode($locationData->brewer->id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+                brewerName: <?php echo json_encode($locationData->brewer->name, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+                meta: <?php echo json_encode($rawAddressLines, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>
             })
         });
         // Closed on load, unlike the brewer and site-wide maps: everything the

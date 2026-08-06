@@ -485,10 +485,16 @@ echo $htmlHead->html;
     <?php echo jsTag('/assets/js/map-popup.js'); ?>
     <script>
     function initMap() {
-        var locations = <?php echo json_encode($mapLocations); ?>;
+        // JSON_HEX_TAG is the load-bearing flag: these carry raw location and
+        // brewer names, and inside a <script> the parser is looking for "<", not
+        // for quotes. Default json_encode escapes "/", so the classic
+        // "</script>" breakout already fails — but "<!--<script" puts the
+        // tokenizer in the script-data-double-escaped state and swallows the rest
+        // of the page. See classes/helpers/html.php.
+        var locations = <?php echo json_encode($mapLocations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
-            mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID); ?>,
+            mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
             // ctrl/cmd + scroll to zoom, two fingers to pan; relaxed to greedy in
             // fullscreen by the API. Set explicitly because the 'auto' default only
             // picks cooperative while the page is scrollable — a brewer with few
