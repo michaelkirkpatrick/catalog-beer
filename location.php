@@ -33,10 +33,6 @@ if(!isset($locationData->id) || isset($locationData->error) || !isset($locationD
     exit();
 }
 
-// Text pipelines
-$text1 = new Text(false, true, true);   // display names, short fields
-$text3 = new Text(false, false, true);  // ids, URLs
-
 $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID']));
 // Location names are optional — see the helpers in classes/helpers/location.php.
 // Two labels, picked by whether the brewer is already on screen:
@@ -44,13 +40,15 @@ $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'
 //                     description, schema.org name, the map's JSON.
 //   $locationRawShort city alone — the h1 and the last breadcrumb, both of which
 //                     sit directly under the brewer's own name.
-// Raw = unescaped, for json_encode()/htmlspecialchars() consumers.
+// Raw = unescaped; h() at each output, json_encode() for the map.
 $locationRawName = locationDisplayName($locationData);
 $locationRawShort = locationShortName($locationData);
-$locationShort = $text1->get($locationRawShort);
-$locationIDString = $text3->get($locationData->id);
-$brewerName = $text1->get($locationData->brewer->name);
-$brewerIDString = $text3->get($locationData->brewer->id);
+// Everything below is RAW; h() goes at each output. $locationShort is gone --
+// it was $locationRawShort escaped, and keeping both invited picking the wrong
+// one. There is now exactly one variable per value.
+$locationIDString = $locationData->id;
+$brewerName = $locationData->brewer->name;
+$brewerIDString = $locationData->brewer->id;
 
 // ----- Permissions -----
 // Per-key verdict from the API; gates which affordances we draw. The API
@@ -71,8 +69,8 @@ $telephone = $addressFacts['telephone'];
 $telephoneDigits = $addressFacts['telephoneDigits'];
 
 // The same address unescaped, for the map popup (writes with textContent) and
-// the maps link (runs through rawurlencode()) — the $text1->get() versions above
-// would reach them as literal "&#8217;".
+// the maps link (runs through rawurlencode()) — an escaped value would reach
+// them as a literal "&amp;".
 $rawAddressLines = locationRawAddressLines($locationData);
 
 // ----- Map -----
@@ -81,6 +79,37 @@ $rawAddressLines = locationRawAddressLines($locationData);
 $hasMap = (!empty($locationData->latitude) && !empty($locationData->longitude));
 $mapLatitude = (float)($locationData->latitude ?? 0);
 $mapLongitude = (float)($locationData->longitude ?? 0);
+
+// One payload, one encode, one guard -- this used to be seven inline
+// json_encode() calls repeating the same four flags, any of which could return
+// false and emit "title: ," into the script. JSON_HEX_TAG is the load-bearing
+// flag: inside a <script> the parser hunts for "<", and a name containing
+// "<!--<script" puts it in the script-data-double-escaped state, swallowing the
+// rest of the page. cbMapPopup() writes every value with textContent, so the
+// popup fields stay RAW here -- escaping them would print a literal "&amp;".
+$mapData = array(
+    'lat'   => $mapLatitude,
+    'lng'   => $mapLongitude,
+    'mapId' => GOOGLE_MAPS_MAP_ID,
+    'title' => $locationRawName,
+    // The location's OWN name, not $locationRawName: the composed
+    // "{brewer} – {city}" stand-in would print a line that just repeats the
+    // brewer line and the address under it. No id, either -- this IS the
+    // location page, so the name must not link back to itself.
+    'popup' => array(
+        'name'       => trim($locationData->name ?? ''),
+        'city'       => $locationData->address->city ?? '',
+        'brewerID'   => $locationData->brewer->id,
+        'brewerName' => $locationData->brewer->name,
+        'meta'       => $rawAddressLines,
+    ),
+);
+$mapDataJSON = json_encode($mapData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+if($mapDataJSON === false){
+    // A map that doesn't draw beats "var cb = ;" taking the page's JS with it.
+    $mapDataJSON = 'null';
+    $hasMap = false;
+}
 
 // ----- "Open in maps" -----
 // The address in the rail doubles as a link into the visitor's mapping app. Two
@@ -128,10 +157,13 @@ if(isset($siblingData->data)){
         }else{
             $siblingName = locationShortName($sibling);
         }
+        // Raw, escaped at the three echoes below. This array used to be built
+        // from $text->get() output and echoed unescaped -- correct under the old
+        // pipeline, so it had to be INVERTED rather than patched at the echo.
         $siblings[] = array(
-            'id' => $text3->get($sibling->id),
-            'name' => $text1->get($siblingName),
-            'city' => ($siblingCity !== '') ? $text1->get($siblingCity) : ''
+            'id' => $sibling->id,
+            'name' => $siblingName,
+            'city' => $siblingCity
         );
     }
 }
@@ -144,9 +176,11 @@ if(isset($siblingData->data)){
 // valid on LocalBusiness, never on the bare Place this page used to declare. The
 // value has to be an Organization rather than a URL, hence the nested item. Typed
 // Brewery to match how brewer.php declares the same entity on its own page.
-$byline = 'A taproom of <a href="/brewer/' . $brewerIDString . '" itemprop="parentOrganization" itemscope itemtype="https://schema.org/Brewery">'
-    . '<span itemprop="name">' . $brewerName . '</span>'
-    . '<link itemprop="url" href="/brewer/' . $brewerIDString . '" />'
+// $byline holds HTML by construction, so its two values are escaped as they go
+// in and it echoes as-is at :208.
+$byline = 'A taproom of <a href="/brewer/' . h($brewerIDString) . '" itemprop="parentOrganization" itemscope itemtype="https://schema.org/Brewery">'
+    . '<span itemprop="name">' . h($brewerName) . '</span>'
+    . '<link itemprop="url" href="/brewer/' . h($brewerIDString) . '" />'
     . '</a>';
 
 // HTML Head
@@ -175,20 +209,20 @@ echo $htmlHead->html;
         // just "Portland" — too thin to publish as the Place's name. The full
         // standalone form carries the brewer, so schema.org gets that instead.
         ?>
-        <meta itemprop="name" content="<?php echo htmlspecialchars($locationRawName, ENT_QUOTES); ?>" />
+        <meta itemprop="name" content="<?php echo h($locationRawName); ?>" />
         <?php
         if($hasMap){
             // The coordinates are already on the page as a rendered map; geo states
             // them in a form a machine can read without running the Maps JS.
             echo '<div itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates">' . "\n";
-            echo '            <meta itemprop="latitude" content="' . htmlspecialchars((string)$mapLatitude, ENT_QUOTES) . '" />' . "\n";
-            echo '            <meta itemprop="longitude" content="' . htmlspecialchars((string)$mapLongitude, ENT_QUOTES) . '" />' . "\n";
+            echo '            <meta itemprop="latitude" content="' . h($mapLatitude) . '" />' . "\n";
+            echo '            <meta itemprop="longitude" content="' . h($mapLongitude) . '" />' . "\n";
             echo '        </div>' . "\n";
         }
         if($mapsHref !== ''){
             // hasMap belongs to the Brewery, so it can't live on the address link
             // in the rail — that sits inside the PostalAddress scope.
-            echo '        <link itemprop="hasMap" href="' . htmlspecialchars($mapsHref, ENT_QUOTES) . '" />' . "\n";
+            echo '        <link itemprop="hasMap" href="' . h($mapsHref) . '" />' . "\n";
         }
         ?>
         <?php
@@ -199,12 +233,12 @@ echo $htmlHead->html;
         ?>
         <div class="cb-eyebrow" itemscope itemtype="https://schema.org/BreadcrumbList">
             <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer"><span itemprop="name">Brewers</span></a><meta itemprop="position" content="1" /></span> &nbsp;/&nbsp;
-            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer/<?php echo $brewerIDString; ?>"><span itemprop="name"><?php echo $brewerName; ?></span></a><meta itemprop="position" content="2" /></span> &nbsp;/&nbsp;
-            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo $locationShort; ?></span><meta itemprop="position" content="3" /></span>
+            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer/<?php echo h($brewerIDString); ?>"><span itemprop="name"><?php echo $brewerName; ?></span></a><meta itemprop="position" content="2" /></span> &nbsp;/&nbsp;
+            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo h($locationRawShort); ?></span><meta itemprop="position" content="3" /></span>
         </div>
 
         <header class="lv-hero">
-            <h1 class="cb-title lv-title"><?php echo $locationShort;?></h1>
+            <h1 class="cb-title lv-title"><?php echo h($locationRawShort); ?></h1>
             <p class="lv-byline"><?php echo $byline; ?></p>
         </header>
 
@@ -214,7 +248,7 @@ echo $htmlHead->html;
                 if($hasMap){
                     // $rawAddressLines is built once up top and shared with the maps
                     // link and cbMapPopup(); each consumer escapes for itself
-                    // (htmlspecialchars here, textContent in the popup).
+                    // (h() here, textContent in the popup).
                     $mapLabel = 'Map showing ' . $locationRawName;
                     if(count($rawAddressLines) > 0){
                         $mapLabel .= ' at ' . implode(', ', $rawAddressLines);
@@ -222,21 +256,21 @@ echo $htmlHead->html;
                     // role="region", not role="img": the map now holds keyboard-focusable
                     // markers and a popup with real links, and role="img" would hide all
                     // of that from assistive tech.
-                    echo '<div id="map" class="lv-map" role="region" aria-label="' . htmlspecialchars($mapLabel, ENT_QUOTES) . '"></div>' . "\n";
+                    echo '<div id="map" class="lv-map" role="region" aria-label="' . h($mapLabel) . '"></div>' . "\n";
                 }
                 ?>
 
                 <?php if(count($siblings) > 0){ ?>
                 <section class="lv-more">
                     <h2 class="cb-label cb-label--rule">
-                        <span>More <?php echo $brewerName; ?> locations</span>
+                        <span>More <?php echo h($brewerName); ?> locations</span>
                     </h2>
                     <div>
                         <?php foreach($siblings as $sibling){ ?>
-                        <a class="cb-row" href="/location/<?php echo $sibling['id']; ?>">
-                            <span class="lv-row-l"><span class="cb-row__name"><?php echo $sibling['name']; ?></span><?php
+                        <a class="cb-row" href="/location/<?php echo h($sibling['id']); ?>">
+                            <span class="lv-row-l"><span class="cb-row__name"><?php echo h($sibling['name']); ?></span><?php
                             if($sibling['city'] !== ''){
-                                echo '<span class="lv-row-city">' . $sibling['city'] . '</span>';
+                                echo '<span class="lv-row-city">' . h($sibling['city']) . '</span>';
                             }
                             ?></span>
                             <span class="cb-row__value">View &rarr;</span>
@@ -251,7 +285,7 @@ echo $htmlHead->html;
                 <div class="cb-label">Location</div>
 
                 <div class="cb-fact cb-fact--addr" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                    <meta itemprop="addressCountry" content="<?php echo $text1->get($locationData->country_code ?? 'US'); ?>" />
+                    <meta itemprop="addressCountry" content="<?php echo h($locationData->country_code ?? 'US'); ?>" />
                     <span class="cb-fact__k">Address</span>
                     <address class="cb-addr cb-fact__v cb-fact__v--sm">
                         <?php
@@ -267,8 +301,8 @@ echo $htmlHead->html;
                                 // The whole address is the link target — on a phone this is
                                 // the point of the rail, and a two-line tap target beats a
                                 // separate "directions" affordance next to it.
-                                echo '<a class="cb-addr__link" data-maps-link href="' . htmlspecialchars($mapsHref, ENT_QUOTES) . '"'
-                                    . ' data-apple-href="' . htmlspecialchars($mapsHrefApple, ENT_QUOTES) . '"'
+                                echo '<a class="cb-addr__link" data-maps-link href="' . h($mapsHref) . '"'
+                                    . ' data-apple-href="' . h($mapsHrefApple) . '"'
                                     . ' target="_blank" rel="noopener" title="Open this address in Maps">'
                                     . $addressBlock . '</a>';
                             }else{
@@ -278,7 +312,7 @@ echo $htmlHead->html;
                             echo '<span class="cb-addr__region">Not on file</span>';
                             if($loggedIn){
                                 // The location editor carries the address now.
-                                echo ' <a href="/location/' . $locationIDString . '/edit" class="cb-action">Add</a>';
+                                echo ' <a href="/location/' . h($locationIDString) . '/edit" class="cb-action">Add</a>';
                             }
                         }
                         ?>
@@ -296,23 +330,23 @@ echo $htmlHead->html;
                         $urlHost = preg_replace('/^www\./', '', $urlHost);
                         // itemprop="url" — the taproom's own page is the canonical URL
                         // for the business in schema.org's sense, not this catalog entry.
-                        echo '<div class="cb-fact"><span class="cb-fact__k">Taproom site</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($locationData->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>' . "\n";
+                        echo '<div class="cb-fact"><span class="cb-fact__k">Taproom site</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($locationData->url) . '" itemprop="url" target="_blank" rel="noopener">' . h($urlHost) . ' &#8599;</a></span></div>' . "\n";
                     }
                 }
                 ?>
 
-                <div class="cb-fact"><span class="cb-fact__k">Brewer</span><span class="cb-fact__v cb-fact__v--sm"><a href="/brewer/<?php echo $brewerIDString; ?>"><?php echo $brewerName; ?></a></span></div>
+                <div class="cb-fact"><span class="cb-fact__k">Brewer</span><span class="cb-fact__v cb-fact__v--sm"><a href="/brewer/<?php echo h($brewerIDString); ?>"><?php echo $brewerName; ?></a></span></div>
 
                 <?php if($canEditLocation){ ?>
                 <div class="cb-rail-actions">
-                    <a href="/location/<?php echo $locationIDString; ?>/edit" class="cb-btn cb-btn--ghost">
+                    <a href="/location/<?php echo h($locationIDString); ?>/edit" class="cb-btn cb-btn--ghost">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
                         Edit location
                     </a>
                 </div>
                 <?php } ?>
                 <?php if($canDeleteLocation){ ?>
-                <a href="/location/<?php echo $locationIDString; ?>/delete" class="cb-delete-link" title="Delete location">
+                <a href="/location/<?php echo h($locationIDString); ?>/delete" class="cb-delete-link" title="Delete location">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
                     Delete location
                 </a>
@@ -326,18 +360,14 @@ echo $htmlHead->html;
     <?php echo jsTag('/assets/js/map-popup.js'); ?>
     <script>
     function initMap() {
-        // JSON_HEX_TAG is the load-bearing flag on the sinks below that carry raw
-        // names and address lines: inside a <script> the parser is looking for
-        // "<", not for quotes. Default json_encode escapes "/", so the classic
-        // "</script>" breakout already fails — but "<!--<script" puts the
-        // tokenizer in the script-data-double-escaped state and swallows the rest
-        // of the page. Applied to every encode in this block so there's nothing to
-        // decide per line. See classes/helpers/html.php.
-        var position = { lat: <?php echo json_encode($mapLatitude, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>, lng: <?php echo json_encode($mapLongitude, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?> };
+        // Built, encoded and guarded up top as $mapData — see the comment there
+        // for why JSON_HEX_TAG is the flag that matters.
+        var cb = <?php echo $mapDataJSON; ?>;
+        var position = { lat: cb.lat, lng: cb.lng };
         var map = new google.maps.Map(document.getElementById('map'), {
             center: position,
             zoom: 15,
-            mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+            mapId: cb.mapId,
             // Explicit, not the 'auto' default: auto only picks cooperative while
             // the page happens to be scrollable, and flips to greedy — wheel zooms
             // the map, one finger drags it — on a short page or a tall window.
@@ -360,22 +390,11 @@ echo $htmlHead->html;
         var marker = new google.maps.marker.AdvancedMarkerElement({
             position: position,
             map: map,
-            title: <?php echo json_encode($locationRawName, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+            title: cb.title,
             gmpClickable: true
         });
         var infoWindow = new google.maps.InfoWindow({
-            // No id passed on purpose: this IS the location page, so the taproom
-            // name shouldn't be a link back to itself. The brewer still links out.
-            // The location's OWN name, not $locationRawName — the composed
-            // "{brewer} – {city}" stand-in would print a line that just repeats
-            // the brewer line and the address under it.
-            content: cbMapPopup({
-                name: <?php echo json_encode(trim($locationData->name ?? ''), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
-                city: <?php echo json_encode($locationData->address->city ?? '', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
-                brewerID: <?php echo json_encode($locationData->brewer->id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
-                brewerName: <?php echo json_encode($locationData->brewer->name, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
-                meta: <?php echo json_encode($rawAddressLines, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>
-            })
+            content: cbMapPopup(cb.popup)
         });
         // Closed on load, unlike the brewer and site-wide maps: everything the
         // popup says — brewer, street, city — is already set in the facts rail
