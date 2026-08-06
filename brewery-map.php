@@ -45,9 +45,9 @@ echo $htmlHead->html;
                 // Build locations array
                 $locations = [];
                 foreach($mapResponse->data as $loc){
-                    // Raw values, not $text1->get() output: cbMapPopup() writes
-                    // these with textContent, which escapes for us — pre-encoded
-                    // entities would show through as literal "&#8217;".
+                    // Raw values, not h() output: cbMapPopup() writes these with
+                    // textContent, which escapes for us — an escaped value would
+                    // show through as a literal "&amp;" or "&#039;".
                     $locations[] = [
                         'lat' => (float)$loc->latitude,
                         'lng' => (float)$loc->longitude,
@@ -61,6 +61,10 @@ echo $htmlHead->html;
                         'brewerID' => $loc->brewer->id
                     ];
                 }
+                // Encoded before the markup: a failed encode yields an empty map
+                // rather than "var locations = ;" and a dead page. See brewer.php.
+                $locationsJSON = json_encode($locations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+                if($locationsJSON === false){ $locationsJSON = '[]'; }
                 echo '<div id="map"></div>' . "\n";
                 echo '                ' . jsTag('/assets/js/map-popup.js') . "\n";
                 ?>
@@ -72,7 +76,7 @@ echo $htmlHead->html;
                 // classic "</script>" breakout already fails — but "<!--<script"
                 // puts the tokenizer in the script-data-double-escaped state and
                 // swallows the rest of the page. See classes/helpers/html.php.
-                var locations = <?php echo json_encode($locations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+                var locations = <?php echo $locationsJSON; ?>;
                 var map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 4,
                     mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,

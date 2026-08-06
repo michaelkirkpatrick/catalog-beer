@@ -32,14 +32,11 @@ if(!isset($brewerData->brewer) || isset($brewerData->error)){
     exit();
 }
 
-// Text pipelines
-$text1 = new Text(false, true, true);   // display names, short fields
-$text2 = new Text(true, true, false);   // multi-paragraph prose (Markdown)
-$text3 = new Text(false, false, true);  // ids, URLs
-
 $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID']));
-$brewerName = $text1->get($brewerData->brewer->name);
-$brewerIDString = $text3->get($brewerData->brewer->id);
+// Raw values; h() goes at each output below. $brewerName alone feeds four
+// sinks (eyebrow, <h1>, two links), which is why it cannot be escaped here.
+$brewerName = $brewerData->brewer->name;
+$brewerIDString = $brewerData->brewer->id;
 
 // ----- Permissions -----
 // Per-key verdict from the API; gates which affordances we draw. The API
@@ -98,7 +95,7 @@ if($singleLocation !== null){
     // The standalone label for the maps pin: this taproom usually has no name of
     // its own, and "Portland" alone would drop a pin on the city.
     $singleMaps = locationMapsLinks($singleLocation, locationDisplayName($singleLocation, $brewerData->brewer->name));
-    $singleLocationID = $text3->get($singleLocation->id);
+    $singleLocationID = $singleLocation->id;
     $singleLocationName = locationShortName($singleLocation);
 }
 
@@ -106,9 +103,9 @@ if($singleLocation !== null){
 $mapLocations = array();
 foreach($locations as $loc){
     if(!empty($loc->latitude) && !empty($loc->longitude)){
-        // Raw values, not $text1->get() output: cbMapPopup() writes these with
-        // textContent, which escapes for us — pre-encoded entities would show
-        // through as literal "&#8217;".
+        // Raw values, not h() output: cbMapPopup() writes these with
+        // textContent, which escapes for us — an escaped value would show
+        // through as a literal "&amp;" or "&#039;".
         $mapLocations[] = array(
             'lat' => (float)$loc->latitude,
             'lng' => (float)$loc->longitude,
@@ -129,6 +126,15 @@ foreach($locations as $loc){
     }
 }
 $showMap = ($locationCount > 1 && count($mapLocations) > 1);
+
+// Encoded here rather than inline in the <script> so an encode failure is a map
+// that doesn't draw, not "var locations = ;" taking the whole page's JS down
+// with it. StyleList::inlineScript() has guarded the same way all along.
+$mapLocationsJSON = json_encode($mapLocations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+if($mapLocationsJSON === false){
+    $mapLocationsJSON = '[]';
+    $showMap = false;
+}
 
 // ----- Beers: group by style family -----
 $beerCount = isset($brewerData->data) ? count($brewerData->data) : 0;
@@ -199,7 +205,7 @@ echo $htmlHead->html;
         ?>
         <div class="cb-eyebrow" itemscope itemtype="https://schema.org/BreadcrumbList">
             <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer"><span itemprop="name">Brewers</span></a><meta itemprop="position" content="1" /></span> &nbsp;/&nbsp;
-            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo $brewerName; ?></span><meta itemprop="position" content="2" /></span>
+            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo h($brewerName); ?></span><meta itemprop="position" content="2" /></span>
         </div>
 
         <div class="bp-body">
@@ -207,15 +213,15 @@ echo $htmlHead->html;
                 <header class="bp-hero">
                     <h1 class="cb-title bp-title" itemprop="name"><?php
                     if(!empty($brewerData->brewer->url)){
-                        $brewerURL = $text3->get($brewerData->brewer->url);
-                        echo '<a href="' . $brewerURL . '" target="_blank" rel="noopener" itemprop="url">' . $brewerName . '</a>';
+                        $brewerURL = $brewerData->brewer->url;
+                        echo '<a href="' . h($brewerURL) . '" target="_blank" rel="noopener" itemprop="url">' . h($brewerName) . '</a>';
                     }else{
-                        echo $brewerName;
+                        echo h($brewerName);
                     }
                     ?></h1>
                     <?php
                     if(!empty($brewerData->brewer->short_description)){
-                        echo '<p class="cb-lede bp-lede">' . $text1->get($brewerData->brewer->short_description) . '</p>';
+                        echo '<p class="cb-lede bp-lede">' . h($brewerData->brewer->short_description) . '</p>';
                     }
                     ?>
                 </header>
@@ -223,8 +229,13 @@ echo $htmlHead->html;
                 <?php
                 // About
                 if(!empty($brewerData->brewer->description)){
+                    // Plain text in an inner .cb-prose__text, which carries
+                    // white-space: pre-line. NOT on .cb-prose itself -- that is a
+                    // container elsewhere and its source whitespace would become
+                    // visible blank lines. 77% of brewer descriptions contain
+                    // newlines and this is what preserves them now Markdown is gone.
                     echo '<div class="cb-prose bp-prose" itemprop="description">';
-                    echo $text2->get($brewerData->brewer->description);
+                    echo '<div class="cb-prose__text">' . h($brewerData->brewer->description) . '</div>';
                     echo '</div>';
                 }
                 // Editing the brewer record lives at the foot of the rail's
@@ -238,7 +249,7 @@ echo $htmlHead->html;
                 ?>
                 <h2 class="cb-label cb-label--rule bp-sec" id="locations">
                     <span><?php echo $taproomsLabel; if($locationCount > 0){ echo ' &middot; ' . $locationCount; } ?></span>
-                    <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add location</a>
+                    <a href="/brewer/<?php echo h($brewerIDString); ?>/add-location" class="cb-action"><strong>+</strong> Add location</a>
                 </h2>
                 <?php if($locationCount > 0){ ?>
                 <?php if($showMap){ echo '<div id="map" class="bp-map"></div>' . "\n"; } ?>
@@ -246,8 +257,8 @@ echo $htmlHead->html;
                     <?php foreach($locations as $loc){
                         // Short form: we're already on the brewer's page, so an
                         // unnamed taproom is labelled by its city alone.
-                        $locationName = $text1->get(locationShortName($loc));
-                        $locationIDString = $text3->get($loc->id);
+                        $locationName = locationShortName($loc);
+                        $locationIDString = $loc->id;
                         ?>
                     <div class="cb-card bp-loc-card" itemprop="location" itemscope itemtype="https://schema.org/Place"><meta itemprop="publicAccess" content="true" />
                         <h3 class="bp-loc-name" itemprop="name"><?php
@@ -255,29 +266,29 @@ echo $htmlHead->html;
                             // itemprop="url" — that property is reserved for the
                             // business's own site, not a catalog entry (see the
                             // rail here and location.php).
-                            echo '<a href="/location/' . $locationIDString . '">' . $locationName . '</a>';
+                            echo '<a href="/location/' . h($locationIDString) . '">' . h($locationName) . '</a>';
                         ?></h3>
                         <div class="bp-loc-meta">
                             <?php
                             if(isset($loc->address)){
                                 // Street Address (address2 is the street line; address1 the unit)
-                                echo '<div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"><meta itemprop="addressCountry" content="' . $text1->get($loc->country_code ?? 'US') . '" /><p><span itemprop="streetAddress">' . $text1->get($loc->address->address2);
+                                echo '<div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"><meta itemprop="addressCountry" content="' . h($loc->country_code ?? 'US') . '" /><p><span itemprop="streetAddress">' . h($loc->address->address2);
                                 if(!empty($loc->address->address1)){
-                                    echo ' ' . $text1->get($loc->address->address1);
+                                    echo ' ' . h($loc->address->address1);
                                 }
                                 echo '</span><br>';
                                 if(!empty($loc->address->zip4)){
-                                    $zipCode = $text1->get($loc->address->zip5) . '-' . $text1->get($loc->address->zip4);
+                                    $zipCode = $loc->address->zip5 . '-' . $loc->address->zip4;
                                 }else{
-                                    $zipCode = $text1->get($loc->address->zip5);
+                                    $zipCode = $loc->address->zip5;
                                 }
-                                echo '<span itemprop="addressLocality">' . $text1->get($loc->address->city) . '</span>, <span itemprop="addressRegion">' . $text1->get($loc->address->state_short) . '</span> <span itemprop="postalCode">' . $zipCode . '</span>';
+                                echo '<span itemprop="addressLocality">' . h($loc->address->city) . '</span>, <span itemprop="addressRegion">' . h($loc->address->state_short) . '</span> <span itemprop="postalCode">' . h($zipCode) . '</span>';
                                 echo '</p></div>';
 
                                 // Telephone
                                 $telephone = formatTelephone($loc->address->telephone ?? '');
                                 if($telephone !== ''){
-                                    echo '<p itemprop="telephone">' . $telephone . '</p>';
+                                    echo '<p itemprop="telephone">' . h($telephone) . '</p>';
                                 }
                             }
                             ?>
@@ -286,13 +297,13 @@ echo $htmlHead->html;
                     <?php } ?>
                 </div>
                 <?php }else{ ?>
-                <p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <a href="/brewer/<?php echo $brewerIDString; ?>/add-location">add it</a>.</p>
+                <p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <a href="/brewer/<?php echo h($brewerIDString); ?>/add-location">add it</a>.</p>
                 <?php } ?>
                 <?php } /* end multi-taproom section */ ?>
 
                 <h2 class="cb-label cb-label--rule bp-sec" id="beer">
                     <span>Beers<?php if($beerCount > 0){ echo ' &middot; ' . $beerCount; } ?></span>
-                    <a href="/beer/add/<?php echo $brewerIDString; ?>" class="cb-action"><strong>+</strong> Add beer</a>
+                    <a href="/beer/add/<?php echo h($brewerIDString); ?>" class="cb-action"><strong>+</strong> Add beer</a>
                 </h2>
                 <?php if($beerCount > 0){ ?>
                 <?php if($showToolbar){ ?>
@@ -307,7 +318,7 @@ echo $htmlHead->html;
                 <div class="cb-toolbar bp-toolbar" id="bpChips" hidden>
                     <button type="button" class="cb-chip is-on" data-family="">All <span class="cb-count"><?php echo $beerCount; ?></span></button>
                     <?php foreach($beerGroups as $familySlug => $group){
-                        echo '<button type="button" class="cb-chip" data-family="' . $text3->get($familySlug) . '">' . $text1->get($group['label']) . ' <span class="cb-count">' . count($group['beers']) . '</span></button>' . "\n";
+                        echo '<button type="button" class="cb-chip" data-family="' . h($familySlug) . '">' . h($group['label']) . ' <span class="cb-count">' . count($group['beers']) . '</span></button>' . "\n";
                     } ?>
                 </div>
                 <?php } ?>
@@ -319,16 +330,16 @@ echo $htmlHead->html;
                         // Whole groups above the fold until the cap; never cut mid-group
                         $capped = ($showToolbar && $rowsSoFar >= $capRows) ? ' data-capped="1"' : '';
                         $rowsSoFar += $groupCount;
-                        echo '<section class="bp-grp" data-family="' . $text3->get($familySlug) . '"' . $capped . '>' . "\n";
-                        echo '<h3 class="bp-grp-h">' . $text1->get($group['label']) . ' <span class="cb-count cb-count--bare">' . $groupCount . '</span></h3>' . "\n";
+                        echo '<section class="bp-grp" data-family="' . h($familySlug) . '"' . $capped . '>' . "\n";
+                        echo '<h3 class="bp-grp-h">' . h($group['label']) . ' <span class="cb-count cb-count--bare">' . $groupCount . '</span></h3>' . "\n";
                         echo '<div class="bp-grp-rows">' . "\n";
                         foreach($group['beers'] as $beerInfo){
-                            $beerName = $text1->get($beerInfo->name);
-                            $beerStyle = $text1->get($beerInfo->style);
-                            $beerIDString = $text3->get($beerInfo->id);
+                            $beerName = $beerInfo->name;
+                            $beerStyle = $beerInfo->style;
+                            $beerIDString = $beerInfo->id;
                             $beerAbv = !empty($beerInfo->abv) ? floatval($beerInfo->abv) : 0;
                             $abvLabel = ($beerAbv > 0) ? rtrim(rtrim(number_format($beerAbv, 1), '0'), '.') . '%' : '';
-                            echo '<a class="cb-row" href="/beer/' . $beerIDString . '" data-name="' . htmlspecialchars(mb_strtolower($beerInfo->name . ' ' . $beerInfo->style), ENT_QUOTES) . '" data-abv="' . $beerAbv . '">';
+                            echo '<a class="cb-row" href="/beer/' . h($beerIDString) . '" data-name="' . h(mb_strtolower($beerInfo->name . ' ' . $beerInfo->style)) . '" data-abv="' . $beerAbv . '">';
                             echo '<span class="bp-beer-l">';
                             if($hasVerifiedBeer){
                                 if(!empty($beerInfo->brewer_verified)){
@@ -337,7 +348,7 @@ echo $htmlHead->html;
                                     echo '<span class="cb-vdot cb-vdot--cbv" title="Catalog.beer verified"></span>';
                                 }
                             }
-                            echo '<span class="cb-row__name">' . $beerName . '</span> <span class="cb-row__meta">' . $beerStyle . '</span></span>';
+                            echo '<span class="cb-row__name">' . h($beerName) . '</span> <span class="cb-row__meta">' . h($beerStyle) . '</span></span>';
                             echo '<span class="cb-row__value">' . $abvLabel . '</span>';
                             echo '</a>' . "\n";
                         }
@@ -354,7 +365,7 @@ echo $htmlHead->html;
                 <div class="cb-legend"><span><span class="cb-vdot cb-vdot--first"></span>Brewer-provided</span><span><span class="cb-vdot cb-vdot--cbv"></span>Catalog.beer verified</span><span class="cb-legend__none">no mark &#8212; unverified</span></div>
                 <?php } ?>
                 <?php }else{ ?>
-                <p class="lead">Well shucks, we have information about the brewer but nothing about what they brew. Can you help? <a href="/beer/add/<?php echo $brewerIDString; ?>">Add a beer</a></p>
+                <p class="lead">Well shucks, we have information about the brewer but nothing about what they brew. Can you help? <a href="/beer/add/<?php echo h($brewerIDString); ?>">Add a beer</a></p>
                 <?php } ?>
             </div>
 
@@ -374,20 +385,20 @@ echo $htmlHead->html;
                         $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
                         if(!empty($urlHost)){
                             $urlHost = preg_replace('/^www\./', '', $urlHost);
-                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $text1->get($urlHost) . ' &#8599;</a></span></div>';
+                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . h($urlHost) . ' &#8599;</a></span></div>';
                         }
                     }
                     ?>
                     <?php if($canEditBrewer){ ?>
                     <div class="cb-rail-actions">
-                        <a href="/brewer/<?php echo $brewerIDString; ?>/edit" class="cb-btn cb-btn--ghost">
+                        <a href="/brewer/<?php echo h($brewerIDString); ?>/edit" class="cb-btn cb-btn--ghost">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
                             Edit brewer
                         </a>
                     </div>
                     <?php } ?>
                     <?php if($canManage){ ?>
-                    <a href="/brewer/<?php echo $brewerIDString; ?>/delete" class="cb-delete-link" title="Delete brewer">
+                    <a href="/brewer/<?php echo h($brewerIDString); ?>/delete" class="cb-delete-link" title="Delete brewer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
                         Delete brewer
                     </a>
@@ -401,12 +412,12 @@ echo $htmlHead->html;
                    and telephone sit inside this scope, not the Brewery's. */
                 ?>
                 <div itemprop="location" itemscope itemtype="https://schema.org/Place">
-                    <meta itemprop="name" content="<?php echo htmlspecialchars($singleLocationName, ENT_QUOTES); ?>" />
+                    <meta itemprop="name" content="<?php echo h($singleLocationName); ?>" />
                     <meta itemprop="publicAccess" content="true" />
                     <div class="cb-label cb-label--band">Location</div>
 
                     <div class="cb-fact cb-fact--addr" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                        <meta itemprop="addressCountry" content="<?php echo $text1->get($singleLocation->country_code ?? 'US'); ?>" />
+                        <meta itemprop="addressCountry" content="<?php echo h($singleLocation->country_code ?? 'US'); ?>" />
                         <span class="cb-fact__k">Address</span>
                         <address class="cb-addr cb-fact__v cb-fact__v--sm">
                             <?php
@@ -425,8 +436,8 @@ echo $htmlHead->html;
                                     // tap target beats a separate "directions" affordance
                                     // next to it. maps-link.js swaps in the Apple href on
                                     // Apple platforms.
-                                    echo '<a class="cb-addr__link" data-maps-link href="' . htmlspecialchars($singleMaps['google'], ENT_QUOTES) . '"'
-                                        . ' data-apple-href="' . htmlspecialchars($singleMaps['apple'], ENT_QUOTES) . '"'
+                                    echo '<a class="cb-addr__link" data-maps-link href="' . h($singleMaps['google']) . '"'
+                                        . ' data-apple-href="' . h($singleMaps['apple']) . '"'
                                         . ' target="_blank" rel="noopener" title="Open this address in Maps">'
                                         . $addressBlock . '</a>';
                                 }else{
@@ -436,7 +447,7 @@ echo $htmlHead->html;
                                 echo '<span class="cb-addr__region">Not on file</span>';
                                 if($canEditSingleLocation){
                                     // The location editor carries the address now.
-                                    echo ' <a href="/location/' . $singleLocationID . '/edit" class="cb-action">Add</a>';
+                                    echo ' <a href="/location/' . h($singleLocationID) . '/edit" class="cb-action">Add</a>';
                                 }
                             }
                             ?>
@@ -455,17 +466,17 @@ echo $htmlHead->html;
                             // "Taproom site", not "Location Info" — this is the
                             // taproom's own website. The Catalog.beer record is
                             // the separate "Location details" line below.
-                            echo '                    <div class="cb-fact"><span class="cb-fact__k">Taproom site</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . $text3->get($singleLocation->url) . '" itemprop="url" target="_blank" rel="noopener">' . $text1->get($locationHost) . ' &#8599;</a></span></div>' . "\n";
+                            echo '                    <div class="cb-fact"><span class="cb-fact__k">Taproom site</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($singleLocation->url) . '" itemprop="url" target="_blank" rel="noopener">' . h($locationHost) . ' &#8599;</a></span></div>' . "\n";
                         }
                     }
                     ?>
 
                     <div class="bp-rail-link">
-                        <a href="/location/<?php echo $singleLocationID; ?>" class="cb-action">Location details &rarr;</a>
+                        <a href="/location/<?php echo h($singleLocationID); ?>" class="cb-action">Location details &rarr;</a>
                     </div>
                     <?php if($canEditSingleLocation){ ?>
                     <div class="cb-rail-actions">
-                        <a href="/location/<?php echo $singleLocationID; ?>/edit" class="cb-btn cb-btn--ghost">
+                        <a href="/location/<?php echo h($singleLocationID); ?>/edit" class="cb-btn cb-btn--ghost">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg>
                             Edit location
                         </a>
@@ -473,7 +484,7 @@ echo $htmlHead->html;
                     <?php } ?>
                     <?php if($loggedIn){ ?>
                     <div class="bp-rail-add">
-                        <a href="/brewer/<?php echo $brewerIDString; ?>/add-location" class="cb-action"><strong>+</strong> Add another location</a>
+                        <a href="/brewer/<?php echo h($brewerIDString); ?>/add-location" class="cb-action"><strong>+</strong> Add another location</a>
                     </div>
                     <?php } ?>
                 </div>
@@ -493,7 +504,7 @@ echo $htmlHead->html;
         // "</script>" breakout already fails — but "<!--<script" puts the
         // tokenizer in the script-data-double-escaped state and swallows the rest
         // of the page. See classes/helpers/html.php.
-        var locations = <?php echo json_encode($mapLocations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+        var locations = <?php echo $mapLocationsJSON; ?>;
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
             mapId: <?php echo json_encode(GOOGLE_MAPS_MAP_ID, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
