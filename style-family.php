@@ -49,13 +49,11 @@ foreach($styles as $s){
 usort($kids, function($a, $b){ return strcasecmp($a['name'], $b['name']); });
 usort($catchAlls, function($a, $b){ return strcasecmp($a['name'], $b['name']); });
 
-// Required Classes
-$text = new Text(false, true, true);
-
-$familyName = $text->get($family['name']);
+// Raw values; h() at each output. $familyName feeds the crumb and the <h1>.
+$familyName = $family['name'];
 // Beer families sit under a fermentation class; cider / mead / perry don't,
 // and their family name already is the beverage type
-$crumbContext = !empty($family['cls']) ? $text->get(ucfirst($family['cls'])) : '';
+$crumbContext = !empty($family['cls']) ? ucfirst($family['cls']) : '';
 
 // Midpoint of a style's SRM range, or null when there's no color data
 $midSRM = function($s){
@@ -118,7 +116,7 @@ $styleRow = function($s, $isCatchAll) use ($text, $midSRM, $srmLabel, $familyHas
             $html .= '<span class="fam-chip fam-chip-none"></span>';
         }
     }
-    $html .= '<span class="fam-name">' . $text->get($s['name']);
+    $html .= '<span class="fam-name">' . h($s['name']);
     if($isCatchAll){
         $html .= ' <span class="cb-tag">catch-all</span>';
     }
@@ -143,22 +141,22 @@ echo $htmlHead->html;
     <?php echo $nav->navbar('Styles'); ?>
     <div class="cb-page" style="padding-top:1.25rem;">
         <div class="cb-eyebrow"><a href="/style">Styles</a><?php
-            if($crumbContext !== ''){ echo ' &nbsp;/&nbsp; <span>' . $crumbContext . '</span>'; }
-            echo ' &nbsp;/&nbsp; <span aria-current="page">' . $familyName . '</span>';
+            if($crumbContext !== ''){ echo ' &nbsp;/&nbsp; <span>' . h($crumbContext) . '</span>'; }
+            echo ' &nbsp;/&nbsp; <span aria-current="page">' . h($familyName) . '</span>';
             ?></div>
 
         <header class="fam-hero">
-            <h1 class="cb-title fam-title"><?php echo $familyName; ?> <span class="cb-count cb-count--bare"><?php echo count($kids) + count($catchAlls); ?> styles</span></h1>
+            <h1 class="cb-title fam-title"><?php echo h($familyName); ?> <span class="cb-count cb-count--bare"><?php echo count($kids) + count($catchAlls); ?> styles</span></h1>
             <?php
             if(!empty($family['desc'])){
-                echo '<p class="cb-lede fam-lede">' . $text->get($family['desc']) . '</p>';
+                echo '<p class="cb-lede fam-lede">' . h($family['desc']) . '</p>';
             }
             if(!empty($family['al'])){
                 $aliases = array();
                 foreach($family['al'] as $alias){
-                    $aliases[] = $text->get($alias);
+                    $aliases[] = $alias;
                 }
-                echo '<p class="da-aka">Also known as ' . implode(', ', $aliases) . '</p>';
+                echo '<p class="da-aka">Also known as ' . implode(', ', array_map('h', $aliases)) . '</p>';
             }
             ?>
         </header>

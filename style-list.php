@@ -21,7 +21,6 @@ if(empty($classes) || empty($parents) || empty($styles)){
 }
 
 // Required Classes
-$text = new Text(false, true, true);
 
 // --- Build the Class → Family → Style tree ---
 
@@ -184,7 +183,7 @@ echo $htmlHead->html;
         $renderSection = function($section) use ($byParent, $text){
             echo '<section class="ix-class">';
             if($section['cards']){
-                echo '<h2 class="ix-class-h sp-class-h">' . $text->get($section['name']) . ' <span class="cb-count cb-count--bare">' . count($section['families']) . ' families</span></h2>';
+                echo '<h2 class="ix-class-h sp-class-h">' . h($section['name']) . ' <span class="cb-count cb-count--bare">' . count($section['families']) . ' families</span></h2>';
                 echo '<div class="ix-card-grid">';
                 foreach($section['families'] as $p){
                     $kids = $byParent[$p['slug']];
@@ -200,7 +199,7 @@ echo $htmlHead->html;
                     // The card isn't a link — the family name and every style
                     // name are, so a reader can jump straight to a style
                     echo '<div class="ix-card"' . $cardStyle . '>';
-                    echo '<div class="ix-card-top"><a class="ix-card-name" href="/style/family/' . rawurlencode($p['slug']) . '">' . $text->get($p['name']) . '</a></div>';
+                    echo '<div class="ix-card-top"><a class="ix-card-name" href="/style/family/' . h(rawurlencode($p['slug'])) . '">' . h($p['name']) . '</a></div>';
                     if($mids){
                         echo '<div class="ix-sw-row">';
                         foreach($mids as $mid){
@@ -214,7 +213,7 @@ echo $htmlHead->html;
                         // only — no tasting notes, usually no color or stats —
                         // so it shouldn't read as another Tasting Sheet
                         $tag = $s['ca'] ? ' <span class="cb-tag">catch-all</span>' : '';
-                        echo '<li><a href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . $tag . '</a></li>';
+                        echo '<li><a href="/style/' . h(rawurlencode($s['id'])) . '">' . h($s['name']) . $tag . '</a></li>';
                     }
                     echo '</ul>';
                     echo '</div>';  // Close ix-card
@@ -225,11 +224,11 @@ echo $htmlHead->html;
                 // + plain list of its styles
                 $p = $section['families'][0];
                 $kids = $byParent[$p['slug']];
-                echo '<h2 class="ix-class-h sp-class-h"><a class="ix-fam-link" href="/style/family/' . rawurlencode($p['slug']) . '">' . $text->get($section['name']) . '</a> <span class="cb-count cb-count--bare">' . count($kids) . ' styles</span></h2>';
+                echo '<h2 class="ix-class-h sp-class-h"><a class="ix-fam-link" href="/style/family/' . h(rawurlencode($p['slug'])) . '">' . h($section['name']) . '</a> <span class="cb-count cb-count--bare">' . count($kids) . ' styles</span></h2>';
                 $names = array();
                 foreach($kids as $s){
                     $tag = $s['ca'] ? ' <span class="cb-tag">catch-all</span>' : '';
-                    $names[] = '<a class="sp-style-link" href="/style/' . rawurlencode($s['id']) . '">' . $text->get($s['name']) . $tag . '</a>';
+                    $names[] = '<a class="sp-style-link" href="/style/' . h(rawurlencode($s['id'])) . '">' . h($s['name']) . $tag . '</a>';
                 }
                 echo '<p class="ix-chip-list">' . implode('<span class="ix-chip-sep">&middot;</span>', $names) . '</p>';
             }
@@ -245,7 +244,11 @@ echo $htmlHead->html;
         if($otherSections){
             echo '<header class="ix-divide">';
             echo '<h2 class="ix-divide-h">Beyond Beer</h2>';
-            echo '<p class="ix-divide-sub">' . $otherStyleCount . ' more styles of ' . proseList($otherNames) . ' &mdash; fermented from fruit and honey rather than grain.</p>';
+            // h() on the assembled list, not inside proseList(): the same call at
+            // :169 feeds addDescription(), which escapes for itself. Escaping in
+            // the helper would double-escape the meta description. The separators
+            // are plain text, so escaping the joined string is equivalent.
+            echo '<p class="ix-divide-sub">' . $otherStyleCount . ' more styles of ' . h(proseList($otherNames)) . ' &mdash; fermented from fruit and honey rather than grain.</p>';
             echo '</header>';
             foreach($otherSections as $section){
                 $renderSection($section);

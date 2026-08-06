@@ -28,17 +28,14 @@ if(!isset($styleData->name) || isset($styleData->error)){
     exit();
 }
 
-// Text pipelines
-$text1 = new Text(false, true, true);   // display names, short fields
-$text2 = new Text(true, true, false);   // multi-paragraph prose (Markdown)
-$text3 = new Text(false, false, true);  // ids, URLs
-
-$styleName = $text1->get($styleData->name);
-$parentName = !empty($styleData->parent_name) ? $text1->get($styleData->parent_name) : '';
-$parentSlug = !empty($styleData->parent) ? $text3->get($styleData->parent) : '';
+// Raw values; h() goes at each output. $styleName alone feeds the eyebrow
+// crumb and the <h1>, and $parentName feeds two branches of the crumb.
+$styleName = $styleData->name;
+$parentName = !empty($styleData->parent_name) ? $styleData->parent_name : '';
+$parentSlug = !empty($styleData->parent) ? $styleData->parent : '';
 // Only beer has a fermentation class. Cider / mead / perry have none, and their
 // family already names the beverage type, so there's no tier to show.
-$className = !empty($styleData->class) ? $text1->get(ucfirst($styleData->class)) : '';
+$className = !empty($styleData->class) ? ucfirst($styleData->class) : '';
 
 // SRM color device. The guidelines publish some colors open-ended ("40+" —
 // at least 40, no upper bound), which the API returns as max: null. Don't
@@ -66,7 +63,7 @@ if($srmOpen){
 $lede = '';
 if(!empty($styleData->description)){
     $parts = preg_split('/(?<=\.)\s/', trim($styleData->description), 2);
-    $lede = $text1->get($parts[0]);
+    $lede = $parts[0];
 }
 
 // Vital-stat range bar (fixed scales so ranges are comparable across styles);
@@ -113,7 +110,7 @@ $hasRail = ($hasSrm || $specBars !== '');
 $aafm = array();
 foreach(array('Appearance' => 'appearance', 'Aroma' => 'aroma', 'Flavor' => 'flavor', 'Mouthfeel' => 'mouthfeel') as $label => $field){
     if(!empty($styleData->$field)){
-        $aafm[$label] = $text1->get($styleData->$field);
+        $aafm[$label] = $styleData->$field;
     }
 }
 
@@ -133,30 +130,30 @@ echo $htmlHead->html;
             <a href="/style">Styles</a><?php
             // Styles / Ale / India Pale Ale / American-Style India Pale Ale
             // Styles / Cider / Applewine        (no class tier for non-beer)
-            if($className !== ''){ echo ' &nbsp;/&nbsp; <span>' . $className . '</span>'; }
+            if($className !== ''){ echo ' &nbsp;/&nbsp; <span>' . h($className) . '</span>'; }
             if($parentName !== ''){
                 if($parentSlug !== ''){
-                    echo ' &nbsp;/&nbsp; <a href="/style/family/' . $parentSlug . '">' . $parentName . '</a>';
+                    echo ' &nbsp;/&nbsp; <a href="/style/family/' . h(rawurlencode($parentSlug)) . '">' . h($parentName) . '</a>';
                 }else{
-                    echo ' &nbsp;/&nbsp; <span>' . $parentName . '</span>';
+                    echo ' &nbsp;/&nbsp; <span>' . h($parentName) . '</span>';
                 }
             }
-            echo ' &nbsp;/&nbsp; <span aria-current="page">' . $styleName . '</span>';
+            echo ' &nbsp;/&nbsp; <span aria-current="page">' . h($styleName) . '</span>';
             ?>
         </div>
 
         <header class="da-hero">
-            <h1 class="cb-title da-title"><?php echo $styleName; ?></h1>
+            <h1 class="cb-title da-title"><?php echo h($styleName); ?></h1>
             <?php
             if($lede !== ''){
-                echo '<p class="cb-lede da-sub">' . $lede . '</p>';
+                echo '<p class="cb-lede da-sub">' . h($lede) . '</p>';
             }
             if(!empty($styleData->aliases)){
                 $aliases = array();
                 foreach($styleData->aliases as $alias){
-                    $aliases[] = $text1->get($alias);
+                    $aliases[] = $alias;
                 }
-                echo '<p class="da-aka">Also known as ' . implode(', ', $aliases) . '</p>';
+                echo '<p class="da-aka">Also known as ' . implode(', ', array_map('h', $aliases)) . '</p>';
             }
             if($hasSrm){
                 echo '<div class="da-glass sp-glass" style="background:' . SRM::gradient(max(1, $srmPaintMin - 1), $srmPaintMax, '180deg') . '"><div class="sp-foam"></div></div>';
@@ -169,7 +166,10 @@ echo $htmlHead->html;
                 <?php
                 // Description
                 if(!empty($styleData->description)){
-                    echo $text2->get($styleData->description);
+                    // Inner wrapper, not <main class="cb-prose"> itself: that is a
+                    // container for the headings and blocks below, and pre-line on
+                    // it would make the source whitespace between them visible.
+                    echo '<div class="cb-prose__text">' . h($styleData->description) . '</div>';
                 }
 
                 // In the glass — AAFM
@@ -177,7 +177,7 @@ echo $htmlHead->html;
                     echo '<h2 class="da-prose-h">In the glass</h2>';
                     echo '<div class="sp-aafm">';
                     foreach($aafm as $label => $value){
-                        echo '<div><div class="sp-aafm-k">' . $label . '</div><div class="sp-aafm-v">' . $value . '</div></div>';
+                        echo '<div><div class="sp-aafm-k">' . $label . '</div><div class="sp-aafm-v">' . h($value) . '</div></div>';
                     }
                     echo '</div>';
                 }
@@ -185,13 +185,13 @@ echo $htmlHead->html;
                 // Origin — history
                 if(!empty($styleData->history)){
                     echo '<h2 class="da-prose-h">Origin</h2>';
-                    echo $text2->get($styleData->history);
+                    echo '<div class="cb-prose__text">' . h($styleData->history) . '</div>';
                 }
 
                 // Notes
                 if(!empty($styleData->notes)){
                     echo '<h2 class="da-prose-h">Notes</h2>';
-                    echo $text2->get($styleData->notes);
+                    echo '<div class="cb-prose__text">' . h($styleData->notes) . '</div>';
                 }
 
                 // Defining examples (curated classics from the style library —
@@ -200,9 +200,9 @@ echo $htmlHead->html;
                     echo '<h2 class="da-prose-h">Defining examples</h2>';
                     $examples = array();
                     foreach($styleData->commercial_examples as $example){
-                        $examples[] = $text1->get($example);
+                        $examples[] = $example;
                     }
-                    echo '<p class="ix-chip-list">' . implode('<span class="ix-chip-sep">&middot;</span>', $examples) . '</p>';
+                    echo '<p class="ix-chip-list">' . implode('<span class="ix-chip-sep">&middot;</span>', array_map('h', $examples)) . '</p>';
                 }
 
                 // Sources
@@ -210,23 +210,26 @@ echo $htmlHead->html;
                 if(!empty($styleData->sources)){
                     $src = $styleData->sources;
                     if(!empty($src->brewers_association->name)){
-                        $sourceRows[] = '<span class="cb-tag">BA 2026</span>' . $text1->get($src->brewers_association->name);
+                        $sourceRows[] = '<span class="cb-tag">BA 2026</span>' . h($src->brewers_association->name);
                     }
                     if(!empty($src->bjcp->name)){
-                        $bjcpTag = 'BJCP' . (!empty($src->bjcp->year) ? ' ' . intval($src->bjcp->year) : '') . (!empty($src->bjcp->code) ? ' &middot; ' . $text1->get($src->bjcp->code) : '');
-                        $sourceRows[] = '<span class="cb-tag">' . $bjcpTag . '</span>' . $text1->get($src->bjcp->name);
+                        $bjcpTag = 'BJCP' . (!empty($src->bjcp->year) ? ' ' . intval($src->bjcp->year) : '') . (!empty($src->bjcp->code) ? ' &middot; ' . h($src->bjcp->code) : '');
+                        $sourceRows[] = '<span class="cb-tag">' . $bjcpTag . '</span>' . h($src->bjcp->name);
                     }
                     if(!empty($src->naba_2024->name)){
-                        $sourceRows[] = '<span class="cb-tag">NABA 2024</span>' . $text1->get($src->naba_2024->name);
+                        $sourceRows[] = '<span class="cb-tag">NABA 2024</span>' . h($src->naba_2024->name);
                     }
                     if(!empty($src->history_sources)){
                         foreach($src->history_sources as $hs){
                             if(empty($hs->citation)){
                                 continue;
                             }
-                            $citation = $text1->get($hs->citation);
+                            // $sourceRows holds HTML by construction -- the tags and
+                            // the citation link are assembled here -- so each value is
+                            // escaped as it goes in, and the rows echo as-is below.
+                            $citation = h($hs->citation);
                             if(!empty($hs->url)){
-                                $url = $text3->get($hs->url);
+                                $url = h($hs->url);
                                 $citation .= ' <a href="' . $url . '" target="_blank" rel="noopener">&#8599;</a>';
                             }
                             $sourceRows[] = $citation;
