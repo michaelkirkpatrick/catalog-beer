@@ -43,16 +43,16 @@ class Textarea {
 
         // Label Row
         $return .= '<div class="cbf-labelrow">';
-        $return .= '<label class="cbf-label" for="' . htmlspecialchars($this->name) . 'Field">' . $this->description . '</label>';
+        $return .= '<label class="cbf-label" for="' . h($this->name) . 'Field">' . h($this->description) . '</label>';
         if($this->required && $this->markRequired){
             $return .= '<span class="cbf-req" aria-hidden="true">*</span>';
         }
         $return .= '</div>';
 
         // Textarea Field Start
-        $return .= '<textarea class="cbf-input' . ($invalid ? ' is-invalid' : '') . '" id="' . htmlspecialchars($this->name) . 'Field" name="' . $this->name . '" rows="' . $this->rows . '"';
+        $return .= '<textarea class="cbf-input' . ($invalid ? ' is-invalid' : '') . '" id="' . h($this->name) . 'Field" name="' . h($this->name) . '" rows="' . $this->rows . '"';
         if($invalid){
-            $return .= ' aria-describedby="helpMsg' . htmlspecialchars($this->name) . '"';
+            $return .= ' aria-describedby="helpMsg' . h($this->name) . '"';
         }
         if($this->required){
             $return .= ' required';
@@ -61,7 +61,7 @@ class Textarea {
 
         // Content
         if(!empty($this->value)){
-            $return .= htmlspecialchars($this->value);
+            $return .= h($this->value);
         }
 
         // Close Textarea
@@ -69,16 +69,15 @@ class Textarea {
 
         // Hint
         if($this->hint !== ''){
-            $text = new Text(false, false, true);
-            $return .= '<p class="cbf-hint">' . $text->get($this->hint) . '</p>';
+            $return .= '<p class="cbf-hint">' . h($this->hint) . '</p>';
         }
 
         // Validation State
         if($invalid){
-            // Message — a div, not a p: the Markdown pass wraps it in <p> tags
-            $text2 = new Text(true, true, true);
-            $message = $text2->get($this->validMsg);
-            $return .= '<div class="cbf-err" id="helpMsg' . htmlspecialchars($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>';
+            // Plain text now — see InputField for why dropping the Markdown
+            // pass leaves this looking identical.
+            $message = h($this->validMsg);
+            $return .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>';
         }
 
         // Close Field

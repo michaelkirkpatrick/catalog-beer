@@ -36,42 +36,40 @@ class GuidedStyleField {
     public $validMsg = '';
 
     public function display(){
-        $attr = function($v){ return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); };
-        $text = new Text(false, false, true);
 
         $invalid = ($this->validState === 'invalid');
         $inputClass = 'cbf-input sf-input' . ($invalid ? ' is-invalid' : '');
 
         $return  = '<div class="cbf-field">';
         $return .= '<div class="cbf-labelrow">';
-        $return .= '<label class="cbf-label" for="styleField">' . $text->get($this->description) . '</label>';
+        $return .= '<label class="cbf-label" for="styleField">' . h($this->description) . '</label>';
         if($this->required){
             $return .= '<span class="cbf-req" aria-hidden="true">*</span>';
         }
         $return .= '</div>';
         $return .= '<div class="sf" data-sf>';
         $return .= '<input type="text" class="' . $inputClass . '" id="styleField" name="style" autocomplete="off"'
-                 . ' placeholder="' . $attr($this->placeholder) . '"'
-                 . ' value="' . $attr($this->value) . '"'
+                 . ' placeholder="' . h($this->placeholder) . '"'
+                 . ' value="' . h($this->value) . '"'
                  . ($this->required ? ' required' : '') . '>';
-        $return .= '<input type="hidden" name="style_id" value="' . $attr($this->styleId) . '">';
-        $return .= '<input type="hidden" name="parent" value="' . $attr($this->parent) . '">';
-        $return .= '<input type="hidden" name="class" value="' . $attr($this->class) . '">';
-        $return .= '<input type="hidden" name="beverage_type" value="' . $attr($this->beverageType) . '">';
-        $return .= '<input type="hidden" name="style_confidence" value="' . $attr($this->styleConfidence) . '">';
+        $return .= '<input type="hidden" name="style_id" value="' . h($this->styleId) . '">';
+        $return .= '<input type="hidden" name="parent" value="' . h($this->parent) . '">';
+        $return .= '<input type="hidden" name="class" value="' . h($this->class) . '">';
+        $return .= '<input type="hidden" name="beverage_type" value="' . h($this->beverageType) . '">';
+        $return .= '<input type="hidden" name="style_confidence" value="' . h($this->styleConfidence) . '">';
         $return .= '<div class="sf-card" hidden></div>';
         $return .= '<div class="sf-picker" hidden></div>';
         $return .= '</div>';
 
         // Hint — persistent, visible guidance (was a data-hint attribute nothing read)
         if($this->hint !== ''){
-            $return .= '<p class="cbf-hint">' . $text->get($this->hint) . '</p>';
+            $return .= '<p class="cbf-hint">' . h($this->hint) . '</p>';
         }
 
         // Validation message
         if($invalid){
-            $text2 = new Text(true, true, true);
-            $return .= '<div class="cbf-err"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $text2->get($this->validMsg) . '</div></div>';
+            // Plain text now — see InputField for why this renders the same.
+            $return .= '<div class="cbf-err"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . h($this->validMsg) . '</div></div>';
         }
 
         $return .= '</div>';

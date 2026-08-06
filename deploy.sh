@@ -89,6 +89,12 @@ EXCLUDES=(
 	--exclude '*.sh'
 	--exclude '*.sql'
 	--exclude 'migrations/'
+	# Offline test harnesses. This is executable PHP and the web root is public,
+	# so it must never publish -- and note the exclude has to exist BEFORE the
+	# directory first deploys: rsync PROTECTS excluded files on the receiver, so
+	# adding this line after the fact would leave the copy on the server
+	# untouchable by deploy and needing hand deletion. Mirrors the API repo.
+	--exclude 'tests/'
 	--exclude 'maintenance.html'
 	# The agent skill IS web content: it is served as markdown at
 	# https://catalog.beer/skills/catalog-beer/SKILL.md, and the skill itself

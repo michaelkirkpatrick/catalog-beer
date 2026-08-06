@@ -209,7 +209,7 @@ echo $htmlHead->html;
             $inputCap->value = $capValue;
             $inputCap->validState = $validState['spendCap'];
             $inputCap->validMsg = $validMsg['spendCap'];
-            $inputCap->hint = 'Whole dollars, $1&#8211;$1,000. Each $1 covers 1,000 requests past the free tier. Set $0 to block all paid usage.';
+            $inputCap->hint = 'Whole dollars, $1–$1,000. Each $1 covers 1,000 requests past the free tier. Set $0 to block all paid usage.';
             echo $inputCap->display();
             ?>
             <div class="ac-actions">

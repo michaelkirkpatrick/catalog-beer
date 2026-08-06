@@ -138,7 +138,7 @@ echo $htmlHead->html;
             $inputEmail = new InputField();
             $inputEmail->name = 'email';
             $inputEmail->description = 'Email address';
-            $inputEmail->hint = 'You&#8217;ll need to verify your email address before contributing or getting an API key.';
+            $inputEmail->hint = 'You’ll need to verify your email address before contributing or getting an API key.';
             $inputEmail->type = 'email';
             $inputEmail->required = true;
             $inputEmail->markRequired = false;

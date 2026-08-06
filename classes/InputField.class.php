@@ -49,9 +49,6 @@ class InputField {
 
     public function display(){
 
-        // HTML Purifier
-        $text = new Text(false, false, true);
-
         $invalid = ($this->validState === 'invalid');
         $hasUnit = (!empty($this->addBefore) || !empty($this->addAfter));
 
@@ -60,14 +57,14 @@ class InputField {
 
         // Label Row
         $return .= '<div class="cbf-labelrow">';
-        $return .= '<label class="cbf-label" for="' . $text->get($this->name) . 'Field">' . $text->get($this->description) . '</label>';
+        $return .= '<label class="cbf-label" for="' . h($this->name) . 'Field">' . h($this->description) . '</label>';
         if($this->required && $this->markRequired){
             $return .= '<span class="cbf-req" aria-hidden="true">*</span>';
         }
         if($this->showCount && $this->maxLength > 0){
             // Static render; a small page script keeps it live (data-count-for).
             $length = strlen((string)($this->value ?? ''));
-            $return .= '<span class="cbf-count" data-count-for="' . $text->get($this->name) . 'Field">' . $length . ' / ' . $this->maxLength . '</span>';
+            $return .= '<span class="cbf-count" data-count-for="' . h($this->name) . 'Field">' . $length . ' / ' . $this->maxLength . '</span>';
         }
         $return .= '</div>';
 
@@ -75,24 +72,24 @@ class InputField {
         if($hasUnit){
             $return .= '<div class="cbf-unitwrap' . ($invalid ? ' is-invalid' : '') . '">';
             if(!empty($this->addBefore)){
-                $return .= '<span class="cbf-unit">' . $text->get($this->addBefore) . '</span>';
+                $return .= '<span class="cbf-unit">' . h($this->addBefore) . '</span>';
             }
         }
 
         // Input Field
         $inputClass = 'cbf-input' . ((!$hasUnit && $invalid) ? ' is-invalid' : '');
-        $return .= '<input type="' . $this->type . '" class="' . $inputClass . '" id="' . $text->get($this->name) . 'Field" name="' . $text->get($this->name) . '"';
+        $return .= '<input type="' . h($this->type) . '" class="' . $inputClass . '" id="' . h($this->name) . 'Field" name="' . h($this->name) . '"';
         if($this->placeholder !== ''){
-            $return .= ' placeholder="' . $text->get($this->placeholder) . '"';
+            $return .= ' placeholder="' . h($this->placeholder) . '"';
         }
         if($this->maxLength !== 0){
             $return .= ' maxlength="' . $this->maxLength . '"';
         }
         if(!empty($this->value) || $this->value === 0 || $this->value === '0'){
-            $return .= ' value="' . htmlspecialchars($this->value, ENT_QUOTES, 'UTF-8') . '"';
+            $return .= ' value="' . h($this->value) . '"';
         }
         if($invalid){
-            $return .= ' aria-describedby="helpMsg' . $text->get($this->name) . '"';
+            $return .= ' aria-describedby="helpMsg' . h($this->name) . '"';
         }
         if($this->required){
             $return .= ' required';
@@ -101,7 +98,7 @@ class InputField {
             $return .= ' autofocus';
         }
         if(!empty($this->autocomplete)){
-            $return .= ' autocomplete="' . $text->get($this->autocomplete) . '"';
+            $return .= ' autocomplete="' . h($this->autocomplete) . '"';
         }
         // Arbitrary data-* attributes, for the things only a vendor reads —
         // data-1p-ignore, data-lpignore. A key that isn't a plain attribute name
@@ -114,7 +111,7 @@ class InputField {
             }
             $return .= ' data-' . $key;
             if((string)$dataValue !== ''){
-                $return .= '="' . htmlspecialchars((string)$dataValue, ENT_QUOTES, 'UTF-8') . '"';
+                $return .= '="' . h($dataValue) . '"';
             }
         }
         $return .= '>';
@@ -122,23 +119,26 @@ class InputField {
         // Close Unit Wrapper
         if($hasUnit){
             if(!empty($this->addAfter)){
-                $return .= '<span class="cbf-unit">' . $text->get($this->addAfter) . '</span>';
+                $return .= '<span class="cbf-unit">' . h($this->addAfter) . '</span>';
             }
             $return .= '</div>';
         }
 
         // Hint — persistent guidance; doesn't vanish on focus like a placeholder
         if($this->hint !== ''){
-            $return .= '<p class="cbf-hint">' . $text->get($this->hint) . '</p>';
+            $return .= '<p class="cbf-hint">' . h($this->hint) . '</p>';
         }
 
         // Validation State
         if($invalid){
-            // Message
-            $text2 = new Text(true, true, true);
-            $message = $text2->get($this->validMsg);
-            // A div, not a p — the Markdown pass wraps the message in <p> tags.
-            $return .= '<div class="cbf-err" id="helpMsg' . $text->get($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>';
+            // Plain text now. These are API-authored validation strings; all
+            // 51 validMsg assignments across the entity classes were checked for
+            // Markdown syntax and none carry any, so this renders the same. The
+            // inner div stays as the flex child that used to hold the Markdown
+            // <p> — DropDown has always rendered its message exactly this way,
+            // which is why nothing moves.
+            $message = h($this->validMsg);
+            $return .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>';
         }
 
         // Close Field

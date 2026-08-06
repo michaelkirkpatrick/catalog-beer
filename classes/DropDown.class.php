@@ -61,7 +61,7 @@ class DropDown {
         // Label Row
         if($this->showLabel){
             $return .= '<div class="cbf-labelrow">';
-            $return .= '<label class="cbf-label" for="' . htmlspecialchars($this->name) . 'Field">' . htmlspecialchars($this->label) . '</label>';
+            $return .= '<label class="cbf-label" for="' . h($this->name) . 'Field">' . h($this->label) . '</label>';
             if($this->required && $this->markRequired){
                 $return .= '<span class="cbf-req" aria-hidden="true">*</span>';
             }
@@ -69,12 +69,12 @@ class DropDown {
         }
 
         // Select
-        $return .= '<select class="cbf-input cbf-select' . ($invalid ? ' is-invalid' : '') . '" name="' . htmlspecialchars($this->name) . '" id="' . htmlspecialchars($this->name) . 'Field"';
+        $return .= '<select class="cbf-input cbf-select' . ($invalid ? ' is-invalid' : '') . '" name="' . h($this->name) . '" id="' . h($this->name) . 'Field"';
         if($invalid){
-            $return .= ' aria-describedby="helpMsg' . htmlspecialchars($this->name) . '"';
+            $return .= ' aria-describedby="helpMsg' . h($this->name) . '"';
         }
         if(!empty($this->autocomplete)){
-            $return .= ' autocomplete="' . htmlspecialchars($this->autocomplete) . '"';
+            $return .= ' autocomplete="' . h($this->autocomplete) . '"';
         }
         if($this->disabled){
             $return .= ' disabled';
@@ -86,7 +86,7 @@ class DropDown {
 
         // Options
         for($i=0; $i<count($this->values); $i++){
-            $return .= '<option value="' . htmlspecialchars($this->values[$i]) . '"';
+            $return .= '<option value="' . h($this->values[$i]) . '"';
             if($this->currentValue === $this->values[$i] && !$selectedShown){
                 // Show as selected
                 $return .= ' selected';
@@ -94,7 +94,7 @@ class DropDown {
                 // Erase current value to prevent future matches
                 $selectedShown = true;
             }
-            $return .= '>' . htmlspecialchars($this->descriptions[$i]) . '</option>' . "\n";
+            $return .= '>' . h($this->descriptions[$i]) . '</option>' . "\n";
         }
 
         // Close Select
@@ -102,7 +102,7 @@ class DropDown {
 
         // Validation State
         if($invalid){
-            $return .= '<div class="cbf-err" id="helpMsg' . htmlspecialchars($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><span>' . htmlspecialchars($this->validMsg) . '</span></div>' . "\n";
+            $return .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><span>' . h($this->validMsg) . '</span></div>' . "\n";
         }
 
         // Close Field

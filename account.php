@@ -235,7 +235,7 @@ echo $htmlHead->html;
             $inputEmail->value = $emailValue;
             $inputEmail->validState = $validState['email'];
             $inputEmail->validMsg = $validMsg['email'];
-            $inputEmail->hint = 'If the new address is on a different domain, you&#8217;ll need to re-verify your email and your API key will be reset.';
+            $inputEmail->hint = 'If the new address is on a different domain, you’ll need to re-verify your email and your API key will be reset.';
             echo $inputEmail->display();
             ?>
             <div class="ac-actions">
