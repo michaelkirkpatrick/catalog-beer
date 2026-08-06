@@ -164,7 +164,9 @@ echo $htmlHead->html;
             // Terms and conditions
             $checkbox = new Checkbox();
             $checkbox->validState = $validState['terms_agreement'];
-            echo $checkbox->display('terms_agreement', 'I agree to the [Terms & Conditions](/terms) for using this site.', true, $termsAgreement);
+            // Label is raw HTML by contract (see Checkbox's docblock), so the &
+            // is written as an entity rather than left for Markdown to escape.
+            echo $checkbox->display('terms_agreement', 'I agree to the <a href="/terms">Terms &amp; Conditions</a> for using this site.', true, $termsAgreement);
             ?>
             <div class="cbf-actions">
                 <button class="cbf-btn cbf-btn--wide" data-callback="onSubmit">Sign Up</button>

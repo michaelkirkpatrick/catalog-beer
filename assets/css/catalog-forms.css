@@ -107,7 +107,9 @@ textarea.cbf-input{min-height:6rem;line-height:1.6;resize:vertical;}
 .cbf-hint{margin:.42rem 0 0;font-size:.8125rem;line-height:1.5;color:#5C564C;}
 .cbf-err{display:flex;gap:.42rem;align-items:flex-start;margin:.42rem 0 0;font-size:.8125rem;font-weight:500;line-height:1.45;color:var(--cb-error);}
 .cbf-err__m{font-family:var(--cb-mono);}
-.cbf-err p{margin:0;}   /* validMsg arrives Markdown-wrapped in <p> */
+/* No `.cbf-err p` rule: validMsg used to arrive Markdown-wrapped in <p> and
+   needed its margin reset. All five field classes now emit it as plain text in
+   the flex child div, which carries no default margin. */
 
 /* --------------------------------------------------------------------------
    4. Actions

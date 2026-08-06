@@ -22,7 +22,8 @@ exactly as a browser would — so "did it survive" and "is it inert" are two
 separate, honest questions.
 
 Add to this as chunks land. Covered so far: chunk 1 (h), chunk 3 (htmlHead),
-chunk 4 (InputField, Textarea, GuidedStyleField, DropDown).
+chunk 4 (InputField, Textarea, GuidedStyleField, DropDown), chunk 5
+(Checkbox).
 
 NOT DEPLOYED: deploy.sh excludes tests/. Keep it that way — this directory is
 executable PHP and the web root is public.
@@ -40,6 +41,7 @@ require_once(ROOT . '/classes/InputField.class.php');
 require_once(ROOT . '/classes/Textarea.class.php');
 require_once(ROOT . '/classes/GuidedStyleField.class.php');
 require_once(ROOT . '/classes/DropDown.class.php');
+require_once(ROOT . '/classes/Checkbox.class.php');
 
 $verbose = in_array('-v', $argv);
 $pass = 0;
@@ -306,6 +308,51 @@ noInjectedAttrs('no attribute injected anywhere in the field', $html, array(
 ok('option value survives exactly',
     attrValue($html, '//option[1]', 'value') === $ATTR_BREAKOUT);
 ok('option text shown literally', textOf($html, '//option[1]') === $ENTITY);
+
+// ===========================================================================
+section('Checkbox — chunk 5');
+
+// $text is developer-authored HTML by contract; everything else is escaped.
+$cb = new Checkbox();
+$cb->validState = 'invalid';
+$cb->validMsg   = $ENTITY_DEC;
+$html = $cb->display($HANDLER, '<a href="/terms">Terms &amp; Conditions</a>', $ATTR_BREAKOUT, true);
+if($verbose){ echo "    $html\n"; }
+
+// 'checked' is expected here, not injected: the variable is true and PHP's
+// loose == makes any non-empty value match it.
+noInjectedAttrs('no attribute injected by name/value/validMsg', $html, array(
+    'class', 'for', 'id', 'name', 'type', 'value', 'href', 'aria-hidden', 'checked',
+));
+ok('checkbox value survives exactly',
+    attrValue($html, '//input', 'value') === $ATTR_BREAKOUT);
+ok('checkbox name survives exactly',
+    attrValue($html, '//input', 'name') === $HANDLER);
+ok('validMsg entity shown as text, not decoded',
+    trim((string)textOf($html, '//div[@class="cbf-err"]')) === '!' . $ENTITY_DEC);
+ok('validMsg is no longer wrapped in <p> (the CSS reset is gone with it)',
+    (new DOMXPath(dom($html)))->query('//div[@class="cbf-err"]//p')->length === 0);
+
+// The contract itself: the label renders as real markup.
+ok('label HTML is honoured — the Terms link exists',
+    attrValue($html, '//label/a', 'href') === '/terms');
+ok('label ampersand entity renders as one character',
+    textOf($html, '//label/a') === 'Terms & Conditions');
+
+// The real signup label, verbatim from create-account.php.
+$terms = new Checkbox();
+$termsHtml = $terms->display('terms_agreement',
+    'I agree to the <a href="/terms">Terms &amp; Conditions</a> for using this site.',
+    true, false);
+ok('signup Terms checkbox links to /terms',
+    attrValue($termsHtml, '//label/a', 'href') === '/terms');
+ok('signup Terms label reads correctly',
+    textOf($termsHtml, '//label') === 'I agree to the Terms & Conditions for using this site.');
+ok('unchecked when the variable is false',
+    !str_contains($termsHtml, 'checked'));
+$termsOn = new Checkbox();
+ok('checked when the variable matches the value',
+    str_contains($termsOn->display('terms_agreement', 'x', true, true), 'checked'));
 
 // ===========================================================================
 echo "\n$pass passed, $fail failed\n";
