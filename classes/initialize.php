@@ -45,6 +45,8 @@ require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
 
 // Function helpers (not autoloaded classes, so required explicitly). Loaded here,
 // after ROOT/config and before the auth gate below, which calls serve503().
+//   html.php    — h(): escape at the point of output. Loaded first; everything
+//                 that emits HTML depends on it
 //   assets.php  — assetUrl/cssTag/jsTag: versioned, cache-busted local asset URLs
 //   session.php — ensureSession + csrf_field/csrf_verify
 //   http.php    — serve503
@@ -52,6 +54,7 @@ require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
 //                 formatting shared by the location and brewer facts rails
 //   forms.php   — suppressAutofill: no-fill attributes for catalog fields
 //   address.php — the address fieldset shared by location-add and location-edit
+require_once ROOT . '/classes/helpers/html.php';
 require_once ROOT . '/classes/helpers/assets.php';
 require_once ROOT . '/classes/helpers/session.php';
 require_once ROOT . '/classes/helpers/http.php';

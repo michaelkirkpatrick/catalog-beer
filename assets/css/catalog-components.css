@@ -25,6 +25,13 @@
 .cb-lede   { font-family: var(--cb-serif); font-style: italic; color: var(--cb-ink-2); font-size: var(--cb-fs-lede); line-height: 1.4; font-weight: var(--cb-fw-regular); }
 .cb-prose  { color: var(--cb-ink-2); line-height: var(--cb-lh-relaxed); }
 .cb-prose p { margin: 0 0 var(--cb-space-4); }
+/* User-authored prose, rendered as escaped plain text rather than HTML (no more
+   Markdown — see Claude Ideas/text-sanitization-rewrite.md). 77% of brewer
+   descriptions carry newlines, so pre-line is what preserves the paragraphing.
+   Deliberately NOT on .cb-prose itself: that is a container on beer.php and
+   style.php, wrapping headings and lists whose source indentation would then
+   render as blank lines. Put it on the description block only. */
+.cb-prose__text { white-space: pre-line; }
 
 /* ============================ label ============================
    THE mono / uppercase / tracked label. Replaces ~10 re-authorings:

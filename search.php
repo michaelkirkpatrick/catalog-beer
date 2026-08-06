@@ -338,10 +338,10 @@ if(!$searchDown && $nbHits === 0 && $q !== ''){
 }
 
 // ----- Rendering helpers -----
-
-function h($value){
-    return htmlspecialchars((string)$value, ENT_QUOTES);
-}
+// h() now lives in classes/helpers/html.php, loaded by initialize.php — one
+// definition site-wide. The local copy passed ENT_QUOTES alone, which meant
+// invalid UTF-8 came back as an empty string; the shared one adds
+// ENT_SUBSTITUTE, so the 36 call sites below silently got safer.
 
 // Only ever link to hit-supplied URLs that are local paths
 function srHitURL($hit){
