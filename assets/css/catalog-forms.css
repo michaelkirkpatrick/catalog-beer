@@ -91,7 +91,10 @@ textarea.cbf-input{min-height:6rem;line-height:1.6;resize:vertical;}
 .cbf-checkrow{display:flex;gap:.65rem;align-items:flex-start;}
 .cbf-checkrow input{width:1.1rem;height:1.1rem;margin:.2rem 0 0;accent-color:var(--cb-amber-deep);flex:0 0 auto;}
 .cbf-checkrow label{font-size:.9375rem;line-height:1.55;color:var(--cb-ink-2);}
-.cbf-checkrow label p{margin:0;}   /* label copy arrives Markdown-wrapped in <p> */
+/* No `.cbf-checkrow label p` reset: the label used to arrive Markdown-wrapped
+   in <p>. It is now developer-authored HTML (see Checkbox.class.php) and the
+   one caller passes inline markup only. Add block styling here if that ever
+   changes. */
 
 /* Unit-suffixed input (ABV %, IBU). Focus ring moves to the wrapper. */
 .cbf-unitwrap{display:flex;align-items:stretch;background:var(--cb-white);border:1px solid var(--cb-line-3);border-radius:var(--cb-radius-md);transition:border-color var(--cb-dur) var(--cb-ease),box-shadow var(--cb-dur) var(--cb-ease);}

@@ -274,7 +274,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>description</var></td>
                                 <td>string</td>
-                                <td>A description of the brewer. Note that this field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
+                                <td>A description of the brewer. Plain text, which may contain new line characters &#8212; those are meaningful and worth preserving. It is not markup: catalog.beer displays it as written, with line breaks kept and nothing else interpreted.</td>
                             </tr>
                             <tr>
                                 <td><var>short_description</var></td>
@@ -346,7 +346,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>description</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>A description of the brewer. This should be like the &#8220;About&#8221; page posted by the brewer. A brief origin story coupled with who they are. This field supports <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a>.</td>
+                                <td>A description of the brewer. This should be like the &#8220;About&#8221; page posted by the brewer. A brief origin story coupled with who they are. Send plain text: we store the bytes you send, and catalog.beer displays them with your line breaks kept. Markup is not interpreted, so formatting syntax will show up literally.</td>
                             </tr>
                             <tr>
                                 <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
@@ -1241,7 +1241,7 @@ curl -X GET \
                             <tr>
                                 <td><var>description</var></td>
                                 <td>string</td>
-                                <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> or new line characters.</td>
+                                <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. Plain text, which may contain new line characters &#8212; those are meaningful and worth preserving. It is not markup: catalog.beer displays it as written, with line breaks kept and nothing else interpreted.</td>
                             </tr>
                             <tr>
                                 <td><var>abv</var></td>
@@ -1366,7 +1366,7 @@ curl -X GET \
                             <tr>
                                 <td><var>description<br><small class="text-muted">(optional)</small></var></td>
                                 <td>string</td>
-                                <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. This field may contain <a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">markdown</a> and new line characters.</td>
+                                <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. Send plain text: we store the bytes you send, and catalog.beer displays them with your line breaks kept. Markup is not interpreted, so formatting syntax will show up literally.</td>
                             </tr>
                             <tr>
                                 <td><var>abv</var></td>
