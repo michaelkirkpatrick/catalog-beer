@@ -30,10 +30,9 @@ if(!permissionsCanEdit($perms, !empty($beerData->cb_verified), !empty($beerData-
 }
 
 // Brewer Info
-$text1 = new Text(false, true, true);
-$text2 = new Text(false, false, true);
-$brewerName = $text1->get($beerData->brewer->name);
-$brewerURL = $text2->get($beerData->brewer->id);
+// Raw. h() at each echo; htmlHead and Navigation escape their own arguments.
+$brewerName = $beerData->brewer->name;
+$brewerURL = $beerData->brewer->id;
 
 // Default Values from Existing Data
 $validState = array('brewer_id'=>'', 'name'=>'', 'style'=>'', 'description'=>'', 'abv'=>'', 'ibu'=>'');
@@ -86,7 +85,7 @@ if(isset($_POST['submit'])){
 }
 
 // HTML Head
-$beerName = $text1->get($beerData->name);
+$beerName = $beerData->name;
 $htmlHead = new htmlHead('Edit ' . $beerName);
 $guidedCSS = cssTag('/assets/css/guided-style.css');
 echo (strpos($htmlHead->html, '</head>') !== false)
@@ -103,7 +102,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
         echo $nav->breadcrumbs();
         ?>
         <div class="cbf-pagehead">
-            <h1 class="cbf-h1">Edit <em><?php echo $beerName; ?></em></h1>
+            <h1 class="cbf-h1">Edit <em><?php echo h($beerName); ?></em></h1>
             <p class="cbf-lede">Changes go live as soon as you save.</p>
         </div>
         <?php echo $alert->display(); ?>
@@ -172,7 +171,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $textarea = new Textarea();
             $textarea->name = 'description';
             $textarea->description = 'Description';
-            $textarea->hint = 'Markdown supported.';
+            $textarea->hint = 'Plain text — line breaks are preserved.';
             $textarea->value = $description;
             $textarea->validState = $validState['description'];
             $textarea->validMsg = $validMsg['description'];

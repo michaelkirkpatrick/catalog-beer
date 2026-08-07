@@ -165,7 +165,7 @@ echo $htmlHead->html;
             $checkbox = new Checkbox();
             $checkbox->validState = $validState['terms_agreement'];
             // Label is raw HTML by contract (see Checkbox's docblock), so the &
-            // is written as an entity rather than left for Markdown to escape.
+            // is written as an entity — nothing escapes it on our behalf now.
             echo $checkbox->display('terms_agreement', 'I agree to the <a href="/terms">Terms &amp; Conditions</a> for using this site.', true, $termsAgreement);
             ?>
             <div class="cbf-actions">

@@ -32,13 +32,12 @@ if(isset($_GET['brewerID'])){
         serve503();
     }
     if(!isset($brewerData->error)){
-        // Save Brewer Info
-        $text1 = new Text(false, true, true);
-        $brewerName = $text1->get($brewerData->name);
-        
-        $text2 = new Text(false, false, true);
-        $brewerURL = $text2->get($brewerData->id);
-        
+        // Save Brewer Info — raw. h() at each echo; htmlHead and Navigation
+        // escape their own arguments.
+        $brewerName = $brewerData->name;
+        $brewerURL = $brewerData->id;
+
+
         // Process Form
         if(isset($_POST['submit'])){
             if(!csrf_verify()){
@@ -182,7 +181,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             $textarea = new Textarea();
             $textarea->name = 'description';
             $textarea->description = 'Description';
-            $textarea->hint = 'Markdown supported.';
+            $textarea->hint = 'Plain text — line breaks are preserved.';
             $textarea->value = $description;
             $textarea->validState = $validState['description'];
             $textarea->validMsg = $validMsg['description'];
@@ -198,7 +197,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             <div class="cbf-actions">
                 <button type="submit" class="cbf-btn" name="submit"<?php if($disabled){echo ' disabled';} ?>>Add Beer</button>
                 <?php if(!$disabled){ ?>
-                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo htmlspecialchars($brewerURL); ?>">Cancel</a>
+                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo h($brewerURL); ?>">Cancel</a>
                 <?php } ?>
             </div>
         </form>

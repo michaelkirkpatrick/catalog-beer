@@ -80,7 +80,7 @@ echo $htmlHead->html;
             $textarea = new Textarea();
             $textarea->name = 'description';
             $textarea->description = 'About the brewer';
-            $textarea->hint = 'Markdown supported.';
+            $textarea->hint = 'Plain text — line breaks are preserved.';
             $textarea->rows = 4;
             $textarea->value = $description;
             $textarea->validState = $validState['description'];

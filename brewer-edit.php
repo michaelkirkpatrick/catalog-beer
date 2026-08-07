@@ -66,8 +66,8 @@ if(isset($_POST['submit'])){
 }
 
 // HTML Head
-$text = new Text(false, true, true);
-$brewerName = $text->get($brewerData->name);
+// Raw. h() at each echo; htmlHead and Navigation escape their own arguments.
+$brewerName = $brewerData->name;
 $htmlHead = new htmlHead('Edit ' . $brewerName);
 echo $htmlHead->html;
 ?>
@@ -81,7 +81,7 @@ echo $htmlHead->html;
         echo $nav->breadcrumbs();
         ?>
         <div class="cbf-pagehead">
-            <h1 class="cbf-h1">Edit <em><?php echo $brewerName; ?></em></h1>
+            <h1 class="cbf-h1">Edit <em><?php echo h($brewerName); ?></em></h1>
             <p class="cbf-lede">Changes go live as soon as you save.</p>
         </div>
         <?php echo $alert->display(); ?>
@@ -107,7 +107,7 @@ echo $htmlHead->html;
             $textarea = new Textarea();
             $textarea->name = 'description';
             $textarea->description = 'About the brewer';
-            $textarea->hint = 'Markdown supported.';
+            $textarea->hint = 'Plain text — line breaks are preserved.';
             $textarea->rows = 4;
             $textarea->value = $description;
             $textarea->validState = $validState['description'];

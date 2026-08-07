@@ -45,12 +45,10 @@ if(isset($_GET['brewerID'])){
         serve503();
     }
     if(!isset($brewerData->error)){
-        // Save Brewer Info
-        $text1 = new Text(false, true, true);
-        $brewerName = $text1->get($brewerData->name);
-
-        $text2 = new Text(false, false, true);
-        $brewerURL = $text2->get($brewerData->id);
+        // Save Brewer Info — raw. h() at each echo; htmlHead and Navigation
+        // escape their own arguments.
+        $brewerName = $brewerData->name;
+        $brewerURL = $brewerData->id;
 
         // Process Form
         if(isset($_POST['submit'])){
@@ -237,7 +235,7 @@ echo $htmlHead->html;
             <div class="cbf-actions">
                 <button type="submit" class="cbf-btn" name="submit"<?php if($disabled){echo ' disabled';} ?>>Add Location</button>
                 <?php if(!$disabled){ ?>
-                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo htmlspecialchars($brewerURL); ?>">Cancel</a>
+                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo h($brewerURL); ?>">Cancel</a>
                 <?php } ?>
             </div>
         </form>

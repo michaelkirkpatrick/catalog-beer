@@ -45,11 +45,10 @@ if(!permissionsCanEdit($perms, !empty($locationData->cb_verified), !empty($locat
 }
 
 // Brewer Info
-$text1 = new Text(false, true, true);
-$text2 = new Text(false, false, true);
-$brewerName = $text1->get($locationData->brewer->name);
-$brewerID = $text2->get($locationData->brewer->id);
-$locationIDString = $text2->get($locationData->id);
+// Raw. h() at each echo; htmlHead and Navigation escape their own arguments.
+$brewerName = $locationData->brewer->name;
+$brewerID = $locationData->brewer->id;
+$locationIDString = $locationData->id;
 
 // Default Values from Existing Data
 $validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
@@ -126,7 +125,7 @@ if(isset($_POST['submit'])){
 }
 
 // HTML Head
-$locationName = $text1->get(locationDisplayName($locationData));
+$locationName = locationDisplayName($locationData);
 $htmlHead = new htmlHead('Edit ' . $locationName);
 echo $htmlHead->html;
 ?>
@@ -140,7 +139,7 @@ echo $htmlHead->html;
         echo $nav->breadcrumbs();
         ?>
         <div class="cbf-pagehead">
-            <h1 class="cbf-h1">Edit <em><?php echo $locationName; ?></em></h1>
+            <h1 class="cbf-h1">Edit <em><?php echo h($locationName); ?></em></h1>
             <p class="cbf-lede">Changes go live as soon as you save.</p>
         </div>
         <?php echo $alert->display(); ?>
@@ -187,7 +186,7 @@ echo $htmlHead->html;
             ?>
             <div class="cbf-actions">
                 <button type="submit" class="cbf-btn" name="submit">Save Changes</button>
-                <a class="cbf-btn cbf-btn--ghost" href="/location/<?php echo htmlspecialchars($locationIDString); ?>">Cancel</a>
+                <a class="cbf-btn cbf-btn--ghost" href="/location/<?php echo h($locationIDString); ?>">Cancel</a>
             </div>
         </form>
     </div>

@@ -26,7 +26,7 @@ class Textarea {
 
     public $name = '';
     public $description = '';
-    public $hint = '';              // guidance under the field (e.g. "Markdown supported.")
+    public $hint = '';              // guidance under the field (e.g. "Plain text — line breaks are preserved.")
     public $value = '';
     public $required = false;
     public $markRequired = true;    // false on all-required forms
