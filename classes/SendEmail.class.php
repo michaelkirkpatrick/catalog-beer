@@ -160,9 +160,15 @@ class SendEmail {
         }
         
         if(!$this->error){
+            // The HTML body is the plain-text message, escaped and with its
+            // newlines turned into breaks. This was the one place Markdown did
+            // real work -- it was the only converter from the visitor's typed
+            // text to HTML -- and it ran with HTMLPurifier OFF, so it was also
+            // the only Text call with no XSS control behind it at all.
+            // strip_tags() above is not that control: it drops tags, but leaves
+            // a bare `<` and every quote and ampersand untouched.
             $postmarkSendEmail = new PostmarkSendEmail();
-            $text = new Text(true, false, false);
-            $postmarkSendEmail->generateBody('michael@catalog.beer', $this->subject, 'contact-form', $text->get($this->plainText), $this->plainText, $this->email);
+            $postmarkSendEmail->generateBody('michael@catalog.beer', $this->subject, 'contact-form', nl2br(h($this->plainText), false), $this->plainText, $this->email);
             
             $json = json_encode($postmarkSendEmail);
 

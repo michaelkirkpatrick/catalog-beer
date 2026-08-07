@@ -24,7 +24,8 @@ separate, honest questions.
 Add to this as chunks land. Covered so far: chunk 1 (h), chunk 3 (htmlHead),
 chunk 4 (InputField, Textarea, GuidedStyleField, DropDown), chunk 5
 (Checkbox), chunk 6 (Alert), chunk 7
-(Navigation, Table), chunk 8 (helpers/location.php).
+(Navigation, Table), chunk 8 (helpers/location.php), chunk 15 (SendEmail's
+contact-form body — the expression, not the class).
 
 NOT DEPLOYED: deploy.sh excludes tests/. Keep it that way — this directory is
 executable PHP and the web root is public.
@@ -542,6 +543,45 @@ ok('9 digits formats to nothing', formatTelephone('503555010') === '');
 ok('11 digits formats to nothing', formatTelephone('15035550100') === '');
 ok('non-digits format to nothing', formatTelephone('503-555-0100') === '');
 ok('an int from json_decode still formats', formatTelephone(5035550100) === '(503) 555-0100');
+
+// ===========================================================================
+// Chunk 15 — SendEmail's contact-form HTML body.
+//
+// The class itself is untestable offline: it reaches LogError, which reaches
+// the database. What matters is the expression that replaced the one Text call
+// doing real work, so that is what is asserted. SendEmail runs strip_tags()
+// on the message first, so both steps are modelled here.
+// ===========================================================================
+
+$contactBody = function($typed){
+    $prefix = '-- Catalog.beer Website Email --' . "\n\n" . 'From: Someone <someone@example.com>' . "\n\n";
+    return nl2br(h($prefix . strip_tags($typed)), false);
+};
+
+$typed = "Hi there,\n\nI run Bob's \"Best\" Brewery & I spotted a bad ABV.\n<script>alert(1)</script>\nThanks";
+$body = $contactBody($typed);
+
+ok('contact body opens no element',
+    (new DOMXPath(dom('<div>' . $body . '</div>')))->query('//script')->length === 0);
+ok('contact body escapes the quote, the apostrophe and the ampersand',
+    strpos($body, '&quot;Best&quot;') !== false
+    && strpos($body, 'Bob&#039;s') !== false
+    && strpos($body, 'Brewery &amp; I') !== false);
+// One <br> per newline, prefix included: four from the prefix, four from the
+// message. This is the whole point of the change — 77% of the descriptions in
+// this migration carry newlines and so does every contact-form message.
+ok('contact body keeps every newline as a <br>',
+    substr_count($body, '<br>') === 8);
+ok('contact body reads back as the visitor typed it, minus the stripped tag',
+    trim(str_replace("\r", '', html_entity_decode(strip_tags(str_replace('<br>', '', $body)), ENT_QUOTES, 'UTF-8')))
+    === trim("-- Catalog.beer Website Email --\n\nFrom: Someone <someone@example.com>\n\n"
+        . "Hi there,\n\nI run Bob's \"Best\" Brewery & I spotted a bad ABV.\nalert(1)\nThanks"));
+ok('the <email> in the prefix is inert text now, not an autolink',
+    (new DOMXPath(dom('<div>' . $body . '</div>')))->query('//a')->length === 0);
+
+// nl2br(..., false) emits HTML5 <br>, not the XHTML <br />. Asserted because
+// the flag is easy to drop and the difference is invisible in a mail client.
+ok('nl2br is called in HTML5 mode', strpos($body, '<br />') === false);
 
 // ===========================================================================
 echo "\n$pass passed, $fail failed\n";
