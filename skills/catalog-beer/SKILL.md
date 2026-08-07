@@ -9,8 +9,8 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "1.9.1"
-  updated: "2026-08-05"
+  version: "2.0.0"
+  updated: "2026-08-07"
 ---
 
 # Catalog.beer API
@@ -288,6 +288,11 @@ present when `has_more` is true.
 - Writing a brewer `short_description` longer than **160 characters** →
   400. Compose it as a one-line subtitle; put anything longer in
   `description`.
+- Formatting a `description` with Markdown — `**bold**`, `- bullets`,
+  `[links](...)`. The API stores exactly the bytes you send and catalog.beer
+  renders them as plain text, so the syntax appears literally on a public page
+  and a human has to go and strip it. Write prose. **Newlines are the one thing
+  that survives** — use blank lines for paragraphs.
 - Treating a `valid_msg.url` 400 as "the URL is wrong" and abandoning the
   write, or swapping in a different URL. The API fetched the site and
   something answered non-2xx — usually bot protection. Retry once, then

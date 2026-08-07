@@ -7,7 +7,7 @@
 | `id` | string | brewer UUID |
 | `object` | string | `"brewer"` |
 | `name` | string | |
-| `description` | string \| null | markdown/newlines allowed |
+| `description` | string \| null | plain text; may contain newlines |
 | `short_description` | string \| null | max 160 chars |
 | `url` | string \| null | brewery website |
 | `cb_verified` | boolean | verified by Catalog.beer — server-controlled |
@@ -19,7 +19,7 @@
 | Field | Required | Constraints |
 |---|---|---|
 | `name` | **yes** | |
-| `description` | no | markdown supported |
+| `description` | no | plain text; newlines are kept, markup renders literally |
 | `short_description` | no | max 160 characters |
 | `url` | no | brewery's website URL — **fetched live**, see below |
 

@@ -12,7 +12,7 @@
 | `parent` | string \| null | family slug (e.g. `ipa`) |
 | `class` | string \| null | `ale` \| `lager` \| null |
 | `beverage_type` | string | `beer` \| `cider` \| `perry` \| `mead` — derived, never settable |
-| `description` | string \| null | markdown/newlines allowed |
+| `description` | string \| null | plain text; may contain newlines |
 | `abv` | float | ABV percentage, `0`–`99.9` — **stored rounded to one decimal place** |
 | `ibu` | integer \| null | `0`–`1000`. `null` means never recorded; `0` means no measurable bitterness — see "Recording IBU" |
 | `cb_verified` | boolean | server-controlled |
@@ -33,7 +33,7 @@
 | `style_confidence` | no | usually omit — see "Recording how sure you are" |
 | `abv` | **yes** | float `0`–`99.9` — rounded to one decimal place on write; see "Recording ABV" |
 | `ibu` | no | whole number `0`–`1000` — omit when unknown, never send `0`; see "Recording IBU" |
-| `description` | no | markdown |
+| `description` | no | plain text; newlines are kept, markup renders literally |
 
 ### Recording ABV
 
