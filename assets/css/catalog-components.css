@@ -24,7 +24,6 @@
 .cb-title  { font-family: var(--cb-serif); color: var(--cb-text-strong); line-height: 1; letter-spacing: var(--cb-track-tight); margin: 0; }
 .cb-lede   { font-family: var(--cb-serif); font-style: italic; color: var(--cb-ink-2); font-size: var(--cb-fs-lede); line-height: 1.4; font-weight: var(--cb-fw-regular); }
 .cb-prose  { color: var(--cb-ink-2); line-height: var(--cb-lh-relaxed); }
-.cb-prose p { margin: 0 0 var(--cb-space-4); }
 /* User-authored prose, rendered as escaped plain text rather than HTML (no more
    Markdown — see Claude Ideas/text-sanitization-rewrite.md). 77% of brewer
    descriptions carry newlines, so pre-line is what preserves the paragraphing.

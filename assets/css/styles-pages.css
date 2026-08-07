@@ -106,7 +106,11 @@
 .ix-style-list a:hover { color: var(--cb-link); }
 /* catch-all rows sit last in the list, tagged and slightly recessive */
 .ix-style-list .cb-tag, .ix-chip-list .cb-tag { margin-left: .3rem; }
-.ix-chip-list { font-size: .95rem; color: var(--cb-ink-2); line-height: 1.8; max-width: 72ch; }
+/* Owns its own margin. It is the last <p> inside a .cb-prose container, and the
+   `.cb-prose p` rule that used to space it existed for the <p> tags Markdown
+   emitted -- see Claude Ideas/text-sanitization-rewrite.md, chunk 12. Spacing a
+   known element from page CSS beats a descendant rule catching whatever lands. */
+.ix-chip-list { font-size: .95rem; color: var(--cb-ink-2); line-height: 1.8; max-width: 72ch; margin: 0 0 var(--cb-space-4); }
 .ix-fam-link { color: inherit; text-decoration: none; }
 .ix-fam-link:hover { color: var(--cb-link); text-decoration: underline; }
 .ix-chip-sep { color: var(--cb-muted-2); padding: 0 .4rem; }

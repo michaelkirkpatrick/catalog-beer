@@ -23,8 +23,6 @@ classes are page layout only (styles-pages.css). Tokens in catalog.css.
 --- */
 
 // Required Classes
-$text = new Text(false, true, true);    // display names
-$textID = new Text(false, false, true); // ids
 $alert = new Alert();
 
 // Total Number of Pages
@@ -123,21 +121,22 @@ echo $htmlHead->html;
         $position = 0;
         foreach($groups as $letter => $rows){
             echo '<div class="cx-grp">';
-            echo '<div class="cx-letter">' . htmlspecialchars($letter) . '</div>';
+            echo '<div class="cx-letter">' . h($letter) . '</div>';
             foreach($rows as $row){
-                $beerName = $text->get($row->name);
-                $beerID = $textID->get($row->id);
+                // Raw from the API; h() at each of the three sinks below.
+                $beerName = $row->name;
+                $beerID = $row->id;
                 $position++;
 
-                echo '<a class="cx-row" href="/beer/' . $beerID . '" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-                echo '<meta itemprop="position" content="' . $position . '" /><link itemprop="url" href="/beer/' . $beerID . '" />';
+                echo '<a class="cx-row" href="/beer/' . h($beerID) . '" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
+                echo '<meta itemprop="position" content="' . $position . '" /><link itemprop="url" href="/beer/' . h($beerID) . '" />';
                 echo '<span class="cx-row__l">';
                 // Swatch only when the enriched shape is present. SRM::hex()
                 // maps 1-40 to the beer-color chart, neutral when unknown.
                 if(property_exists($row, 'srm')){
                     echo '<span class="cb-swatch cx-swatch" style="background:' . SRM::hex($row->srm) . ';"></span>';
                 }
-                echo '<span class="cx-name" itemprop="name">' . $beerName . '</span>';
+                echo '<span class="cx-name" itemprop="name">' . h($beerName) . '</span>';
                 echo '</span>';
                 echo '</a>';
             }

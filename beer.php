@@ -37,11 +37,6 @@ if(!isset($beerData->name) || isset($beerData->error)){
     exit();
 }
 
-// Text pipelines
-$text1 = new Text(false, true, true);   // display names, short fields
-$text2 = new Text(true, true, false);   // multi-paragraph prose (Markdown)
-$text3 = new Text(false, false, true);  // ids, URLs
-
 $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID']));
 
 // ----- Permissions -----
@@ -51,12 +46,16 @@ $perms = $loggedIn ? brewerPermissions($api, $beerData->brewer->id) : null;
 $canManage = permissionsCanManage($perms);
 $canEditBeer = permissionsCanEdit($perms, !empty($beerData->cb_verified), !empty($beerData->brewer_verified));
 
-$beerName = $text1->get($beerData->name);
-$beerStyle = $text1->get($beerData->style);
-$beerIDString = $text3->get($beerData->id);
-$brewerURL = $text3->get($beerData->brewer->id);
-$brewerName = $text1->get($beerData->brewer->name);
-$styleURL = !empty($beerData->style_id) ? $text3->get($beerData->style_id) : '';
+// Raw API values. Every one of these lands in more than one sink -- $beerName
+// in the crumb and the <h1>, $brewerURL in five hrefs -- so they stay raw here
+// and get h() at each output. Escaping once, up here, is what produced the
+// literal `Bob&#8217;s Brewery` in breadcrumbs.
+$beerName = $beerData->name;
+$beerStyle = $beerData->style;
+$beerIDString = $beerData->id;
+$brewerURL = $beerData->brewer->id;
+$brewerName = $beerData->brewer->name;
+$styleURL = !empty($beerData->style_id) ? $beerData->style_id : '';
 $hasProse = !empty($beerData->description);
 
 // This beer's own numbers. ABV/IBU are stored NOT NULL and default to 0, so a
@@ -175,26 +174,31 @@ if($hasSrm){
 // each drawn only when the API says this key can actually use it
 $editBtn = '';
 if($canEditBeer){
-    $editBtn .= '<a href="/beer/' . $beerIDString . '/edit" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg> Edit beer</a>';
+    $editBtn .= '<a href="/beer/' . h($beerIDString) . '/edit" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg> Edit beer</a>';
 }
 if($canManage){
-    $editBtn .= '<a href="/beer/' . $beerIDString . '/delete" class="cb-delete-link cb-delete-link--inline" title="Delete beer"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg> Delete beer</a>';
+    $editBtn .= '<a href="/beer/' . h($beerIDString) . '/delete" class="cb-delete-link cb-delete-link--inline" title="Delete beer"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg> Delete beer</a>';
 }
 if($editBtn !== ''){
     $editBtn = '<div class="be-topbar-actions">' . $editBtn . '</div>';
 }
 
-// Style line — links to the reference page when the beer has a canonical style
+// Style line — links to the reference page when the beer has a canonical style.
+// Holds markup by construction, so the values are escaped as they go in.
 if($styleURL !== ''){
-    $styleLine = '<a href="/style/' . $styleURL . '" class="be-lede" title="Learn about this beer style">' . $beerStyle . '</a>';
+    $styleLine = '<a href="/style/' . h($styleURL) . '" class="be-lede" title="Learn about this beer style">' . h($beerStyle) . '</a>';
 }else{
-    $styleLine = '<span class="be-lede be-lede--static">' . $beerStyle . '</span>';
+    $styleLine = '<span class="be-lede be-lede--static">' . h($beerStyle) . '</span>';
 }
 
 // HTML Head
 $htmlHead = new htmlHead($beerData->name);
 if($hasProse){
-    $htmlHead->addDescription(mb_substr(strip_tags($beerData->description), 0, 160));
+    // No strip_tags: descriptions are plain text now, and strip_tags eats
+    // everything from the first `<` onward. Verified against the real corpus --
+    // "(<0.5% ABV)" truncates to "(" -- which is the non-alcoholic ABV notation
+    // two breweries actually use. addDescription() escapes for itself.
+    $htmlHead->addDescription(mb_substr($beerData->description, 0, 160));
 }
 $htmlHead->addStylesheet('/assets/css/styles-pages.css');
 echo $htmlHead->html;
@@ -245,8 +249,8 @@ echo $htmlHead->html;
             ?>
             <div class="cb-eyebrow" itemscope itemtype="https://schema.org/BreadcrumbList">
                 <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer"><span itemprop="name">Brewers</span></a><meta itemprop="position" content="1" /></span> &nbsp;/&nbsp;
-                <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer/<?php echo $brewerURL; ?>"><span itemprop="name"><?php echo $brewerName; ?></span></a><meta itemprop="position" content="2" /></span> &nbsp;/&nbsp;
-                <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo $beerName; ?></span><meta itemprop="position" content="3" /></span>
+                <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer/<?php echo h($brewerURL); ?>"><span itemprop="name"><?php echo h($brewerName); ?></span></a><meta itemprop="position" content="2" /></span> &nbsp;/&nbsp;
+                <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo h($beerName); ?></span><meta itemprop="position" content="3" /></span>
             </div>
             <?php echo $editBtn; ?>
         </div>
@@ -254,12 +258,12 @@ echo $htmlHead->html;
         <?php if($stateFull){ /* ============ STATE A: RECORD ============ */ ?>
         <header class="be-hero">
             <div>
-                <h1 class="cb-title be-title" itemprop="name"><?php echo $beerName; ?></h1>
+                <h1 class="cb-title be-title" itemprop="name"><?php echo h($beerName); ?></h1>
                 <?php if($verifyText !== ''){ ?>
                 <span class="be-verify"><span class="cb-vdot <?php echo $verifyDot; ?>"></span><?php echo $verifyText; ?></span>
                 <?php } ?>
                 <?php echo $styleLine; ?>
-                <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
+                <div class="be-byline">Brewed by <a href="/brewer/<?php echo h($brewerURL); ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo h($brewerName); ?></span></a></div>
             </div>
             <?php echo $glassHTML; ?>
         </header>
@@ -269,18 +273,22 @@ echo $htmlHead->html;
                 <?php
                 if($hasProse){
                     // Wrapped so itemprop="description" carries the prose alone,
-                    // not the related-beers list that shares this <main>.
-                    echo '<div itemprop="description">' . $text2->get($beerData->description) . '</div>';
+                    // not the related-beers list that shares this <main>. The
+                    // class is what preserves the author's newlines now Markdown
+                    // is gone -- .cb-prose__text is white-space: pre-line, and it
+                    // goes here rather than on the <main> above, which also wraps
+                    // headings whose source indentation would then show.
+                    echo '<div class="cb-prose__text" itemprop="description">' . h($beerData->description) . '</div>';
                 }
                 if($hasRelated){
-                    echo '<h2 class="be-rel-h">More ' . $text1->get($familyLabel) . ' <span class="cb-count cb-count--bare">' . count($related) . '</span></h2>';
+                    echo '<h2 class="be-rel-h">More ' . h($familyLabel) . ' <span class="cb-count cb-count--bare">' . count($related) . '</span></h2>';
                     echo '<div>';
                     foreach($related as $b){
-                        $rName = $text1->get($b->name);
-                        $rStyle = $text1->get($b->style);
-                        $rID = $text3->get($b->id);
+                        $rName = $b->name;
+                        $rStyle = $b->style;
+                        $rID = $b->id;
                         $rAbv = (isset($b->abv) && is_numeric($b->abv) && floatval($b->abv) > 0) ? rtrim(rtrim(number_format(floatval($b->abv), 1), '0'), '.') . '%' : '';
-                        echo '<a href="/beer/' . $rID . '" class="cb-row"><span class="be-rel-l">';
+                        echo '<a href="/beer/' . h($rID) . '" class="cb-row"><span class="be-rel-l">';
                         if($hasVerifiedRel){
                             if(!empty($b->cb_verified)){
                                 echo '<span class="cb-vdot cb-vdot--cbv" title="Catalog.beer verified"></span>';
@@ -288,12 +296,12 @@ echo $htmlHead->html;
                                 echo '<span class="cb-vdot cb-vdot--first" title="Brewer-provided"></span>';
                             }
                         }
-                        echo '<span style="min-width:0;"><span class="cb-row__name">' . $rName . '</span> <span class="cb-row__meta">' . $rStyle . '</span></span>';
+                        echo '<span style="min-width:0;"><span class="cb-row__name">' . h($rName) . '</span> <span class="cb-row__meta">' . h($rStyle) . '</span></span>';
                         echo '</span><span class="cb-row__value">' . $rAbv . '</span></a>' . "\n";
                     }
                     echo '</div>';
                     if($relOverflow){
-                        echo '<a href="/brewer/' . $brewerURL . '#beer" class="cb-action">See more from ' . $brewerName . ' &rarr;</a>';
+                        echo '<a href="/brewer/' . h($brewerURL) . '#beer" class="cb-action">See more from ' . h($brewerName) . ' &rarr;</a>';
                     }
                     if($hasVerifiedRel){
                         echo '<div class="cb-legend"><span><span class="cb-vdot cb-vdot--first"></span>Brewer-provided</span><span><span class="cb-vdot cb-vdot--cbv"></span>Catalog.beer verified</span><span class="cb-legend__none">no mark &#8212; unverified</span></div>';
@@ -318,9 +326,9 @@ echo $htmlHead->html;
                 <div>
                     <span class="cb-label">Details</span>
                     <div class="cb-fact"><span class="cb-fact__k">Style</span><span class="cb-fact__v cb-fact__v--sm"><?php
-                        echo ($styleURL !== '') ? '<a href="/style/' . $styleURL . '">' . $beerStyle . '</a>' : $beerStyle;
+                        echo ($styleURL !== '') ? '<a href="/style/' . h($styleURL) . '">' . h($beerStyle) . '</a>' : h($beerStyle);
                     ?></span></div>
-                    <div class="cb-fact"><span class="cb-fact__k">Brewer</span><span class="cb-fact__v cb-fact__v--sm"><a href="/brewer/<?php echo $brewerURL; ?>"><?php echo $brewerName; ?></a></span></div>
+                    <div class="cb-fact"><span class="cb-fact__k">Brewer</span><span class="cb-fact__v cb-fact__v--sm"><a href="/brewer/<?php echo h($brewerURL); ?>"><?php echo h($brewerName); ?></a></span></div>
                 </div>
             </aside>
         </div>
@@ -328,9 +336,9 @@ echo $htmlHead->html;
         <?php }else{ /* ============ STATE B: COASTER ============ */ ?>
         <div class="be-card">
             <?php echo $glassHTML; ?>
-            <h1 class="cb-title be-title" itemprop="name"><?php echo $beerName; ?></h1>
+            <h1 class="cb-title be-title" itemprop="name"><?php echo h($beerName); ?></h1>
             <?php echo $styleLine; ?>
-            <div class="be-byline">Brewed by <a href="/brewer/<?php echo $brewerURL; ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo $brewerName; ?></span></a></div>
+            <div class="be-byline">Brewed by <a href="/brewer/<?php echo h($brewerURL); ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo h($brewerName); ?></span></a></div>
             <?php if($abv !== null){ ?>
             <hr class="be-card-rule">
             <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;">
