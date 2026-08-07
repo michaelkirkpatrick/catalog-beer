@@ -28,11 +28,10 @@ if(!permissionsCanManage($perms)){
     exit();
 }
 
-// Brewer Info
-$text1 = new Text(false, true, true);
-$text2 = new Text(false, false, true);
-$brewerName = $text1->get($locationData->brewer->name);
-$brewerID = $text2->get($locationData->brewer->id);
+// Brewer Info — raw. h() at each echo below; htmlHead and Navigation escape
+// their own arguments.
+$brewerName = $locationData->brewer->name;
+$brewerID = $locationData->brewer->id;
 
 // Process Deletion
 if(isset($_POST['submit'])){
@@ -71,7 +70,7 @@ if(isset($_POST['submit'])){
 
 // HTML Head
 // Short form: the brewer is named alongside this on every line it appears in.
-$locationName = $text1->get(locationShortName($locationData));
+$locationName = locationShortName($locationData);
 $htmlHead = new htmlHead('Delete ' . $locationName);
 echo $htmlHead->html;
 ?>
@@ -93,12 +92,12 @@ echo $htmlHead->html;
             echo $alert->display();
         }
         ?>
-        <p class="cbf-confirm">You&#8217;re about to delete <strong><?php echo $locationName; ?></strong> from <?php echo $brewerName; ?>. This can&#8217;t be undone.</p>
+        <p class="cbf-confirm">You&#8217;re about to delete <strong><?php echo h($locationName); ?></strong> from <?php echo h($brewerName); ?>. This can&#8217;t be undone.</p>
         <form method="post">
             <?php echo csrf_field(); ?>
             <div class="cbf-actions cbf-actions--bare">
                 <button type="submit" class="cbf-btn cbf-btn--danger" name="submit">Delete Location</button>
-                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo htmlspecialchars($brewerID); ?>">Cancel</a>
+                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo h($brewerID); ?>">Cancel</a>
             </div>
         </form>
     </div>

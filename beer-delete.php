@@ -28,13 +28,13 @@ if(!permissionsCanManage($perms)){
     exit();
 }
 
-// Beer & Brewer Info
-$text1 = new Text(false, true, true);
-$text2 = new Text(false, false, true);
-$beerName = $text1->get($beerData->name);
-$beerIDString = $text2->get($beerData->id);
-$brewerName = $text1->get($beerData->brewer->name);
-$brewerIDString = $text2->get($beerData->brewer->id);
+// Beer & Brewer Info — raw. h() at each echo below; htmlHead and Navigation
+// escape their own arguments, so the page title, the breadcrumb text and the
+// breadcrumb links all take these unescaped.
+$beerName = $beerData->name;
+$beerIDString = $beerData->id;
+$brewerName = $beerData->brewer->name;
+$brewerIDString = $beerData->brewer->id;
 
 // Process Deletion
 if(isset($_POST['submit'])){
@@ -93,12 +93,12 @@ echo $htmlHead->html;
             echo $alert->display();
         }
         ?>
-        <p class="cbf-confirm">You&#8217;re about to delete <strong><?php echo $beerName; ?></strong> by <?php echo $brewerName; ?>. This can&#8217;t be undone.</p>
+        <p class="cbf-confirm">You&#8217;re about to delete <strong><?php echo h($beerName); ?></strong> by <?php echo h($brewerName); ?>. This can&#8217;t be undone.</p>
         <form method="post">
             <?php echo csrf_field(); ?>
             <div class="cbf-actions cbf-actions--bare">
                 <button type="submit" class="cbf-btn cbf-btn--danger" name="submit">Delete Beer</button>
-                <a class="cbf-btn cbf-btn--ghost" href="/beer/<?php echo htmlspecialchars($beerIDString); ?>">Cancel</a>
+                <a class="cbf-btn cbf-btn--ghost" href="/beer/<?php echo h($beerIDString); ?>">Cancel</a>
             </div>
         </form>
     </div>

@@ -39,11 +39,10 @@ if(isset($locationData->data)){
     $locationCount = count($locationData->data);
 }
 
-// Brewer Info
-$text1 = new Text(false, true, true);
-$text2 = new Text(false, false, true);
-$brewerName = $text1->get($brewerData->brewer->name);
-$brewerIDString = $text2->get($brewerData->brewer->id);
+// Brewer Info — raw. h() at each echo below; htmlHead and Navigation escape
+// their own arguments.
+$brewerName = $brewerData->brewer->name;
+$brewerIDString = $brewerData->brewer->id;
 
 // Process Deletion
 if(isset($_POST['submit'])){
@@ -115,12 +114,12 @@ echo $htmlHead->html;
             echo $alert->display();
         }
         ?>
-        <p class="cbf-confirm">You&#8217;re about to delete <strong><?php echo $brewerName; ?></strong> from the catalog.<?php echo $cascadeSentence; ?> This can&#8217;t be undone.</p>
+        <p class="cbf-confirm">You&#8217;re about to delete <strong><?php echo h($brewerName); ?></strong> from the catalog.<?php echo $cascadeSentence; ?> This can&#8217;t be undone.</p>
         <form method="post">
             <?php echo csrf_field(); ?>
             <div class="cbf-actions cbf-actions--bare">
                 <button type="submit" class="cbf-btn cbf-btn--danger" name="submit">Delete Brewer</button>
-                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo htmlspecialchars($brewerIDString); ?>">Cancel</a>
+                <a class="cbf-btn cbf-btn--ghost" href="/brewer/<?php echo h($brewerIDString); ?>">Cancel</a>
             </div>
         </form>
     </div>

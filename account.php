@@ -129,9 +129,6 @@ if(!empty($_SESSION['account_flash'])){
     unset($_SESSION['account_flash']);
 }
 
-// Text Prep
-$text = new Text(false, true, true);
-
 // Email verification tag + API section data
 if($userInfo->email_verified){
     $emailTag = ' <span class="cb-tag ac-tag ac-tag--ok">Verified</span>';
@@ -163,7 +160,9 @@ if($userInfo->email_verified){
                 $meterClass = '';
             }
             if(isset($billingData->card->last4)){
-                $billingCard = ucfirst($billingData->card->brand) . ' &#8226;&#8226;&#8226;&#8226; ' . $billingData->card->last4;
+                // Markup by construction (the bullets are entities), so the two
+                // Stripe values are escaped as they go in and it echoes as-is.
+                $billingCard = h(ucfirst($billingData->card->brand)) . ' &#8226;&#8226;&#8226;&#8226; ' . h($billingData->card->last4);
             }
         }
     }
@@ -219,7 +218,7 @@ echo $htmlHead->html;
         <?php }else{ ?>
         <div class="ac-row">
             <span class="cbf-label ac-row__label">Name</span>
-            <span class="ac-row__value"><?php echo $text->get($userInfo->name); ?></span>
+            <span class="ac-row__value"><?php echo h($userInfo->name); ?></span>
             <a class="cb-action" href="/account?edit=name">Edit</a>
         </div>
         <?php } ?>
@@ -250,7 +249,7 @@ echo $htmlHead->html;
         <?php }else{ ?>
         <div class="ac-row">
             <span class="cbf-label ac-row__label">Email</span>
-            <span class="ac-row__value"><?php echo $text->get($userInfo->email) . $emailTag; ?></span>
+            <span class="ac-row__value"><?php echo h($userInfo->email) . $emailTag; ?></span>
             <a class="cb-action" href="/account?edit=email">Change</a>
         </div>
         <?php } ?>
@@ -307,7 +306,7 @@ echo $htmlHead->html;
         <?php }elseif(isset($apiKey)){ ?>
         <div class="ac-keybar">
             <span class="cbf-label ac-keybar__label">Secret key</span>
-            <code class="ac-key" id="acctKey" data-key="<?php echo htmlspecialchars($apiKey, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($apiKey, ENT_QUOTES, 'UTF-8'); ?></code>
+            <code class="ac-key" id="acctKey" data-key="<?php echo h($apiKey); ?>"><?php echo h($apiKey); ?></code>
             <div class="ac-keybar__btns" id="acctKeyBtns" hidden>
                 <button class="cb-btn cb-btn--ghost ac-minibtn" type="button" id="acctKeyToggle">Hide</button>
                 <button class="cb-btn cb-btn--ghost ac-minibtn" type="button" id="acctKeyCopy">Copy</button>
@@ -347,7 +346,7 @@ echo $htmlHead->html;
 
         <?php if($openPanel === 'delete'){ ?>
         <div class="ac-confirm">
-            <p class="cbf-confirm">Are you sure you want to delete the account for <strong><?php echo $text->get($userInfo->email); ?></strong>? Your API key will stop working immediately.</p>
+            <p class="cbf-confirm">Are you sure you want to delete the account for <strong><?php echo h($userInfo->email); ?></strong>? Your API key will stop working immediately.</p>
             <form method="post" class="ac-actions">
                 <?php echo csrf_field(); ?>
                 <button type="submit" class="cbf-btn cbf-btn--danger" name="submitDelete">Delete my account</button>
