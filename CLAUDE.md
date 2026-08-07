@@ -134,14 +134,33 @@ Key details:
 
 - **`API.class.php`** — REST API client using cURL. Constructor auto-fetches the user's API key if `$_SESSION['userID']` is set. Use: `$api->request('GET'|'POST'|'PUT', '/endpoint', $data)`. Check `$api->error` and `$api->httpcode` after calls.
 - **`Database.class.php`** — MySQLi wrapper using prepared statements for local DB queries (error logging, etc). Use `$db->query($sql, $params)` with `?` placeholders and a params array. Check `$db->error` / `$db->errorMsg` after calls. SELECT queries return `mysqli_result` (use `->fetch_assoc()`, `->num_rows`); INSERT/UPDATE/DELETE return `null`. Also: `$db->getInsertId()`, `$db->getNumRows($result)`, `$db->close()`. Has built-in recursion guard for error logging.
-- **`Text.class.php`** — Text processing pipeline: `new Text($markdown, $smartyPants, $htmlPurifier)`. All three params are booleans. Call `$text->get($string)` to process. HTMLPurifier always runs for XSS prevention. Common patterns:
-  - `new Text(false, true, true)` — SmartyPants quotes + purify (for display names)
-  - `new Text(true, true, false)` — Markdown + SmartyPants (for descriptions with `<p>` tags kept)
-  - `new Text(false, false, true)` — Purify only (for IDs, numbers)
-- **`Alert.class.php`** — Bootstrap alert. Set `$alert->msg` (supports Markdown), `$alert->type` (`'success'`/`'info'`/`'warning'`/`'error'`), `$alert->dismissible`. Call `$alert->display()`.
+- **`classes/helpers/html.php`** — `h($value)`, the site's single output-escaping helper. Required from `initialize.php`, so it is available everywhere. See "Output Escaping" below — that section is the rule, this is just where it lives.
+- **`Alert.class.php`** — Warm alert family (`.cbf-alert`). Set `$alert->msg` and `$alert->type` (`'success'`/`'info'`/`'warning'`/`'error'`), call `$alert->display()`. **`$msg` is developer-authored HTML and is emitted raw** — write the markup and the entities yourself (`&amp;`, not a bare `&`), and wrap any interpolated user/API value in `h()` at the interpolation point. (`$dismissible` is dead: eight callers set it, `display()` has never read it.)
 - **`LogError.class.php`** — Logs errors to the `error_log` DB table. Set `errorNumber`, `errorMsg`, `badData`, `filename`, then call `$errorLog->write()`. Has a static recursion guard to prevent infinite loops when the DB is down.
 - **`Navigation.class.php`** — Navbar, breadcrumbs (`$nav->breadcrumbText` / `$nav->breadcrumbLink` arrays), pagination.
-- **Form classes** (`InputField`, `Textarea`, `Checkbox`, `DropDown`) — Bootstrap-styled form components. Set properties then call `->display()`.
+- **Form classes** (`InputField`, `Textarea`, `Checkbox`, `DropDown`, `GuidedStyleField`) — framework-free `.cbf-*` components styled by `assets/css/catalog-forms.css` (no Bootstrap since the Jul 2026 forms redesign). Set properties then call `->display()`. They escape everything they render, with **one exception**: `Checkbox::display()`'s `$text` — the label — is developer-authored HTML on the same contract as `Alert::$msg`, because the Terms label needs a link inside it.
+
+### Output Escaping
+
+**Escaping is a function of where the value is going, not of what the value is.** The API stores raw bytes, this site escapes at the moment of output, and a value is escaped **exactly once**. Never store escaped, and never hand escaped output to something that escapes again — passing an already-escaped name into `$nav->breadcrumbText` is what used to render a literal `Bob&#8217;s Brewery` on eight pages.
+
+Pick by destination:
+
+| Destination | Use |
+|---|---|
+| element body **and** HTML attribute | `h($v)` |
+| URL path / query segment | `rawurlencode($v)`, then `h()` if it lands in an attribute |
+| inside `<script>` | `json_encode($v, JSON_HEX_TAG\|JSON_HEX_AMP\|JSON_HEX_APOS\|JSON_HEX_QUOT)` |
+| `href` | confirm the scheme is `http`/`https` first, then `h()` |
+
+`h()` is `htmlspecialchars($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')` with a `(string)` cast for nulls, and `classes/helpers/html.php` is its **only** definition. `ENT_QUOTES` is what makes one function correct in both body and attribute context; `ENT_SUBSTITUTE` is what stops malformed UTF-8 returning an empty string — a field that silently blanks itself. Don't drop either flag, and don't add a second helper.
+
+This replaced `Text.class.php` (Markdown → SmartyPants → HTML Purifier) in Aug 2026; `../Claude Ideas/text-sanitization-rewrite.md` has the reasoning and the production census behind it. What follows from it:
+
+- **User prose renders as plain text.** Newlines are preserved by `.cb-prose__text { white-space: pre-line; }` — not by `<br>`, and not by Markdown. Across 1,782 non-empty production descriptions the census found zero Markdown links and zero bullet lists, so nothing was lost. Don't reintroduce a formatting pipeline; the forms now tell authors "Plain text — line breaks are preserved."
+- **Exactly two things emit raw HTML**, both developer-authored by contract and both documented in their own docblocks: `Alert::$msg` and `Checkbox::display()`'s `$text`.
+- **Straight quotes and `--` are correct**, not a rendering bug. SmartyPants curled them, and it also created a false sense of security — its output was numeric entities, which the next stage decoded again.
+- **`tests/escaping.php`** is the offline harness (`php tests/escaping.php`, 114 assertions). It covers the shared classes only — the page files need a session and a live API, so they stay a manual staging walk. It is `deploy.sh`-excluded and must stay that way.
 
 ### URL Routing
 
