@@ -104,7 +104,7 @@ foreach(array_merge($kids, $catchAlls) as $s){
 }
 
 // One row per style: chip + name (+ SRM range), linking to the Tasting Sheet
-$styleRow = function($s, $isCatchAll) use ($text, $midSRM, $srmLabel, $familyHasSRM){
+$styleRow = function($s, $isCatchAll) use ($midSRM, $srmLabel, $familyHasSRM){
     $mid = $midSRM($s);
     $html = '<a class="fam-row" href="/style/' . rawurlencode($s['id']) . '">';
     if($familyHasSRM){

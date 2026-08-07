@@ -280,7 +280,6 @@ trap 'ssh -S "$SOCKET" -O exit "$REMOTE" 2>/dev/null' EXIT
 RSYNC_OUTPUT=$(rsync -azOi --no-perms --delete \
 	-e "ssh -S '$SOCKET'" \
 	"${EXCLUDES[@]}" \
-	--filter 'P classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/***' \
 	./ "$REMOTE:$REMOTE_PATH/" 2>&1)
 
 RSYNC_STATUS=$?

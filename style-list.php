@@ -180,7 +180,7 @@ echo $htmlHead->html;
         <?php
         // One section of the index: a grid of family color cards, or (for the
         // non-beer beverages) a plain chip list of style links
-        $renderSection = function($section) use ($byParent, $text){
+        $renderSection = function($section) use ($byParent){
             echo '<section class="ix-class">';
             if($section['cards']){
                 echo '<h2 class="ix-class-h sp-class-h">' . h($section['name']) . ' <span class="cb-count cb-count--bare">' . count($section['families']) . ' families</span></h2>';

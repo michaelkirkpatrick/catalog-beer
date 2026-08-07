@@ -38,7 +38,3 @@ scratch/*
 
 # Deploy targets (server addresses + SSH user). See deploy.conf.example.
 deploy.conf
-
-# HTMLPurifier serializer definition cache — regenerated at runtime, filename
-# is a content hash, so it churns and should never be tracked.
-classes/htmlpurifier/HTMLPurifier/DefinitionCache/Serializer/**/*.ser

@@ -23,8 +23,6 @@ spl_autoload_register(function ($class_name) {
     require_once ROOT . '/classes/' . $class_name . '.class.php';
 });
 
-require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
-
 // --- Configuration ---
 if(ENVIRONMENT === 'staging'){
     $prefix = 'https://staging.catalog.beer/';

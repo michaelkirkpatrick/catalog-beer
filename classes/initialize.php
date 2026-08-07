@@ -40,9 +40,6 @@ spl_autoload_register(function ($class_name) {
     require_once  ROOT . '/classes/' . $class_name . '.class.php';
 });
 
-// HTML Purifier
-require_once ROOT . '/classes/htmlpurifier/HTMLPurifier.auto.php';
-
 // Function helpers (not autoloaded classes, so required explicitly). Loaded here,
 // after ROOT/config and before the auth gate below, which calls serve503().
 //   html.php    — h(): escape at the point of output. Loaded first; everything
