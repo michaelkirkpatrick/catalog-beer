@@ -499,11 +499,18 @@ echo $htmlHead->html;
     <script>
     function initMap() {
         // JSON_HEX_TAG is the load-bearing flag: these carry raw location and
-        // brewer names, and inside a <script> the parser is looking for "<", not
-        // for quotes. Default json_encode escapes "/", so the classic
-        // "</script>" breakout already fails — but "<!--<script" puts the
-        // tokenizer in the script-data-double-escaped state and swallows the rest
-        // of the page. See classes/helpers/html.php.
+        // brewer names, and inside an inline script the HTML tokenizer is looking
+        // for "<", not for quotes. Default json_encode escapes "/", so a closing
+        // script tag on its own already fails to break out — but an HTML comment
+        // opener followed by an opening script tag puts the tokenizer into the
+        // script-data-double-escaped state, where the real terminator stops
+        // ending the element and the rest of the page is swallowed.
+        //
+        // Never write either sequence literally in here. The tokenizer does not
+        // know it is inside a JS comment, so a literal closing script tag ends
+        // the element, leaves initMap() unterminated, and blanks the map. This
+        // comment did exactly that on staging until 8 Aug 2026.
+        // See classes/helpers/html.php.
         var locations = <?php echo $mapLocationsJSON; ?>;
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
