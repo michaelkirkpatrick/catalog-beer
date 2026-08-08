@@ -313,7 +313,7 @@ if(!$searchDown && $nbHits === 0 && $q !== ''){
             if(!empty($mainFacetFilters)){ $fbQuery['facetFilters'] = $mainFacetFilters; }
             $fbResults = $search->multiQuery(array($fbQuery));
             if($fbResults !== null && intval($fbResults[0]['nbHits'] ?? 0) > 0){
-                $fallbackNotice = 'No matches for &ldquo;' . htmlspecialchars($q, ENT_QUOTES) . '&rdquo;. Showing results for &ldquo;' . htmlspecialchars($shortQ, ENT_QUOTES) . '&rdquo;.';
+                $fallbackNotice = 'No matches for &ldquo;' . h($q) . '&rdquo;. Showing results for &ldquo;' . h($shortQ) . '&rdquo;.';
                 $mainResult = $fbResults[0];
                 $nbHits = intval($mainResult['nbHits']);
                 $nbPages = min(intval($mainResult['nbPages'] ?? 0), $maxPages);
