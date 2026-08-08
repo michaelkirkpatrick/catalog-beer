@@ -233,7 +233,7 @@ echo $htmlHead->html;
         ?>
         <div class="cb-eyebrow" itemscope itemtype="https://schema.org/BreadcrumbList">
             <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer"><span itemprop="name">Brewers</span></a><meta itemprop="position" content="1" /></span> &nbsp;/&nbsp;
-            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer/<?php echo h($brewerIDString); ?>"><span itemprop="name"><?php echo $brewerName; ?></span></a><meta itemprop="position" content="2" /></span> &nbsp;/&nbsp;
+            <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/brewer/<?php echo h($brewerIDString); ?>"><span itemprop="name"><?php echo h($brewerName); ?></span></a><meta itemprop="position" content="2" /></span> &nbsp;/&nbsp;
             <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page"><?php echo h($locationRawShort); ?></span><meta itemprop="position" content="3" /></span>
         </div>
 
@@ -335,7 +335,7 @@ echo $htmlHead->html;
                 }
                 ?>
 
-                <div class="cb-fact"><span class="cb-fact__k">Brewer</span><span class="cb-fact__v cb-fact__v--sm"><a href="/brewer/<?php echo h($brewerIDString); ?>"><?php echo $brewerName; ?></a></span></div>
+                <div class="cb-fact"><span class="cb-fact__k">Brewer</span><span class="cb-fact__v cb-fact__v--sm"><a href="/brewer/<?php echo h($brewerIDString); ?>"><?php echo h($brewerName); ?></a></span></div>
 
                 <?php if($canEditLocation){ ?>
                 <div class="cb-rail-actions">
