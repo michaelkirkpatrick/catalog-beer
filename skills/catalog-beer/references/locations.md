@@ -119,14 +119,25 @@ write it back, or you will strip the zero and the next write will fail.
 **The whole address is standardised — `address1` included.** Every write runs
 through Google Address Validation with USPS CASS. The street stores with its
 words spelled out (`Woodinville Redmond Rd NE`, even where USPS abbreviates);
-the city stores as USPS's mailing city — an unincorporated community like
-Paoli, WI stores as its post-office city, Belleville — falling back to
-Google's locality where USPS's 13-character field truncates the name; and the
-suite/unit is re-derived from the CASS secondary line, not passed through.
-Casing is normalised with directionals and unit letters intact (`Rd NE`,
-`Ste 105B`). Send whatever form you have and treat what comes back as
-canonical — a re-submit of your original spelling will standardise the same
-way, so don't retry when the stored form differs from what you sent.
+the city stores as USPS's mailing city, falling back to Google's locality
+where USPS's 13-character field truncates the name; and the suite/unit is
+re-derived from the CASS secondary line, not passed through. Casing is
+normalised with directionals and unit letters intact (`Rd NE`, `Ste 105B`).
+Send whatever form you have and treat what comes back as canonical — a
+re-submit of your original spelling will standardise the same way, so don't
+retry when the stored form differs from what you sent.
+
+**The mailing city is frequently not the municipality the venue sits in**, and
+that is correct rather than a bug. A ZIP has one preferred city name, and it is
+often a larger neighbour: a taproom in Maplewood, MO stores as `Saint Louis`
+(the preferred name for `63143`), and most of St. Louis County, Brooklyn and
+much of LA County behave the same way. Unincorporated communities resolve to
+their post office — Paoli, WI stores as Belleville. A `PATCH` putting the
+municipality back re-derives straight to the mailing city again. To check what
+a ZIP's preferred city is, use [USPS's lookup **by ZIP
+code**](https://tools.usps.com/zip-code-lookup.htm?bycitystate), not by
+address: the by-address form echoes back whichever acceptable alias you typed,
+which makes the stored value look wrong when it isn't.
 
 ## Finding breweries near a place
 
