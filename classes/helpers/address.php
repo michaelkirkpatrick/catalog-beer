@@ -303,5 +303,5 @@ function addressAutocompleteScripts(): string {
         . '&libraries=places&loading=async&callback=cbAddressAutocompleteInit';
 
     return jsTag('/assets/js/address-autocomplete.js') . "\n"
-        . '    <script src="' . htmlspecialchars($mapsSrc, ENT_QUOTES) . '" async defer></script>';
+        . '    <script src="' . h($mapsSrc) . '" async defer></script>';
 }

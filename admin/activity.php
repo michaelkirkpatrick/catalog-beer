@@ -32,7 +32,7 @@ echo $htmlHead->html;
                 $report = json_decode($response);
 
                 if(isset($report->error) && $report->error){
-                    echo '<div class="alert alert-danger">' . htmlspecialchars($report->error_msg) . '</div>';
+                    echo '<div class="alert alert-danger">' . h($report->error_msg) . '</div>';
                 }elseif(isset($report->write_activity)){
 
                     // --- Write Activity Summary ---
@@ -49,7 +49,7 @@ echo $htmlHead->html;
                             $grandUpdated += $row->updated;
                             $grandDeleted += $row->deleted;
                             echo '<tr>';
-                            echo '<td>' . htmlspecialchars(ucfirst($row->resource)) . '</td>';
+                            echo '<td>' . h(ucfirst($row->resource)) . '</td>';
                             echo '<td>' . number_format($row->created) . '</td>';
                             echo '<td>' . number_format($row->updated) . '</td>';
                             echo '<td>' . number_format($row->deleted) . '</td>';
@@ -76,9 +76,9 @@ echo $htmlHead->html;
                         echo $table->startTable(array('Name', 'Email', 'Created', 'Updated', 'Total'));
                         foreach($report->write_activity->top_contributors as $contributor){
                             echo '<tr>';
-                            echo '<td>' . htmlspecialchars($contributor->name) . '</td>';
+                            echo '<td>' . h($contributor->name) . '</td>';
                             if(!empty($contributor->email)){
-                                echo '<td><a href="mailto:' . htmlspecialchars($contributor->email) . '">' . htmlspecialchars($contributor->email) . '</a></td>';
+                                echo '<td><a href="mailto:' . h($contributor->email) . '">' . h($contributor->email) . '</a></td>';
                             }else{
                                 echo '<td></td>';
                             }
@@ -138,20 +138,20 @@ echo $htmlHead->html;
 
                             if($resourceName && $brewerName && $brewerId && in_array($parts[0], array('location', 'address'))){
                                 // Location/Address: "Location Name, Brewer Name" (brewer linked)
-                                $whatHtml = htmlspecialchars($resourceName) . ', <a href="/brewer/' . htmlspecialchars($brewerId) . '">' . htmlspecialchars($brewerName) . '</a>';
+                                $whatHtml = h($resourceName) . ', <a href="/brewer/' . h($brewerId) . '">' . h($brewerName) . '</a>';
                             }elseif($resourceName && $resourceId && in_array($parts[0], array('beer', 'brewer'))){
                                 // Beer/Brewer: name linked to detail page
-                                $whatHtml = '<a href="/' . htmlspecialchars($parts[0]) . '/' . htmlspecialchars($resourceId) . '">' . htmlspecialchars($resourceName) . '</a>';
+                                $whatHtml = '<a href="/' . h($parts[0]) . '/' . h($resourceId) . '">' . h($resourceName) . '</a>';
                             }elseif($resourceName){
-                                $whatHtml = htmlspecialchars($resourceName);
+                                $whatHtml = h($resourceName);
                             }else{
-                                $whatHtml = '<code>' . htmlspecialchars($uriPath) . '</code>';
+                                $whatHtml = '<code>' . h($uriPath) . '</code>';
                             }
 
                             echo '<tr>';
                             echo '<td>' . date('M j, g:ia', $entry->timestamp) . '</td>';
-                            echo '<td>' . htmlspecialchars($entry->user_name) . '</td>';
-                            echo '<td>' . htmlspecialchars($actionLabel) . '</td>';
+                            echo '<td>' . h($entry->user_name) . '</td>';
+                            echo '<td>' . h($actionLabel) . '</td>';
                             echo '<td>' . $whatHtml . '</td>';
                             echo '<td>' . $badge . '</td>';
                             echo '</tr>' . "\n";
@@ -168,7 +168,7 @@ echo $htmlHead->html;
                         echo $table->startTable(array('Endpoint', 'Count'));
                         foreach($report->read_traffic->by_endpoint as $ep){
                             echo '<tr>';
-                            echo '<td><code>' . htmlspecialchars($ep->endpoint) . '</code></td>';
+                            echo '<td><code>' . h($ep->endpoint) . '</code></td>';
                             echo '<td>' . number_format($ep->count) . '</td>';
                             echo '</tr>' . "\n";
                         }

@@ -181,7 +181,7 @@ echo (strpos($htmlHead->html, '</head>') !== false)
             ?>
             <div class="cbf-actions">
                 <button type="submit" class="cbf-btn" name="submit">Save Changes</button>
-                <a class="cbf-btn cbf-btn--ghost" href="/beer/<?php echo htmlspecialchars($beerID); ?>">Cancel</a>
+                <a class="cbf-btn cbf-btn--ghost" href="/beer/<?php echo h($beerID); ?>">Cancel</a>
                 <?php
                 // "Last edited …" — recent edits read relative, older ones as a date
                 if(isset($beerData->last_modified) && is_numeric($beerData->last_modified)){

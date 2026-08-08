@@ -156,7 +156,7 @@ class Navigation {
         }else{
             $searchPlaceholder = 'Search Catalog.beer…';
         }
-        $html = str_replace('##SEARCHPLACEHOLDER##', htmlspecialchars($searchPlaceholder, ENT_QUOTES), $html);
+        $html = str_replace('##SEARCHPLACEHOLDER##', h($searchPlaceholder), $html);
 
         // Sign In / Sign Out
         if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){

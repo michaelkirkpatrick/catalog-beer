@@ -32,7 +32,7 @@ echo $htmlHead->html;
                 $usageData = json_decode($response);
 
                 if(isset($usageData->error) && $usageData->error){
-                    echo '<div class="alert alert-danger">' . htmlspecialchars($usageData->error_msg) . '</div>';
+                    echo '<div class="alert alert-danger">' . h($usageData->error_msg) . '</div>';
                 }elseif(isset($usageData->data)){
                     // Pivot data: group by api_key
                     $users = array();
@@ -96,11 +96,11 @@ echo $htmlHead->html;
                     foreach($users as $user){
                         echo '<tr>';
                         if(!empty($user['email'])){
-                            echo '<td><a href="mailto:' . htmlspecialchars($user['email']) . '">' . htmlspecialchars($user['name']) . '</a></td>';
+                            echo '<td><a href="mailto:' . h($user['email']) . '">' . h($user['name']) . '</a></td>';
                         }else{
-                            echo '<td>' . htmlspecialchars($user['name']) . '</td>';
+                            echo '<td>' . h($user['name']) . '</td>';
                         }
-                        echo '<td><code>' . htmlspecialchars($user['api_key']) . '</code></td>';
+                        echo '<td><code>' . h($user['api_key']) . '</code></td>';
                         $total = 0;
                         foreach($months as $m){
                             $key = $m['year'] . '-' . $m['month'];

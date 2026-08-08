@@ -18,15 +18,15 @@ echo $htmlHead->html;
             <tbody>
                 <tr>
                     <th>Commit</th>
-                    <td><?php echo htmlspecialchars(VERSION_COMMIT); ?></td>
+                    <td><?php echo h(VERSION_COMMIT); ?></td>
                 </tr>
                 <tr>
                     <th>Branch</th>
-                    <td><?php echo htmlspecialchars(VERSION_BRANCH); ?></td>
+                    <td><?php echo h(VERSION_BRANCH); ?></td>
                 </tr>
                 <tr>
                     <th>Deployed</th>
-                    <td><?php echo htmlspecialchars(VERSION_TIMESTAMP); ?></td>
+                    <td><?php echo h(VERSION_TIMESTAMP); ?></td>
                 </tr>
                 <?php if(VERSION_DIRTY){ ?>
                 <tr>

@@ -44,7 +44,7 @@ echo $htmlHead->html;
                     echo '<div class="alert alert-success">Resolved ' . number_format(intval($_GET['resolved'])) . ' errors.</div>';
                 }
                 if(isset($_GET['error'])){
-                    echo '<div class="alert alert-danger">' . htmlspecialchars($_GET['error']) . '</div>';
+                    echo '<div class="alert alert-danger">' . h($_GET['error']) . '</div>';
                 }
 
                 // Fetch error report data
@@ -53,7 +53,7 @@ echo $htmlHead->html;
                 $report = json_decode($response);
 
                 if(isset($report->error) && $report->error){
-                    echo '<div class="alert alert-danger">' . htmlspecialchars($report->error_msg) . '</div>';
+                    echo '<div class="alert alert-danger">' . h($report->error_msg) . '</div>';
                 }elseif(isset($report->summary)){
                     // Summary Cards
                     echo '<div class="row mb-4">';
@@ -76,8 +76,8 @@ echo $htmlHead->html;
                         echo $table->startTable(array('Error #', 'Message', 'Count'));
                         foreach($report->by_error_number as $err){
                             echo '<tr>';
-                            echo '<td>' . htmlspecialchars($err->error_number) . '</td>';
-                            echo '<td>' . htmlspecialchars($err->error_message) . '</td>';
+                            echo '<td>' . h($err->error_number) . '</td>';
+                            echo '<td>' . h($err->error_message) . '</td>';
                             echo '<td>' . number_format($err->count) . '</td>';
                             echo '</tr>' . "\n";
                         }
@@ -91,7 +91,7 @@ echo $htmlHead->html;
                         echo $table->startTable(array('Date', 'Count'));
                         foreach($report->by_day as $day){
                             echo '<tr>';
-                            echo '<td>' . htmlspecialchars($day->date) . '</td>';
+                            echo '<td>' . h($day->date) . '</td>';
                             echo '<td>' . number_format($day->count) . '</td>';
                             echo '</tr>' . "\n";
                         }
@@ -105,7 +105,7 @@ echo $htmlHead->html;
                         echo $table->startTable(array('IP Address', 'Count'));
                         foreach($report->top_ips as $ip){
                             echo '<tr>';
-                            echo '<td>' . htmlspecialchars($ip->ip_address) . '</td>';
+                            echo '<td>' . h($ip->ip_address) . '</td>';
                             echo '<td>' . number_format($ip->count) . '</td>';
                             echo '</tr>' . "\n";
                         }
@@ -120,11 +120,11 @@ echo $htmlHead->html;
                         foreach($report->recent_errors as $err){
                             echo '<tr>';
                             echo '<td>' . date('Y-m-d H:i:s', $err->timestamp) . '</td>';
-                            echo '<td>' . htmlspecialchars($err->error_number) . '</td>';
-                            echo '<td>' . htmlspecialchars($err->error_message) . '</td>';
-                            echo '<td>' . htmlspecialchars($err->uri) . '</td>';
-                            echo '<td>' . htmlspecialchars($err->ip_address) . '</td>';
-                            echo '<td>' . htmlspecialchars($err->filename) . '</td>';
+                            echo '<td>' . h($err->error_number) . '</td>';
+                            echo '<td>' . h($err->error_message) . '</td>';
+                            echo '<td>' . h($err->uri) . '</td>';
+                            echo '<td>' . h($err->ip_address) . '</td>';
+                            echo '<td>' . h($err->filename) . '</td>';
                             echo '</tr>' . "\n";
                         }
                         echo $table->closeTable();

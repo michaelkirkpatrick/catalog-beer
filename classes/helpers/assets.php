@@ -58,7 +58,7 @@ function assetUrl(string $path): string {
  * @return string       The tag, with the href escaped for HTML
  */
 function cssTag(string $path): string {
-    return '<link rel="stylesheet" href="' . htmlspecialchars(assetUrl($path)) . '">';
+    return '<link rel="stylesheet" href="' . h(assetUrl($path)) . '">';
 }
 
 /**
@@ -68,5 +68,5 @@ function cssTag(string $path): string {
  * @return string       The tag, with the src escaped for HTML
  */
 function jsTag(string $path): string {
-    return '<script src="' . htmlspecialchars(assetUrl($path)) . '"></script>';
+    return '<script src="' . h(assetUrl($path)) . '"></script>';
 }
