@@ -3818,9 +3818,11 @@ curl -X GET \
 }
 </pre>
 
-<h4>Rate Limiting</h4>
+<h4>Usage Limits</h4>
 
-<p>When your usage exceeds your <var>request_limit</var> + <var>request_buffer</var>, the API will return a <var>429 Too Many Requests</var> response for all endpoints except <code>/usage</code> and <code>/billing</code>. Your count resets on the first of each month. To keep going past the free tier, add a payment method&#8212;see <a href="#billing">Billing</a>.</p>
+<p>When your usage exceeds your <var>request_limit</var> + <var>request_buffer</var>, the API will return a <var>402 Payment Required</var> response for all endpoints except <code>/usage</code> and <code>/billing</code>. Your count resets on the first of each month. To keep going past the free tier, add a payment method&#8212;see <a href="#billing">Billing</a>.</p>
+
+<p>Note that this is a monthly allowance, not a rate limit: there is no per-second or per-minute throttle, and retrying a <var>402</var> will not clear it. Either add a payment method or wait for the monthly reset.</p>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -3834,8 +3836,8 @@ curl -X GET \
 
 <ul>
     <li><strong>Invoicing.</strong> Overage is invoiced on the first of the following month and charged automatically to your saved card. Balances under $5 roll forward to a later invoice rather than being charged immediately.</li>
-    <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month&#8217;s usage would cost more than the cap, further requests receive a <var>429</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage.</li>
-    <li><strong>Exempt endpoints.</strong> The <code>/billing</code> and <code>/usage</code> endpoints are never rate limited and don&#8217;t count toward your usage, so you can always check your status and manage billing&#8212;even when your key is over its cap.</li>
+    <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month&#8217;s usage would cost more than the cap, further requests receive a <var>402</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage.</li>
+    <li><strong>Exempt endpoints.</strong> The <code>/billing</code> and <code>/usage</code> endpoints are never blocked by the usage limit and don&#8217;t count toward your usage, so you can always check your status and manage billing&#8212;even when your key is over its cap.</li>
 </ul>
 
 <!----- BILLING: OBJECT ----->
@@ -4443,7 +4445,7 @@ curl -X DELETE \
 
 <h3 id="users-reset-password">Request Password Reset</h3>
 
-<p>To request a password reset, send a <strong>POST</strong> request to the <code>/users/{user_id}/reset-password</code> endpoint. The user&#8217;s email must be verified. A password reset email will be sent to the email address on file. This endpoint is rate limited to one request per 15 minutes. Successful requests return a <var>204 No Content</var> response.</p>
+<p>To request a password reset, send a <strong>POST</strong> request to the <code>/users/{user_id}/reset-password</code> endpoint. The user&#8217;s email must be verified. A password reset email will be sent to the email address on file. This endpoint is rate limited to one request per 15 minutes; requests made too soon return a <var>429 Too Many Requests</var> response with a <var>Retry-After</var> header giving the seconds remaining. Successful requests return a <var>204 No Content</var> response.</p>
 
 <pre class="api-code">POST https://api.catalog.beer/users/{user_id}/reset-password</pre>
 
