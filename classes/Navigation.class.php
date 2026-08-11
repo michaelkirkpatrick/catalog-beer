@@ -39,12 +39,12 @@ class Navigation {
     public $breadcrumbHTML;
     public $breadcrumbText = array();
     public $breadcrumbLink = array();
-    
+
     // Private Variables
     private $URIArray = array();
     private $topNavSection = '';
     private $countsCache = null;
-    
+
     // Startup
     function __construct(){
         $this->currentURI = $_SERVER['REQUEST_URI'];
@@ -53,12 +53,12 @@ class Navigation {
         if(isset($step1[1])){
             $append = explode('&', $step1[1]);
         }else{
-            $append = '';   
+            $append = '';
         }
         array_push($pieces, $append);
         $this->URIArray = $pieces;
     }
-    
+
     // ---------- BREADCRUMBS ----------
     public function breadcrumbs(){
         /* ---
@@ -107,11 +107,11 @@ class Navigation {
         // Return HTML
         return $html;
     }
-    
+
     // ---------- FOOTER ----------
     public function footer(){
         $html = file_get_contents(ROOT . '/classes/resources/plain-footer.html');
-        
+
         // Staging
         if(ENVIRONMENT == 'staging'){
             $staging = ' <span class="cb-footer__staging">[Staging]</span>';
@@ -126,12 +126,12 @@ class Navigation {
 
         return $html;
     }
-    
+
     // ---------- NAV BAR ----------
     public function navbar($section){
         // Get Navbar
         $html = file_get_contents(ROOT . '/classes/resources/navbar.html');
-        
+
         // Generate Links (with cached counts for Brewers + Beer). Styles carries no
         // badge — the number isn't one a reader is browsing by.
         $counts = $this->counts();
@@ -139,24 +139,9 @@ class Navigation {
         $links .= $this->activeNav($section, '/beer', 'Beer', $counts['beers']);
         $links .= $this->activeNav($section, '/style', 'Styles');
         $links .= $this->activeNav($section, '/map', 'Map');
-        
+
         // Add in Links
         $html = str_replace('##ITEMS##', $links, $html);
-
-        // Global search placeholder — reflects the section + cached counts.
-        // (The field is wired to Algolia separately; this is copy only.)
-        if($section == 'Beer'){
-            $searchPlaceholder = ($counts['beers'] !== null)
-                ? 'Search ' . number_format($counts['beers']) . ' beers…'
-                : 'Search beers…';
-        }elseif($section == 'Brewers'){
-            $searchPlaceholder = ($counts['brewers'] !== null)
-                ? 'Search ' . number_format($counts['brewers']) . ' brewers…'
-                : 'Search brewers…';
-        }else{
-            $searchPlaceholder = 'Search Catalog.beer…';
-        }
-        $html = str_replace('##SEARCHPLACEHOLDER##', h($searchPlaceholder), $html);
 
         // Sign In / Sign Out
         if(session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'])){
@@ -173,7 +158,7 @@ class Navigation {
         // Return
         return $html;
     }
-    
+
     private function activeNav($section, $url, $title, $count = null){
         // Add Active?
         $classAdd = '';
@@ -250,7 +235,7 @@ class Navigation {
 
         return $out;
     }
-    
+
     // ----- Editorial Pager (catalog A-Z index pages) -----
     // Mono chip pagination for the beer/brewer index: chevron Prev/Next, a
     // 5-wide window centered on the current page, and first/last with ellipses.
