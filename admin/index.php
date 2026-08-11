@@ -41,6 +41,15 @@ echo $htmlHead->html;
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
+                                <h5 class="card-title">Metrics</h5>
+                                <p class="card-text">Catalog health dashboard: size and growth since 2017, freshness, verification, completeness, and API demand.</p>
+                                <a href="/admin/metrics.php" class="btn btn-primary">View Metrics</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
                                 <h5 class="card-title">Error Log</h5>
                                 <p class="card-text">Unresolved errors, daily trends, top error numbers, and recent errors.</p>
                                 <a href="/admin/error-log.php" class="btn btn-primary">View Errors</a>
