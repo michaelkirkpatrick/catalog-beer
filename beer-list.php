@@ -74,13 +74,14 @@ echo $htmlHead->html;
     <?php echo $nav->navbar('Beer'); ?>
     <div class="cb-page" style="padding-bottom:2.2rem;">
         <?php
-        // Page header: title + count/page meta, and the add-a-beer action.
+        // Page header: title + count/page meta. No add action here — a beer is
+        // always created under a brewer (beer-add.php requires a brewerID), so
+        // the entry point lives on the brewer page, not on this list.
         echo '<div class="cx-head">';
         echo '<div>';
         echo '<h1 class="cb-title cx-title">Beer</h1>';
         echo '<p class="cx-meta">' . number_format($numBeers) . ' beers &middot; page ' . number_format($page) . ' of ' . number_format($totalPages) . '</p>';
         echo '</div>';
-        echo '<a class="btn btn-primary cx-add" href="/beer/add" role="button" title="Add a beer"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Add a beer</a>';
         echo '</div>';
 
         // Invalid-page notice, if any
