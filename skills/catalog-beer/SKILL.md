@@ -9,8 +9,8 @@ description: >-
   guidelines).
 license: MIT
 metadata:
-  version: "2.0.1"
-  updated: "2026-08-07"
+  version: "2.1.1"
+  updated: "2026-08-18"
 ---
 
 # Catalog.beer API
@@ -49,9 +49,9 @@ Ask the user for their key and read it from the `CATALOG_BEER_API_KEY`
 environment variable. Never hardcode or commit it. Keys include 1,000 free
 requests/month; past that, usage bills at $1 per 1,000 requests **only if
 the user has added a payment method** at https://catalog.beer/billing —
-otherwise a `429` ends the month's access. `GET /usage/my-usage` and
+otherwise a `402` ends the month's access. `GET /usage/my-usage` and
 `GET /billing` report status without counting against the limit. See
-`references/api-basics.md` → "Rate limiting & billing" — and never call the
+`references/api-basics.md` → "Usage limits & billing" — and never call the
 billing endpoints (checkout, spend cap, disable) unless the user explicitly
 asks; they spend the user's money.
 
@@ -263,7 +263,7 @@ the URL is wrong):
 | Create | `POST /brewer` · `/beer` · `/location`, then `POST /address/{location_id}` |
 | Edit | `PATCH /beer/{id}` etc. (partial) · `PUT` (full replace — clears omitted fields) |
 | Styles | `GET /style` (all, with `version`) · `/style/parent` (families) · `/style/class` |
-| My usage / billing status | `GET /usage/my-usage` · `GET /billing` (never rate limited, not counted) |
+| My usage / billing status | `GET /usage/my-usage` · `GET /billing` (never blocked by the usage limit, not counted) |
 
 All entity IDs are 36-char UUIDs; style IDs are slugs. List endpoints use
 cursor pagination: pass `next_cursor` back as `cursor`; `next_cursor` is only
@@ -327,7 +327,7 @@ present when `has_more` is true.
   the brewery's page — never supply one from your own knowledge of the city.
 - Calling billing endpoints (`POST /billing/checkout-session`,
   `PATCH /billing`, `DELETE /billing`) without the user explicitly asking.
-  They spend the user's money. On a free-tier `429`, report the options —
+  They spend the user's money. On a free-tier `402`, report the options —
   wait for the monthly reset, or add a payment method at
   https://catalog.beer/billing — and let the user decide.
 - Error responses use `error`, `error_msg`, and per-field
@@ -343,4 +343,4 @@ examples above are shape, these are the contract. Read the rest as needed:
 - [references/brewers.md](references/brewers.md) — full brewer endpoints
 - [references/locations.md](references/locations.md) — locations, addresses, nearby search
 - [references/styles.md](references/styles.md) — style taxonomy, objects, endpoints
-- [references/api-basics.md](references/api-basics.md) — auth, errors, pagination, rate limits, method semantics
+- [references/api-basics.md](references/api-basics.md) — auth, errors, pagination, usage limits, method semantics

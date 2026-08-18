@@ -59,7 +59,7 @@ Example (invalid POST /brewer):
 
 Read `valid_msg` for the failing field — it says exactly what to fix.
 
-## Rate limiting & billing
+## Usage limits & billing
 
 - Each key includes **1,000 free requests/month**, plus a small grace
   buffer. The counter resets on the 1st of each month (Pacific time).
@@ -67,13 +67,17 @@ Read `valid_msg` for the failing field — it says exactly what to fix.
   https://catalog.beer/billing), the key keeps working past the free tier at
   **$1 per 1,000 requests**, rounded up to whole blocks and invoiced monthly
   — bounded by a per-key monthly spend cap ($50 by default).
-- Without a payment method, exceeding limit + buffer → `429 Too Many
-  Requests` until the month resets. With one, a `429` appears only once the
+- Without a payment method, exceeding limit + buffer → `402 Payment
+  Required` until the month resets. With one, a `402` appears only once the
   month's usage would cost more than the spend cap. The `error_msg`
   says which case applies.
+- A `402` is a monthly allowance, not a pace limit — there is no per-second
+  or per-minute throttle. **Do not retry or back off**: the wall stands until
+  the user pays or the month resets. Stop and report.
 - `GET /usage/my-usage` (usage object: `count`, `request_limit`,
   `request_buffer`, `resets_on`) and everything under `/billing` are never
-  rate limited and don't count toward usage — always safe to check.
+  blocked by the usage limit and don't count toward usage — always safe to
+  check.
 - Pricing details: https://catalog.beer/api-pricing
 
 ### Billing endpoints
@@ -88,7 +92,7 @@ Read `valid_msg` for the failing field — it says exactly what to fix.
 
 **These endpoints spend the user's money — only call them when the user
 explicitly asks.** Never start a checkout session, raise a spend cap, or
-disable billing on your own initiative. If a key hits its free-tier `429`
+disable billing on your own initiative. If a key hits its free-tier `402`
 mid-task, stop and tell the user their options — wait for the monthly reset,
 or add a payment method at https://catalog.beer/billing — rather than
 "fixing" it yourself.

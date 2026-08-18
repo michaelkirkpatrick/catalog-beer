@@ -37,9 +37,19 @@ creates).
    `api.catalog.beer/1.0`. Any transport error, or a final status outside
    200–399, is treated as an invalid URL.
 
-On success the **post-redirect** URL is stored, upgraded to `https://` if the
-https variant also answers. The host (minus `www.`) is also recorded as the
-brewer's domain, which is what lets brewery staff claim the record.
+On success the **submitted** URL is stored, with only provable
+canonicalisation adopted from where its redirects landed: `www.` ↔ apex host
+normalisation, an `http://` → `https://` upgrade (also applied when the https
+variant answers directly), and trailing-slash normalisation. **A redirect
+that leaves the registrable domain is never followed into storage** — the
+submitted URL is stored verbatim. This is deliberate: a lapsed domain
+redirecting off-site must not be silently adopted (the check-urls cron
+reports that case as `moved`, for a human to decide), and an age gate or
+cookie wall's redirect path would bake session state into the record. If a
+brewery has genuinely moved domains, submit the destination URL yourself.
+The stored host (minus `www.`) is also recorded as the brewer's domain,
+which is what lets brewery staff claim the record — another reason it stays
+anchored to what was submitted.
 
 On failure: `400`, with `valid_state.url = "invalid"` and a generic
 `valid_msg.url` ("something seems to be wrong with your URL") that does not
