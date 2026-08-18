@@ -200,6 +200,18 @@ section > .lede { color: var(--text-secondary); font-size: 14px; margin: 0 0 18p
 .tile .delta.down { color: var(--neg); }
 .tile .spark { position: relative; height: 30px; margin-top: 10px; }
 
+/* Segmented controls. One row above the charts they scope — never inside a card. */
+.ctlrow { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 0 0 18px; }
+.ctlrow .ctllab { font-size: 12px; color: var(--text-muted); }
+.ctl { display: inline-flex; background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
+.ctl button {
+  font: inherit; font-size: 12.5px; line-height: 1; color: var(--text-secondary);
+  background: none; border: 0; border-radius: 6px; padding: 6px 11px; cursor: pointer;
+}
+.ctl button:hover { color: var(--text-primary); }
+.ctl button.is-on { background: var(--page); color: var(--text-primary); font-weight: 600; box-shadow: inset 0 0 0 1px var(--border); }
+.ctl button:focus-visible { outline: 2px solid var(--series-1); outline-offset: 1px; }
+
 details.tv { margin-top: 14px; }
 details.tv summary {
   cursor: pointer; font-size: 12.5px; color: var(--text-muted); list-style: none;
@@ -266,8 +278,15 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
 <section id="s-growth">
   <h2>Size &amp; growth</h2>
   <p class="lede">The only family with real history. One day dominates it: the 2 May 2020 bulk
-  import landed 60,307 beers and 6,154 brewers at once, so the totals are read on a log axis —
-  a linear one shows a single step and nothing else.</p>
+  import landed 60,307 beers and 6,154 brewers at once, so the whole-run view is read on a log
+  axis — a linear one shows a single step and nothing else. The range below scopes the two
+  history charts; <i>Created vs deleted</i> is live-window-only and ignores it.</p>
+  <div class="ctlrow">
+    <span class="ctllab">Range</span>
+    <div class="ctl" id="rangeCtl" role="group" aria-label="Time range"></div>
+    <span class="ctllab">Scale</span>
+    <div class="ctl" id="scaleCtl" role="group" aria-label="Scale"></div>
+  </div>
   <div class="grid"><div class="card" id="c-totals"></div></div>
   <div class="grid two" style="margin-top:18px">
     <div class="card" id="c-rate"></div>
@@ -468,11 +487,21 @@ function tile(host, o) {
 const HAS_CHART = typeof Chart !== 'undefined';
 if (!HAS_CHART) document.getElementById('offline').style.display = 'block';
 const charts = [];
+/* Cards the range control can rebuild on their own collect into their own list,
+   so a re-render destroys only what that card made — nothing else on the page. */
+const owned = {};
+let sink = charts;
 function mk(canvas, cfg) {
   if (!HAS_CHART) { canvas.parentElement.style.height = '0'; return null; }
   const c = new Chart(canvas, cfg);
-  charts.push(c);
+  sink.push(c);
   return c;
+}
+function rebuild(hostId, fn) {
+  const list = owned[hostId] || (owned[hostId] = []);
+  while (list.length) list.pop().destroy();
+  sink = list;
+  try { fn(); } finally { sink = charts; }
 }
 
 /* A vertical hairline at the hovered X — readers aim at a date, not at a 2px line. */
@@ -488,16 +517,14 @@ const crosshair = {
     ctx.restore();
   }
 };
-/* Value at the end of each line — selective direct labelling, never every point. */
+/* Value at the end of each line \u2014 selective direct labelling, never every point.
+   Converging lines would stack their labels on top of each other, so the text is
+   nudged apart vertically while the dot stays on the true last point. */
 const endLabels = {
   id: 'endLabels',
   afterDatasetsDraw(chart, args, opts) {
     if (!opts || !opts.enabled) return;
-    const ctx = chart.ctx;
-    ctx.save();
-    ctx.font = '500 11.5px ' + FONT;
-    ctx.fillStyle = tok('--text-secondary');
-    ctx.textBaseline = 'middle';
+    const ctx = chart.ctx, area = chart.chartArea, GAP = 14, marks = [];
     chart.data.datasets.forEach((ds, i) => {
       const meta = chart.getDatasetMeta(i);
       if (meta.hidden) return;
@@ -505,15 +532,34 @@ const endLabels = {
         if (ds.data[k] == null) continue;
         const p = meta.data[k];
         if (!p) break;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, 6.284);
-        ctx.fillStyle = ds.borderColor;
-        ctx.fill();
-        ctx.lineWidth = 2; ctx.strokeStyle = tok('--surface-1'); ctx.stroke();  /* surface ring */
-        ctx.fillStyle = tok('--text-secondary');
-        ctx.fillText(fmt(ds.data[k]), p.x + 9, p.y);
+        marks.push({ x: p.x, y: p.y, ty: p.y, color: ds.borderColor, text: fmt(ds.data[k]) });
         break;
       }
+    });
+    /* one downward pass to open the gaps, then shift the block back if it overruns */
+    marks.sort((a, b) => a.ty - b.ty);
+    for (let i = 1; i < marks.length; i++)
+      if (marks[i].ty - marks[i - 1].ty < GAP) marks[i].ty = marks[i - 1].ty + GAP;
+    const over = marks.length ? marks[marks.length - 1].ty - (area.bottom - 2) : 0;
+    if (over > 0) marks.forEach(m => { m.ty -= over; });
+
+    ctx.save();
+    ctx.font = '500 11.5px ' + FONT;
+    ctx.textBaseline = 'middle';
+    marks.forEach(m => {
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 4, 0, 6.284);
+      ctx.fillStyle = m.color;
+      ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = tok('--surface-1'); ctx.stroke();  /* surface ring */
+      /* a hairline leader whenever the text had to leave its dot */
+      if (Math.abs(m.ty - m.y) > 1) {
+        ctx.beginPath();
+        ctx.moveTo(m.x + 5, m.y); ctx.lineTo(m.x + 8, m.ty);
+        ctx.lineWidth = 1; ctx.strokeStyle = tok('--axis'); ctx.stroke();
+      }
+      ctx.fillStyle = tok('--text-secondary');
+      ctx.fillText(m.text, m.x + 9, m.ty);
     });
     ctx.restore();
   }
@@ -628,6 +674,24 @@ function dateTicks(dates, pick, label) {
   return v => pick(dates[v], v) ? label(dates[v]) : '';
 }
 
+/* Date ticks sized to the window: years across a decade, months across a quarter.
+   One helper so every chart the range control scopes labels its axis the same way. */
+function spanTicks(dates) {
+  const n = dates.length;
+  if (n > 1200) return dateTicks(dates, d => d.slice(5) === '01-01', d => d.slice(0, 4));
+  const step = n > 500 ? 3 : n > 200 ? 2 : 1;
+  return dateTicks(dates,
+    d => d.slice(8) === '01' && (+d.slice(5, 7) - 1) % step === 0,
+    d => MONTH[+d.slice(5, 7) - 1] + (+d.slice(5, 7) === 1 || step > 1 ? ' \u2019' + d.slice(2, 4) : ''));
+}
+
+/* Log axes label 1, 2 and 5 per decade. Powers of ten alone leave a window that
+   spans less than a decade with a single gridline label. */
+const logTick = v => {
+  const m = v / Math.pow(10, Math.floor(Math.log10(v) + 1e-9));
+  return Math.abs(m - 1) < 1e-9 || Math.abs(m - 2) < 1e-9 || Math.abs(m - 5) < 1e-9 ? axisNum(v) : '';
+};
+
 /* ============================ data accessors ============================ */
 const H = D.history, L = D.live;
 const hist = k => H.series[k];
@@ -668,118 +732,11 @@ function renderAll() {
   tile(k, { label: 'GET requests (30d)', value: fmt(now('api_get_30d')), delta: delta('api_get_30d'), spark: live('api_get_30d') });
   tile(k, { label: 'Writes (30d)', value: fmt(now('api_write_30d')), delta: delta('api_write_30d'), spark: live('api_write_30d') });
 
-  /* ---------- 1.1 totals, full history, log ---------- */
-  {
-    const c = card('c-totals', {
-      title: 'Catalog size, Nov 2017 → Aug 2026',
-      sub: 'Total records per entity. Log scale — one import day spans four orders of magnitude.',
-      note: 'Backfilled from createdAt, so records deleted since are absent from every earlier point. Locations begin at their first record in May 2020; zero is not plottable on a log axis, so each line starts at its first record.'
-    });
-    const sets = ENTC.map((e, i) =>
-      lineOf(e.label, tok('--series-' + (i + 1)), hist('total_' + e.key).map(v => v > 0 ? v : null), i));
-    const importIdx = HD.indexOf('2020-05-02');
-    /* the import rule + its caption live in a reserved band above the plot */
-    const importLine = {
-      id: 'importLine',
-      beforeDatasetsDraw(chart) {
-        const x = chart.scales.x.getPixelForValue(importIdx), a = chart.chartArea, ctx = chart.ctx;
-        ctx.save();
-        ctx.beginPath(); ctx.moveTo(x, a.top); ctx.lineTo(x, a.bottom);
-        ctx.lineWidth = 1; ctx.strokeStyle = tok('--axis'); ctx.stroke();
-        ctx.font = '11.5px ' + FONT; ctx.fillStyle = tok('--text-secondary');
-        ctx.textBaseline = 'alphabetic';
-        ctx.fillText('2 May 2020 bulk import', x + 7, a.top - 8);
-        ctx.restore();
-      }
-    };
-    mk(c.plot(320), {
-      type: 'line',
-      data: { labels: HD, datasets: sets },
-      options: {
-        animation: false, responsive: true, maintainAspectRatio: false,
-        layout: { padding: { top: 20, right: 62 } },
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: legendStyle(true),
-          tooltip: tooltipStyle({ callbacks: {
-            title: it => shortDate(HD[it[0].dataIndex]),
-            label: ct => fmt(ct.parsed.y) + '  ' + ct.dataset.label } }),
-          endLabels: { enabled: true }
-        },
-        scales: {
-          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, {
-            callback: dateTicks(HD, d => d.slice(5) === '01-01', d => d.slice(0, 4)) }) }),
-          y: gridY({ type: 'logarithmic', ticks: {
-            color: tok('--text-muted'), font: { size: 11, family: FONT }, padding: 8,
-            callback: v => Number.isInteger(Math.log10(v)) ? axisNum(v) : '' } })
-        }
-      },
-      plugins: [crosshair, endLabels, importLine]
-    });
-    const rows = [];
-    for (let y = 2017; y <= 2026; y++) {
-      let idx = -1;
-      HD.forEach((d, i) => { if (d.startsWith(String(y))) idx = i; });
-      if (idx < 0) continue;
-      rows.push([HD[idx], fmt(hist('total_beer')[idx]), fmt(hist('total_brewer')[idx]), fmt(hist('total_location')[idx])]);
-    }
-    c.done();
-    tableView(c.host, ['Year end', 'Beers', 'Brewers', 'Locations'], rows, 'Table view (year-end values)');
-  }
+  /* ---------- 1.1 totals ---------- */
+  rebuild('c-totals', renderTotals);
 
   /* ---------- 1.2 creation rate ---------- */
-  {
-    const n = 730, dates = HD.slice(-n);
-    const c = card('c-rate', {
-      title: 'Creation rate, last 24 months',
-      sub: 'Trailing-30-day new records. The window excludes the 2020 import, so the axis stays linear.',
-      note: 'August 2026 is the busiest stretch since the import: ' + fmt(now('created_beer_30d')) +
-            ' beers and ' + fmt(now('created_location_30d')) + ' locations in the last 30 days.'
-    });
-    const sets = ENTC.map((e, i) =>
-      lineOf(e.label, tok('--series-' + (i + 1)), hist('created_' + e.key + '_30d').slice(-n), i));
-    mk(c.plot(240), {
-      type: 'line',
-      data: { labels: dates, datasets: sets },
-      options: {
-        animation: false, responsive: true, maintainAspectRatio: false,
-        layout: { padding: { top: 6, right: 58 } },
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: legendStyle(true),
-          tooltip: tooltipStyle({ callbacks: {
-            title: it => shortDate(dates[it[0].dataIndex]),
-            label: ct => fmt(ct.parsed.y) + '  ' + ct.dataset.label } }),
-          endLabels: { enabled: true }
-        },
-        scales: {
-          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, {
-            callback: dateTicks(dates, d => d.slice(8) === '01' && (+d.slice(5, 7)) % 3 === 1,
-              d => MONTH[+d.slice(5, 7) - 1] + ' ’' + d.slice(2, 4)) }) }),
-          y: gridY({ beginAtZero: true })
-        }
-      },
-      plugins: [crosshair, endLabels]
-    });
-    /* The other three windows are one number each — a table, not four more lines. */
-    const ORDER = [['beer', 'Beers'], ['brewer', 'Brewers'], ['location', 'Locations']];
-    c.body.appendChild(el('p', { class: 'rowlab', style: 'margin-top:18px',
-      text: 'New records by window, as of ' + shortDate(D.asOf) }));
-    c.body.appendChild(el('div', { class: 'scroller' }, [el('table', {}, [
-      el('thead', {}, [el('tr', {}, ['Window', ...ORDER.map(o => o[1])].map(t => el('th', { text: t })))]),
-      el('tbody', {}, [1, 7, 30, 365].map(w => el('tr', {}, [
-        el('td', { text: 'last ' + w + (w === 1 ? ' day' : ' days') }),
-        ...ORDER.map(([e]) => el('td', { text: fmt(now('created_' + e + '_' + w + 'd')) }))
-      ])))
-    ])]));
-    c.done();
-    c.host.appendChild(el('p', { class: 'note',
-      text: 'The 365-day and 30-day beer figures nearly agree (' + fmt(now('created_beer_365d')) + ' vs ' +
-            fmt(now('created_beer_30d')) + '): almost everything added in the past year arrived in the past month.' }));
-    tableView(c.host, ['Date', 'Beers', 'Brewers', 'Locations'],
-      LD.map(d => [d, fmt(hAt('created_beer_30d', d)), fmt(hAt('created_brewer_30d', d)), fmt(hAt('created_location_30d', d))]),
-      'Table view (trailing 30-day series)');
-  }
+  rebuild('c-rate', renderRate);
 
   /* ---------- 1.3 created vs deleted ---------- */
   {
@@ -1351,6 +1308,183 @@ function renderAll() {
   }
 }
 
+/* ==================== size & growth: range + scale ==================== */
+/* The size family is the only one with real history, so it is the only one that
+   can be windowed. RANGE is in days; 0 means the whole run. */
+const RANGES = [{ id: '3m', label: '3M', days: 90 }, { id: '1y', label: '1Y', days: 365 },
+                { id: '5y', label: '5Y', days: 1825 }, { id: 'all', label: 'All', days: 0 }];
+const SCALES = [{ id: 'abs', label: 'Absolute' }, { id: 'idx', label: 'Indexed' }];
+/* 1Y by default: long enough to hold a season, short enough that the last month
+   of activity is not a hairline against nine years of backfill. */
+let gRange = '1y', gScale = 'abs';
+
+/* Indices of the chosen window within the history series. */
+function windowSlice() {
+  const days = (RANGES.find(r => r.id === gRange) || RANGES[3]).days;
+  return (!days || days >= HD.length) ? 0 : HD.length - days;
+}
+
+function renderTotals() {
+  const from = windowSlice(), dates = HD.slice(from), whole = from === 0;
+  const abs = ENTC.map(e => hist('total_' + e.key).slice(from).map(v => v > 0 ? v : null));
+  const idx = gScale === 'idx';
+  /* Base each line at its own first in-window value, so the lines answer
+     "how much has each grown since then", not "which one is biggest". */
+  const base = abs.map(a => a.find(v => v != null) || null);
+  const plotted = idx ? abs.map((a, i) => base[i] ? a.map(v => v == null ? null : v / base[i] * 100) : a) : abs;
+
+  const flat = plotted.flat().filter(v => v != null && v > 0);
+  const spread = flat.length ? Math.max.apply(null, flat) / Math.min.apply(null, flat) : 1;
+  /* Absolute totals always need a log axis — three entities two decades apart.
+     Indexed values usually sit in a narrow band, where linear reads the small
+     changes better; it only needs a log axis when the window spans a big multiple. */
+  const useLog = !idx || spread > 30;
+
+  const c = card('c-totals', {
+    title: 'Catalog size, ' + shortDate(dates[0]) + ' \u2192 ' + shortDate(dates[dates.length - 1]),
+    sub: idx
+      ? 'Each entity indexed to 100 at the start of the window. ' +
+        (useLog ? 'Log scale — the window spans a large multiple.' : 'Linear scale.')
+      : 'Total records per entity. Log scale — the entities sit two orders of magnitude apart.',
+    note: (idx
+      ? 'Indexed values are ratios, not counts: a line at 140 means that entity is 1.4\u00d7 its size at the start of the window. Tooltips and the table below carry the real counts. '
+      : 'Locations begin at their first record in May 2020; zero is not plottable on a log axis, so each line starts at its first record. ') +
+      'Backfilled from createdAt, so records deleted since are absent from every earlier point.'
+  });
+
+  const sets = ENTC.map((e, i) => lineOf(e.label, tok('--series-' + (i + 1)), plotted[i], i));
+
+  const importIdx = HD.indexOf('2020-05-02') - from;
+  /* the import rule + its caption live in a reserved band above the plot */
+  const importLine = {
+    id: 'importLine',
+    beforeDatasetsDraw(chart) {
+      if (importIdx < 0) return;
+      const x = chart.scales.x.getPixelForValue(importIdx), a = chart.chartArea, ctx = chart.ctx;
+      ctx.save();
+      ctx.beginPath(); ctx.moveTo(x, a.top); ctx.lineTo(x, a.bottom);
+      ctx.lineWidth = 1; ctx.strokeStyle = tok('--axis'); ctx.stroke();
+      ctx.font = '11.5px ' + FONT; ctx.fillStyle = tok('--text-secondary');
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText('2 May 2020 bulk import', x + 7, a.top - 8);
+      ctx.restore();
+    }
+  };
+
+  mk(c.plot(320), {
+    type: 'line',
+    data: { labels: dates, datasets: sets },
+    options: {
+      animation: false, responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: importIdx >= 0 ? 20 : 6, right: 62 } },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: legendStyle(true),
+        tooltip: tooltipStyle({ callbacks: {
+          title: it => shortDate(dates[it[0].dataIndex]),
+          label: ct => idx
+            ? fmt(ct.parsed.y) + '  ' + ct.dataset.label + ' (' + fmt(abs[ct.datasetIndex][ct.dataIndex]) + ')'
+            : fmt(ct.parsed.y) + '  ' + ct.dataset.label } }),
+        endLabels: { enabled: true }
+      },
+      scales: {
+        x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, { callback: spanTicks(dates) }) }),
+        y: useLog
+          ? gridY({ type: 'logarithmic', ticks: {
+              color: tok('--text-muted'), font: { size: 11, family: FONT }, padding: 8, callback: logTick } })
+          : gridY({})
+      }
+    },
+    plugins: [crosshair, endLabels, importLine]
+  });
+
+  /* One row per period end \u2014 years over the whole run, months inside a window.
+     Keeping the LAST index of each period means the table ends where the chart does. */
+  const last = new Map();
+  dates.forEach((d, i) => last.set(whole ? d.slice(0, 4) : d.slice(0, 7), i));
+  c.done();
+  tableView(c.host, ['Date', 'Beers', 'Brewers', 'Locations'],
+    [...last.values()].map(i => [dates[i], fmt(abs[0][i]), fmt(abs[1][i]), fmt(abs[2][i])]),
+    whole ? 'Table view (year-end counts)' : 'Table view (month-end counts)');
+}
+
+function renderRate() {
+  const from = windowSlice(), dates = HD.slice(from);
+  const label = (RANGES.find(r => r.id === gRange) || RANGES[3]).label;
+  const c = card('c-rate', {
+    title: 'Creation rate, ' + (gRange === 'all' ? 'whole run' : 'last ' + label),
+    sub: 'Trailing-30-day new records, on a linear axis.' +
+      (gRange === 'all' ? ' The 2020 import dwarfs everything else at this range.' : ''),
+    note: 'August 2026 is the busiest stretch since the import: ' + fmt(now('created_beer_30d')) +
+          ' beers and ' + fmt(now('created_location_30d')) + ' locations in the last 30 days.'
+  });
+  const sets = ENTC.map((e, i) =>
+    lineOf(e.label, tok('--series-' + (i + 1)), hist('created_' + e.key + '_30d').slice(from), i));
+  mk(c.plot(240), {
+    type: 'line',
+    data: { labels: dates, datasets: sets },
+    options: {
+      animation: false, responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 6, right: 58 } },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: legendStyle(true),
+        tooltip: tooltipStyle({ callbacks: {
+          title: it => shortDate(dates[it[0].dataIndex]),
+          label: ct => fmt(ct.parsed.y) + '  ' + ct.dataset.label } }),
+        endLabels: { enabled: true }
+      },
+      scales: {
+        x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, { callback: spanTicks(dates) }) }),
+        y: gridY({ beginAtZero: true })
+      }
+    },
+    plugins: [crosshair, endLabels]
+  });
+  /* The other three windows are one number each — a table, not four more lines. */
+  const ORDER = [['beer', 'Beers'], ['brewer', 'Brewers'], ['location', 'Locations']];
+  c.body.appendChild(el('p', { class: 'rowlab', style: 'margin-top:18px',
+    text: 'New records by window, as of ' + shortDate(D.asOf) }));
+  c.body.appendChild(el('div', { class: 'scroller' }, [el('table', {}, [
+    el('thead', {}, [el('tr', {}, ['Window', ...ORDER.map(o => o[1])].map(t => el('th', { text: t })))]),
+    el('tbody', {}, [1, 7, 30, 365].map(w => el('tr', {}, [
+      el('td', { text: 'last ' + w + (w === 1 ? ' day' : ' days') }),
+      ...ORDER.map(([e]) => el('td', { text: fmt(now('created_' + e + '_' + w + 'd')) }))
+    ])))
+  ])]));
+  c.done();
+  c.host.appendChild(el('p', { class: 'note',
+    text: 'The 365-day and 30-day beer figures nearly agree (' + fmt(now('created_beer_365d')) + ' vs ' +
+          fmt(now('created_beer_30d')) + '): almost everything added in the past year arrived in the past month.' }));
+  tableView(c.host, ['Date', 'Beers', 'Brewers', 'Locations'],
+    LD.map(d => [d, fmt(hAt('created_beer_30d', d)), fmt(hAt('created_brewer_30d', d)), fmt(hAt('created_location_30d', d))]),
+    'Table view (trailing 30-day series, live window)');
+}
+
+/* One row of buttons per control; the pressed one is the current state. */
+function segmented(hostId, items, get, set) {
+  const host = document.getElementById(hostId);
+  host.textContent = '';
+  items.forEach(it => {
+    const b = el('button', { type: 'button', text: it.label });
+    const paint = () => {
+      const on = get() === it.id;
+      b.className = on ? 'is-on' : '';
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    };
+    b.addEventListener('click', () => {
+      if (get() === it.id) return;
+      set(it.id);
+      host.parentElement.querySelectorAll('.ctl button').forEach(x => x.dispatchEvent(new Event('repaint')));
+      rebuild('c-totals', renderTotals);
+      rebuild('c-rate', renderRate);
+    });
+    b.addEventListener('repaint', paint);
+    paint();
+    host.appendChild(b);
+  });
+}
+
 /* ============================ theme ============================ */
 const btn = document.getElementById('themeBtn');
 const currentDark = () => {
@@ -1372,6 +1506,8 @@ if (HAS_CHART) {
   Chart.defaults.animation = false;
 }
 syncBtn();
+segmented('rangeCtl', RANGES, () => gRange, v => { gRange = v; });
+segmented('scaleCtl', SCALES, () => gScale, v => { gScale = v; });
 renderAll();
 </script>
 </body>
