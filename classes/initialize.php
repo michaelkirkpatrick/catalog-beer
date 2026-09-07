@@ -52,12 +52,14 @@ spl_autoload_register(function ($class_name) {
 //                 that emits HTML depends on it
 //   assets.php  — assetUrl/cssTag/jsTag: versioned, cache-busted local asset URLs
 //   session.php — ensureSession + csrf_field/csrf_verify
+//   meta.php    — beerMetaDescription, indefiniteArticle (raw text for htmlHead)
 //   http.php    — serve503, serve404
 //   location.php— labels for an unnamed location, plus the address / maps-link
 //                 formatting shared by the location and brewer facts rails
 //   forms.php   — suppressAutofill: no-fill attributes for catalog fields
 //   address.php — the address fieldset shared by location-add and location-edit
 require_once ROOT . '/classes/helpers/html.php';
+require_once ROOT . '/classes/helpers/meta.php';
 require_once ROOT . '/classes/helpers/assets.php';
 require_once ROOT . '/classes/helpers/session.php';
 require_once ROOT . '/classes/helpers/http.php';

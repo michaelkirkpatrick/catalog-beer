@@ -189,14 +189,22 @@ if($styleURL !== ''){
     $styleLine = '<span class="be-lede be-lede--static">' . h($beerStyle) . '</span>';
 }
 
-// HTML Head
-$htmlHead = new htmlHead($beerData->name);
+// HTML Head. Title carries the brewer and the description is never empty:
+// Search Console clustered same-named beers from different breweries as
+// duplicates when the <title> was the bare name and 97% of beers had no
+// description (Sep 2026; ../Claude Ideas/beer-page-metadata.md). Raw values
+// in — htmlHead and addDescription() escape for themselves.
+$htmlHead = new htmlHead($beerName . ' by ' . $brewerName);
 if($hasProse){
     // No strip_tags: descriptions are plain text now, and strip_tags eats
     // everything from the first `<` onward. Verified against the real corpus --
     // "(<0.5% ABV)" truncates to "(" -- which is the non-alcoholic ABV notation
-    // two breweries actually use. addDescription() escapes for itself.
+    // two breweries actually use.
     $htmlHead->addDescription(mb_substr($beerData->description, 0, 160));
+}else{
+    // Canonical style name when the beer resolved to one, else the brewer's label
+    $styleName = isset($styleData->name) ? $styleData->name : $beerStyle;
+    $htmlHead->addDescription(beerMetaDescription($beerName, $styleName, $abv, $ibu, $brewerName));
 }
 $htmlHead->addStylesheet('/assets/css/styles-pages.css');
 echo $htmlHead->html;

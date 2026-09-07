@@ -160,7 +160,13 @@ This replaced `Text.class.php` (Markdown → SmartyPants → HTML Purifier) in A
 - **User prose renders as plain text.** Newlines are preserved by `.cb-prose__text { white-space: pre-line; }` — not by `<br>`, and not by Markdown. Across 1,782 non-empty production descriptions the census found zero Markdown links and zero bullet lists, so nothing was lost. Don't reintroduce a formatting pipeline; the forms now tell authors "Plain text — line breaks are preserved."
 - **Exactly two things emit raw HTML**, both developer-authored by contract and both documented in their own docblocks: `Alert::$msg` and `Checkbox::display()`'s `$text`.
 - **Straight quotes and `--` are correct**, not a rendering bug. SmartyPants curled them, and it also created a false sense of security — its output was numeric entities, which the next stage decoded again.
-- **`tests/escaping.php`** is the offline harness (`php tests/escaping.php`, 114 assertions). It covers the shared classes only — the page files need a session and a live API, so they stay a manual staging walk. It is `deploy.sh`-excluded and must stay that way.
+- **`tests/escaping.php`** is the offline harness (`php tests/escaping.php`, 114 assertions). It covers the shared classes only — the page files need a session and a live API, so they stay a manual staging walk. `tests/meta.php` does the same for `classes/helpers/meta.php` (the generated beer `<title>`/description, see below). Both are `deploy.sh`-excluded and must stay that way.
+
+### Page Metadata & Indexing
+
+Every page gets a self-referencing `<link rel="canonical">` from `htmlHead` (request path on `https://catalog.beer`, every query parameter dropped except the list pages' `page=N`); `htmlHead->noindex()` strips it, because noindex plus canonical is a mixed signal. Missing records go through `serve404()` (`classes/helpers/http.php`), which includes the 404 page in place — never `header('Location: /error_page/404.php')`, PHP turns that into a 302 and Search Console filed hundreds of deleted beers as duplicates of the 404 page. Staging sends `X-Robots-Tag: noindex, nofollow` from `initialize.php`. Links to login-gated actions (add beer, add location) are only rendered when logged in, so Googlebot never walks into `/login?request=…`.
+
+Beer pages title as `{Beer} by {Brewer}` and, when the beer has no prose, get a generated description from `beerMetaDescription()` in `classes/helpers/meta.php` ("Sculpin is an American-Style India Pale Ale (7% ABV, 70 IBU) brewed by …"). Two "Extra Pale Ale" pages from different breweries were indistinguishable to Google without it. Reasoning and the measurement plan: `../Claude Ideas/beer-page-metadata.md`.
 
 ### URL Routing
 
