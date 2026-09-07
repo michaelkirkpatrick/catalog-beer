@@ -27,9 +27,7 @@ if($api->unavailable()){
 }
 if(!isset($brewerData->brewer) || isset($brewerData->error)){
     // Invalid Brewer ID or bad API response
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID']));
@@ -249,7 +247,7 @@ echo $htmlHead->html;
                 ?>
                 <h2 class="cb-label cb-label--rule bp-sec" id="locations">
                     <span><?php echo $taproomsLabel; if($locationCount > 0){ echo ' &middot; ' . $locationCount; } ?></span>
-                    <a href="/brewer/<?php echo h($brewerIDString); ?>/add-location" class="cb-action"><strong>+</strong> Add location</a>
+                    <?php if($loggedIn){ ?><a href="/brewer/<?php echo h($brewerIDString); ?>/add-location" class="cb-action"><strong>+</strong> Add location</a><?php } ?>
                 </h2>
                 <?php if($locationCount > 0){ ?>
                 <?php if($showMap){ echo '<div id="map" class="bp-map"></div>' . "\n"; } ?>
@@ -297,13 +295,13 @@ echo $htmlHead->html;
                     <?php } ?>
                 </div>
                 <?php }else{ ?>
-                <p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <a href="/brewer/<?php echo h($brewerIDString); ?>/add-location">add it</a>.</p>
+                <p class="lead">We don&#8217;t have any locations on file yet for this brewery. Do you know where they have a tasting room? If you do, it&#8217;d be a big help if you could <?php if($loggedIn){ ?><a href="/brewer/<?php echo h($brewerIDString); ?>/add-location">add it</a><?php }else{ ?><a href="/login">sign in</a> and add it<?php } ?>.</p>
                 <?php } ?>
                 <?php } /* end multi-taproom section */ ?>
 
                 <h2 class="cb-label cb-label--rule bp-sec" id="beer">
                     <span>Beers<?php if($beerCount > 0){ echo ' &middot; ' . $beerCount; } ?></span>
-                    <a href="/beer/add/<?php echo h($brewerIDString); ?>" class="cb-action"><strong>+</strong> Add beer</a>
+                    <?php if($loggedIn){ ?><a href="/beer/add/<?php echo h($brewerIDString); ?>" class="cb-action"><strong>+</strong> Add beer</a><?php } ?>
                 </h2>
                 <?php if($beerCount > 0){ ?>
                 <?php if($showToolbar){ ?>
@@ -365,7 +363,7 @@ echo $htmlHead->html;
                 <div class="cb-legend"><span><span class="cb-vdot cb-vdot--first"></span>Brewer-provided</span><span><span class="cb-vdot cb-vdot--cbv"></span>Catalog.beer verified</span><span class="cb-legend__none">no mark &#8212; unverified</span></div>
                 <?php } ?>
                 <?php }else{ ?>
-                <p class="lead">Well shucks, we have information about the brewer but nothing about what they brew. Can you help? <a href="/beer/add/<?php echo h($brewerIDString); ?>">Add a beer</a></p>
+                <p class="lead">Well shucks, we have information about the brewer but nothing about what they brew. Can you help? <?php if($loggedIn){ ?><a href="/beer/add/<?php echo h($brewerIDString); ?>">Add a beer</a><?php }else{ ?><a href="/login">Sign in</a> to add a beer.<?php } ?></p>
                 <?php } ?>
             </div>
 

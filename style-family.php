@@ -28,9 +28,7 @@ foreach($parents as $p){
     }
 }
 if($family === null){
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 // Its styles, A→Z, regular styles first, catch-alls last

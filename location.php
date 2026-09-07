@@ -28,9 +28,7 @@ if($api->unavailable()){
 }
 if(!isset($locationData->id) || isset($locationData->error) || !isset($locationData->brewer->id)){
     // Invalid Location ID or bad API response
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID']));

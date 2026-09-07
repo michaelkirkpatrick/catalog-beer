@@ -8,6 +8,7 @@ include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
 // HTML Head
 $htmlHead = new htmlHead('Page Not Found on Catalog.beer');
+$htmlHead->noindex();
 echo $htmlHead->html;
 ?>
 <body>

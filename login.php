@@ -97,6 +97,9 @@ if(isset($_POST['submit'])){
 
 // HTML Head
 $htmlHead = new htmlHead('Sign In');
+// robots.txt already disallows /login; this is the belt to that suspender, and
+// it means the ?request= variants never carry a canonical of their own.
+$htmlHead->noindex();
 echo $htmlHead->html;
 ?>
 <body>

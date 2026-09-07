@@ -23,9 +23,7 @@ if($api->unavailable()){
 }
 if(!isset($styleData->name) || isset($styleData->error)){
     // Invalid styleID or bad API response
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 // Raw values; h() goes at each output. $styleName alone feeds the eyebrow

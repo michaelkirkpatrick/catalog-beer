@@ -32,9 +32,7 @@ if($api->unavailable()){
 }
 if(!isset($beerData->name) || isset($beerData->error)){
     // Invalid beerID or bad API response
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID']));

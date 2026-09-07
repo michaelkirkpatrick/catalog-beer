@@ -39,7 +39,29 @@ class htmlHead {
         if(defined('ENVIRONMENT') && ENVIRONMENT === 'production'){
             $fathom = "<!-- Fathom Analytics -->\n\t" . '<script src="https://cdn.usefathom.com/script.js" data-site="YRZMNYXM" defer></script>';
         }
-        $this->html = str_replace('##FATHOM##', $fathom, $html);
+        $html = str_replace('##FATHOM##', $fathom, $html);
+
+        // Self-referencing canonical. Search Console filed 3,000+ URLs as
+        // "Duplicate without user-selected canonical" (Sep 2026): www, http,
+        // trailing-slash (/api-docs/ vs /api-docs), and stray query-string
+        // variants all serve the same page with nothing declaring which is
+        // real. The canonical is rebuilt from the request path, so www and the
+        // trailing slash collapse; every query parameter is dropped except the
+        // list pages' ?page=N, which is the only one that selects distinct
+        // content. Staging gets its own host so a noindex page never canonicals
+        // to a production URL (Google treats that as mixed signals).
+        $this->html = str_replace('</head>', "\t" . '<link rel="canonical" href="' . h(self::canonicalURL()) . '">' . "\n" . '</head>', $html);
+    }
+
+    static function canonicalURL(){
+        $host = (defined('ENVIRONMENT') && ENVIRONMENT === 'staging') ? 'https://staging.catalog.beer' : 'https://catalog.beer';
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $path = '/' . trim((string)$path, '/');
+        $query = '';
+        if(isset($_GET['page']) && ctype_digit((string)$_GET['page']) && (int)$_GET['page'] > 1){
+            $query = '?page=' . (int)$_GET['page'];
+        }
+        return $host . $path . $query;
     }
     
     // Append a page-specific stylesheet (loads after catalog.css). Versioned via
@@ -50,9 +72,11 @@ class htmlHead {
         $this->html = str_replace('</head>', $link . '</head>', $this->html);
     }
 
-    // Mark the page noindex,follow — for thin/derived pages (search results)
-    // that shouldn't compete with the real pages in search engines.
+    // Mark the page noindex,follow — for thin/derived pages (search results,
+    // login, 404) that shouldn't compete with the real pages in search engines.
+    // Also drops the canonical: noindex plus a canonical is a mixed signal.
     function noindex(){
+        $this->html = preg_replace('/\t<link rel="canonical" href="[^"]*">\n/', '', $this->html, 1);
         $meta = "\t" . '<meta name="robots" content="noindex,follow">' . "\n";
         $this->html = str_replace('</head>', $meta . '</head>', $this->html);
     }

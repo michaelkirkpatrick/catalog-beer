@@ -28,6 +28,12 @@ require_once ROOT . '/config/config.php';
 $serverName = explode('.', $_SERVER['SERVER_NAME']);
 if($serverName[0] === 'staging'){
     define('ENVIRONMENT', 'staging');
+    // Staging is a public host with production's robots.txt, and Search Console
+    // was indexing it as duplicate content (Sep 2026). A response header covers
+    // every response — pages, sitemaps, assets — and unlike a robots.txt
+    // Disallow it lets Google keep crawling, which is how the already-indexed
+    // staging URLs get seen as noindex and drop out.
+    header('X-Robots-Tag: noindex, nofollow');
 }else{
     define('ENVIRONMENT', 'production');
 }
@@ -46,7 +52,7 @@ spl_autoload_register(function ($class_name) {
 //                 that emits HTML depends on it
 //   assets.php  — assetUrl/cssTag/jsTag: versioned, cache-busted local asset URLs
 //   session.php — ensureSession + csrf_field/csrf_verify
-//   http.php    — serve503
+//   http.php    — serve503, serve404
 //   location.php— labels for an unnamed location, plus the address / maps-link
 //                 formatting shared by the location and brewer facts rails
 //   forms.php   — suppressAutofill: no-fill attributes for catalog fields
