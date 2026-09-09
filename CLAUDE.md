@@ -201,6 +201,8 @@ Admin landing page at `/admin/` with cards linking to sub-pages. All require `$g
 - **`admin/activity.php`** — Activity dashboard: write summary by resource, top contributors, recent activity feed (with resource names and clickable links), GET traffic by endpoint. Consumes `GET /activity` from the API.
 - **`admin/usage.php`** — Monthly API call counts per user (last 13 months). Consumes `GET /usage`.
 - **`admin/error-log.php`** — Error summary, trends, recent errors, resolve-all. Consumes `GET /error-log`.
+- **`admin/reviews.php`** (`/admin/reviews`, `/admin/reviews/{id}` via mod_rewrite) — The brewer review loop's check-in. "Waiting on you" merges review questions (`GET /review?needs_decision=1`) and lead questions (`GET /brewer-lead?needs_decision=1`) oldest first, one at a time; answering PATCHes `decision` to whichever API route asked. Review history below.
+- **`admin/leads.php`** (`/admin/leads`, `/admin/leads/{id}`) — The lead queue (`GET /brewer-lead`, filtered by `status` or `needs_decision`) and one lead in full with its answer form. Rendering shared with the reviews page lives in `classes/helpers/review-ui.php` (required explicitly by the two pages, not from `initialize.php`).
 
 ### Structured Data (schema.org)
 

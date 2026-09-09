@@ -59,6 +59,15 @@ echo $htmlHead->html;
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
+                                <h5 class="card-title">Leads</h5>
+                                <p class="card-text">Breweries the review loop met that the catalog does not hold, queued to be researched before anything is created.</p>
+                                <a href="/admin/leads" class="btn btn-primary">View Leads</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
                                 <h5 class="card-title">Error Log</h5>
                                 <p class="card-text">Unresolved errors, daily trends, top error numbers, and recent errors.</p>
                                 <a href="/admin/error-log.php" class="btn btn-primary">View Errors</a>

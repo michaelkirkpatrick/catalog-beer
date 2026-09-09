@@ -545,6 +545,8 @@ a.be-lede:hover { text-decoration: underline; }
 .rv-review { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: var(--cb-space-8); align-items: start; }
 @media (max-width: 820px) { .rv-review { grid-template-columns: minmax(0, 1fr); } .rv-review .cb-rail { order: -1; } }
 .rv-brewer { display: flex; align-items: baseline; gap: var(--cb-space-3); flex-wrap: wrap; margin: 0 0 var(--cb-space-3); }
+/* A lead in the merged queue announces itself: it is not a brewer yet. */
+.rv-kind { display: flex; align-items: baseline; gap: var(--cb-space-2); margin: 0 0 var(--cb-space-2); }
 .rv-brewer__name { font-family: var(--cb-serif); font-size: var(--cb-fs-h2); letter-spacing: var(--cb-track-tight); line-height: var(--cb-lh-tight); color: var(--cb-ink); text-decoration: none; }
 .rv-brewer__name:hover { color: var(--cb-link); }
 .rv-brewer__meta { font-family: var(--cb-mono); font-size: var(--cb-fs-label); letter-spacing: var(--cb-track-tag); color: var(--cb-muted); }

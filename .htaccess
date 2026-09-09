@@ -68,6 +68,8 @@ RewriteRule ^build-info/?$	build-info.php	[L]
 RewriteRule ^admin/error-log/?$	admin/error-log.php	[L]
 RewriteRule ^admin/reviews/([-0-9a-f]{36})/?$	admin/reviews.php?reviewID=$1	[QSA,L]
 RewriteRule ^admin/reviews/?$	admin/reviews.php	[L]
+RewriteRule ^admin/leads/([-0-9a-f]{36})/?$	admin/leads.php?leadID=$1	[QSA,L]
+RewriteRule ^admin/leads/?$	admin/leads.php	[QSA,L]
 
 
 # Redirect Pages

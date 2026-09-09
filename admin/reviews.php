@@ -16,10 +16,14 @@ decision names a real account).
 
 Two things on one page, plus one route:
 
-  - Waiting on you: the reviews with needs_decision, oldest first, stepped
-    ONE at a time (?q=N) rather than stacked. A question is a piece of work,
-    and the queue reads as a queue. Answering PATCHes /review/{id} and the
-    next claim of that brewer acts on it.
+  - Waiting on you: the reviews with needs_decision and the leads with
+    needs_decision (/brewer-lead, the review loop's queue of uncatalogued
+    breweries), merged oldest first and stepped ONE at a time (?q=N) rather
+    than stacked. A question is a piece of work, and the queue reads as a
+    queue. Answering PATCHes /review/{id} or /brewer-lead/{id}; the next
+    claim of that brewer or lead acts on it. A lead's own screen is
+    /admin/leads/<id>; the rendering it shares with that page lives in
+    classes/helpers/review-ui.php.
   - Review history: the most recent reviews, one row each. A row leads to
     /admin/reviews/<id>, which is also the link an agent or a log line hands
     you — one destination, not two ways of reading the same review.
@@ -41,6 +45,18 @@ shared .cb- and .cbf- primitives.
 // it does not bring the banner back, and the queue re-reads from the top with
 // the answered question gone. $flash['msg'] is plain text -- it is escaped at
 // output, never on the way in.
+require_once ROOT . '/classes/helpers/review-ui.php';
+
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['decision'], $_POST['lead_id'])){
+    if(!csrf_verify()){
+        $_SESSION['reviews_flash'] = array('type' => 'error', 'msg' => 'Your session expired before the answer was sent. Please try again.');
+    }else{
+        $_SESSION['reviews_flash'] = recordLeadDecision(new API(), trim($_POST['lead_id']), trim($_POST['decision']));
+    }
+    header('location: /admin/reviews');
+    exit;
+}
+
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['decision'], $_POST['review_id'])){
     $reviewID = trim($_POST['review_id']);
     $decision = trim($_POST['decision']);
@@ -71,10 +87,6 @@ const RV_CHANGES_INLINE = 6;
 const RV_HISTORY_PER_PAGE = 15;
 
 // ----- Helpers, local to this page -----
-
-function reviewDate($ts){
-    return $ts ? date('M j, Y', intval($ts)) : '&#8212;';
-}
 
 // Outcomes are flat except 'deferred', which is the one that wants reading.
 function outcomeTag($outcome){
@@ -188,32 +200,6 @@ function changesTable($changes, $limit = 0){
     return $html;
 }
 
-function sourcesHtml($sources){
-    $html = '<ul class="rv-sources">';
-    foreach($sources as $source){
-        $source = (string)$source;
-        $url = strtok($source, ' ');
-        $note = substr($source, strlen($url));
-        if(preg_match('#^https?://#i', $url)){
-            $html .= '<li><a href="' . h($url) . '" target="_blank" rel="noopener noreferrer">' . h($url) . '</a><span class="rv-sources__note">' . h($note) . '</span></li>';
-        }else{
-            $html .= '<li><span class="rv-sources__note">' . h($source) . '</span></li>';
-        }
-    }
-    $html .= '</ul>';
-    return $html;
-}
-
-function subhead($label, $count = null, $stacked = false, $accent = false){
-    $html = '<div class="rv-sup__h' . ($stacked ? ' rv-sup__h--stacked' : '') . '">';
-    $html .= '<span class="cb-label' . ($accent ? ' cb-label--accent' : '') . '">' . h($label) . '</span>';
-    if(!is_null($count)){
-        $html .= '<span class="cb-count">' . number_format($count) . '</span>';
-    }
-    $html .= '</div>';
-    return $html;
-}
-
 // Notes, sources and changes — the part of a review a human actually reads.
 // $options: 'question' prepends the question and its decision, 'limit' caps the
 // changes table, 'moreURL'/'moreLabel' render the link that lifts that cap.
@@ -315,15 +301,6 @@ function reviewHref($review){
     return '/admin/reviews/' . rawurlencode($review->id);
 }
 
-// A chip that is a link when there is somewhere to go and an inert button when
-// there is not — an <a> has no disabled state, and a dead href is worse.
-function stepChip($label, $href){
-    if($href === ''){
-        return '<button type="button" class="cb-chip" disabled>' . $label . '</button>';
-    }
-    return '<a class="cb-chip" href="' . h($href) . '">' . $label . '</a>';
-}
-
 // ----- Data -----
 
 $single = null;
@@ -351,6 +328,30 @@ if($singleID !== ''){
         $openError = $result->error_msg;
     }else{
         $open = is_array($result->data ?? null) ? $result->data : array();
+        foreach($open as $item){
+            $item->kind = 'review';
+            $item->askedAt = intval($item->reviewed_at);
+        }
+    }
+
+    // Lead questions join the same queue. A lead's question is asked before
+    // any brewer exists, so it has no review row to ride on; here it is one
+    // more piece of work waiting on a human, ordered by when it was asked
+    // among the rest.
+    if($openError === ''){
+        $response = $api->request('GET', '/brewer-lead?needs_decision=1&count=100', '');
+        $result = json_decode($response);
+        if(isset($result->error) && $result->error){
+            $openError = $result->error_msg;
+        }else{
+            $leads = is_array($result->data ?? null) ? $result->data : array();
+            foreach($leads as $lead){
+                $lead->kind = 'lead';
+                $lead->askedAt = intval($lead->created_at);
+                $open[] = $lead;
+            }
+            usort($open, function($a, $b){ return $a->askedAt <=> $b->askedAt; });
+        }
     }
 
     // History. The API's cursor is base64 of a row offset (Review.class.php,
@@ -391,6 +392,7 @@ echo $htmlHead->html;
                 <h1 class="cbf-h1">Reviews</h1>
                 <p class="cbf-lede">Claude reviews brewers; anything that needs a human decision waits here. Your answer is read on the next pass of that brewer.</p>
             </div>
+            <a class="cb-chip" href="/admin/leads">Lead queue &#8594;</a>
         </div>
 
         <?php
@@ -398,10 +400,7 @@ echo $htmlHead->html;
         if(!empty($_SESSION['reviews_flash'])){
             $flash = $_SESSION['reviews_flash'];
             unset($_SESSION['reviews_flash']);
-            $isSuccess = (isset($flash['type']) && $flash['type'] === 'success');
-            echo '<div class="cbf-alert' . ($isSuccess ? ' cbf-alert--ok" role="status"' : '" role="alert"') . '>';
-            echo '<span class="cbf-alert__i" aria-hidden="true">' . ($isSuccess ? '&#10003;' : '!') . '</span>';
-            echo '<div>' . h($flash['msg'] ?? '') . '</div></div>';
+            echo alertHtml($flash['msg'] ?? '', isset($flash['type']) && $flash['type'] === 'success');
         }
 
         // ================= One review on its own screen (/admin/reviews/<id>) =================
@@ -447,6 +446,19 @@ echo $htmlHead->html;
             echo '<div class="cbf-alert" role="alert"><span class="cbf-alert__i" aria-hidden="true">!</span><div>' . h($openError) . '</div></div>';
         }elseif(!$current){
             echo '<div class="rv-empty"><p>Nothing is waiting on a decision.</p></div>';
+        }elseif($current->kind === 'lead'){
+            // A lead's question: what the source said, and the page it was
+            // read on. No changes table, since a lead writes nothing.
+            echo '<section class="rv-review">';
+            echo '<div>';
+            echo '<div class="rv-kind"><span class="cb-tag cb-tag--accent">lead</span><span class="rv-brewer__meta">not yet in the catalog</span></div>';
+            echo leadHeader($current);
+            echo '<p class="rv-question">' . h($current->question) . '</p>';
+            echo leadAnswerForm($current, '/admin/reviews');
+            echo leadSupplement($current, false);
+            echo '</div>';
+            echo leadRail($current);
+            echo '</section>';
         }else{
             $changes = reviewChanges($current);
             echo '<section class="rv-review">';
