@@ -66,6 +66,7 @@ RewriteRule ^build-info/?$	build-info.php	[L]
 
 # Admin
 RewriteRule ^admin/error-log/?$	admin/error-log.php	[L]
+RewriteRule ^admin/reviews/([-0-9a-f]{36})/?$	admin/reviews.php?reviewID=$1	[QSA,L]
 RewriteRule ^admin/reviews/?$	admin/reviews.php	[L]
 
 

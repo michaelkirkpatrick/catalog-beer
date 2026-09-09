@@ -52,7 +52,7 @@ echo $htmlHead->html;
                             <div class="card-body">
                                 <h5 class="card-title">Reviews</h5>
                                 <p class="card-text">The brewer review loop's check-in: answer what is waiting on a decision, and read every change a review made.</p>
-                                <a href="/admin/reviews.php" class="btn btn-primary">View Reviews</a>
+                                <a href="/admin/reviews" class="btn btn-primary">View Reviews</a>
                             </div>
                         </div>
                     </div>

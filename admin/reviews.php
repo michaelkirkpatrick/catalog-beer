@@ -17,30 +17,36 @@ decision names a real account).
   - Open questions: reviews with needs_decision, oldest first, each with an
     answer box. Answering PATCHes /review/{id} and the next claim of that
     brewer acts on it.
-  - One review in full (?review=<id>): notes, sources, every before/after.
+  - One review in full (/admin/reviews/<id>): notes, sources, every
+    before/after.
   - Recent reviews: the last 30, one line each.
 */
 
 // Handle an answer
+//
+// Post/redirect/get, with the outcome in a one-shot session flash rather than
+// the query string: the redirect lands on a bare /admin/reviews, so reloading
+// it does not bring the banner back. $flash['msg'] is plain text -- it is
+// escaped at output, never on the way in.
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['decision'], $_POST['review_id'])){
-    if(!csrf_verify()){
-        header('location: /admin/reviews.php?error=' . urlencode('Your session expired before the answer was sent. Please try again.'));
-        exit;
-    }
     $reviewID = trim($_POST['review_id']);
     $decision = trim($_POST['decision']);
-    if(!preg_match('/^[0-9a-f-]{36}$/', $reviewID) || $decision === ''){
-        header('location: /admin/reviews.php?error=' . urlencode('An answer needs a review id and some text.'));
-        exit;
-    }
-    $api = new API();
-    $response = $api->request('PATCH', '/review/' . $reviewID, ['decision' => $decision]);
-    $result = json_decode($response);
-    if(isset($result->error) && $result->error){
-        header('location: /admin/reviews.php?error=' . urlencode($result->error_msg));
+    if(!csrf_verify()){
+        $_SESSION['reviews_flash'] = array('type' => 'error', 'msg' => 'Your session expired before the answer was sent. Please try again.');
+    }elseif(!preg_match('/^[0-9a-f-]{36}$/', $reviewID) || $decision === ''){
+        $_SESSION['reviews_flash'] = array('type' => 'error', 'msg' => 'An answer needs a review id and some text.');
     }else{
-        header('location: /admin/reviews.php?decided=' . urlencode($result->brewer_name ?? ''));
+        $api = new API();
+        $response = $api->request('PATCH', '/review/' . $reviewID, ['decision' => $decision]);
+        $result = json_decode($response);
+        if(isset($result->error) && $result->error){
+            $_SESSION['reviews_flash'] = array('type' => 'error', 'msg' => $result->error_msg);
+        }else{
+            $brewerName = $result->brewer_name ?? '';
+            $_SESSION['reviews_flash'] = array('type' => 'success', 'msg' => 'Decision recorded' . ($brewerName !== '' ? ' for ' . $brewerName : '') . '. The next claim of that brewer acts on it.');
+        }
     }
+    header('location: /admin/reviews');
     exit;
 }
 
@@ -143,23 +149,24 @@ echo $htmlHead->html;
                 <h1>Reviews</h1>
                 <p class="text-muted">The brewer review loop's check-in. Answer what is waiting, read what changed, revert by hand from the before/after pairs if a write was wrong.</p>
                 <?php
-                if(isset($_GET['error'])){
-                    echo '<div class="alert alert-danger">' . h($_GET['error']) . '</div>';
-                }
-                if(isset($_GET['decided'])){
-                    echo '<div class="alert alert-success">Decision recorded' . ($_GET['decided'] !== '' ? ' for ' . h($_GET['decided']) : '') . '. The next claim of that brewer acts on it.</div>';
+                // Flash from the last answer, read once and cleared
+                if(!empty($_SESSION['reviews_flash'])){
+                    $flash = $_SESSION['reviews_flash'];
+                    unset($_SESSION['reviews_flash']);
+                    $flashClass = (isset($flash['type']) && $flash['type'] === 'success') ? 'alert-success' : 'alert-danger';
+                    echo '<div class="alert ' . $flashClass . '">' . h($flash['msg'] ?? '') . '</div>';
                 }
 
                 // ----- One review in full -----
-                if(isset($_GET['review']) && preg_match('/^[0-9a-f-]{36}$/', $_GET['review'])){
-                    $response = $api->request('GET', '/review/' . $_GET['review'], '');
+                if(isset($_GET['reviewID']) && preg_match('/^[0-9a-f-]{36}$/', $_GET['reviewID'])){
+                    $response = $api->request('GET', '/review/' . rawurlencode($_GET['reviewID']), '');
                     $review = json_decode($response);
                     if(isset($review->error) && $review->error){
                         echo '<div class="alert alert-danger">' . h($review->error_msg) . '</div>';
                     }else{
                         echo '<div class="card mb-4"><div class="card-body">';
                         echo '<h2 class="h4">' . brewerLink($review) . ' ' . outcomeBadge($review->outcome) . '</h2>';
-                        echo '<p class="text-muted mb-3">' . reviewDate($review->reviewed_at) . ' · url ' . h($review->url_verdict) . ' · brewer: ' . h($review->brewer_changed ?: '—') . ' · beers +' . intval($review->beers_added) . ' ~' . intval($review->beers_updated) . ' · locations +' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' −' . intval($review->locations_deleted) . ' · brief ' . h($review->brief_version ?: '—') . ' · <a href="/admin/reviews.php">all reviews</a></p>';
+                        echo '<p class="text-muted mb-3">' . reviewDate($review->reviewed_at) . ' · url ' . h($review->url_verdict) . ' · brewer: ' . h($review->brewer_changed ?: '—') . ' · beers +' . intval($review->beers_added) . ' ~' . intval($review->beers_updated) . ' · locations +' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' −' . intval($review->locations_deleted) . ' · brief ' . h($review->brief_version ?: '—') . ' · <a href="/admin/reviews">all reviews</a></p>';
                         echo reviewDetail($review);
                         echo '</div></div>';
                     }
@@ -178,12 +185,12 @@ echo $htmlHead->html;
                         echo '<div class="card mb-4"><div class="card-body">';
                         echo '<h3 class="h5">' . brewerLink($review) . ' ' . outcomeBadge($review->outcome) . ' <small class="text-muted">' . reviewDate($review->reviewed_at) . '</small></h3>';
                         echo '<p class="cb-prose__text"><strong>' . h($review->question) . '</strong></p>';
-                        echo '<form method="POST" class="mb-3">';
+                        echo '<form method="POST" action="/admin/reviews" class="mb-3">';
                         echo csrf_field();
                         echo '<input type="hidden" name="review_id" value="' . h($review->id) . '">';
                         echo '<div class="mb-2"><textarea name="decision" class="form-control" rows="2" maxlength="500" required placeholder="Your answer, in one or two sentences. The next review of this brewer reads it and acts on it."></textarea></div>';
                         echo '<button type="submit" class="btn btn-primary">Record decision</button> ';
-                        echo '<a class="btn btn-link" href="/admin/reviews.php?review=' . h($review->id) . '#detail">Full review</a>';
+                        echo '<a class="btn btn-link" href="/admin/reviews/' . h(rawurlencode($review->id)) . '">Full review</a>';
                         echo '</form>';
                         echo '<details><summary class="text-muted">Notes, sources and changes</summary>' . reviewDetail($review) . '</details>';
                         echo '</div></div>';
@@ -212,7 +219,7 @@ echo $htmlHead->html;
                         echo '<td>+' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' −' . intval($review->locations_deleted) . '</td>';
                         echo '<td>' . number_format($nChanges) . '</td>';
                         echo '<td><code>' . h($review->brief_version ?: '—') . '</code></td>';
-                        echo '<td><a href="/admin/reviews.php?review=' . h($review->id) . '">Open</a></td>';
+                        echo '<td><a href="/admin/reviews/' . h(rawurlencode($review->id)) . '">Open</a></td>';
                         echo '</tr>' . "\n";
                     }
                     echo $table->closeTable();
