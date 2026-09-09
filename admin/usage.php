@@ -34,15 +34,16 @@ echo $htmlHead->html;
                 if(isset($usageData->error) && $usageData->error){
                     echo '<div class="alert alert-danger">' . h($usageData->error_msg) . '</div>';
                 }elseif(isset($usageData->data)){
-                    // Pivot data: group by api_key
+                    // Pivot data: one row per key. The API never sends the
+                    // key itself, only its owner and its last four characters.
                     $users = array();
                     foreach($usageData->data as $row){
-                        $key = $row->api_key;
+                        $key = ($row->user_id ?? '') . '/' . $row->api_key_last4;
                         if(!isset($users[$key])){
                             $users[$key] = array(
                                 'name' => $row->name,
                                 'email' => $row->email,
-                                'api_key' => $row->api_key,
+                                'api_key_last4' => $row->api_key_last4,
                                 'months' => array()
                             );
                         }
@@ -100,7 +101,7 @@ echo $htmlHead->html;
                         }else{
                             echo '<td>' . h($user['name']) . '</td>';
                         }
-                        echo '<td><code>' . h($user['api_key']) . '</code></td>';
+                        echo '<td><code>&hellip;' . h($user['api_key_last4']) . '</code></td>';
                         $total = 0;
                         foreach($months as $m){
                             $key = $m['year'] . '-' . $m['month'];
