@@ -67,7 +67,7 @@
 .cbf-label{font-family:var(--cb-mono);font-size:var(--cb-fs-label);letter-spacing:var(--cb-track-label);text-transform:uppercase;color:var(--cb-ink-2);}
 .cbf-req{color:var(--cb-amber-ink);font-size:1rem;line-height:1;}
 /* Live character count (e.g. Short description 0 / 160) */
-.cbf-count{margin-left:auto;font-family:var(--cb-mono);font-size:var(--cb-fs-label-xs);letter-spacing:.06em;color:#5C564C;}
+.cbf-count{margin-left:auto;font-family:var(--cb-mono);font-size:var(--cb-fs-label-xs);letter-spacing:.06em;color:#5C564C;white-space:nowrap;}
 
 /* Field grids. grid2 collapses to one column on its own via auto-fit. */
 .cbf-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.15rem;}

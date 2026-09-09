@@ -85,6 +85,11 @@
 .cb-chip .cb-count { background: none; color: var(--cb-muted-2); margin-left: .3rem; padding: 0; }
 .cb-chip.is-on .cb-count { color: #c9bfa8; }
 .cb-chip--back { color: var(--cb-muted); border-style: dashed; }
+/* Chips that step or paginate without JS are links, not buttons. A step with
+   nowhere to go stays a button, because an <a> has no disabled state. */
+a.cb-chip { text-decoration: none; display: inline-block; }
+.cb-chip[disabled] { opacity: .4; cursor: default; }
+.cb-chip[disabled]:hover { background: var(--cb-surface); border-color: var(--cb-line-2); color: var(--cb-ink-2); }
 
 /* ============================ surfaces: card + rail ============================ */
 .cb-card { background: var(--cb-surface); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-lg); padding: var(--cb-space-4); }
@@ -191,6 +196,9 @@
 .cb-note { display: block; width: 100%; font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-muted-2); text-align: center; padding: .6rem; background: transparent; border: 1px dashed var(--cb-line-2); border-radius: var(--cb-radius-md); margin-top: .9rem; }
 button.cb-note { cursor: pointer; }
 button.cb-note:hover { color: var(--cb-ink-2); border-color: var(--cb-muted-2); }
+/* Server-rendered pages reach for the same control as a link (admin/reviews.php). */
+a.cb-note { text-decoration: none; }
+a.cb-note:hover { color: var(--cb-ink-2); border-color: var(--cb-muted-2); }
 
 /* ============================ map popup ============================
    Body of a Google InfoWindow. Google owns the surrounding chrome (bubble,

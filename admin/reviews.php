@@ -14,20 +14,33 @@ The check-in for the brewer review loop. Reads the API's /review routes with
 the logged-in admin's own key (the API refuses master keys there, so every
 decision names a real account).
 
-  - Open questions: reviews with needs_decision, oldest first, each with an
-    answer box. Answering PATCHes /review/{id} and the next claim of that
-    brewer acts on it.
-  - One review in full (/admin/reviews/<id>): notes, sources, every
-    before/after.
-  - Recent reviews: the last 30, one line each.
+Two things on one page, plus one route:
+
+  - Waiting on you: the reviews with needs_decision, oldest first, stepped
+    ONE at a time (?q=N) rather than stacked. A question is a piece of work,
+    and the queue reads as a queue. Answering PATCHes /review/{id} and the
+    next claim of that brewer acts on it.
+  - Review history: the most recent reviews, one row each. A row leads to
+    /admin/reviews/<id>, which is also the link an agent or a log line hands
+    you — one destination, not two ways of reading the same review.
+  - /admin/reviews/<id>: one review in full, on its own screen. Notes,
+    sources and every before/after, beside the same facts rail.
+
+Everything is server-rendered — the stepper, the pager and the row links are
+all URLs. The only scripts on the page are the shared live character count
+and six lines that widen a row's click target to the whole row.
+
+Layout is rv-* in styles-pages.css; the pieces it is built from are the
+shared .cb- and .cbf- primitives.
 */
 
 // Handle an answer
 //
 // Post/redirect/get, with the outcome in a one-shot session flash rather than
 // the query string: the redirect lands on a bare /admin/reviews, so reloading
-// it does not bring the banner back. $flash['msg'] is plain text -- it is
-// escaped at output, never on the way in.
+// it does not bring the banner back, and the queue re-reads from the top with
+// the answered question gone. $flash['msg'] is plain text -- it is escaped at
+// output, never on the way in.
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['decision'], $_POST['review_id'])){
     $reviewID = trim($_POST['review_id']);
     $decision = trim($_POST['decision']);
@@ -52,182 +65,533 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['decision'], $_POST['re
 
 $api = new API();
 
-// Helpers, local to this page
+// How much of a long review shows before you ask for the rest, and how deep
+// the history page runs.
+const RV_CHANGES_INLINE = 6;
+const RV_HISTORY_PER_PAGE = 15;
+
+// ----- Helpers, local to this page -----
+
 function reviewDate($ts){
-    return $ts ? date('M j, Y', intval($ts)) : '—';
+    return $ts ? date('M j, Y', intval($ts)) : '&#8212;';
 }
-function outcomeBadge($outcome){
-    $class = 'bg-secondary';
-    switch($outcome){
-        case 'updated':  $class = 'bg-success'; break;
-        case 'created':  $class = 'bg-success'; break;
-        case 'defunct':  $class = 'bg-dark'; break;
-        case 'deferred': $class = 'bg-warning text-dark'; break;
-        case 'skipped':  $class = 'bg-secondary'; break;
-        case 'unchanged':$class = 'bg-light text-dark border'; break;
+
+// Outcomes are flat except 'deferred', which is the one that wants reading.
+function outcomeTag($outcome){
+    $class = ($outcome === 'deferred') ? 'cb-tag cb-tag--accent' : 'cb-tag';
+    return '<span class="' . $class . '">' . h($outcome) . '</span>';
+}
+
+function brewerHref($review){
+    return '/brewer/' . rawurlencode($review->brewer_id);
+}
+
+function brewerName($review){
+    return !empty($review->brewer_name) ? $review->brewer_name : $review->brewer_id;
+}
+
+function reviewChanges($review){
+    return is_array($review->changes ?? null) ? $review->changes : array();
+}
+
+function reviewSources($review){
+    return is_array($review->sources ?? null) ? $review->sources : array();
+}
+
+// A question routinely names a record by uuid ("is <uuid> the same beer as
+// …"). Left as text that is 36 characters of noise you cannot act on; matched
+// against this review's own changes it becomes a link to the record, and the
+// full id stays in the title attribute either way.
+function questionHtml($question, $changes){
+    $question = (string)$question;
+    $entityOf = array();
+    foreach($changes as $c){
+        if(!empty($c->id) && !empty($c->entity)){
+            $entityOf[strtolower($c->id)] = $c->entity;
+        }
     }
-    return '<span class="badge ' . $class . '">' . h($outcome) . '</span>';
+
+    $html = '';
+    $offset = 0;
+    $pattern = '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i';
+    if(preg_match_all($pattern, $question, $matches, PREG_OFFSET_CAPTURE)){
+        foreach($matches[0] as $match){
+            list($id, $position) = $match;
+            if($position > $offset){
+                $html .= h(substr($question, $offset, $position - $offset));
+            }
+            $short = h(substr($id, 0, 8)) . '&#8230;';
+            $entity = $entityOf[strtolower($id)] ?? '';
+            if(in_array($entity, array('brewer', 'beer', 'location'), true)){
+                $html .= '<a href="/' . $entity . '/' . rawurlencode($id) . '" title="' . h($id) . '"><code>' . $short . '</code></a>';
+            }else{
+                $html .= '<code title="' . h($id) . '">' . $short . '</code>';
+            }
+            $offset = $position + strlen($id);
+        }
+    }
+    if($offset < strlen($question)){
+        $html .= h(substr($question, $offset));
+    }
+    return $html;
 }
-function brewerLink($review){
-    $name = !empty($review->brewer_name) ? $review->brewer_name : $review->brewer_id;
-    return '<a href="/brewer/' . rawurlencode($review->brewer_id) . '">' . h($name) . '</a>';
+
+// One side of a before/after pair. null is the common value here and reads as
+// a value, not as a blank cell.
+function changeValue($value){
+    if(is_null($value)){
+        return array('text' => 'null', 'class' => 'rv-null');
+    }
+    if(is_bool($value)){
+        return array('text' => $value ? 'true' : 'false', 'class' => '');
+    }
+    if(is_scalar($value)){
+        return array('text' => (string)$value, 'class' => '');
+    }
+    return array('text' => json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'class' => '');
 }
-function jsonCell($value){
-    if(is_null($value)) return '<span class="text-muted">null</span>';
-    if(is_bool($value)) return $value ? 'true' : 'false';
-    if(is_scalar($value)) return h((string)$value);
-    return h(json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+// $limit 0 shows every row.
+function changesTable($changes, $limit = 0){
+    $rows = ($limit > 0) ? array_slice($changes, 0, $limit) : $changes;
+
+    $html = '<table class="rv-changes">';
+    $html .= '<thead><tr><th>Entity</th><th>Field</th><th>Before</th><th>After</th></tr></thead><tbody>';
+    foreach($rows as $c){
+        $entity = $c->entity ?? '';
+        $id = (string)($c->id ?? '');
+        $short = h(substr($id, 0, 8));
+        if(in_array($entity, array('brewer', 'beer', 'location'), true) && preg_match('/^[0-9a-f-]{36}$/', $id)){
+            $record = '<a href="/' . $entity . '/' . rawurlencode($id) . '" title="' . h($id) . '">' . $short . '</a>';
+        }else{
+            $record = $short;
+        }
+
+        $before = changeValue($c->before ?? null);
+        $after = changeValue($c->after ?? null);
+        // Strike the old value only where a new one replaced it. A write that
+        // filled an empty field has nothing to cross out.
+        $beforeClass = $before['class'];
+        if($beforeClass === '' && !is_null($c->after ?? null)){
+            $beforeClass = 'rv-before';
+        }
+        $afterClass = $after['class'] !== '' ? $after['class'] : 'rv-after';
+
+        $html .= '<tr>';
+        $html .= '<td class="rv-ent">' . h($entity) . ' ' . $record . '</td>';
+        $html .= '<td class="rv-fieldcell"><span class="rv-field">' . h($c->field ?? '') . '</span></td>';
+        $html .= '<td><span class="' . $beforeClass . '">' . h($before['text']) . '</span></td>';
+        $html .= '<td><span class="' . $afterClass . '">' . h($after['text']) . '</span></td>';
+        $html .= '</tr>' . "\n";
+    }
+    $html .= '</tbody></table>';
+    return $html;
 }
-function reviewDetail($review){
-    // Notes, sources, changes — the part of a review a human actually reads
-    $out = '';
-    if(!empty($review->question) || !empty($review->decision)){
-        $out .= '<div class="card mb-3"><div class="card-body">';
-        $out .= '<div class="cb-eyebrow">Question</div><p class="cb-prose__text">' . h($review->question) . '</p>';
+
+function sourcesHtml($sources){
+    $html = '<ul class="rv-sources">';
+    foreach($sources as $source){
+        $source = (string)$source;
+        $url = strtok($source, ' ');
+        $note = substr($source, strlen($url));
+        if(preg_match('#^https?://#i', $url)){
+            $html .= '<li><a href="' . h($url) . '" target="_blank" rel="noopener noreferrer">' . h($url) . '</a><span class="rv-sources__note">' . h($note) . '</span></li>';
+        }else{
+            $html .= '<li><span class="rv-sources__note">' . h($source) . '</span></li>';
+        }
+    }
+    $html .= '</ul>';
+    return $html;
+}
+
+function subhead($label, $count = null, $stacked = false, $accent = false){
+    $html = '<div class="rv-sup__h' . ($stacked ? ' rv-sup__h--stacked' : '') . '">';
+    $html .= '<span class="cb-label' . ($accent ? ' cb-label--accent' : '') . '">' . h($label) . '</span>';
+    if(!is_null($count)){
+        $html .= '<span class="cb-count">' . number_format($count) . '</span>';
+    }
+    $html .= '</div>';
+    return $html;
+}
+
+// Notes, sources and changes — the part of a review a human actually reads.
+// $options: 'question' prepends the question and its decision, 'limit' caps the
+// changes table, 'moreURL'/'moreLabel' render the link that lifts that cap.
+function reviewSupplement($review, $options = array()){
+    $changes = reviewChanges($review);
+    $sources = reviewSources($review);
+
+    $html = '<div class="rv-sup">';
+
+    if(!empty($options['question']) && (!empty($review->question) || !empty($review->decision))){
+        $html .= '<div>';
+        if(!empty($review->question)){
+            $html .= subhead('Question');
+            $html .= '<p class="rv-notes">' . questionHtml($review->question, $changes) . '</p>';
+        }
         if(!empty($review->decision)){
-            $out .= '<div class="cb-eyebrow">Decision</div><p class="cb-prose__text mb-0">' . h($review->decision) . ' <span class="text-muted">— ' . reviewDate($review->decided_at) . '</span></p>';
+            $html .= subhead('Decision', null, !empty($review->question), true);
+            $html .= '<p class="rv-decision">' . h($review->decision) . '<small>' . reviewDate($review->decided_at) . '</small></p>';
+        }elseif(!empty($review->needs_decision)){
+            $html .= '<p class="rv-none rv-none--stacked">waiting on you &#8212; <a href="/admin/reviews">answer it in the queue</a></p>';
         }
-        $out .= '</div></div>';
+        $html .= '</div>';
     }
-    $out .= '<h3 class="h5">Notes</h3>';
-    $out .= '<p class="cb-prose__text">' . (!empty($review->notes) ? h($review->notes) : '<span class="text-muted">none</span>') . '</p>';
-    $out .= '<h3 class="h5">Sources</h3>';
-    if(!empty($review->sources)){
-        $out .= '<ul>';
-        foreach($review->sources as $src){
-            $src = (string)$src;
-            $url = strtok($src, ' ');
-            if(preg_match('#^https?://#i', $url)){
-                $out .= '<li><a href="' . h($url) . '" rel="noopener noreferrer" target="_blank">' . h($url) . '</a>' . h(substr($src, strlen($url))) . '</li>';
-            }else{
-                $out .= '<li>' . h($src) . '</li>';
-            }
-        }
-        $out .= '</ul>';
-    }else{
-        $out .= '<p class="text-muted">none</p>';
-    }
-    $changes = is_array($review->changes) ? $review->changes : array();
-    $out .= '<h3 class="h5">Changes <small class="text-muted">(' . count($changes) . ')</small></h3>';
+
+    $html .= '<div>';
+    $html .= subhead('Notes');
+    $html .= !empty($review->notes) ? '<p class="rv-notes">' . h($review->notes) . '</p>' : '<p class="rv-none">none</p>';
+    $html .= '</div>';
+
+    $html .= '<div>';
+    $html .= subhead('Sources', count($sources));
+    $html .= !empty($sources) ? sourcesHtml($sources) : '<p class="rv-none">none</p>';
+    $html .= '</div>';
+
+    $html .= '<div>';
+    $html .= subhead($options['changesLabel'] ?? 'Changes', count($changes));
     if(!empty($changes)){
-        $table = new Table();
-        $out .= $table->startTable(array('Entity', 'Id', 'Field', 'Before', 'After'));
-        foreach($changes as $c){
-            $entity = $c->entity ?? '';
-            $id = (string)($c->id ?? '');
-            $link = '';
-            if(in_array($entity, array('brewer', 'beer', 'location')) && preg_match('/^[0-9a-f-]{36}$/', $id)){
-                $link = '<a href="/' . $entity . '/' . rawurlencode($id) . '">' . h(substr($id, 0, 8)) . '</a>';
-            }else{
-                $link = h(substr($id, 0, 8));
-            }
-            $out .= '<tr><td>' . h($entity) . '</td><td>' . $link . '</td><td>' . h($c->field ?? '') . '</td>';
-            $out .= '<td>' . jsonCell($c->before ?? null) . '</td><td>' . jsonCell($c->after ?? null) . '</td></tr>' . "\n";
+        $limit = intval($options['limit'] ?? 0);
+        $html .= changesTable($changes, $limit);
+        if($limit > 0 && count($changes) > $limit && !empty($options['moreURL'])){
+            $html .= '<a class="cb-note" href="' . h($options['moreURL']) . '">' . h($options['moreLabel'] ?? 'Show all') . '</a>';
+        }elseif(!empty($options['fewerURL'])){
+            $html .= '<a class="cb-note" href="' . h($options['fewerURL']) . '">Show fewer</a>';
         }
-        $out .= $table->closeTable();
     }else{
-        $out .= '<p class="text-muted">none recorded</p>';
+        $html .= '<p class="rv-none">none recorded</p>';
     }
-    return $out;
+    $html .= '</div>';
+
+    $html .= '</div>';
+    return $html;
+}
+
+// The rail beside a review: what the pass did, in counters.
+function reviewRail($review){
+    $html = '<aside class="cb-rail">';
+    $html .= '<span class="cb-label">This review</span>';
+
+    $facts = array(
+        'Brewer' => '<a href="' . brewerHref($review) . '">' . h(brewerName($review)) . ' &#8594;</a>',
+        'Outcome' => outcomeTag($review->outcome),
+        'URL' => h($review->url_verdict),
+        'Brewer field' => h($review->brewer_changed ?: '—'),
+        'Beers' => '+' . intval($review->beers_added) . ' ~' . intval($review->beers_updated),
+        'Locations' => '+' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' &#8722;' . intval($review->locations_deleted),
+        'Brief' => h($review->brief_version ?: '—'),
+        'Review id' => '<span title="' . h($review->id) . '">' . h(substr($review->id, 0, 8)) . '</span>'
+    );
+    foreach($facts as $key => $value){
+        $html .= '<div class="cb-fact"><span class="cb-fact__k">' . h($key) . '</span><span class="cb-fact__v cb-fact__v--sm">' . $value . '</span></div>';
+    }
+
+    $html .= '<div class="cb-legend"><span>+ added</span><span>~ updated</span><span>&#8722; deleted</span></div>';
+    $html .= '</aside>';
+    return $html;
+}
+
+// ----- View state -----
+//
+// Every control on this page is a URL, so the whole view is these three
+// parameters and one function that rebuilds a link from them.
+$singleID = (isset($_GET['reviewID']) && preg_match('/^[0-9a-f-]{36}$/', $_GET['reviewID'])) ? $_GET['reviewID'] : '';
+$queueIndex = max(1, intval($_GET['q'] ?? 1));
+$showAllChanges = !empty($_GET['all']);
+$historyPage = max(1, intval($_GET['page'] ?? 1));
+
+$state = array('q' => $queueIndex, 'all' => $showAllChanges, 'page' => $historyPage);
+$url = function($overrides = array()) use ($state){
+    $params = array_merge($state, $overrides);
+    $query = array();
+    if(intval($params['q']) > 1){ $query['q'] = intval($params['q']); }
+    if(!empty($params['all'])){ $query['all'] = 1; }
+    if(intval($params['page']) > 1){ $query['page'] = intval($params['page']); }
+    return '/admin/reviews' . (empty($query) ? '' : '?' . http_build_query($query));
+};
+
+// A history row is a link to its review.
+function reviewHref($review){
+    return '/admin/reviews/' . rawurlencode($review->id);
+}
+
+// A chip that is a link when there is somewhere to go and an inert button when
+// there is not — an <a> has no disabled state, and a dead href is worse.
+function stepChip($label, $href){
+    if($href === ''){
+        return '<button type="button" class="cb-chip" disabled>' . $label . '</button>';
+    }
+    return '<a class="cb-chip" href="' . h($href) . '">' . $label . '</a>';
+}
+
+// ----- Data -----
+
+$single = null;
+$singleError = '';
+$open = null;
+$openError = '';
+$history = array();
+$historyError = '';
+$historyHasMore = false;
+
+if($singleID !== ''){
+    $response = $api->request('GET', '/review/' . rawurlencode($singleID), '');
+    $result = json_decode($response);
+    if(isset($result->error) && $result->error){
+        $singleError = $result->error_msg;
+    }else{
+        $single = $result;
+    }
+}else{
+    // Open questions. count=100 is well inside the API's LIST_MAX and far past
+    // any queue a human would let build up; the stepper walks the array.
+    $response = $api->request('GET', '/review?needs_decision=1&count=100', '');
+    $result = json_decode($response);
+    if(isset($result->error) && $result->error){
+        $openError = $result->error_msg;
+    }else{
+        $open = is_array($result->data ?? null) ? $result->data : array();
+    }
+
+    // History. The API's cursor is base64 of a row offset (Review.class.php,
+    // listReviews) and has_more comes from a LIMIT count+1, so a page number
+    // maps straight onto a cursor and there is no total to show. If that
+    // encoding ever changes, this is the line that has to change with it.
+    $cursor = base64_encode((string)(($historyPage - 1) * RV_HISTORY_PER_PAGE));
+    $response = $api->request('GET', '/review?count=' . RV_HISTORY_PER_PAGE . '&cursor=' . rawurlencode($cursor), '');
+    $result = json_decode($response);
+    if(isset($result->error) && $result->error){
+        $historyError = $result->error_msg;
+    }else{
+        $history = is_array($result->data ?? null) ? $result->data : array();
+        $historyHasMore = !empty($result->has_more);
+    }
 }
 
 // HTML Head
 $htmlHead = new htmlHead('Reviews');
 $htmlHead->noindex();
+$htmlHead->addStylesheet('/assets/css/styles-pages.css');
 echo $htmlHead->html;
 ?>
 <body>
     <?php echo $nav->navbar(''); ?>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <?php
-                $nav->breadcrumbText = array('Admin', 'Reviews');
-                $nav->breadcrumbLink = array('/admin/');
-                echo $nav->breadcrumbs();
-                ?>
-                <h1>Reviews</h1>
-                <p class="text-muted">The brewer review loop's check-in. Answer what is waiting, read what changed, revert by hand from the before/after pairs if a write was wrong.</p>
-                <?php
-                // Flash from the last answer, read once and cleared
-                if(!empty($_SESSION['reviews_flash'])){
-                    $flash = $_SESSION['reviews_flash'];
-                    unset($_SESSION['reviews_flash']);
-                    $flashClass = (isset($flash['type']) && $flash['type'] === 'success') ? 'alert-success' : 'alert-danger';
-                    echo '<div class="alert ' . $flashClass . '">' . h($flash['msg'] ?? '') . '</div>';
-                }
-
-                // ----- One review in full -----
-                if(isset($_GET['reviewID']) && preg_match('/^[0-9a-f-]{36}$/', $_GET['reviewID'])){
-                    $response = $api->request('GET', '/review/' . rawurlencode($_GET['reviewID']), '');
-                    $review = json_decode($response);
-                    if(isset($review->error) && $review->error){
-                        echo '<div class="alert alert-danger">' . h($review->error_msg) . '</div>';
-                    }else{
-                        echo '<div class="card mb-4"><div class="card-body">';
-                        echo '<h2 class="h4">' . brewerLink($review) . ' ' . outcomeBadge($review->outcome) . '</h2>';
-                        echo '<p class="text-muted mb-3">' . reviewDate($review->reviewed_at) . ' · url ' . h($review->url_verdict) . ' · brewer: ' . h($review->brewer_changed ?: '—') . ' · beers +' . intval($review->beers_added) . ' ~' . intval($review->beers_updated) . ' · locations +' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' −' . intval($review->locations_deleted) . ' · brief ' . h($review->brief_version ?: '—') . ' · <a href="/admin/reviews">all reviews</a></p>';
-                        echo reviewDetail($review);
-                        echo '</div></div>';
-                    }
-                }
-
-                // ----- Open questions -----
-                $response = $api->request('GET', '/review?needs_decision=1&count=100', '');
-                $open = json_decode($response);
-                echo '<h2>Waiting on you</h2>';
-                if(isset($open->error) && $open->error){
-                    echo '<div class="alert alert-danger">' . h($open->error_msg) . '</div>';
-                }elseif(empty($open->data)){
-                    echo '<p>Nothing is waiting on a decision.</p>';
-                }else{
-                    foreach($open->data as $review){
-                        echo '<div class="card mb-4"><div class="card-body">';
-                        echo '<h3 class="h5">' . brewerLink($review) . ' ' . outcomeBadge($review->outcome) . ' <small class="text-muted">' . reviewDate($review->reviewed_at) . '</small></h3>';
-                        echo '<p class="cb-prose__text"><strong>' . h($review->question) . '</strong></p>';
-                        echo '<form method="POST" action="/admin/reviews" class="mb-3">';
-                        echo csrf_field();
-                        echo '<input type="hidden" name="review_id" value="' . h($review->id) . '">';
-                        echo '<div class="mb-2"><textarea name="decision" class="form-control" rows="2" maxlength="500" required placeholder="Your answer, in one or two sentences. The next review of this brewer reads it and acts on it."></textarea></div>';
-                        echo '<button type="submit" class="btn btn-primary">Record decision</button> ';
-                        echo '<a class="btn btn-link" href="/admin/reviews/' . h(rawurlencode($review->id)) . '">Full review</a>';
-                        echo '</form>';
-                        echo '<details><summary class="text-muted">Notes, sources and changes</summary>' . reviewDetail($review) . '</details>';
-                        echo '</div></div>';
-                    }
-                }
-
-                // ----- Recent reviews -----
-                $response = $api->request('GET', '/review?count=30', '');
-                $recent = json_decode($response);
-                echo '<h2>Recent reviews</h2>';
-                if(isset($recent->error) && $recent->error){
-                    echo '<div class="alert alert-danger">' . h($recent->error_msg) . '</div>';
-                }elseif(empty($recent->data)){
-                    echo '<p>No reviews yet.</p>';
-                }else{
-                    $table = new Table();
-                    echo $table->startTable(array('When', 'Brewer', 'Outcome', 'URL', 'Beers', 'Locations', 'Changes', 'Brief', ''));
-                    foreach($recent->data as $review){
-                        $nChanges = is_array($review->changes) ? count($review->changes) : 0;
-                        echo '<tr>';
-                        echo '<td>' . reviewDate($review->reviewed_at) . '</td>';
-                        echo '<td>' . brewerLink($review) . ($review->needs_decision ? ' <span class="badge bg-warning text-dark">question</span>' : '') . '</td>';
-                        echo '<td>' . outcomeBadge($review->outcome) . '</td>';
-                        echo '<td>' . h($review->url_verdict) . '</td>';
-                        echo '<td>+' . intval($review->beers_added) . ' ~' . intval($review->beers_updated) . '</td>';
-                        echo '<td>+' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' −' . intval($review->locations_deleted) . '</td>';
-                        echo '<td>' . number_format($nChanges) . '</td>';
-                        echo '<td><code>' . h($review->brief_version ?: '—') . '</code></td>';
-                        echo '<td><a href="/admin/reviews/' . h(rawurlencode($review->id)) . '">Open</a></td>';
-                        echo '</tr>' . "\n";
-                    }
-                    echo $table->closeTable();
-                }
-                ?>
+    <main class="cb-page rv-page">
+        <?php
+        $nav->breadcrumbText = array('Admin', 'Reviews');
+        $nav->breadcrumbLink = array('/admin/');
+        if($single){
+            $nav->breadcrumbText[] = brewerName($single);
+            $nav->breadcrumbLink[] = '/admin/reviews';
+        }
+        echo $nav->breadcrumbs();
+        ?>
+        <div class="rv-head">
+            <div>
+                <h1 class="cbf-h1">Reviews</h1>
+                <p class="cbf-lede">Claude reviews brewers; anything that needs a human decision waits here. Your answer is read on the next pass of that brewer.</p>
             </div>
         </div>
-    </div>
+
+        <?php
+        // Flash from the last answer, read once and cleared
+        if(!empty($_SESSION['reviews_flash'])){
+            $flash = $_SESSION['reviews_flash'];
+            unset($_SESSION['reviews_flash']);
+            $isSuccess = (isset($flash['type']) && $flash['type'] === 'success');
+            echo '<div class="cbf-alert' . ($isSuccess ? ' cbf-alert--ok" role="status"' : '" role="alert"') . '>';
+            echo '<span class="cbf-alert__i" aria-hidden="true">' . ($isSuccess ? '&#10003;' : '!') . '</span>';
+            echo '<div>' . h($flash['msg'] ?? '') . '</div></div>';
+        }
+
+        // ================= One review on its own screen (/admin/reviews/<id>) =================
+        if($singleID !== ''){
+            if($singleError !== ''){
+                echo '<div class="cbf-alert" role="alert"><span class="cbf-alert__i" aria-hidden="true">!</span><div>' . h($singleError) . '</div></div>';
+                echo '<p><a class="cb-chip cb-chip--back" href="/admin/reviews">&#8592; All reviews</a></p>';
+            }else{
+                echo '<div class="rv-sechead"><span class="cb-label">One review</span>';
+                echo '<a class="cb-chip cb-chip--back" href="/admin/reviews">&#8592; All reviews</a></div>';
+                echo '<section class="rv-review">';
+                echo '<div>';
+                echo '<div class="rv-brewer"><a class="rv-brewer__name" href="' . brewerHref($single) . '">' . h(brewerName($single)) . '</a>';
+                echo '<span class="rv-brewer__meta">reviewed ' . reviewDate($single->reviewed_at) . '</span></div>';
+                if(!empty($single->question)){
+                    echo '<p class="rv-question">' . questionHtml($single->question, reviewChanges($single)) . '</p>';
+                }
+                echo reviewSupplement($single, array('question' => true, 'changesLabel' => 'Changes this pass'));
+                echo '</div>';
+                echo reviewRail($single);
+                echo '</section>';
+            }
+        }else{
+
+        // ================= Waiting on you =================
+        $openCount = is_array($open) ? count($open) : 0;
+        $index = min($queueIndex, max(1, $openCount));
+        $current = $openCount > 0 ? $open[$index - 1] : null;
+        ?>
+        <div class="rv-sechead">
+            <span class="cb-label">Waiting on you<?php if($openError === ''){ echo '<span class="cb-count">' . number_format($openCount) . '</span>'; } ?></span>
+            <?php if($current){ ?>
+            <div class="rv-step">
+                <?php echo stepChip('&#8592; Previous', $index > 1 ? $url(array('q' => $index - 1, 'all' => false)) : ''); ?>
+                <span class="rv-step__n"><?php echo $index . ' of ' . $openCount; ?></span>
+                <?php echo stepChip('Next &#8594;', $index < $openCount ? $url(array('q' => $index + 1, 'all' => false)) : ''); ?>
+            </div>
+            <?php } ?>
+        </div>
+
+        <?php
+        if($openError !== ''){
+            echo '<div class="cbf-alert" role="alert"><span class="cbf-alert__i" aria-hidden="true">!</span><div>' . h($openError) . '</div></div>';
+        }elseif(!$current){
+            echo '<div class="rv-empty"><p>Nothing is waiting on a decision.</p></div>';
+        }else{
+            $changes = reviewChanges($current);
+            echo '<section class="rv-review">';
+            echo '<div>';
+            echo '<div class="rv-brewer"><a class="rv-brewer__name" href="' . brewerHref($current) . '">' . h(brewerName($current)) . '</a>';
+            echo '<span class="rv-brewer__meta">reviewed ' . reviewDate($current->reviewed_at) . '</span></div>';
+            echo '<p class="rv-question">' . questionHtml($current->question, $changes) . '</p>';
+            ?>
+            <form class="rv-answer" method="post" action="/admin/reviews">
+                <?php
+                echo csrf_field();
+                echo '<input type="hidden" name="review_id" value="' . h($current->id) . '">';
+                $decision = new Textarea();
+                $decision->name = 'decision';
+                $decision->description = 'Your decision';
+                $decision->hint = 'One or two sentences. Say what to do, not why — the sources below already hold the why.';
+                $decision->required = true;
+                $decision->markRequired = false;
+                $decision->maxLength = 500;
+                $decision->showCount = true;
+                $decision->rows = 3;
+                echo $decision->display();
+                ?>
+                <div class="cbf-actions">
+                    <button type="submit" class="cbf-btn">Record decision</button>
+                    <span class="cbf-actnote">Records and returns to the top of the queue</span>
+                </div>
+            </form>
+            <?php
+            echo reviewSupplement($current, array(
+                'changesLabel' => 'Changes this pass',
+                'limit' => $showAllChanges ? 0 : RV_CHANGES_INLINE,
+                'moreURL' => $url(array('q' => $index, 'all' => true)),
+                'moreLabel' => 'Show all ' . number_format(count($changes)) . ' changes',
+                'fewerURL' => ($showAllChanges && count($changes) > RV_CHANGES_INLINE) ? $url(array('q' => $index, 'all' => false)) : ''
+            ));
+            echo '</div>';
+            echo reviewRail($current);
+            echo '</section>';
+        }
+        ?>
+
+        <!-- ================= Review history ================= -->
+        <div class="rv-sechead rv-sechead--hist">
+            <span class="cb-label">Review history<?php
+                // No total to show: has_more comes from a LIMIT count+1, not a
+                // COUNT. On a first page that is also the last, the rows are
+                // the total; otherwise the pager carries the range instead.
+                if($historyError === '' && $historyPage === 1 && !$historyHasMore){
+                    echo '<span class="cb-count">' . number_format(count($history)) . '</span>';
+                }
+            ?></span>
+            <span class="rv-brewer__meta">Tap a row for the full review</span>
+        </div>
+        <?php
+        if($historyError !== ''){
+            echo '<div class="cbf-alert" role="alert"><span class="cbf-alert__i" aria-hidden="true">!</span><div>' . h($historyError) . '</div></div>';
+        }elseif(empty($history)){
+            echo '<div class="rv-empty"><p>' . ($historyPage > 1 ? 'Nothing further back than this.' : 'No reviews yet.') . '</p></div>';
+        }else{
+        ?>
+        <table class="rv-hist">
+            <thead>
+                <tr>
+                    <th class="rv-ok"><span class="cb-sr-only">Decided</span></th>
+                    <th>When</th>
+                    <th>Brewer</th>
+                    <th>Outcome</th>
+                    <th class="rv-hide-sm">URL</th>
+                    <th class="rv-num rv-hide-sm">Beers</th>
+                    <th class="rv-num rv-hide-sm">Locations</th>
+                    <th class="rv-num">Changes</th>
+                    <th class="rv-hide-sm">Brief</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                foreach($history as $review){
+                    // The whole row leads to /admin/reviews/<id>. The name is
+                    // the anchor that carries it — a row is about its review, so
+                    // its one link goes where the row goes; the brewer's own page
+                    // is one click further on, from the review's rail.
+                    $rowURL = reviewHref($review);
+                    $waiting = !empty($review->needs_decision);
+                    echo '<tr class="rv-hist__row" data-href="' . h($rowURL) . '">';
+                    echo '<td class="rv-ok' . ($waiting ? ' rv-ok--pending' : '') . '" title="' . ($waiting ? 'Waiting on a decision' : 'Reviewed') . '">' . ($waiting ? '&#183;' : '&#10003;') . '</td>';
+                    echo '<td class="rv-when">' . reviewDate($review->reviewed_at) . '</td>';
+                    echo '<td class="rv-name"><a href="' . h($rowURL) . '">' . h(brewerName($review)) . '</a></td>';
+                    echo '<td>' . outcomeTag($review->outcome) . '</td>';
+                    echo '<td class="rv-when rv-hide-sm">' . h($review->url_verdict) . '</td>';
+                    echo '<td class="rv-num rv-hide-sm">+' . intval($review->beers_added) . ' ~' . intval($review->beers_updated) . '</td>';
+                    echo '<td class="rv-num rv-hide-sm">+' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' &#8722;' . intval($review->locations_deleted) . '</td>';
+                    echo '<td class="rv-num">' . number_format(count(reviewChanges($review))) . '</td>';
+                    echo '<td class="rv-when rv-hide-sm">' . h($review->brief_version ?: '—') . '</td>';
+                    echo '</tr>' . "\n";
+                }
+                ?>
+            </tbody>
+        </table>
+        <?php
+            // Pager. Without a total there is no last page to count back from,
+            // so the numbered chips run to as far as we know the list reaches.
+            $firstRow = ($historyPage - 1) * RV_HISTORY_PER_PAGE + 1;
+            $lastRow = $firstRow + count($history) - 1;
+            $knownPages = $historyPage + ($historyHasMore ? 1 : 0);
+        ?>
+        <div class="rv-pager">
+            <span class="rv-pager__n"><?php echo number_format($firstRow) . '&#8211;' . number_format($lastRow); ?></span>
+            <?php
+            echo stepChip('&#8592; Newer', $historyPage > 1 ? $url(array('page' => $historyPage - 1)) : '');
+            for($p = 1; $p <= $knownPages; $p++){
+                if($p === $historyPage){
+                    echo '<button type="button" class="cb-chip is-on" aria-current="page">' . $p . '</button>';
+                }else{
+                    echo '<a class="cb-chip" href="' . h($url(array('page' => $p))) . '">' . $p . '</a>';
+                }
+            }
+            echo stepChip('Older &#8594;', $historyHasMore ? $url(array('page' => $historyPage + 1)) : '');
+            ?>
+        </div>
+        <?php
+        }
+        } // end of the queue + history view
+        ?>
+    </main>
     <?php echo $nav->footer(); ?>
+    <script>
+    // Live "n / max" count for fields that render a .cbf-count
+    document.querySelectorAll('.cbf-count[data-count-for]').forEach(function(el){
+        var field = document.getElementById(el.getAttribute('data-count-for'));
+        if(!field){ return; }
+        var max = field.maxLength > 0 ? field.maxLength : null;
+        var update = function(){ el.textContent = field.value.length + (max ? ' / ' + max : ''); };
+        field.addEventListener('input', update);
+        update();
+    });
+
+    // The whole history row follows its link to the review. The brewer name is
+    // the real control — this only widens the target for a mouse.
+    document.querySelectorAll('.rv-hist__row[data-href]').forEach(function(row){
+        row.addEventListener('click', function(event){
+            if(event.target.closest('a')){ return; }
+            window.location = row.getAttribute('data-href');
+        });
+    });
+    </script>
 </body>
 </html>
