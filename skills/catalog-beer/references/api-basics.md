@@ -17,10 +17,7 @@ Authorization: Basic base64("{api_key}:")
 
 With curl: `-u "$CATALOG_BEER_API_KEY:"` (note the trailing colon).
 
-Accounts are created on the website, not the API: sign up at
-https://catalog.beer/signup, verify email, key at https://catalog.beer/account.
-The key is `null` until the email is verified (`GET /users/{id}/api-key`
-returns `api_key: null`).
+Accounts are created on the website, not the API: sign up at https://catalog.beer/signup, verify email, key at https://catalog.beer/account. The key is `null` until the email is verified (`GET /users/{id}/api-key` returns `api_key: null`).
 
 ## HTTP method semantics
 
@@ -32,8 +29,7 @@ returns `api_key: null`).
 | PATCH | Partial update; only provided fields change. Resource must exist → `404` otherwise |
 | DELETE | Removes resource → `204 No Content`, no body |
 
-`405 Method Not Allowed` if the endpoint doesn't support the method; the
-`Allow` response header lists what it does support.
+`405 Method Not Allowed` if the endpoint doesn't support the method; the `Allow` response header lists what it does support.
 
 ## Errors
 
@@ -61,23 +57,11 @@ Read `valid_msg` for the failing field — it says exactly what to fix.
 
 ## Usage limits & billing
 
-- Each key includes **1,000 free requests/month**, plus a small grace
-  buffer. The counter resets on the 1st of each month (Pacific time).
-- With a payment method on file (added by the user at
-  https://catalog.beer/billing), the key keeps working past the free tier at
-  **$1 per 1,000 requests**, rounded up to whole blocks and invoiced monthly
-  — bounded by a per-key monthly spend cap ($50 by default).
-- Without a payment method, exceeding limit + buffer → `402 Payment
-  Required` until the month resets. With one, a `402` appears only once the
-  month's usage would cost more than the spend cap. The `error_msg`
-  says which case applies.
-- A `402` is a monthly allowance, not a pace limit — there is no per-second
-  or per-minute throttle. **Do not retry or back off**: the wall stands until
-  the user pays or the month resets. Stop and report.
-- `GET /usage/my-usage` (usage object: `count`, `request_limit`,
-  `request_buffer`, `resets_on`) and everything under `/billing` are never
-  blocked by the usage limit and don't count toward usage — always safe to
-  check.
+- Each key includes **1,000 free requests/month**, plus a small grace buffer. The counter resets on the 1st of each month (Pacific time).
+- With a payment method on file (added by the user at https://catalog.beer/billing), the key keeps working past the free tier at **$1 per 1,000 requests**, rounded up to whole blocks and invoiced monthly — bounded by a per-key monthly spend cap ($50 by default).
+- Without a payment method, exceeding limit + buffer → `402 Payment Required` until the month resets. With one, a `402` appears only once the month's usage would cost more than the spend cap. The `error_msg` says which case applies.
+- A `402` is a monthly allowance, not a pace limit — there is no per-second or per-minute throttle. **Do not retry or back off**: the wall stands until the user pays or the month resets. Stop and report.
+- `GET /usage/my-usage` (usage object: `year`, `month`, `count`, `request_limit`, `request_buffer`, `resets_on`, `last_updated`) and everything under `/billing` are never blocked by the usage limit and don't count toward usage — always safe to check. Neither response echoes the API key, so printing them cannot leak it.
 - Pricing details: https://catalog.beer/api-pricing
 
 ### Billing endpoints
@@ -85,17 +69,10 @@ Read `valid_msg` for the failing field — it says exactly what to fix.
 | Endpoint | What it does |
 |---|---|
 | `GET /billing` | Billing status for the key: `billing_enabled`, `monthly_spend_cap_cents`, `card` (brand/last4, or `null`), plus this month's `count`, `request_limit`, `billable_requests`, `estimated_charge_cents`, `unbilled_balance_cents` |
-| `POST /billing/checkout-session` | Body: `success_url` + `cancel_url` (HTTPS URLs on catalog.beer or a subdomain). Returns a Stripe-hosted `url` — give it to the user to add their card in a browser. Nothing is charged at checkout; billing enables automatically once the card is saved |
-| `POST /billing/portal-session` | Body: `return_url`. Returns a Stripe portal `url` where the user manages saved cards and sees invoices |
 | `PATCH /billing` | Body: `monthly_spend_cap_cents` — `0` (block all paid usage) or `100`–`100000` ($1–$1,000) |
 | `DELETE /billing` | Turns billing off; the key returns to the free-tier cap. The card stays saved with Stripe |
 
-**These endpoints spend the user's money — only call them when the user
-explicitly asks.** Never start a checkout session, raise a spend cap, or
-disable billing on your own initiative. If a key hits its free-tier `402`
-mid-task, stop and tell the user their options — wait for the monthly reset,
-or add a payment method at https://catalog.beer/billing — rather than
-"fixing" it yourself.
+**These endpoints spend the user's money — only call them when the user explicitly asks.** Never raise a spend cap or disable billing on your own initiative. Adding or managing a payment method happens on the website, not through the API. If a key hits its free-tier `402` mid-task, stop and tell the user their options — wait for the monthly reset, or add a payment method at https://catalog.beer/billing — rather than "fixing" it yourself.
 
 ## Pagination
 
@@ -107,13 +84,9 @@ Cursor-based. List responses:
 
 - Pass `next_cursor` back as the `cursor` query param to get the next page.
 - `next_cursor` is only present when `has_more` is `true`.
-- `count` query param controls page size. Defaults: 500 for `/brewer`,
-  `/beer`, `/location`; 25 (max 100) for `*/search`; 100 for
-  `/location/nearby|zip|city`.
+- `count` query param controls page size. Defaults: 500 for `/brewer`, `/beer`, `/location`; 25 (max 100) for `*/search`; 100 for `/location/nearby|zip|city`.
 - URL-encode query values (everything except alphanumerics, `-`, `_`).
 
 ## IDs
 
-Entity IDs (beer, brewer, location, user) are 36-character UUIDs. Style IDs
-are human-readable slugs (`american-ipa`). `last_modified` fields are Unix
-timestamps (integers).
+Entity IDs (beer, brewer, location, user) are 36-character UUIDs. Style IDs are human-readable slugs (`american-ipa`). `last_modified` fields are Unix timestamps (integers).
