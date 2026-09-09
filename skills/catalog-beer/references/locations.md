@@ -25,7 +25,7 @@ A **location** is a physical place (taproom, brewery, brewpub) belonging to a br
 | `brewer_id` | **yes** | |
 | `country_code` | **yes** | ISO 3166-1 alpha-2 |
 | `name` | no | the venue's own name, or its neighborhood — see "Naming a location"; never the bare city |
-| `url` | no | location-specific URL — subject to the same **live reachability check** as the brewer's `url` (see [brewers.md](brewers.md)); an unreachable URL 400s the whole write, so retry once then send without `url` |
+| `url` | no | location-specific URL — subject to the same **live reachability check** as the brewer's `url` (see [brewers.md](brewers.md)); only a host that does not answer, or answers `404`/`410`, is refused (a bot-protection `403` is accepted), and a refused URL 400s the whole write, so retry once then send without `url` |
 
 ## Naming a location
 

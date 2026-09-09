@@ -4,7 +4,7 @@ description: >-
   Read from and contribute to Catalog.beer, an open database of breweries, beers, and brewery locations, via its REST API. Use when the user wants to add or update a beer, brewery, or taproom on catalog.beer; search the beer catalog; find breweries near a location; or needs authoritative beer style specifications (ABV/IBU/SRM ranges from Brewers Association / BJCP guidelines).
 license: MIT
 metadata:
-  version: "2.1.2"
+  version: "2.2.0"
   updated: "2026-09-09"
 ---
 
@@ -60,7 +60,7 @@ The most common task. Order of operations:
 5. (Optional) POST /location + POST /address/{location_id} for taprooms
 ```
 
-Step 2 — create the brewery (verify name/URL/description from their site). `short_description` is a subtitle shown in search results and is **limited to 160 characters** — exceeding it returns a 400. `url` is **fetched live by the API** and rejects far more than bad syntax — see "The URL field bites" below:
+Step 2 — create the brewery (verify name/URL/description from their site). `short_description` is a subtitle shown in search results and is **limited to 160 characters** — exceeding it returns a 400. `url` is **fetched live by the API** — a dead host or a `404` fails the whole write, but a bot-blocked `403` is accepted, so always send the correct URL; see "The URL field is checked live" below:
 
 ```bash
 curl -X POST https://api.catalog.beer/brewer \
@@ -125,26 +125,22 @@ The taxonomy has three tiers — **class** (`ale`/`lager`) → **family** (26, e
 
 Style specs are also the API's best read feature: `GET /style/{slug}` returns curated ABV/IBU/SRM/OG/FG ranges sourced from BA/BJCP guidelines — use it instead of recalling specs from memory.
 
-## The URL field bites
+## The URL field is checked live
 
-`url` (on brewers and locations) is not just syntax-checked — **the API fetches it live** before accepting the write: a `HEAD` request, 10s timeout, up to 10 redirects, strict TLS verification, sent with the user agent `api.catalog.beer/1.0`. Anything other than a final 2xx/3xx is treated as a bad URL.
+`url` (on brewers and locations) is fetched before the write is accepted: `HEAD`, then `GET` if `HEAD` did not serve a page; 10s timeout, up to 10 redirects, strict TLS verification, a desktop-browser user agent. The gate is deliberately lenient. **Only two outcomes are refused:** no answer at all (DNS failure, timeout, TLS error, connection refused) or a final `404`/`410`. Any other answer — a bot-protection or WAF `403`, a `429`, a `5xx` — is accepted. The theory: a site that answers is a real address, and blocking bots is the site's business, not evidence the URL is wrong. Link health is re-tested on a schedule afterwards.
 
-That produces false rejections on URLs that are perfectly correct:
+So **always try the write with the correct URL**, even when your own fetch of it is blocked. What you can reach and what the API accepts are different questions.
 
-- **Bot protection / WAF** (Cloudflare et al.) answering `403` to a non-browser user agent — common for breweries on hosted platforms
-- Servers that answer `405` to `HEAD` but serve `GET` fine
-- Sites slower than 10s, expired/self-signed certs, geo-blocked hosts
+Two consequences still hold:
 
-Two consequences worth knowing before you start:
+- **A refused URL fails the entire request** — `POST /brewer` with a dead `url` creates *no brewer at all*, not a brewer without a URL.
+- **Nothing is inferred from a blocked site.** When the answer was not a served page, the URL is stored exactly as submitted — no `https://` upgrade, no `www.` normalisation — so send the form a browser lands on.
 
-- **A refused URL fails the entire request** — `POST /brewer` with an unreachable `url` creates *no brewer at all*, not a brewer without a URL.
-- **A wrong URL already in the catalog can't be corrected** if the correct one is bot-protected: the PATCH 400s and the wrong URL stays.
-
-When a write fails with `valid_msg.url` set (the message says "something seems to be wrong with your URL" regardless of cause — it is not evidence the URL is wrong):
+When a write fails with `valid_msg.url` set (the message says "something seems to be wrong with your URL" for bad syntax and a dead host alike):
 
 1. Retry **once** with the exact URL a browser lands on — `https://`, correct `www.` or bare host, no tracking params.
-2. If it fails again, **resend without `url`** so the rest of the record is still created or updated. Never let the URL sink the write. (If the original was a PUT, retry as a PATCH — an omitted `url` on PUT clears the URL already on the record.)
-3. Tell the user plainly: the URL is correct, the API's reachability check refused it, and the field was left unset. Don't record a substitute URL (a Facebook page, an old domain) just to fill the field — a wrong URL is worse than none.
+2. If it fails again, the host really did not answer, or answered `404`/`410`. **Resend without `url`** so the rest of the record is still created or updated. (If the original was a PUT, retry as a PATCH — an omitted `url` on PUT clears the URL already on the record.)
+3. Tell the user plainly: the URL was refused and the field was left unset. Don't record a substitute URL (a Facebook page, an old domain) just to fill the field — a wrong URL is worse than none.
 
 ## Endpoint quick reference
 
@@ -170,7 +166,7 @@ All entity IDs are 36-char UUIDs; style IDs are slugs. List endpoints use cursor
 - Writing a brewer `short_description` longer than **160 characters** →
   400. Compose it as a one-line subtitle; put anything longer in `description`.
 - Formatting a `description` with Markdown — `**bold**`, `- bullets`, `[links](...)`. The API stores exactly the bytes you send and catalog.beer renders them as plain text, so the syntax appears literally on a public page and a human has to go and strip it. Write prose. **Newlines are the one thing that survives** — use blank lines for paragraphs.
-- Treating a `valid_msg.url` 400 as "the URL is wrong" and abandoning the write, or swapping in a different URL. The API fetched the site and something answered non-2xx — usually bot protection. Retry once, then send the record **without** `url`.
+- Skipping the `url` because your own fetch of the site was blocked. The API accepts a bot-protection `403`; it refuses only a host that does not answer or a `404`/`410`. Send the correct URL, and only on a `valid_msg.url` 400 retry once, then send the record **without** `url` — never swap in a different URL.
 - Assuming an unmatched `style` label is stored verbatim with a null `style_id`. It isn't — it's a `400` and nothing is written. Resend the label **plus** `style_id`/`parent`/`class` together. This applies to PATCH as well, where the whole patch is discarded: a `name` and an `abv` sent alongside an unresolvable `style` are not saved either, even though `valid_state` marks them `"valid"` (which means "passed validation", not "was written"). Fix the `"invalid"` field and resend the entire body.
 - Sending `style_id` without `style`, which overwrites the brewery's label with the canonical style name.
 - Verifying a write against a list endpoint. List and nested rows are **compact** — e.g. `GET /brewer/{id}/beer` rows omit `description` — so a missing field there is not a failed write. Verify with the single-object endpoint (`GET /beer/{id}`).
