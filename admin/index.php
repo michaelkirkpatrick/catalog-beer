@@ -50,6 +50,15 @@ echo $htmlHead->html;
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
+                                <h5 class="card-title">Reviews</h5>
+                                <p class="card-text">The brewer review loop's check-in: answer what is waiting on a decision, and read every change a review made.</p>
+                                <a href="/admin/reviews.php" class="btn btn-primary">View Reviews</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
                                 <h5 class="card-title">Error Log</h5>
                                 <p class="card-text">Unresolved errors, daily trends, top error numbers, and recent errors.</p>
                                 <a href="/admin/error-log.php" class="btn btn-primary">View Errors</a>

@@ -66,6 +66,7 @@ RewriteRule ^build-info/?$	build-info.php	[L]
 
 # Admin
 RewriteRule ^admin/error-log/?$	admin/error-log.php	[L]
+RewriteRule ^admin/reviews/?$	admin/reviews.php	[L]
 
 
 # Redirect Pages
