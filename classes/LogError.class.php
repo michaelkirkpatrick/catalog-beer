@@ -49,8 +49,10 @@ class LogError {
                 $this->errorNumber,
                 $this->errorMsg,
                 serialize($this->badData),
-                $_SERVER['REQUEST_URI'],
-                $_SERVER['REMOTE_ADDR'],
+                // Absent under the CLI (cron: generate-sitemap.php), which
+                // otherwise prints two warnings into every cron mail.
+                $_SERVER['REQUEST_URI'] ?? 'cli',
+                $_SERVER['REMOTE_ADDR'] ?? '',
                 time(),
                 $this->filename
             ]);

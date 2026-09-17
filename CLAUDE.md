@@ -37,7 +37,7 @@ When adding anything secret or generated to `.gitignore`, decide separately whet
 
 Two things to know about `--exclude`:
 - It doubles as a **protect** rule — it stops a file uploading *and* stops `--delete` removing the server's copy. So excluding an already-deployed file does **not** clean it up; remove it from the server manually.
-- That protect behavior is load-bearing for **server-generated files**. `sitemap*.xml` is built on the server by weekly cron (`generate-sitemap.php`), doesn't exist locally, and was being deleted on every deploy until it was excluded.
+- That protect behavior is load-bearing for **server-generated files**. `sitemap*.xml` is built on the server by weekly cron (`generate-sitemap.php`), doesn't exist locally, and was being deleted on every deploy until it was excluded. The generator writes `sitemapN.tmp.xml` and only swaps them in when every API section succeeded and the URL count is at least 80% of what is published; otherwise it leaves the published files alone and exits 1 (`--force` overrides). It used to publish whatever it got, and on 14 Sep 2026 one stalled run replaced 75,000 URLs with 13.
 
 ## Agent Skill mirror (`skills/`)
 
