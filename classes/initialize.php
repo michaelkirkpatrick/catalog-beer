@@ -29,10 +29,11 @@ $serverName = explode('.', $_SERVER['SERVER_NAME']);
 if($serverName[0] === 'staging'){
     define('ENVIRONMENT', 'staging');
     // Staging is a public host with production's robots.txt, and Search Console
-    // was indexing it as duplicate content (Sep 2026). A response header covers
-    // every response — pages, sitemaps, assets — and unlike a robots.txt
-    // Disallow it lets Google keep crawling, which is how the already-indexed
-    // staging URLs get seen as noindex and drop out.
+    // was indexing it as duplicate content (Sep 2026). A response header,
+    // rather than a robots.txt Disallow, lets Google keep crawling, which is
+    // how the already-indexed staging URLs get seen as noindex and drop out.
+    // This covers PHP responses; .htaccess adds the same header to static
+    // files (sitemaps, CSS, robots.txt), which never reach this code.
     header('X-Robots-Tag: noindex, nofollow');
 }else{
     define('ENVIRONMENT', 'production');

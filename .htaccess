@@ -36,6 +36,18 @@ Options -Indexes
 	</FilesMatch>
 </IfModule>
 
+# Staging must not be indexed. initialize.php sends this header on every PHP
+# response, but static files (sitemap*.xml, CSS, robots.txt) never reach PHP,
+# and Search Console had staging.catalog.beer in the index (Sep 2026). Matched
+# on the Host header so the same .htaccess deploys to both environments; on
+# production the env var is never set and nothing is added.
+<IfModule mod_setenvif.c>
+	SetEnvIf Host ^staging\. STAGING_HOST
+</IfModule>
+<IfModule mod_headers.c>
+	Header set X-Robots-Tag "noindex, nofollow" env=STAGING_HOST
+</IfModule>
+
 # Down for Maintenance (manual toggle — uncomment, set your IP, then test)
 # RewriteCond %{REQUEST_URI} !\.(css|ico|jpg|js|png)$
 # My IP Address for testing
