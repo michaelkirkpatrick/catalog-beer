@@ -325,7 +325,10 @@ if [ "$TRANSFER_COUNT" -eq 0 ] && [ "$DELETE_COUNT" -eq 0 ]; then
 fi
 
 # Set ownership and permissions so Apache can read/serve and michael can deploy.
-# config/passwords.php is locked down to 600 (owner-only) since it holds secrets.
-ssh -S "$SOCKET" -t "$REMOTE" "sudo chown -R www-data:developers $REMOTE_PATH/ && sudo find $REMOTE_PATH/ -type d -exec chmod 2775 {} + && sudo find $REMOTE_PATH/ -type f -exec chmod 664 {} + && sudo chmod 600 $REMOTE_PATH/config/passwords.php"
+# config/passwords.php is re-locked to 640 after the global chmod above loosens it to 664:
+# www-data reads it, the developers group reads it, "other" does not. The
+# HTTP-deny .htaccess beside it is what keeps it off the web (640 since
+# 2026-09-22; was 600, which shut out developers-group crons and tooling).
+ssh -S "$SOCKET" -t "$REMOTE" "sudo chown -R www-data:developers $REMOTE_PATH/ && sudo find $REMOTE_PATH/ -type d -exec chmod 2775 {} + && sudo find $REMOTE_PATH/ -type f -exec chmod 664 {} + && sudo chmod 640 $REMOTE_PATH/config/passwords.php"
 
 echo "Deploy to $DEST complete."
