@@ -29,7 +29,8 @@ Disallow: /*/edit-address
 Disallow: /*/add-address
 Disallow: /*/delete
 Disallow: /beer/add/
-Disallow: /brewer/add
+Disallow: /brewer/add$
+Disallow: /brewer/add?
 
 
 # ---------------------------------------------------------------------
