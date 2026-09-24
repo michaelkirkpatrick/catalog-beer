@@ -262,7 +262,7 @@ function reviewRail($review){
         'Brewer' => '<a href="' . brewerHref($review) . '">' . h(brewerName($review)) . ' &#8594;</a>',
         'Outcome' => outcomeTag($review->outcome),
         'URL' => h($review->url_verdict),
-        'Brewer field' => h($review->brewer_changed ?: '—'),
+        'Brewer field' => h($review->brewer_changed ? str_replace(',', ', ', $review->brewer_changed) : '—'),
         'Beers' => '+' . intval($review->beers_added) . ' ~' . intval($review->beers_updated),
         'Locations' => '+' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' &#8722;' . intval($review->locations_deleted),
         'Brief' => h($review->brief_version ?: '—'),
