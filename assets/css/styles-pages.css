@@ -574,7 +574,7 @@ a.be-lede:hover { text-decoration: underline; }
 .rv-none { margin: 0; font-family: var(--cb-mono); font-size: var(--cb-fs-label); letter-spacing: var(--cb-track-tag); color: var(--cb-muted-2); }
 .rv-none--stacked { margin-top: .5rem; }
 .rv-none a { color: var(--cb-link); }
-.rv-decision { margin: 0; font-family: var(--cb-serif); font-size: var(--cb-fs-lg); line-height: 1.45; color: var(--cb-ink); }
+.rv-decision { margin: 0; font-family: var(--cb-serif); font-size: var(--cb-fs-lg); line-height: 1.45; color: var(--cb-ink); white-space: pre-line; }
 .rv-decision small { font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); color: var(--cb-muted); margin-left: .4rem; }
 
 /* ---- changes: before → after, one row per write ---- */
