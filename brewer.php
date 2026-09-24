@@ -383,7 +383,13 @@ echo $htmlHead->html;
                         $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
                         if(!empty($urlHost)){
                             $urlHost = preg_replace('/^www\./', '', $urlHost);
-                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . h($urlHost) . ' &#8599;</a></span></div>';
+                            // A brewer may live on a page of another brewery's site (an
+                            // acquired brand on its owner's site), so a sub-page URL shows
+                            // its path too: "northchair.com/whetstone-beer", not the owner's
+                            // homepage. The homepage itself stays host-only.
+                            $urlPath = rtrim((string)parse_url($brewerData->brewer->url, PHP_URL_PATH), '/');
+                            $urlLabel = $urlHost . (preg_match('#^(/index\.(html?|php))?$#i', $urlPath) ? '' : $urlPath);
+                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . h($urlLabel) . ' &#8599;</a></span></div>';
                         }
                     }
                     ?>

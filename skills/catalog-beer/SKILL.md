@@ -4,8 +4,8 @@ description: >-
   Read from and contribute to Catalog.beer, an open database of breweries, beers, and brewery locations, via its REST API. Use when the user wants to add or update a beer, brewery, or taproom on catalog.beer; search the beer catalog; find breweries near a location; or needs authoritative beer style specifications (ABV/IBU/SRM ranges from Brewers Association / BJCP guidelines).
 license: MIT
 metadata:
-  version: "2.2.0"
-  updated: "2026-09-09"
+  version: "2.3.0"
+  updated: "2026-09-24"
 ---
 
 # Catalog.beer API
@@ -135,6 +135,7 @@ Two consequences still hold:
 
 - **A refused URL fails the entire request** — `POST /brewer` with a dead `url` creates *no brewer at all*, not a brewer without a URL.
 - **Nothing is inferred from a blocked site.** When the answer was not a served page, the URL is stored exactly as submitted — no `https://` upgrade, no `www.` normalisation — so send the form a browser lands on.
+- **A domain may be shared; a homepage may not.** One brewer per *homepage*, not per domain: an acquired brand that still sells under its own name stores its page on the owner's site (`https://northchair.com/whetstone-beer/`) as its `url`, beside the owner's record at the root. A second brewer at a homepage or a page another brewer already holds is refused with `valid_msg.url` naming that brewer — send the right page, never the owner's homepage.
 
 When a write fails with `valid_msg.url` set (the message says "something seems to be wrong with your URL" for bad syntax and a dead host alike):
 
