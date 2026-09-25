@@ -53,14 +53,20 @@ if(isset($_GET['page'])){
 // Set Cursor
 $cursor = base64_encode(($page - 1) * $perPage);
 
-// First-letter bucket for A-Z grouping: transliterate to ASCII, drop leading
-// punctuation/space, uppercase the first character. Non-letters group under '#'.
+// First-letter bucket for A-Z grouping, taken from the name's first character
+// as written: an accented letter counts as its base letter (À -> A), anything
+// else -- punctuation, digits, other scripts -- groups under '#'. Leading
+// punctuation is NOT skipped: the API sorts by the raw name, so "#FREEDOM" and
+// "'t Hofbrouwerijke" sit among the symbols at the front of the catalog, and a
+// heading of "F" or "T" there would be a lone group out of place.
 if(!function_exists('cbListLetter')){
     function cbListLetter($name){
-        $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', (string)$name);
-        if($ascii === false || $ascii === ''){ $ascii = (string)$name; }
-        $ascii = preg_replace('/^[^A-Za-z0-9]+/', '', $ascii);
-        $ch = strtoupper(substr($ascii, 0, 1));
+        $first = mb_substr((string)$name, 0, 1, 'UTF-8');
+        // Only letters get transliterated: iconv also turns "§" into "SS".
+        if(!preg_match('/^\p{L}$/u', $first)){ return '#'; }
+        $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $first);
+        // glibc gives "A" for "À"; other iconvs give "`A" -- keep only the letter.
+        $ch = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', (string)$ascii), 0, 1));
         return ($ch >= 'A' && $ch <= 'Z') ? $ch : '#';
     }
 }
@@ -101,17 +107,20 @@ echo $htmlHead->html;
             exit();
         }
 
-        // Group rows by first letter (data already sorted by name from the API).
+        // Group consecutive rows by first letter, in the API's order. The groups
+        // are not re-sorted: pagination follows the API's ORDER BY name, which
+        // puts symbols and digits first and other scripts after Z, so a '#'
+        // heading belongs wherever those rows actually fall.
         $groups = array();
         foreach($beerData->data as $row){
-            $groups[cbListLetter($row->name)][] = $row;
+            $letter = cbListLetter($row->name);
+            $last = count($groups) - 1;
+            if($last >= 0 && $groups[$last]['letter'] === $letter){
+                $groups[$last]['rows'][] = $row;
+            }else{
+                $groups[] = array('letter' => $letter, 'rows' => array($row));
+            }
         }
-        // A-Z, with the non-alphabetic '#' group last.
-        uksort($groups, function($a, $b){
-            if($a === '#'){ return 1; }
-            if($b === '#'){ return -1; }
-            return strcmp($a, $b);
-        });
 
         // Render the 3-column A-Z index (CSS multi-column; groups stay intact).
         // The grid doubles as a schema.org ItemList (summary-page pattern: each
@@ -120,7 +129,9 @@ echo $htmlHead->html;
         echo '<div class="cx-cols" itemscope itemtype="https://schema.org/ItemList">';
         echo '<meta itemprop="numberOfItems" content="' . count($beerData->data) . '" />';
         $position = 0;
-        foreach($groups as $letter => $rows){
+        foreach($groups as $group){
+            $letter = $group['letter'];
+            $rows = $group['rows'];
             echo '<div class="cx-grp">';
             echo '<div class="cx-letter">' . h($letter) . '</div>';
             foreach($rows as $row){
