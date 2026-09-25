@@ -282,7 +282,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>url</var></td>
                                 <td>string</td>
-                                <td>The URL of the brewer&#8217;s website. A homepage can belong to only one brewer, but a brewer may use a page on another brewery&#8217;s site &mdash; an acquired brand that lives on its owner&#8217;s site &mdash; so a domain may be shared as long as no two brewers store the same page.</td>
+                                <td>The URL of the brewer&#8217;s website. A homepage (e.g. northchair.com) can belong to only one brewer. However, a brewery&#8217;s URL may be a page on another brewery&#8217;s site (e.g. northchair.com/whetstone-beer) &mdash; an acquired brand that lives on its owner&#8217;s site &mdash; so a domain may be shared as long as no two brewers store the same page.</td>
                             </tr>
                             <tr>
                                 <td><var>cb_verified</var></td>
