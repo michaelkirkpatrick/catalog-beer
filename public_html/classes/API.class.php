@@ -111,7 +111,6 @@ class API {
         $response = curl_exec($curl);
         $err = curl_error($curl);
         $this->httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
 
         if(!empty($err)){           
             // cURL Error

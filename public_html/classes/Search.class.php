@@ -99,12 +99,10 @@ class Search {
             $errorLog->errorMsg = 'Algolia multi-query cURL error';
             $errorLog->badData = $this->errorMsg;
             $errorLog->write();
-            curl_close($ch);
             return null;
         }
 
         $this->httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if($this->httpcode < 200 || $this->httpcode >= 300){
             // HTTP Error
