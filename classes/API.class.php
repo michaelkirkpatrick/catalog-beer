@@ -47,18 +47,35 @@ class API {
         }
     }
     
-    public function request($type, $endpoint, $data){
-        // Admin Endpoint?
-        // /login and /users
-        if(substr($endpoint, 0, 6) === '/login' || substr($endpoint, 0, 6) === '/users' || substr($endpoint, 0, 10) === '/error-log' || substr($endpoint, 0, 13) === '/location/map'){
-            $this->apiKey = $this->masterAPIKey;
-        }else{
-            if(!empty($this->usersAPIKey)){
-                // Use the User's API Key
-                $this->apiKey = $this->usersAPIKey;
-            }
+    // Which key a request goes out under. The website reads the catalog on
+    // behalf of whoever is looking at it, so public reads (GET /beer, /brewer,
+    // /location, /style, ...) always use the master key: the API neither logs
+    // nor counts master-key requests, so browsing the site never draws on the
+    // visitor's own monthly allowance (and can't 402 the site once they're over
+    // it), and master-only shapes like the list pages' ?enriched=1 come back
+    // whether or not they're logged in. The user's key is presented only where
+    // the API needs to know who is asking: every write (attribution, privilege
+    // checks) and the handful of GETs that answer per key or gate on the key's
+    // admin flag. A user calling the API directly is unaffected by any of this.
+    private function keyFor($type, $endpoint){
+        // Account plumbing the site does as itself, whatever the method.
+        foreach(array('/login', '/users', '/error-log', '/location/map') as $prefix){
+            if(strpos($endpoint, $prefix) === 0){ return $this->masterAPIKey; }
         }
-                
+        if(empty($this->usersAPIKey)){ return $this->masterAPIKey; }
+        if($type !== 'GET'){ return $this->usersAPIKey; }
+        // Per-user GETs: the key's own usage and billing, the admin-gated
+        // dashboards and queues, and the caller's role on a brewer.
+        foreach(array('/usage', '/billing', '/activity', '/metrics', '/review', '/brewer-lead') as $prefix){
+            if(strpos($endpoint, $prefix) === 0){ return $this->usersAPIKey; }
+        }
+        if(preg_match('#^/brewer/[-0-9a-f]{36}/permissions#', $endpoint)){ return $this->usersAPIKey; }
+        return $this->masterAPIKey;
+    }
+
+    public function request($type, $endpoint, $data){
+        $this->apiKey = $this->keyFor($type, $endpoint);
+
         // Headers & Options
         $headerArray = array(
             "accept: application/json",
