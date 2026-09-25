@@ -12,7 +12,12 @@ if(!in_array($environment, ['staging', 'production'])){
 }
 
 // --- Bootstrap (no initialize.php — no session, CSRF, or nav needed) ---
-define('ROOT', dirname(__FILE__));
+//
+// This script lives at the vhost root (/var/www/html/<vhost>/cron/), outside
+// the DocumentRoot, so ROOT is the sibling public_html/ -- the same value
+// $_SERVER['DOCUMENT_ROOT'] gives the pages. The sitemap files are written
+// into ROOT, i.e. into the DocumentRoot, where they are served from.
+define('ROOT', dirname(__DIR__) . '/public_html');
 define('ENVIRONMENT', $environment);
 
 require_once ROOT . '/config/config.php';

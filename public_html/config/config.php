@@ -1,9 +1,16 @@
 <?php
 // Non-secret configuration — safe to deploy and commit.
-// Secrets live in passwords.php (never deployed or committed).
+// Secrets live in the vhost-root common/passwords.php (never deployed or committed).
 
 // Load Secrets
-require_once __DIR__ . '/passwords.php';
+//
+// The secrets file lives OUTSIDE the web root, at the vhost root beside
+// public_html (/var/www/html/<vhost>/common/passwords.php), so Apache cannot
+// serve it under any misconfiguration. ROOT is public_html in every context
+// that loads this file (DOCUMENT_ROOT on the web, derived from __DIR__ in
+// cron/), so dirname(ROOT) is the vhost root. Locally the same expression
+// resolves to the repo's own common/passwords.php.
+require_once dirname(ROOT) . '/common/passwords.php';
 
 // Database Configuration
 define('DB_HOST', 'localhost');

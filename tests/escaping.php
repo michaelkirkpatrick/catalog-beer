@@ -33,7 +33,7 @@ executable PHP and the web root is public.
 
 if(php_sapi_name() !== 'cli'){ exit('CLI only'); }
 
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__) . '/public_html');
 define('ENVIRONMENT', 'staging');   // htmlHead only adds Fathom on production
 
 require_once(ROOT . '/classes/helpers/html.php');

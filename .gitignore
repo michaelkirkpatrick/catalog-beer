@@ -2,17 +2,22 @@
 # OS
 .DS_Store
 
-# Credentials
-config/passwords.php
+# Secrets -- the repo-root common/ mirrors the vhost-root secrets dir on the
+# 26.04 servers (outside public_html/). Ignore the file, not the directory:
+# common/Secrets.md (rotation checklist) stays tracked.
+common/passwords.php
+# Defensive: the secrets file must never reappear inside the web root either
+# (its pre-2026-09-25 home was config/, inside the DocumentRoot).
+public_html/config/passwords.php
 
 # Database dumps — contain user emails, password hashes, and live API keys.
 # This repo is PUBLIC. Never commit one.
 *.sql
 
-# Generated at deploy time
-config/version.php
+# Generated at deploy time into the deploy source (see deploy.sh § Version file)
+public_html/config/version.php
 
-# Generated on the server by generate-sitemap.php (cron)
+# Generated on the server by cron/generate-sitemap.php into the DocumentRoot
 sitemap*.xml
 
 # Private keys
@@ -26,7 +31,6 @@ php-errors-*.txt
 .editorconfig
 
 # Legacy
-classes/_notes/dwsync.xml
 _notes/dwsync.xml
 
 # Scratch space: local working files (dumps, exports, one-off scripts, notes).
