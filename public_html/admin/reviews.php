@@ -354,6 +354,28 @@ if($singleID !== ''){
         }
     }
 
+    // The item on screen. A list row carries no sources, changes or notes
+    // (Review.class.php in the API: a list of 100 would be tens of MB), so the
+    // one review being answered is fetched again in full. A lead's list row
+    // is already complete.
+    $openCount = is_array($open) ? count($open) : 0;
+    $index = min($queueIndex, max(1, $openCount));
+    $current = $openCount > 0 ? $open[$index - 1] : null;
+    $currentError = '';
+    if($current && $current->kind === 'review'){
+        $response = $api->request('GET', '/review/' . rawurlencode($current->id), '');
+        $result = json_decode($response);
+        if(isset($result->error) && $result->error){
+            $currentError = $result->error_msg;
+        }elseif(is_object($result)){
+            $result->kind = 'review';
+            $result->askedAt = $current->askedAt;
+            $current = $result;
+        }else{
+            $currentError = 'The full review could not be loaded, so its notes, sources and changes are missing below.';
+        }
+    }
+
     // History. The API's cursor is base64 of a row offset (Review.class.php,
     // listReviews) and has_more comes from a LIMIT count+1, so a page number
     // maps straight onto a cursor and there is no total to show. If that
@@ -426,9 +448,6 @@ echo $htmlHead->html;
         }else{
 
         // ================= Waiting on you =================
-        $openCount = is_array($open) ? count($open) : 0;
-        $index = min($queueIndex, max(1, $openCount));
-        $current = $openCount > 0 ? $open[$index - 1] : null;
         ?>
         <div class="rv-sechead">
             <span class="cb-label">Waiting on you<?php if($openError === ''){ echo '<span class="cb-count">' . number_format($openCount) . '</span>'; } ?></span>
@@ -461,6 +480,9 @@ echo $htmlHead->html;
             echo '</section>';
         }else{
             $changes = reviewChanges($current);
+            if($currentError !== ''){
+                echo '<div class="cbf-alert" role="alert"><span class="cbf-alert__i" aria-hidden="true">!</span><div>' . h($currentError) . '</div></div>';
+            }
             echo '<section class="rv-review">';
             echo '<div>';
             echo '<div class="rv-brewer"><a class="rv-brewer__name" href="' . brewerHref($current) . '">' . h(brewerName($current)) . '</a>';
@@ -551,7 +573,7 @@ echo $htmlHead->html;
                     echo '<td class="rv-when rv-hide-sm">' . h($review->url_verdict) . '</td>';
                     echo '<td class="rv-num rv-hide-sm">+' . intval($review->beers_added) . ' ~' . intval($review->beers_updated) . '</td>';
                     echo '<td class="rv-num rv-hide-sm">+' . intval($review->locations_added) . ' ~' . intval($review->locations_updated) . ' &#8722;' . intval($review->locations_deleted) . '</td>';
-                    echo '<td class="rv-num">' . number_format(count(reviewChanges($review))) . '</td>';
+                    echo '<td class="rv-num">' . number_format(intval($review->changes_count ?? 0)) . '</td>';
                     echo '<td class="rv-when rv-hide-sm">' . h($review->brief_version ?: '—') . '</td>';
                     echo '</tr>' . "\n";
                 }
