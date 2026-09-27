@@ -21,15 +21,38 @@ if (isset($_COOKIE[session_name()])) {
 
 // Define Root
 define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
-define("SERVER_NAME", $_SERVER['SERVER_NAME']);
 
-// Load Configuration
-require_once ROOT . '/config/config.php';
+// Establish Environment from the hostname.
+//
+// Exact matches only, and a miss is fatal. Apache's catch-all vhost already
+// denies hostnames it doesn't serve, so a request reaching this point with an
+// unlisted name means a vhost gained a name without a row here, or a CLI
+// caller forgot to set SERVER_NAME. Either way, refuse rather than fall
+// through to production credentials. www.catalog.beer is listed because the vhost
+// carries it as a ServerAlias: Apache's canonical-host.conf 301s it before PHP
+// runs, but the row costs nothing if that Include is ever missing.
+$hostTable = [
+    'catalog.beer' => 'production',
+    'www.catalog.beer' => 'production',
+    'staging.catalog.beer' => 'staging',
+];
+$hostName = strtolower($_SERVER['SERVER_NAME'] ?? '');
+if (!isset($hostTable[$hostName])) {
+    if (PHP_SAPI === 'cli') {
+        fwrite(STDERR, "initialize.php: unknown SERVER_NAME '{$hostName}'; expected one of "
+            . implode(', ', array_keys($hostTable)) . "\n");
+        exit(1);
+    }
+    // 421 Misdirected Request: this server does not answer for that authority.
+    http_response_code(421);
+    header('Content-Type: text/plain; charset=UTF-8');
+    exit("Unknown host.\n");
+}
+define('ENVIRONMENT', $hostTable[$hostName]);
+define("SERVER_NAME", $hostName);
+unset($hostTable, $hostName);
 
-// Establish Environment
-$serverName = explode('.', $_SERVER['SERVER_NAME']);
-if($serverName[0] === 'staging'){
-    define('ENVIRONMENT', 'staging');
+if(ENVIRONMENT === 'staging'){
     // Staging is a public host with production's robots.txt, and Search Console
     // was indexing it as duplicate content (Sep 2026). A response header,
     // rather than a robots.txt Disallow, lets Google keep crawling, which is
@@ -37,9 +60,10 @@ if($serverName[0] === 'staging'){
     // This covers PHP responses; .htaccess adds the same header to static
     // files (sitemaps, CSS, robots.txt), which never reach this code.
     header('X-Robots-Tag: noindex, nofollow');
-}else{
-    define('ENVIRONMENT', 'production');
 }
+
+// Load Configuration (after ENVIRONMENT, so config.php may branch on it)
+require_once ROOT . '/config/config.php';
 
 // Set Timezone
 date_default_timezone_set('America/Los_Angeles');

@@ -26,9 +26,8 @@ define('RECAPTCHA_SITE_KEY', '6LfLYo0sAAAAAMXwORFEsq5yuDW-a62k5FBc-yp2');
 // The renderer (vector) and the map style are configured against this ID in the Cloud
 // Console, not in code: restyling the maps needs no deploy, and leaves no trace in this
 // repo. Tilt/rotate is enabled on the ID but overridden off in each map's options.
-// Shared by staging and production. To split them, note that config.php loads at
-// initialize.php:25 but ENVIRONMENT is not defined until line 29 — either move that
-// block above the require, or branch on $_SERVER['SERVER_NAME'] here.
+// Shared by staging and production. To split them, branch on ENVIRONMENT, which
+// initialize.php defines before it requires this file.
 define('GOOGLE_MAPS_MAP_ID', 'b57fea0da75866f5998c4200');
 
 ?>
