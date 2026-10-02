@@ -73,6 +73,19 @@ class API {
         return $this->masterAPIKey;
     }
 
+    // A page view holds a PHP worker for as long as its API call takes, so a
+    // slow API turns into a full worker pool here. Public GETs answer in tens
+    // of milliseconds; give up on them fast so a stall frees workers instead of
+    // stacking them. Writes (address validation, style suggestions) and the
+    // admin reports legitimately run longer and keep the old ceiling.
+    private function timeoutFor($type, $endpoint): int {
+        if($type !== 'GET'){ return 10; }
+        foreach(array('/activity', '/metrics', '/location/map', '/review', '/brewer-lead', '/usage') as $prefix){
+            if(strpos($endpoint, $prefix) === 0){ return 10; }
+        }
+        return 4;
+    }
+
     public function request($type, $endpoint, $data){
         $this->apiKey = $this->keyFor($type, $endpoint);
 
@@ -88,8 +101,8 @@ class API {
         $optionsArray = array(
             CURLOPT_URL => $this->url . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 10,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => $this->timeoutFor($type, $endpoint),
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => $type,
             CURLOPT_HTTPHEADER => $headerArray
