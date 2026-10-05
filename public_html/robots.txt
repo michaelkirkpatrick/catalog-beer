@@ -87,6 +87,29 @@ Disallow: /
 
 
 # ---------------------------------------------------------------------
+# SEO-TOOL CRAWLERS — not permitted
+#
+# These index links to sell backlink and keyword reports to their own
+# subscribers. They are not search engines: nobody finds catalog.beer
+# through them, and nothing links back. Over Sep 25-Oct 5 2026 the four
+# below were a quarter of all requests (SERanking alone 8.4%, from one
+# IP). Blocked 2026-10-05.
+# ---------------------------------------------------------------------
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SERankingBacklinksBot
+Disallow: /
+
+
+# ---------------------------------------------------------------------
 # USER-TRIGGERED AI AGENTS — welcome
 #
 # These fetch live, on behalf of a specific person asking a specific
