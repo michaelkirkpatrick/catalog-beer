@@ -7,6 +7,20 @@ class API {
     private $apiKey = '';
     private $url = 'https://api.catalog.beer';
 
+    // One cURL handle for the whole page, shared by every API instance the
+    // page creates (the page itself, Navigation for the counts, StyleList for
+    // the taxonomy). A page renders from four to six sequential calls to the
+    // API on the same box, and until Oct 2026 each one opened its own
+    // connection: ~14 ms of TLS handshake on the 1-vCPU production box
+    // against 3-20 ms of actual work. Reusing the handle keeps the connection
+    // open (Apache KeepAlive, 5 s), so only the first call pays the
+    // handshake. curl_reset() clears every option between calls but keeps the
+    // live connection, which is exactly the split we want: a POST's body can
+    // never leak into the next GET, and the socket survives. Nothing is
+    // shared across PHP requests -- a static lives only as long as the
+    // request that created it.
+    private static $curl = null;
+
     public $error = false;
     public $errorMsg = '';
     public $httpcode = 0;
@@ -118,15 +132,25 @@ class API {
                 break;
         }
                 
-        // Create cURL Request
-        $curl = curl_init();
+        // Reuse the page's connection (see self::$curl)
+        if(self::$curl === null){
+            self::$curl = curl_init();
+        }else{
+            curl_reset(self::$curl);
+        }
+        $curl = self::$curl;
         curl_setopt_array($curl, $optionsArray);
         $response = curl_exec($curl);
         $err = curl_error($curl);
         $this->httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        if(!empty($err)){           
-            // cURL Error
+        if(!empty($err)){
+            // cURL Error. Drop the shared handle so the next call starts from a
+            // fresh connection rather than whatever state the failed one left.
+            // (No curl_close(): deprecated in PHP 8.5, and releasing the last
+            // reference frees the handle anyway.)
+            self::$curl = null;
+
             $this->error = true;
             $this->errorMsg = 'Whoops, looks like a bug on our end. We\'ve logged the issue and our support team will look into it.';
             
