@@ -182,18 +182,19 @@ class Navigation {
     }
 
     // Brewer, beer + style counts. Brewers and beers come from the API and are
-    // cached per-session (short TTL) because the navbar badges them on every page
-    // and each count is a blocking API call. Cache is busted on add (see
-    // beer-add.php / brewer-add.php) for instant freshness.
+    // cached in APCu (classes/helpers/cache.php, 10-minute TTL) because the
+    // navbar badges them on every page and each count is a blocking API call.
+    // The cache is shared by every request on the box -- it used to live in
+    // $_SESSION, which anonymous visitors (every crawler) never have, so the
+    // pages under the most load paid both calls every time. Busted on add
+    // (see beer-add.php / brewer-add.php) for instant freshness.
     //
     // Public because the homepage states all three numbers in its lede — it reads
     // brewers and beers from here rather than counting again, so the page costs
     // nothing the navbar wasn't already paying for. Either may be null (API down).
     public function counts(){
-        // Per-request memo. Anonymous visitors have no session at all (see
-        // initialize.php), so the session cache below can't hold anything for
-        // them — without this the homepage, which asks for the counts before it
-        // renders the navbar, would fetch them twice on every hit.
+        // Per-request memo: the homepage asks for the counts before it renders
+        // the navbar, and this keeps that to one cache lookup per request.
         if($this->countsCache !== null){
             return $this->countsCache;
         }
@@ -209,12 +210,11 @@ class Navigation {
         return $out;
     }
 
-    // The API-backed half of counts(): brewers + beers, session-cached.
+    // The API-backed half of counts(): brewers + beers, APCu-cached.
     private function fetchCounts(){
-        if(isset($_SESSION['cb_counts']['ts']) && (time() - $_SESSION['cb_counts']['ts']) < 600){
-            // Fill any key a session cached before this shape grew, so a live
-            // session mid-deploy reads null (no badge) rather than warning.
-            return $_SESSION['cb_counts'] + array('brewers' => null, 'beers' => null);
+        $cached = cacheGet('counts');
+        if(is_array($cached)){
+            return $cached + array('brewers' => null, 'beers' => null);
         }
 
         $out = array('brewers' => null, 'beers' => null, 'ts' => time());
@@ -230,7 +230,7 @@ class Navigation {
 
         // Cache only on at least one success, so a transient API blip retries next page
         if($out['brewers'] !== null || $out['beers'] !== null){
-            $_SESSION['cb_counts'] = $out;
+            cacheSet('counts', $out, 600);
         }
 
         return $out;

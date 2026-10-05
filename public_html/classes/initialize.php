@@ -81,6 +81,7 @@ spl_autoload_register(function ($class_name) {
 //   session.php — ensureSession + csrf_field/csrf_verify
 //   meta.php    — beerMetaDescription, indefiniteArticle (raw text for htmlHead)
 //   http.php    — serve503, serve404
+//   cache.php   — cacheGet/cacheSet/cacheDelete: APCu, shared by every request
 //   location.php— labels for an unnamed location, plus the address / maps-link
 //                 formatting shared by the location and brewer facts rails
 //   forms.php   — suppressAutofill: no-fill attributes for catalog fields
@@ -90,6 +91,7 @@ require_once ROOT . '/classes/helpers/meta.php';
 require_once ROOT . '/classes/helpers/assets.php';
 require_once ROOT . '/classes/helpers/session.php';
 require_once ROOT . '/classes/helpers/http.php';
+require_once ROOT . '/classes/helpers/cache.php';
 require_once ROOT . '/classes/helpers/location.php';
 require_once ROOT . '/classes/helpers/forms.php';
 require_once ROOT . '/classes/helpers/address.php';

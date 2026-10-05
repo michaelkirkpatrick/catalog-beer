@@ -1,8 +1,9 @@
 <?php
 /* ---
 StyleList — fetches the canonical style vocabulary from the API and shapes it for
-the guided-style confidence-ladder field, caching per session (fetched once, not
-per page load).
+the guided-style confidence-ladder field, cached in APCu for an hour
+(classes/helpers/cache.php) so it is fetched once per box, not once per page
+load -- the session cache it replaced never applied to anonymous visitors.
 
 Emits one global, window.CB_TAX, in the compact runtime shape the resolver uses:
   classes : [{slug,name,bev,al}]                    (GET /style/class)
@@ -16,10 +17,9 @@ input (the server still resolves/validates on submit).
 class StyleList {
 
     public static function styles(){
-        // v2: rows carry srm — versioned key so pre-upgrade session caches refetch
-        if(isset($_SESSION['cb_styles_v2']) && is_array($_SESSION['cb_styles_v2'])){
-            return $_SESSION['cb_styles_v2'];
-        }
+        // v2: rows carry srm — versioned key so a pre-upgrade cache is a miss
+        $cached = cacheGet('styles_v2');
+        if(is_array($cached)){ return $cached; }
         $data = self::call('/style');
         $out = array();
         foreach($data as $s){
@@ -33,15 +33,14 @@ class StyleList {
                 'srm'    => (isset($s['srm']) && is_array($s['srm'])) ? $s['srm'] : null,
             );
         }
-        if($out){ $_SESSION['cb_styles_v2'] = $out; }
+        if($out){ cacheSet('styles_v2', $out, 3600); }
         return $out;
     }
 
     public static function parents(){
-        // v2: rows carry desc — versioned key so pre-upgrade session caches refetch
-        if(isset($_SESSION['cb_parents_v2']) && is_array($_SESSION['cb_parents_v2'])){
-            return $_SESSION['cb_parents_v2'];
-        }
+        // v2: rows carry desc — versioned key so a pre-upgrade cache is a miss
+        $cached = cacheGet('parents_v2');
+        if(is_array($cached)){ return $cached; }
         $data = self::call('/style/parent');
         $out = array();
         foreach($data as $p){
@@ -55,7 +54,7 @@ class StyleList {
                 'desc' => $p['description'] ?? null,
             );
         }
-        if($out){ $_SESSION['cb_parents_v2'] = $out; }
+        if($out){ cacheSet('parents_v2', $out, 3600); }
         return $out;
     }
 
@@ -65,7 +64,7 @@ class StyleList {
     // vocabulary — never title-cased for display. Every beer.parent is a FK
     // into style_parent, so the lookup always hits; the raw slug is returned
     // only in the degenerate case the API vocabulary itself is unreachable.
-    // Built once per request from the session-cached parents list.
+    // Built once per request from the cached parents list.
     public static function parentName($slug){
         static $map = null;
         if($map === null){
@@ -78,9 +77,8 @@ class StyleList {
     }
 
     public static function classes(){
-        if(isset($_SESSION['cb_classes']) && is_array($_SESSION['cb_classes'])){
-            return $_SESSION['cb_classes'];
-        }
+        $cached = cacheGet('classes');
+        if(is_array($cached)){ return $cached; }
         $data = self::call('/style/class');
         $out = array();
         foreach($data as $c){
@@ -91,7 +89,7 @@ class StyleList {
                 'al'   => self::aliases($c),
             );
         }
-        if($out){ $_SESSION['cb_classes'] = $out; }
+        if($out){ cacheSet('classes', $out, 3600); }
         return $out;
     }
 
