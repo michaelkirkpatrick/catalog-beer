@@ -116,32 +116,34 @@ if($abv !== null){ $specBars .= $specBar('ABV', $abv, $abvLabel . '%', $styleAbv
 if($ibu !== null){ $specBars .= $specBar('IBU', $ibu, (string)intval($ibu), $styleIbu, 0, 120); }
 
 // ----- Related: the brewer's other beers in this style family -----
-// The one list endpoint that exists carries `parent` (family), `abv`, and the
-// verified flags per beer — everything the list needs, in one call.
+// One small call: the brewer's beer list filtered to this beer's family (the
+// `parent` the beer object already carries), without the beer itself, capped
+// at $relCap, with has_more saying whether anything was cut. Until Oct 2026
+// this pulled the brewer's whole catalog to pick six names -- ~1.5 MB per
+// page view for the largest brewer. A beer filed with no family has no strip
+// and makes no call. The client-side family/self checks stay so the page still
+// renders correctly against an API that ignores the parameters (deploy order).
 $related = array();
 $familyLabel = '';
 $hasVerifiedRel = false;
 $relCap = 6;
 $relOverflow = false;
-$brewerBeerResp = $api->request('GET', '/brewer/' . $beerData->brewer->id . '/beer', '');
-$brewerBeerData = json_decode($brewerBeerResp);
-if(isset($brewerBeerData->data)){
-    // This beer's family comes from its own row in the brewer catalog
-    $family = '';
-    foreach($brewerBeerData->data as $b){
-        if(isset($b->id) && $b->id === $beerData->id){ $family = $b->parent ?? ''; break; }
-    }
-    if(!empty($family)){
+$family = $beerData->parent ?? '';
+if(!empty($family)){
+    $brewerBeerResp = $api->request('GET', '/brewer/' . $beerData->brewer->id . '/beer?parent=' . rawurlencode($family) . '&exclude=' . rawurlencode($beerData->id) . '&count=' . $relCap, '');
+    $brewerBeerData = json_decode($brewerBeerResp);
+    if(isset($brewerBeerData->data)){
         foreach($brewerBeerData->data as $b){
             if(!isset($b->id) || $b->id === $beerData->id){ continue; }
-            if(($b->parent ?? '') === $family){
-                $related[] = $b;
-                if(!empty($b->cb_verified) || !empty($b->brewer_verified)){ $hasVerifiedRel = true; }
-            }
+            if(($b->parent ?? '') !== $family){ continue; }
+            $related[] = $b;
+        }
+        $relOverflow = !empty($brewerBeerData->has_more) || (count($related) > $relCap);
+        $related = array_slice($related, 0, $relCap);
+        foreach($related as $b){
+            if(!empty($b->cb_verified) || !empty($b->brewer_verified)){ $hasVerifiedRel = true; }
         }
         $familyLabel = ($family === 'other') ? 'Other' : StyleList::parentName($family);
-        $relOverflow = (count($related) > $relCap);
-        $related = array_slice($related, 0, $relCap);
     }
 }
 $hasRelated = count($related) > 0;

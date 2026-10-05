@@ -817,7 +817,40 @@ curl -X GET \
 
                 <h3 id="brewer-beers">List all Beers made by a Brewer</h3>
 
-                <p>If you would like a list of all the beers made by a brewer, send a request to the <code>/brewer/{brewer_id}/beer</code> endpoint. </p>
+                <p>If you would like a list of all the beers made by a brewer, send a request to the <code>/brewer/{brewer_id}/beer</code> endpoint. Without query parameters it returns the brewery&#8217;s whole catalog in one response, however large.</p>
+
+                <p>Three optional query parameters narrow the list. Any of them with an invalid value returns a <code>400</code> rather than being ignored.</p>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><var>parent</var></td>
+                                <td>string</td>
+                                <td>A style family id (e.g. <var>ipa</var>, <var>porter</var>). Only beers filed in that family are returned; an unknown family returns an empty list.</td>
+                            </tr>
+                            <tr>
+                                <td><var>exclude</var></td>
+                                <td>string</td>
+                                <td>A <var>beer_id</var> to leave out of the list, for example the beer whose page is listing its siblings.</td>
+                            </tr>
+                            <tr>
+                                <td><var>count</var></td>
+                                <td>integer</td>
+                                <td>The maximum number of beers to return, from 1 to 500. When more exist, <var>has_more</var> is <var>true</var>. There is no cursor on this endpoint: the list is alphabetical, so narrow it with <var>parent</var> rather than paging through it.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>For example, <code>/brewer/{brewer_id}/beer?parent=ipa&amp;exclude={beer_id}&amp;count=6</code> returns up to six of the brewery&#8217;s other IPAs.</p>
 
                 <p>This request returns a list object with the following parameters.</p>
 
@@ -844,7 +877,7 @@ curl -X GET \
                             <tr>
                                 <td><var>has_more</var></td>
                                 <td>Boolean</td>
-                                <td>As of this writing, this will always return <var>false</var>. In the future, if pagination of results is required, this value may become <var>true</var>.</td>
+                                <td><var>false</var> unless a <var>count</var> was given and the brewery has more matching beers than that.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer</var></td>
@@ -854,7 +887,7 @@ curl -X GET \
                             <tr>
                                 <td><var>data</var></td>
                                 <td>array</td>
-                                <td>An array containing all the beers associated with this brewer in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, <var>style</var>, <var>style_id</var>, <var>parent</var>, <var>class</var>, <var>beverage_type</var>, <var>abv</var>, <var>cb_verified</var>, and <var>brewer_verified</var> described below.</td>
+                                <td>An array containing the beers associated with this brewer in the database (all of them, or those matching the query parameters) sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, <var>style</var>, <var>style_id</var>, <var>parent</var>, <var>class</var>, <var>beverage_type</var>, <var>abv</var>, <var>cb_verified</var>, and <var>brewer_verified</var> described below.</td>
                             </tr>
                             <tr>
                                 <td><var>id</var></td>
