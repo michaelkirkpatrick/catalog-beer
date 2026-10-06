@@ -302,7 +302,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>country_code</var></td>
                                 <td>string</td>
-                                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses. Currently &#8220;US&#8221; for every brewer: the catalog collects US breweries, and only a Catalog.beer administrator can record another country.</td>
+                                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses (e.g. &#8220;US&#8221;, &#8220;CA&#8221;, &#8220;BE&#8221;). See <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a> or the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. Locations can only be added for US brewers at this time; the brewer record itself may be from anywhere.</td>
                             </tr>
                             <tr>
                                 <td><var>cb_verified</var></td>
@@ -398,7 +398,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>ISO 3166&#8211;1 Alpha&#8211;2; defaults to &#8220;US&#8221;. Any other value is refused with a 403 unless you are a Catalog.beer administrator.</td>
+                                <td>ISO 3166&#8211;1 Alpha&#8211;2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>); defaults to &#8220;US&#8221;. Case-insensitive; an unassigned code is a 400.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -470,7 +470,7 @@ curl -X POST \
                             <tr>
                                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>ISO 3166&#8211;1 Alpha&#8211;2; reset to &#8220;US&#8221; if omitted. Any other value is refused with a 403 unless you are a Catalog.beer administrator.</td>
+                                <td>ISO 3166&#8211;1 Alpha&#8211;2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>); reset to &#8220;US&#8221; if omitted.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -542,7 +542,7 @@ curl -X PUT \
                             <tr>
                                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>ISO 3166&#8211;1 Alpha&#8211;2; Any value other than &#8220;US&#8221; is refused with a 403 unless you are a Catalog.beer administrator.</td>
+                                <td>ISO 3166&#8211;1 Alpha&#8211;2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>). Case-insensitive; an unassigned code is a 400.</td>
                             </tr>
                         </tbody>
                     </table>

@@ -13,7 +13,7 @@
 | `status` | string | `"active"` or `"closed"` — the catalog's closure flag; see "Closed breweries" |
 | `founded_year` | integer \| null | year only |
 | `closed_year` | integer \| null | year only; set only when `status` is `"closed"` |
-| `country_code` | string | ISO 3166-1 alpha-2, same standard as locations; `"US"` for every brewer today |
+| `country_code` | string | ISO 3166-1 alpha-2, same standard as locations (`"US"`, `"CA"`, `"BE"`) |
 | `cb_verified` | boolean | verified by Catalog.beer — server-controlled |
 | `brewer_verified` | boolean | verified by brewery staff — server-controlled |
 | `last_modified` | integer | Unix timestamp |
@@ -29,7 +29,7 @@
 | `status` | no | `"active"` (default) or `"closed"` |
 | `founded_year` | no | four-digit year, not in the future; only when the brewery or a named source states it ("est. 2014") — never from a copyright footer |
 | `closed_year` | no | four-digit year; needs `status: "closed"` and cannot precede `founded_year` |
-| `country_code` | no | ISO 3166-1 alpha-2, default `"US"`; **anything else is `403` for a non-admin key** — the catalog's scope is US breweries |
+| `country_code` | no | ISO 3166-1 alpha-2, default `"US"`; any assigned code, case-insensitive. The brewer may be anywhere; **locations are still US-only** |
 
 Returns the created brewer object (grab `id` for subsequent beer/location creates).
 

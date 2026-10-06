@@ -4,8 +4,8 @@ description: >-
   Read from and contribute to Catalog.beer, an open database of breweries, beers, and brewery locations, via its REST API. Use when the user wants to add or update a beer, brewery, or taproom on catalog.beer; search the beer catalog; find breweries near a location; or needs authoritative beer style specifications (ABV/IBU/SRM ranges from Brewers Association / BJCP guidelines).
 license: MIT
 metadata:
-  version: "2.5.0"
-  updated: "2026-10-05"
+  version: "2.5.1"
+  updated: "2026-10-06"
 ---
 
 # Catalog.beer API

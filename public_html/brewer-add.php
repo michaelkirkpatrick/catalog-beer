@@ -12,6 +12,7 @@ $description = '';
 $shortDescription = '';
 $url = '';
 $status = 'active';
+$countryCode = 'US';
 $foundedYear = '';
 $closedYear = '';
 
@@ -27,10 +28,11 @@ if(isset($_POST['submit'])){
     $shortDescription = $_POST['short_description'];
     $url = $_POST['url'];
     $status = ($_POST['status'] ?? 'active') === 'closed' ? 'closed' : 'active';
+    $countryCode = strtoupper(trim($_POST['country_code'] ?? 'US'));
     $foundedYear = trim($_POST['founded_year'] ?? '');
     $closedYear = trim($_POST['closed_year'] ?? '');
 
-    $brewerData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url, 'status'=>$status);
+    $brewerData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url, 'country_code'=>$countryCode, 'status'=>$status);
     if($foundedYear !== ''){ $brewerData['founded_year'] = (int)$foundedYear; }
     if($status === 'closed' && $closedYear !== ''){ $brewerData['closed_year'] = (int)$closedYear; }
     $api = new API();
@@ -120,6 +122,23 @@ echo $htmlHead->html;
             $inputURL->validMsg = $validMsg['url'];
             suppressAutofill($inputURL);
             echo $inputURL->display();
+
+            // Country: every assigned ISO 3166-1 code, US first then by name.
+            // The brewer may be anywhere; locations are still US-only.
+            $countryCodes = CountryCode::CODES;
+            asort($countryCodes);
+            $countryValues = array_merge(array('US'), array_values(array_diff(array_keys($countryCodes), array('US'))));
+            $countryNames = array_map(fn($c) => $countryCodes[$c], $countryValues);
+            $dropCountry = new DropDown();
+            $dropCountry->name = 'country_code';
+            $dropCountry->values = $countryValues;
+            $dropCountry->descriptions = $countryNames;
+            $dropCountry->label = 'Country';
+            $dropCountry->showLabel = true;
+            $dropCountry->currentValue = $countryCode;
+            $dropCountry->validState = $validState['country_code'];
+            $dropCountry->validMsg = $validMsg['country_code'];
+            echo $dropCountry->display();
 
             // Status + years. Year inputs post as strings; '' means "unknown"
             // and goes to the API as null so a cleared field actually clears.

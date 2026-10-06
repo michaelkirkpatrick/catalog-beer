@@ -37,6 +37,7 @@ $description = $brewerData->description ?? '';
 $shortDescription = $brewerData->short_description ?? '';
 $url = $brewerData->url ?? '';
 $status = $brewerData->status ?? 'active';
+$countryCode = $brewerData->country_code ?? 'US';
 $foundedYear = $brewerData->founded_year ?? '';
 $closedYear = $brewerData->closed_year ?? '';
 
@@ -52,13 +53,14 @@ if(isset($_POST['submit'])){
     $shortDescription = $_POST['short_description'];
     $url = $_POST['url'];
     $status = ($_POST['status'] ?? 'active') === 'closed' ? 'closed' : 'active';
+    $countryCode = strtoupper(trim($_POST['country_code'] ?? 'US'));
     $foundedYear = trim($_POST['founded_year'] ?? '');
     $closedYear = trim($_POST['closed_year'] ?? '');
 
     // Every field goes, so the form is a full picture of the record: the API
     // only writes what changed, and a year cleared here clears there.
     $patchData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url,
-        'status'=>$status, 'founded_year'=>($foundedYear === '' ? null : (int)$foundedYear), 'closed_year'=>(($status === 'closed' && $closedYear !== '') ? (int)$closedYear : null));
+        'country_code'=>$countryCode, 'status'=>$status, 'founded_year'=>($foundedYear === '' ? null : (int)$foundedYear), 'closed_year'=>(($status === 'closed' && $closedYear !== '') ? (int)$closedYear : null));
     $api = new API();
     $patchResponse = $api->request('PATCH', '/brewer/' . $brewerID, $patchData);
     $patchArray = json_decode($patchResponse, true);
@@ -147,6 +149,23 @@ echo $htmlHead->html;
             $inputURL->validMsg = $validMsg['url'];
             suppressAutofill($inputURL);
             echo $inputURL->display();
+
+            // Country: every assigned ISO 3166-1 code, US first then by name.
+            // The brewer may be anywhere; locations are still US-only.
+            $countryCodes = CountryCode::CODES;
+            asort($countryCodes);
+            $countryValues = array_merge(array('US'), array_values(array_diff(array_keys($countryCodes), array('US'))));
+            $countryNames = array_map(fn($c) => $countryCodes[$c], $countryValues);
+            $dropCountry = new DropDown();
+            $dropCountry->name = 'country_code';
+            $dropCountry->values = $countryValues;
+            $dropCountry->descriptions = $countryNames;
+            $dropCountry->label = 'Country';
+            $dropCountry->showLabel = true;
+            $dropCountry->currentValue = $countryCode;
+            $dropCountry->validState = $validState['country_code'];
+            $dropCountry->validMsg = $validMsg['country_code'];
+            echo $dropCountry->display();
 
             // Status + years. Year inputs post as strings; '' means "unknown"
             // and goes to the API as null so a cleared field actually clears.
