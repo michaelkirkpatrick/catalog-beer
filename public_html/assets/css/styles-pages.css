@@ -133,6 +133,8 @@
 .bp-title a { color: inherit; text-decoration: none; }
 .bp-title a:hover { color: var(--cb-link); }
 .bp-lede { font-size: 1.3rem; margin: .8rem 0 0; max-width: 44ch; }
+/* Closed tag under the title; the lede, when present, follows it. */
+.bp-status { margin: .7rem 0 0; }
 .bp-prose { max-width: 60ch; }
 .bp-sec { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
 

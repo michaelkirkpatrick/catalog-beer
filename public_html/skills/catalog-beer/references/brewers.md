@@ -10,6 +10,10 @@
 | `description` | string \| null | plain text; may contain newlines |
 | `short_description` | string \| null | max 160 chars |
 | `url` | string \| null | brewery website |
+| `status` | string | `"active"` or `"closed"` — the catalog's closure flag; see "Closed breweries" |
+| `founded_year` | integer \| null | year only |
+| `closed_year` | integer \| null | year only; set only when `status` is `"closed"` |
+| `country_code` | string | ISO 3166-1 alpha-2, same standard as locations; `"US"` for every brewer today |
 | `cb_verified` | boolean | verified by Catalog.beer — server-controlled |
 | `brewer_verified` | boolean | verified by brewery staff — server-controlled |
 | `last_modified` | integer | Unix timestamp |
@@ -22,8 +26,18 @@
 | `description` | no | plain text; newlines are kept, markup renders literally |
 | `short_description` | no | max 160 characters |
 | `url` | no | brewery's website URL — **fetched live**, see below |
+| `status` | no | `"active"` (default) or `"closed"` |
+| `founded_year` | no | four-digit year, not in the future; only when the brewery or a named source states it ("est. 2014") — never from a copyright footer |
+| `closed_year` | no | four-digit year; needs `status: "closed"` and cannot precede `founded_year` |
+| `country_code` | no | ISO 3166-1 alpha-2, default `"US"`; **anything else is `403` for a non-admin key** — the catalog's scope is US breweries |
 
 Returns the created brewer object (grab `id` for subsequent beer/location creates).
+
+### Closed breweries
+
+A brewery that has stopped brewing keeps its record and its beers; `status: "closed"` is how the catalog says so. Record a closure as one PATCH — `{"status": "closed", "closed_year": 2023}` when a source states the year, `{"status": "closed"}` when none does (an unknown year is `null`, never a guess). A `closed_year` sent without `status: "closed"`, or earlier than `founded_year`, is a `400` on `valid_state.closed_year`. Patching `status` back to `"active"` clears `closed_year` for you.
+
+**A closed brewer accepts no new locations:** `POST /location` on one (or moving a location onto one) is `400` with `valid_state.brewer_id = "invalid"` and a message saying it is closed. Its existing locations can still be edited or deleted. Closed brewers still appear in `GET /brewer/search`, ranked below active brewers within the same match tier, with `status` on the row.
 
 ### The `url` reachability check
 
@@ -46,7 +60,7 @@ Dropping `url` is safe on POST and PATCH. On **PUT** it is not — an omitted `u
 
 ## PATCH /brewer/{brewer_id} — partial update
 
-All fields optional: `name`, `description`, `short_description` (max 160), `url`. Only provided fields change.
+All fields optional: `name`, `description`, `short_description` (max 160), `url`, `status`, `founded_year`, `closed_year`, `country_code`. Only provided fields change.
 
 **To clear an optional field, PATCH it with `null`.** An absent key means "leave this alone"; an explicit `null` means "clear this". Clearing a lapsed or hijacked URL is therefore one field:
 
@@ -60,7 +74,7 @@ Use this rather than PUT whenever you are clearing something. PUT clears by *omi
 
 ## PUT /brewer/{brewer_id} — full replace
 
-`name` required. **Omitted optional fields (`description`, `short_description`, `url`) are cleared to null.** Creates if absent → `201`.
+`name` required. **Omitted optional fields (`description`, `short_description`, `url`, `founded_year`, `closed_year`) are cleared to null, and an omitted `status` resets to `"active"`, `country_code` to `"US"`** — a PUT that leaves `status` out reopens a closed brewer. Use PATCH on anything closed. Creates if absent → `201`.
 
 ## DELETE /brewer/{brewer_id}
 

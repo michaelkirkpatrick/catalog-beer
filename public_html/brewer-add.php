@@ -5,12 +5,15 @@ include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 $alert = new Alert();
 
 // Default Values
-$validState = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'');
-$validMsg = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'');
+$validState = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'', 'status'=>'', 'founded_year'=>'', 'closed_year'=>'', 'country_code'=>'');
+$validMsg = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'', 'status'=>'', 'founded_year'=>'', 'closed_year'=>'', 'country_code'=>'');
 $name = '';
 $description = '';
 $shortDescription = '';
 $url = '';
+$status = 'active';
+$foundedYear = '';
+$closedYear = '';
 
 // Process Form
 if(isset($_POST['submit'])){
@@ -23,15 +26,20 @@ if(isset($_POST['submit'])){
     $description = $_POST['description'];
     $shortDescription = $_POST['short_description'];
     $url = $_POST['url'];
+    $status = ($_POST['status'] ?? 'active') === 'closed' ? 'closed' : 'active';
+    $foundedYear = trim($_POST['founded_year'] ?? '');
+    $closedYear = trim($_POST['closed_year'] ?? '');
 
-    $brewerData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url);
+    $brewerData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url, 'status'=>$status);
+    if($foundedYear !== ''){ $brewerData['founded_year'] = (int)$foundedYear; }
+    if($closedYear !== ''){ $brewerData['closed_year'] = (int)$closedYear; }
     $api = new API();
     $brewerResponse = $api->request('POST', '/brewer', $brewerData);
     $brewerArray = json_decode($brewerResponse, true);
     if(isset($brewerArray['error'])){
         $alert->msg = $brewerArray['error_msg'];
-        $validState = $brewerArray['valid_state'];
-        $validMsg = $brewerArray['valid_msg'];
+        $validState = array_merge($validState, $brewerArray['valid_state'] ?? array());
+        $validMsg = array_merge($validMsg, $brewerArray['valid_msg'] ?? array());
     }else{
         // Success
         cacheDelete('counts');  // bust navbar count cache so the new brewer shows immediately
@@ -112,6 +120,47 @@ echo $htmlHead->html;
             $inputURL->validMsg = $validMsg['url'];
             suppressAutofill($inputURL);
             echo $inputURL->display();
+
+            // Status + years. Year inputs post as strings; '' means "unknown"
+            // and goes to the API as null so a cleared field actually clears.
+            $dropStatus = new DropDown();
+            $dropStatus->name = 'status';
+            $dropStatus->values = array('active', 'closed');
+            $dropStatus->descriptions = array('Open', 'Closed');
+            $dropStatus->label = 'Status';
+            $dropStatus->showLabel = true;
+            $dropStatus->currentValue = $status;
+            $dropStatus->validState = $validState['status'];
+            $dropStatus->validMsg = $validMsg['status'];
+            echo $dropStatus->display();
+
+            $inputFounded = new InputField();
+            $inputFounded->name = 'founded_year';
+            $inputFounded->description = 'Founded';
+            $inputFounded->hint = 'Year only, as the brewery states it (e.g. 2014). Leave blank if unknown.';
+            $inputFounded->type = 'number';
+            $inputFounded->required = false;
+            $inputFounded->maxLength = 4;
+            $inputFounded->placeholder = 'YYYY';
+            $inputFounded->value = $foundedYear;
+            $inputFounded->validState = $validState['founded_year'];
+            $inputFounded->validMsg = $validMsg['founded_year'];
+            suppressAutofill($inputFounded);
+            echo $inputFounded->display();
+
+            $inputClosed = new InputField();
+            $inputClosed->name = 'closed_year';
+            $inputClosed->description = 'Closed';
+            $inputClosed->hint = 'Only for a closed brewery, and only when the year is known.';
+            $inputClosed->type = 'number';
+            $inputClosed->required = false;
+            $inputClosed->maxLength = 4;
+            $inputClosed->placeholder = 'YYYY';
+            $inputClosed->value = $closedYear;
+            $inputClosed->validState = $validState['closed_year'];
+            $inputClosed->validMsg = $validMsg['closed_year'];
+            suppressAutofill($inputClosed);
+            echo $inputClosed->display();
             ?>
             </div>
             <div class="cbf-actions">

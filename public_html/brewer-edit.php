@@ -30,12 +30,15 @@ if(!permissionsCanEdit($perms, !empty($brewerData->cb_verified), !empty($brewerD
 }
 
 // Default Values from Existing Data
-$validState = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'');
-$validMsg = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'');
+$validState = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'', 'status'=>'', 'founded_year'=>'', 'closed_year'=>'', 'country_code'=>'');
+$validMsg = array('name'=>'', 'url'=>'', 'description'=>'', 'short_description'=>'', 'status'=>'', 'founded_year'=>'', 'closed_year'=>'', 'country_code'=>'');
 $name = $brewerData->name;
 $description = $brewerData->description ?? '';
 $shortDescription = $brewerData->short_description ?? '';
 $url = $brewerData->url ?? '';
+$status = $brewerData->status ?? 'active';
+$foundedYear = $brewerData->founded_year ?? '';
+$closedYear = $brewerData->closed_year ?? '';
 
 // Process Form
 if(isset($_POST['submit'])){
@@ -48,15 +51,21 @@ if(isset($_POST['submit'])){
     $description = $_POST['description'];
     $shortDescription = $_POST['short_description'];
     $url = $_POST['url'];
+    $status = ($_POST['status'] ?? 'active') === 'closed' ? 'closed' : 'active';
+    $foundedYear = trim($_POST['founded_year'] ?? '');
+    $closedYear = trim($_POST['closed_year'] ?? '');
 
-    $patchData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url);
+    // Every field goes, so the form is a full picture of the record: the API
+    // only writes what changed, and a year cleared here clears there.
+    $patchData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url,
+        'status'=>$status, 'founded_year'=>($foundedYear === '' ? null : (int)$foundedYear), 'closed_year'=>($closedYear === '' ? null : (int)$closedYear));
     $api = new API();
     $patchResponse = $api->request('PATCH', '/brewer/' . $brewerID, $patchData);
     $patchArray = json_decode($patchResponse, true);
     if(isset($patchArray['error'])){
         $alert->msg = $patchArray['error_msg'];
-        $validState = $patchArray['valid_state'];
-        $validMsg = $patchArray['valid_msg'];
+        $validState = array_merge($validState, $patchArray['valid_state'] ?? array());
+        $validMsg = array_merge($validMsg, $patchArray['valid_msg'] ?? array());
     }else{
         // Success
         header('location: /brewer/' . $patchArray['id']);
@@ -139,6 +148,47 @@ echo $htmlHead->html;
             $inputURL->validMsg = $validMsg['url'];
             suppressAutofill($inputURL);
             echo $inputURL->display();
+
+            // Status + years. Year inputs post as strings; '' means "unknown"
+            // and goes to the API as null so a cleared field actually clears.
+            $dropStatus = new DropDown();
+            $dropStatus->name = 'status';
+            $dropStatus->values = array('active', 'closed');
+            $dropStatus->descriptions = array('Open', 'Closed');
+            $dropStatus->label = 'Status';
+            $dropStatus->showLabel = true;
+            $dropStatus->currentValue = $status;
+            $dropStatus->validState = $validState['status'];
+            $dropStatus->validMsg = $validMsg['status'];
+            echo $dropStatus->display();
+
+            $inputFounded = new InputField();
+            $inputFounded->name = 'founded_year';
+            $inputFounded->description = 'Founded';
+            $inputFounded->hint = 'Year only, as the brewery states it (e.g. 2014). Leave blank if unknown.';
+            $inputFounded->type = 'number';
+            $inputFounded->required = false;
+            $inputFounded->maxLength = 4;
+            $inputFounded->placeholder = 'YYYY';
+            $inputFounded->value = $foundedYear;
+            $inputFounded->validState = $validState['founded_year'];
+            $inputFounded->validMsg = $validMsg['founded_year'];
+            suppressAutofill($inputFounded);
+            echo $inputFounded->display();
+
+            $inputClosed = new InputField();
+            $inputClosed->name = 'closed_year';
+            $inputClosed->description = 'Closed';
+            $inputClosed->hint = 'Only for a closed brewery, and only when the year is known.';
+            $inputClosed->type = 'number';
+            $inputClosed->required = false;
+            $inputClosed->maxLength = 4;
+            $inputClosed->placeholder = 'YYYY';
+            $inputClosed->value = $closedYear;
+            $inputClosed->validState = $validState['closed_year'];
+            $inputClosed->validMsg = $validMsg['closed_year'];
+            suppressAutofill($inputClosed);
+            echo $inputClosed->display();
             ?>
             </div>
             <div class="cbf-actions">

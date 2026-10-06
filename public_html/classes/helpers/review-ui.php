@@ -82,6 +82,8 @@ function leadPlace($lead){
     $parts = array();
     if(!empty($lead->city)){ $parts[] = $lead->city; }
     if(!empty($lead->state_short)){ $parts[] = $lead->state_short; }
+    // A non-US lead names its country; US is the default and says nothing.
+    if(!empty($lead->country_code) && $lead->country_code !== 'US'){ $parts[] = $lead->country_code; }
     return implode(', ', $parts);
 }
 

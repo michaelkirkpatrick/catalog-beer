@@ -285,6 +285,26 @@ echo $htmlHead->html;
                                 <td>The URL of the brewer&#8217;s website. A homepage (e.g. northchair.com) can belong to only one brewer. However, a brewery&#8217;s URL may be a page on another brewery&#8217;s site (e.g. northchair.com/whetstone-beer) &mdash; an acquired brand that lives on its owner&#8217;s site &mdash; so a domain may be shared as long as no two brewers store the same page.</td>
                             </tr>
                             <tr>
+                                <td><var>status</var></td>
+                                <td>string</td>
+                                <td>&#8220;active&#8221; or &#8220;closed&#8221;. A brewery that has stopped brewing keeps its record and its beers; this flag is how the catalog says so. A closed brewer accepts no new locations.</td>
+                            </tr>
+                            <tr>
+                                <td><var>founded_year</var></td>
+                                <td>integer</td>
+                                <td>The year the brewery was founded, or <var>null</var> when unknown. Year only.</td>
+                            </tr>
+                            <tr>
+                                <td><var>closed_year</var></td>
+                                <td>integer</td>
+                                <td>The year the brewery closed, or <var>null</var>. Only ever set when <var>status</var> is &#8220;closed&#8221;; a closure whose year is unknown is &#8220;closed&#8221; with a <var>null</var> year.</td>
+                            </tr>
+                            <tr>
+                                <td><var>country_code</var></td>
+                                <td>string</td>
+                                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses. Currently &#8220;US&#8221; for every brewer: the catalog collects US breweries, and only a Catalog.beer administrator can record another country.</td>
+                            </tr>
+                            <tr>
                                 <td><var>cb_verified</var></td>
                                 <td>Boolean</td>
                                 <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer&#8217;s information.</td>
@@ -313,6 +333,10 @@ echo $htmlHead->html;
   "description": "HopSaint was born after one too many late nights navigating a crowded bar just to have a great beer unceremoniously poured into a dirty pint glass. We believe fresh draft beer shouldn't be confined to the pub. You should choose when, where, how, and with whom you enjoy a fresh, crafted beer. That's at the heart of HopSaint - a community that fosters lasting relationships &amp; enriches our hometown through the production of honest, real beer. A community built on craft beer.",
   "short_description": "A brewery in Torrance, CA.",
   "url": "https://www.hopsaint.com/",
+  "status": "active",
+  "founded_year": 2015,
+  "closed_year": null,
+  "country_code": "US",
   "cb_verified": true,
   "brewer_verified": false,
   "last_modified": 1783639445
@@ -355,6 +379,26 @@ echo $htmlHead->html;
                                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
                                 <td>The URL of the brewer&#8217;s website.</td>
+                            </tr>
+                            <tr>
+                                <td><var>status</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>&#8220;active&#8221; (the default) or &#8220;closed&#8221;.</td>
+                            </tr>
+                            <tr>
+                                <td><var>founded_year</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A four-digit year, no later than this year. Send it only when the brewery or a named source states it.</td>
+                            </tr>
+                            <tr>
+                                <td><var>closed_year</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A four-digit year; requires <var>status</var> &#8220;closed&#8221; and cannot precede <var>founded_year</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>ISO 3166&#8211;1 Alpha&#8211;2; defaults to &#8220;US&#8221;. Any other value is refused with a 403 unless you are a Catalog.beer administrator.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -408,6 +452,26 @@ curl -X POST \
                                 <td>string</td>
                                 <td>The URL of the brewer&#8217;s website. Cleared if omitted.</td>
                             </tr>
+                            <tr>
+                                <td><var>status</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>&#8220;active&#8221; or &#8220;closed&#8221;. Reset to &#8220;active&#8221; if omitted &#8212; a PUT that omits it reopens a closed brewer, so prefer PATCH to change anything else on one.</td>
+                            </tr>
+                            <tr>
+                                <td><var>founded_year</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A four-digit year, no later than this year. Cleared if omitted.</td>
+                            </tr>
+                            <tr>
+                                <td><var>closed_year</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A four-digit year; requires <var>status</var> &#8220;closed&#8221; and cannot precede <var>founded_year</var>. Cleared if omitted.</td>
+                            </tr>
+                            <tr>
+                                <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>ISO 3166&#8211;1 Alpha&#8211;2; reset to &#8220;US&#8221; if omitted. Any other value is refused with a 403 unless you are a Catalog.beer administrator.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -459,6 +523,26 @@ curl -X PUT \
                                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
                                 <td>The URL of the brewer&#8217;s website.</td>
+                            </tr>
+                            <tr>
+                                <td><var>status</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>&#8220;active&#8221; or &#8220;closed&#8221;. Patching a closed brewer back to &#8220;active&#8221; also clears its <var>closed_year</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>founded_year</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A four-digit year, no later than this year. Send <var>null</var> to clear it.</td>
+                            </tr>
+                            <tr>
+                                <td><var>closed_year</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A four-digit year; requires <var>status</var> &#8220;closed&#8221; and cannot precede <var>founded_year</var>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
+                                <td>string</td>
+                                <td>ISO 3166&#8211;1 Alpha&#8211;2; Any value other than &#8220;US&#8221; is refused with a 403 unless you are a Catalog.beer administrator.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -3432,7 +3516,7 @@ curl -X GET \
                     <ul>
                         <li>A <var>location</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var>, <var>telephone</var>, and a nested <var>address</var> object</li>
                         <li>A <var>distance</var> object described below</li>
-                        <li>A <var>brewer</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
+                        <li>A <var>brewer</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>status</var>, <var>founded_year</var>, <var>closed_year</var>, <var>country_code</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
                     </ul>
                 </td>
             </tr>
