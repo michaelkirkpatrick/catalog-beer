@@ -58,7 +58,7 @@ if(isset($_POST['submit'])){
     // Every field goes, so the form is a full picture of the record: the API
     // only writes what changed, and a year cleared here clears there.
     $patchData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url,
-        'status'=>$status, 'founded_year'=>($foundedYear === '' ? null : (int)$foundedYear), 'closed_year'=>($closedYear === '' ? null : (int)$closedYear));
+        'status'=>$status, 'founded_year'=>($foundedYear === '' ? null : (int)$foundedYear), 'closed_year'=>(($status === 'closed' && $closedYear !== '') ? (int)$closedYear : null));
     $api = new API();
     $patchResponse = $api->request('PATCH', '/brewer/' . $brewerID, $patchData);
     $patchArray = json_decode($patchResponse, true);
@@ -178,7 +178,6 @@ echo $htmlHead->html;
             $inputClosed = new InputField();
             $inputClosed->name = 'closed_year';
             $inputClosed->description = 'Year Closed';
-            $inputClosed->hint = 'Only for a closed brewery.';
             $inputClosed->type = 'number';
             $inputClosed->required = false;
             $inputClosed->maxLength = 4;
@@ -209,6 +208,23 @@ echo $htmlHead->html;
     </div>
     <?php echo $nav->footer(); ?>
     <script>
+    // Year Closed only applies to a closed brewery: show it when the status
+    // says so, clear it when the status flips back to open (the API refuses a
+    // closed_year on an open brewer, and clears it itself on a reopen).
+    (function(){
+        var status = document.getElementById('statusField');
+        var closed = document.getElementById('closed_yearField');
+        if(!status || !closed){ return; }
+        var field = closed.closest('.cbf-field');
+        var toggle = function(){
+            var isClosed = status.value === 'closed';
+            field.hidden = !isClosed;
+            if(!isClosed){ closed.value = ''; }
+        };
+        status.addEventListener('change', toggle);
+        toggle();
+    })();
+
     // Live "n / max" count for fields that render a .cbf-count
     document.querySelectorAll('.cbf-count[data-count-for]').forEach(function(el){
         var field = document.getElementById(el.getAttribute('data-count-for'));

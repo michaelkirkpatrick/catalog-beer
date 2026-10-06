@@ -62,6 +62,9 @@
 .cbf-subhead__n{margin-left:auto;font-size:.8125rem;color:#5C564C;}
 
 .cbf-field{margin-bottom:1.15rem;}
+/* A field toggled by script (Year Closed follows Brewery Status) stays hidden
+   even though .cbf-field sets its own display. */
+.cbf-field[hidden]{display:none;}
 .cbf-field:last-child{margin-bottom:0;}
 .cbf-labelrow{display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;}
 .cbf-label{font-family:var(--cb-mono);font-size:var(--cb-fs-label);letter-spacing:var(--cb-track-label);text-transform:uppercase;color:var(--cb-ink-2);}

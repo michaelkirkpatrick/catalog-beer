@@ -32,7 +32,7 @@ if(isset($_POST['submit'])){
 
     $brewerData = array('name'=>$name, 'description'=>$description, 'short_description'=>$shortDescription, 'url'=>$url, 'status'=>$status);
     if($foundedYear !== ''){ $brewerData['founded_year'] = (int)$foundedYear; }
-    if($closedYear !== ''){ $brewerData['closed_year'] = (int)$closedYear; }
+    if($status === 'closed' && $closedYear !== ''){ $brewerData['closed_year'] = (int)$closedYear; }
     $api = new API();
     $brewerResponse = $api->request('POST', '/brewer', $brewerData);
     $brewerArray = json_decode($brewerResponse, true);
@@ -151,7 +151,6 @@ echo $htmlHead->html;
             $inputClosed = new InputField();
             $inputClosed->name = 'closed_year';
             $inputClosed->description = 'Year Closed';
-            $inputClosed->hint = 'Only for a closed brewery.';
             $inputClosed->type = 'number';
             $inputClosed->required = false;
             $inputClosed->maxLength = 4;
@@ -171,6 +170,23 @@ echo $htmlHead->html;
     </div>
     <?php echo $nav->footer(); ?>
     <script>
+    // Year Closed only applies to a closed brewery: show it when the status
+    // says so, clear it when the status flips back to open (the API refuses a
+    // closed_year on an open brewer, and clears it itself on a reopen).
+    (function(){
+        var status = document.getElementById('statusField');
+        var closed = document.getElementById('closed_yearField');
+        if(!status || !closed){ return; }
+        var field = closed.closest('.cbf-field');
+        var toggle = function(){
+            var isClosed = status.value === 'closed';
+            field.hidden = !isClosed;
+            if(!isClosed){ closed.value = ''; }
+        };
+        status.addEventListener('change', toggle);
+        toggle();
+    })();
+
     // Live "n / max" count for fields that render a .cbf-count
     document.querySelectorAll('.cbf-count[data-count-for]').forEach(function(el){
         var field = document.getElementById(el.getAttribute('data-count-for'));
