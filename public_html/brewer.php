@@ -209,20 +209,46 @@ echo $htmlHead->html;
         <div class="bp-body">
             <div>
                 <header class="bp-hero">
-                    <h1 class="cb-title bp-title" itemprop="name"><?php
+                    <?php
+                    // Closed: the operating span sits beside the name in muted
+                    // italic, the way a reference book dates a historical entry
+                    // ("Harbor Lane Brewing Co. 2011–2023"). It stays outside the
+                    // link and the itemprop="name" span, so neither the link text
+                    // nor the structured-data name carries the dates. Bare dates
+                    // don't say "closed" aloud, so that case gets a hidden prefix.
+                    $isClosed = (($brewerData->brewer->status ?? 'active') === 'closed');
+                    $foundedYear = !empty($brewerData->brewer->founded_year) ? (int)$brewerData->brewer->founded_year : null;
+                    $closedYear = !empty($brewerData->brewer->closed_year) ? (int)$brewerData->brewer->closed_year : null;
+                    $yearsLabel = '';
+                    if($isClosed){
+                        if($foundedYear !== null && $closedYear !== null){
+                            $yearsLabel = '<span class="cb-sr-only">Closed. Operated </span>' . $foundedYear . '&#8211;' . $closedYear;
+                        }elseif($closedYear !== null){
+                            $yearsLabel = 'closed ' . $closedYear;
+                        }elseif($foundedYear !== null){
+                            $yearsLabel = $foundedYear . '&#8211;closed';
+                        }else{
+                            $yearsLabel = 'closed';
+                        }
+                    }
+                    ?>
+                    <h1 class="cb-title bp-title"><?php
                     if(!empty($brewerData->brewer->url)){
                         $brewerURL = $brewerData->brewer->url;
-                        echo '<a href="' . h($brewerURL) . '" target="_blank" rel="noopener" itemprop="url">' . h($brewerName) . '</a>';
+                        echo '<a href="' . h($brewerURL) . '" target="_blank" rel="noopener" itemprop="url"><span itemprop="name">' . h($brewerName) . '</span></a>';
                     }else{
-                        echo h($brewerName);
+                        echo '<span itemprop="name">' . h($brewerName) . '</span>';
+                    }
+                    if($isClosed){
+                        echo '<wbr><span class="bp-years">' . $yearsLabel . '</span>';
                     }
                     ?></h1>
                     <?php
-                    // Closed: the one fact a visitor needs before anything else.
-                    // The year rides on the tag when the catalog holds it.
-                    if(($brewerData->brewer->status ?? 'active') === 'closed'){
-                        $closedLabel = 'Closed' . (!empty($brewerData->brewer->closed_year) ? ' ' . (int)$brewerData->brewer->closed_year : '');
-                        echo '<p class="bp-status"><span class="cb-tag cb-tag--accent">' . h($closedLabel) . '</span></p>';
+                    if($foundedYear !== null){
+                        echo '<meta itemprop="foundingDate" content="' . $foundedYear . '" />' . "\n";
+                    }
+                    if($isClosed && $closedYear !== null){
+                        echo '<meta itemprop="dissolutionDate" content="' . $closedYear . '" />' . "\n";
                     }
                     if(!empty($brewerData->brewer->short_description)){
                         echo '<p class="cb-lede bp-lede">' . h($brewerData->brewer->short_description) . '</p>';

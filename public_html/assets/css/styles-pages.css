@@ -133,8 +133,10 @@
 .bp-title a { color: inherit; text-decoration: none; }
 .bp-title a:hover { color: var(--cb-link); }
 .bp-lede { font-size: 1.3rem; margin: .8rem 0 0; max-width: 44ch; }
-/* Closed tag under the title; the lede, when present, follows it. */
-.bp-status { margin: .7rem 0 0; }
+/* Closed brewer: operating span beside the name, reference-book style.
+   em-sized so it scales with the title; nowrap drops it under the name as a unit. */
+.bp-years { font-style: italic; color: var(--cb-muted); font-size: .5em;
+    letter-spacing: 0; white-space: nowrap; margin-left: .4em; }
 .bp-prose { max-width: 60ch; }
 .bp-sec { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
 
