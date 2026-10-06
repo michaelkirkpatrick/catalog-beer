@@ -387,9 +387,8 @@ echo $htmlHead->html;
                     <?php
                     // Operating years: "Founded 1988" on its own, "1988–1997"
                     // as a span once closed, "Closed 1997" when only that is
-                    // known. Country only when it is not the US, since the
-                    // catalog is US-only on the public side and every page
-                    // saying "United States" would say nothing.
+                    // known. Country on every brewer, so a non-US one reads as
+                    // ordinary rather than flagged.
                     $founded = !empty($brewerData->brewer->founded_year) ? (int)$brewerData->brewer->founded_year : null;
                     $closed = !empty($brewerData->brewer->closed_year) ? (int)$brewerData->brewer->closed_year : null;
                     if($founded !== null && $closed !== null){
@@ -400,10 +399,7 @@ echo $htmlHead->html;
                         echo '<div class="cb-fact"><span class="cb-fact__k">Closed</span><span class="cb-fact__v">' . $closed . '</span></div>' . "\n";
                     }
                     $brewerCountry = $brewerData->brewer->country_code ?? 'US';
-                    if($brewerCountry !== 'US'){
-                        include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/CountryCode.class.php';
-                        echo '<div class="cb-fact"><span class="cb-fact__k">Country</span><span class="cb-fact__v cb-fact__v--sm">' . h(CountryCode::shortName($brewerCountry) ?? $brewerCountry) . '</span></div>' . "\n";
-                    }
+                    echo '<div class="cb-fact"><span class="cb-fact__k">Country</span><span class="cb-fact__v cb-fact__v--sm">' . h(CountryCode::shortName($brewerCountry) ?? $brewerCountry) . '</span></div>' . "\n";
                     if(!empty($brewerData->brewer->url)){
                         $urlHost = parse_url($brewerData->brewer->url, PHP_URL_HOST);
                         if(!empty($urlHost)){
