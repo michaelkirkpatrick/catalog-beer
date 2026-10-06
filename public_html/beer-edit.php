@@ -103,7 +103,6 @@ echo (strpos($htmlHead->html, '</head>') !== false)
         ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1">Edit <em><?php echo h($beerName); ?></em></h1>
-            <p class="cbf-lede">Changes go live as soon as you save.</p>
         </div>
         <?php echo $alert->display(); ?>
         <p class="cbf-legend"><span aria-hidden="true">*</span> Required</p>

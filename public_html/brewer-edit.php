@@ -91,7 +91,6 @@ echo $htmlHead->html;
         ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1">Edit <em><?php echo h($brewerName); ?></em></h1>
-            <p class="cbf-lede">Changes go live as soon as you save.</p>
         </div>
         <?php echo $alert->display(); ?>
         <p class="cbf-legend"><span aria-hidden="true">*</span> Required</p>
@@ -155,8 +154,9 @@ echo $htmlHead->html;
             $dropStatus->name = 'status';
             $dropStatus->values = array('active', 'closed');
             $dropStatus->descriptions = array('Open', 'Closed');
-            $dropStatus->label = 'Status';
+            $dropStatus->label = 'Brewery Status';
             $dropStatus->showLabel = true;
+            $dropStatus->hint = 'Is this brewery currently in business and operating?';
             $dropStatus->currentValue = $status;
             $dropStatus->validState = $validState['status'];
             $dropStatus->validMsg = $validMsg['status'];
@@ -164,8 +164,7 @@ echo $htmlHead->html;
 
             $inputFounded = new InputField();
             $inputFounded->name = 'founded_year';
-            $inputFounded->description = 'Founded';
-            $inputFounded->hint = 'Year only, as the brewery states it (e.g. 2014). Leave blank if unknown.';
+            $inputFounded->description = 'Year Founded';
             $inputFounded->type = 'number';
             $inputFounded->required = false;
             $inputFounded->maxLength = 4;
@@ -178,8 +177,8 @@ echo $htmlHead->html;
 
             $inputClosed = new InputField();
             $inputClosed->name = 'closed_year';
-            $inputClosed->description = 'Closed';
-            $inputClosed->hint = 'Only for a closed brewery, and only when the year is known.';
+            $inputClosed->description = 'Year Closed';
+            $inputClosed->hint = 'Only for a closed brewery.';
             $inputClosed->type = 'number';
             $inputClosed->required = false;
             $inputClosed->maxLength = 4;

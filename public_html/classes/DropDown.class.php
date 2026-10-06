@@ -9,6 +9,7 @@ values - (array) Values for the option
 descriptions - (array) Descriptions for the options
 label - Label for the field (e.g. "Beer")
 showLabel - Default False
+hint - guidance under the field, same line InputField renders
 currentValue
 validState
 validMsg
@@ -35,6 +36,7 @@ class DropDown {
     public $descriptions = array();
     public $label = '';
     public $showLabel = false;
+    public $hint = '';              // guidance under the field, as InputField renders it
     public $currentValue = '';
     public $validState = '';
     public $validMsg = '';
@@ -99,6 +101,11 @@ class DropDown {
 
         // Close Select
         $return .= '</select>' . "\n";
+
+        // Hint — above the error line, as InputField orders them
+        if($this->hint !== ''){
+            $return .= '<p class="cbf-hint">' . h($this->hint) . '</p>' . "\n";
+        }
 
         // Validation State
         if($invalid){
