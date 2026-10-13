@@ -62,12 +62,13 @@ $abv = (isset($beerData->abv) && is_numeric($beerData->abv) && floatval($beerDat
 $ibu = (isset($beerData->ibu) && is_numeric($beerData->ibu) && floatval($beerData->ibu) > 0) ? floatval($beerData->ibu) : null;
 $abvLabel = ($abv !== null) ? rtrim(rtrim(number_format($abv, 1), '0'), '.') : '';
 
-// Verification badge — Catalog.beer verification outranks brewer-provided
+// Verification badge — the brewer's own verification outranks Catalog.beer's,
+// matching the brewer page's beer list
 $verifyDot = $verifyText = '';
-if(!empty($beerData->cb_verified)){
-    $verifyDot = 'cb-vdot--cbv';   $verifyText = 'Verified by Catalog.beer';
-}elseif(!empty($beerData->brewer_verified)){
+if(!empty($beerData->brewer_verified)){
     $verifyDot = 'cb-vdot--first'; $verifyText = 'Verified by the brewer';
+}elseif(!empty($beerData->cb_verified)){
+    $verifyDot = 'cb-vdot--cbv';   $verifyText = 'Verified by Catalog.beer';
 }
 
 // ----- Style specs (color + typical ranges) -----
@@ -298,10 +299,10 @@ echo $htmlHead->html;
                         $rAbv = (isset($b->abv) && is_numeric($b->abv) && floatval($b->abv) > 0) ? rtrim(rtrim(number_format(floatval($b->abv), 1), '0'), '.') . '%' : '';
                         echo '<a href="/beer/' . h($rID) . '" class="cb-row"><span class="be-rel-l">';
                         if($hasVerifiedRel){
-                            if(!empty($b->cb_verified)){
-                                echo '<span class="cb-vdot cb-vdot--cbv" title="Catalog.beer verified"></span>';
-                            }elseif(!empty($b->brewer_verified)){
+                            if(!empty($b->brewer_verified)){
                                 echo '<span class="cb-vdot cb-vdot--first" title="Brewer-provided"></span>';
+                            }elseif(!empty($b->cb_verified)){
+                                echo '<span class="cb-vdot cb-vdot--cbv" title="Catalog.beer verified"></span>';
                             }
                         }
                         echo '<span style="min-width:0;"><span class="cb-row__name">' . h($rName) . '</span> <span class="cb-row__meta">' . h($rStyle) . '</span></span>';

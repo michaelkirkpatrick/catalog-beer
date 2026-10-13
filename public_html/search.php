@@ -163,7 +163,9 @@ function srFacetFilters($forType, $excludeGroup = null){
         }
     }
     if($forType === 'beer' && $state['verified'] === '1'){
-        $filters[] = array('cb_verified:true');
+        // Either badge counts, as on the hit's Verified tag (one inner
+        // facetFilters array is an OR)
+        $filters[] = array('cb_verified:true', 'brewer_verified:true');
     }
     return $filters;
 }

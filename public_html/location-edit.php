@@ -36,7 +36,7 @@ if(isset($locationData->error) || !isset($locationData->id)){
     exit();
 }
 
-// Permissions — verified locations are staff/admin-editable only; bounce back
+// Permissions — brewer_verified locations are staff/admin-editable only; bounce back
 // to the location page rather than showing a form the API would refuse.
 $perms = brewerPermissions($api, $locationData->brewer->id);
 if(!permissionsCanEdit($perms, !empty($locationData->cb_verified), !empty($locationData->brewer_verified))){

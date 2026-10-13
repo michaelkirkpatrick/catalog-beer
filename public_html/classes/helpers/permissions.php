@@ -41,12 +41,14 @@ function permissionsCanManage($permissions){
 
 function permissionsCanEdit($permissions, $cbVerified, $brewerVerified){
     // $cbVerified/$brewerVerified are the flags of the specific entity being
-    // edited (brewer, beer, or location) — verified entities are staff-only.
+    // edited (brewer, beer, or location). Only brewer_verified entities are
+    // staff-only: cb_verified is an indicator, not a gate — the API lets any
+    // account edit one and clears the badge on a non-admin write.
     if($permissions === null){
         return false;
     }
     if(permissionsCanManage($permissions)){
         return true;
     }
-    return (!$cbVerified && !$brewerVerified);
+    return !$brewerVerified;
 }

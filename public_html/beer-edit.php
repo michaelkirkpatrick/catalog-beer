@@ -21,7 +21,7 @@ if(isset($beerData->error) || !isset($beerData->id)){
     exit();
 }
 
-// Permissions — verified beers are staff/admin-editable only; bounce back
+// Permissions — brewer_verified beers are staff/admin-editable only; bounce back
 // to the beer page rather than showing a form the API would refuse.
 $perms = brewerPermissions($api, $beerData->brewer->id);
 if(!permissionsCanEdit($perms, !empty($beerData->cb_verified), !empty($beerData->brewer_verified))){

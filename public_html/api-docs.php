@@ -1259,7 +1259,7 @@ curl -X GET \
                             <tr>
                                 <td><var>edit</var></td>
                                 <td>Boolean</td>
-                                <td>Whether your key may <strong>PUT</strong>/<strong>PATCH</strong> this brewer. <var>staff</var> may always edit; <var>general</var> users may edit only while the brewer is neither <var>cb_verified</var> nor <var>brewer_verified</var>.</td>
+                                <td>Whether your key may <strong>PUT</strong>/<strong>PATCH</strong> this brewer. <var>staff</var> may always edit; <var>general</var> users may edit unless the brewer is <var>brewer_verified</var>. A <var>cb_verified</var> brewer is open to edits; a <var>general</var> edit clears its <var>cb_verified</var> flag until an administrator reviews it again.</td>
                             </tr>
                             <tr>
                                 <td><var>delete</var></td>
@@ -1270,7 +1270,7 @@ curl -X GET \
                     </table>
                 </div>
 
-                <p>The same rules extend to everything under the brewer. If your role is <var>staff</var>, you may edit and delete the brewer&#8217;s beers and locations as well. If your role is <var>general</var>, you may edit a beer or location only while that specific entity is unverified (check its own <var>cb_verified</var> / <var>brewer_verified</var> flags), and you may not delete anything. <var>edit</var> and <var>delete</var> in this response describe the brewer itself.</p>
+                <p>The same rules extend to everything under the brewer. If your role is <var>staff</var>, you may edit and delete the brewer&#8217;s beers and locations as well. If your role is <var>general</var>, you may edit a beer or location unless that specific entity is <var>brewer_verified</var> (check its own flag; editing a <var>cb_verified</var> entity is allowed and clears that flag), and you may not delete anything. <var>edit</var> and <var>delete</var> in this response describe the brewer itself.</p>
 
                 <h4>Sample Request</h4>
 
