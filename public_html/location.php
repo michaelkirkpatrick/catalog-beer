@@ -237,6 +237,7 @@ echo $htmlHead->html;
 
         <header class="lv-hero">
             <h1 class="cb-title lv-title"><?php echo h($locationRawShort); ?></h1>
+            <?php echo verifyMark(verifyTier($locationData)); ?>
             <p class="lv-byline"><?php echo $byline; ?></p>
         </header>
 

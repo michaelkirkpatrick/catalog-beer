@@ -62,14 +62,8 @@ $abv = (isset($beerData->abv) && is_numeric($beerData->abv) && floatval($beerDat
 $ibu = (isset($beerData->ibu) && is_numeric($beerData->ibu) && floatval($beerData->ibu) > 0) ? floatval($beerData->ibu) : null;
 $abvLabel = ($abv !== null) ? rtrim(rtrim(number_format($abv, 1), '0'), '.') : '';
 
-// Verification badge — the brewer's own verification outranks Catalog.beer's,
-// matching the brewer page's beer list
-$verifyDot = $verifyText = '';
-if(!empty($beerData->brewer_verified)){
-    $verifyDot = 'cb-vdot--first'; $verifyText = 'Verified by the brewer';
-}elseif(!empty($beerData->cb_verified)){
-    $verifyDot = 'cb-vdot--cbv';   $verifyText = 'Verified by Catalog.beer';
-}
+// Provenance mark under the h1 (classes/helpers/verification.php)
+$verifyMark = verifyMark(verifyTier($beerData));
 
 // ----- Style specs (color + typical ranges) -----
 // Fetched only when the beer resolved to a canonical style. Failures leave the
@@ -142,7 +136,7 @@ if(!empty($family)){
         $relOverflow = !empty($brewerBeerData->has_more) || (count($related) > $relCap);
         $related = array_slice($related, 0, $relCap);
         foreach($related as $b){
-            if(!empty($b->cb_verified) || !empty($b->brewer_verified)){ $hasVerifiedRel = true; }
+            if(verifyTier($b) !== ''){ $hasVerifiedRel = true; }
         }
         $familyLabel = ($family === 'other') ? 'Other' : StyleList::parentName($family);
     }
@@ -268,9 +262,7 @@ echo $htmlHead->html;
         <header class="be-hero">
             <div>
                 <h1 class="cb-title be-title" itemprop="name"><?php echo h($beerName); ?></h1>
-                <?php if($verifyText !== ''){ ?>
-                <span class="be-verify"><span class="cb-vdot <?php echo $verifyDot; ?>"></span><?php echo $verifyText; ?></span>
-                <?php } ?>
+                <?php echo $verifyMark; ?>
                 <?php echo $styleLine; ?>
                 <div class="be-byline">Brewed by <a href="/brewer/<?php echo h($brewerURL); ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo h($brewerName); ?></span></a></div>
             </div>
@@ -298,13 +290,7 @@ echo $htmlHead->html;
                         $rID = $b->id;
                         $rAbv = (isset($b->abv) && is_numeric($b->abv) && floatval($b->abv) > 0) ? rtrim(rtrim(number_format(floatval($b->abv), 1), '0'), '.') . '%' : '';
                         echo '<a href="/beer/' . h($rID) . '" class="cb-row"><span class="be-rel-l">';
-                        if($hasVerifiedRel){
-                            if(!empty($b->brewer_verified)){
-                                echo '<span class="cb-vdot cb-vdot--first" title="Brewer-provided"></span>';
-                            }elseif(!empty($b->cb_verified)){
-                                echo '<span class="cb-vdot cb-vdot--cbv" title="Catalog.beer verified"></span>';
-                            }
-                        }
+                        echo verifyDot(verifyTier($b), $hasVerifiedRel);
                         echo '<span style="min-width:0;"><span class="cb-row__name">' . h($rName) . '</span> <span class="cb-row__meta">' . h($rStyle) . '</span></span>';
                         echo '</span><span class="cb-row__value">' . $rAbv . '</span></a>' . "\n";
                     }
@@ -313,7 +299,7 @@ echo $htmlHead->html;
                         echo '<a href="/brewer/' . h($brewerURL) . '#beer" class="cb-action">See more from ' . h($brewerName) . ' &rarr;</a>';
                     }
                     if($hasVerifiedRel){
-                        echo '<div class="cb-legend"><span><span class="cb-vdot cb-vdot--first"></span>Brewer-provided</span><span><span class="cb-vdot cb-vdot--cbv"></span>Catalog.beer verified</span><span class="cb-legend__none">no mark &#8212; unverified</span></div>';
+                        echo verifyLegend();
                     }
                 }
                 ?>
@@ -346,6 +332,7 @@ echo $htmlHead->html;
         <div class="be-card">
             <?php echo $glassHTML; ?>
             <h1 class="cb-title be-title" itemprop="name"><?php echo h($beerName); ?></h1>
+            <?php echo $verifyMark; ?>
             <?php echo $styleLine; ?>
             <div class="be-byline">Brewed by <a href="/brewer/<?php echo h($brewerURL); ?>" itemscope itemtype="https://schema.org/Brewery"><span itemprop="name"><?php echo h($brewerName); ?></span></a></div>
             <?php if($abv !== null){ ?>

@@ -179,8 +179,17 @@ a.cb-chip { text-decoration: none; display: inline-block; }
 
 /* ============================ provenance marks + legend ============================ */
 .cb-vdot { display: inline-block; width: 8px; height: 8px; border-radius: var(--cb-radius-circle); vertical-align: .04em; flex: none; }
-.cb-vdot--first { background: var(--cb-amber); border: 1.5px solid var(--cb-amber); }         /* brewer-provided        */
+.cb-vdot--first { background: var(--cb-amber); border: 1.5px solid var(--cb-amber); }         /* verified by the brewer */
 .cb-vdot--cbv   { background: transparent; border: 1.5px solid var(--cb-amber-deep); }        /* Catalog.beer verified  */
+.cb-vdot--none  { visibility: hidden; border: 1.5px solid transparent; }                    /* aligns unmarked rows   */
+/* Provenance mark under an entity page's h1 (helpers/verification.php). Two
+   weights for two tiers: the brewer's own mark is an outlined pill in ink; our
+   check is a quiet muted line with no container. */
+.cb-verify { display: inline-flex; align-items: center; gap: .45rem; margin-top: .8rem;
+  font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase; }
+.cb-verify--first { color: var(--cb-ink); background: var(--cb-surface); border: 1px solid var(--cb-amber);
+  border-radius: var(--cb-radius-pill); padding: .3rem .7rem .3rem .55rem; }
+.cb-verify--cbv   { color: var(--cb-muted); }
 .cb-legend { font-family: var(--cb-mono); font-size: .64rem; color: var(--cb-muted); display: flex; gap: .9rem; align-items: center; flex-wrap: wrap; margin-top: 1.1rem; padding-top: .8rem; border-top: 1px solid var(--cb-line); }
 .cb-legend .cb-vdot { margin-right: .3rem; }
 .cb-legend__none { color: var(--cb-muted-2); }

@@ -83,7 +83,8 @@ foreach(array_keys($facetGroups) as $key){
 }
 $state['abv'] = (isset($_GET['abv']) && isset($abvBuckets[$_GET['abv']])) ? $_GET['abv'] : '';
 $state['ibu'] = (isset($_GET['ibu']) && isset($ibuBuckets[$_GET['ibu']])) ? $_GET['ibu'] : '';
-$state['verified'] = isset($_GET['verified']) ? '1' : '';
+// Trust filter: '1' = either provenance mark, 'brewer' = the brewer's own only
+$state['verified'] = (($_GET['verified'] ?? '') === 'brewer') ? 'brewer' : (isset($_GET['verified']) ? '1' : '');
 
 $perPage = 25;
 // Algolia's paginationLimitedTo defaults to 1,000 hits
@@ -107,7 +108,7 @@ foreach($facetGroups as $key => $group){
 }
 $abvActive = ($type === 'beer' && $state['abv'] !== '');
 $ibuActive = ($type === 'beer' && $state['ibu'] !== '');
-$verifiedActive = ($type === 'beer' && $state['verified'] === '1');
+$verifiedActive = ($type === 'beer' && $state['verified'] !== '');
 $hasRefinements = (!empty($activeGroups) || $abvActive || $ibuActive || $verifiedActive);
 
 // ----- URL builder -----
@@ -162,9 +163,10 @@ function srFacetFilters($forType, $excludeGroup = null){
             $filters[] = array($group['attr'] . ':' . $state[$key]);
         }
     }
-    if($forType === 'beer' && $state['verified'] === '1'){
-        // Either badge counts, as on the hit's Verified tag (one inner
-        // facetFilters array is an OR)
+    if($forType === 'beer' && $state['verified'] === 'brewer'){
+        $filters[] = array('brewer_verified:true');
+    }elseif($forType === 'beer' && $state['verified'] === '1'){
+        // Either mark counts (one inner facetFilters array is an OR)
         $filters[] = array('cb_verified:true', 'brewer_verified:true');
     }
     return $filters;
@@ -422,10 +424,9 @@ function srRenderHit($hit){
             $html .= '<span class="sr-grad" style="background:' . SRM::gradient($lo, $hi) . ';"></span>';
         }
     }
+    // Provenance dot leads the name, as in every other list
+    $html .= verifyDot(verifyTier($hit));
     $html .= '<span class="sr-hit__name">' . $name . '</span>';
-    if(($hit['cb_verified'] ?? false) === true || ($hit['brewer_verified'] ?? false) === true){
-        $html .= '<span class="cb-tag cb-tag--accent">Verified</span>';
-    }
     if(!empty($hit['beverage_type']) && $hit['beverage_type'] !== 'beer'){
         $html .= '<span class="cb-tag">' . h(ucfirst($hit['beverage_type'])) . '</span>';
     }
@@ -726,10 +727,15 @@ echo $htmlHead->html;
                     echo '<div class="sr-group">';
                     echo '<span class="cb-label cb-label--sm sr-group__h">Trust</span>';
                     echo '<ul class="sr-facets">';
-                    if($verifiedActive){
-                        echo '<li><a class="sr-facet is-on" href="' . h(srURL(array('verified'=>''))) . '" title="Remove this filter"><span class="sr-facet__v">Catalog.beer verified</span><span class="sr-facet__x" aria-hidden="true">&times;</span></a></li>';
-                    }else{
-                        echo '<li><a class="sr-facet" href="' . h(srURL(array('verified'=>'1'))) . '"><span class="sr-facet__v">Catalog.beer verified</span></a></li>';
+                    // Two steps: either mark, or the brewer's own (stricter)
+                    $trustSteps = array('1' => 'Verified', 'brewer' => verifyLabel('first'));
+                    foreach($trustSteps as $stepValue => $stepLabel){
+                        $stepValue = (string) $stepValue;
+                        if($state['verified'] === $stepValue){
+                            echo '<li><a class="sr-facet is-on" href="' . h(srURL(array('verified'=>''))) . '" title="Remove this filter"><span class="sr-facet__v">' . h($stepLabel) . '</span><span class="sr-facet__x" aria-hidden="true">&times;</span></a></li>';
+                        }else{
+                            echo '<li><a class="sr-facet" href="' . h(srURL(array('verified'=>$stepValue))) . '"><span class="sr-facet__v">' . h($stepLabel) . '</span></a></li>';
+                        }
                     }
                     echo '</ul></div>';
                 }

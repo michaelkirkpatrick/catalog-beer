@@ -86,6 +86,8 @@ spl_autoload_register(function ($class_name) {
 //                 formatting shared by the location and brewer facts rails
 //   forms.php   — suppressAutofill: no-fill attributes for catalog fields
 //   address.php — the address fieldset shared by location-add and location-edit
+//   verification.php — provenance marks: the two verification tiers' names,
+//                 order and markup
 require_once ROOT . '/classes/helpers/html.php';
 require_once ROOT . '/classes/helpers/meta.php';
 require_once ROOT . '/classes/helpers/assets.php';
@@ -96,6 +98,7 @@ require_once ROOT . '/classes/helpers/location.php';
 require_once ROOT . '/classes/helpers/forms.php';
 require_once ROOT . '/classes/helpers/address.php';
 require_once ROOT . '/classes/helpers/permissions.php';
+require_once ROOT . '/classes/helpers/verification.php';
 
 // Navigation
 $nav = new Navigation();

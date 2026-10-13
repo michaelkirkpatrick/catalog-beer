@@ -9,8 +9,9 @@ beers, with a sticky facts rail on the right. Two API calls: the beer list
 (which carries the brewer object) and the expanded locations list. The beer
 list stays scannable at scale via a client-side toolbar (search + sort +
 style-family chips) over rows grouped by style family — largest group first,
-A–Z within. Per-beer provenance dots (brewer-provided / Catalog.beer
-verified) render only when at least one beer on the page is verified.
+A–Z within. Provenance marks (classes/helpers/verification.php): the
+brewer's own mark sits under the h1; per-beer and per-taproom dots render
+only when at least one row in that list is verified.
 
 Design system: composes .cb-* primitives (catalog-components.css); bp-*
 classes are page layout only (styles-pages.css). Tokens in catalog.css.
@@ -150,7 +151,7 @@ if($beerCount > 0){
         }
         $beerGroups[$familySlug]['beers'][] = $beerInfo;
         if(!empty($beerInfo->abv)){$hasAbv = true;}
-        if(!empty($beerInfo->cb_verified) || !empty($beerInfo->brewer_verified)){$hasVerifiedBeer = true;}
+        if(verifyTier($beerInfo) !== ''){$hasVerifiedBeer = true;}
     }
     // Largest family first (no popularity data — this surfaces what the
     // brewery makes most of without asserting a ranking); ties A–Z by label.
@@ -250,6 +251,7 @@ echo $htmlHead->html;
                     if($isClosed && $closedYear !== null){
                         echo '<meta itemprop="dissolutionDate" content="' . $closedYear . '" />' . "\n";
                     }
+                    echo verifyMark(verifyTier($brewerData->brewer));
                     if(!empty($brewerData->brewer->short_description)){
                         echo '<p class="cb-lede bp-lede">' . h($brewerData->brewer->short_description) . '</p>';
                     }
@@ -284,7 +286,12 @@ echo $htmlHead->html;
                 <?php if($locationCount > 0){ ?>
                 <?php if($showMap){ echo '<div id="map" class="bp-map"></div>' . "\n"; } ?>
                 <div class="bp-loc-grid">
-                    <?php foreach($locations as $loc){
+                    <?php
+                    $hasVerifiedLoc = false;
+                    foreach($locations as $loc){
+                        if(verifyTier($loc) !== ''){ $hasVerifiedLoc = true; }
+                    }
+                    foreach($locations as $loc){
                         // Short form: we're already on the brewer's page, so an
                         // unnamed taproom is labelled by its city alone.
                         $locationName = locationShortName($loc);
@@ -296,7 +303,7 @@ echo $htmlHead->html;
                             // itemprop="url" — that property is reserved for the
                             // business's own site, not a catalog entry (see the
                             // rail here and location.php).
-                            echo '<a href="/location/' . h($locationIDString) . '">' . h($locationName) . '</a>';
+                            echo verifyDot(verifyTier($loc), $hasVerifiedLoc) . '<a href="/location/' . h($locationIDString) . '">' . h($locationName) . '</a>';
                         ?></h3>
                         <div class="bp-loc-meta">
                             <?php
@@ -371,13 +378,7 @@ echo $htmlHead->html;
                             $abvLabel = ($beerAbv > 0) ? rtrim(rtrim(number_format($beerAbv, 1), '0'), '.') . '%' : '';
                             echo '<a class="cb-row" href="/beer/' . h($beerIDString) . '" data-name="' . h(mb_strtolower($beerInfo->name . ' ' . $beerInfo->style)) . '" data-abv="' . $beerAbv . '">';
                             echo '<span class="bp-beer-l">';
-                            if($hasVerifiedBeer){
-                                if(!empty($beerInfo->brewer_verified)){
-                                    echo '<span class="cb-vdot cb-vdot--first" title="Brewer-provided"></span>';
-                                }elseif(!empty($beerInfo->cb_verified)){
-                                    echo '<span class="cb-vdot cb-vdot--cbv" title="Catalog.beer verified"></span>';
-                                }
-                            }
+                            echo verifyDot(verifyTier($beerInfo), $hasVerifiedBeer);
                             echo '<span class="cb-row__name">' . h($beerName) . '</span> <span class="cb-row__meta">' . h($beerStyle) . '</span></span>';
                             echo '<span class="cb-row__value">' . $abvLabel . '</span>';
                             echo '</a>' . "\n";
@@ -391,12 +392,13 @@ echo $htmlHead->html;
                 <?php if($showToolbar){ ?>
                 <button type="button" class="cb-note" id="bpShowAll" hidden>Show all <?php echo $beerCount; ?> beers &#9662;</button>
                 <?php } ?>
-                <?php if($hasVerifiedBeer){ ?>
-                <div class="cb-legend"><span><span class="cb-vdot cb-vdot--first"></span>Brewer-provided</span><span><span class="cb-vdot cb-vdot--cbv"></span>Catalog.beer verified</span><span class="cb-legend__none">no mark &#8212; unverified</span></div>
-                <?php } ?>
                 <?php }else{ ?>
                 <p class="lead">Well shucks, we have information about the brewer but nothing about what they brew. Can you help? <?php if($loggedIn){ ?><a href="/beer/add/<?php echo h($brewerIDString); ?>">Add a beer</a><?php }else{ ?><a href="/login">Sign in</a> to add a beer.<?php } ?></p>
                 <?php } ?>
+                <?php
+                // One key for the page's dots: beer rows and taproom cards
+                if($hasVerifiedBeer || !empty($hasVerifiedLoc)){ echo verifyLegend(); }
+                ?>
             </div>
 
             <aside class="cb-rail bp-rail">
