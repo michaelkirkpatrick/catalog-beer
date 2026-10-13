@@ -53,16 +53,18 @@ echo $htmlHead->html;
 
         <p>You must give appropriate credit to Catalog.beer, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</p>
 
-        <p>For example, if you reproduce the description for <a href="375289f8-6cc5-2d38-3ce7-73ab50b8dff4">Long Beach Beer Lab</a>, a brewer, you should include an attribution like this:</p>
+        <p>We suggest this form of attribution:</p>
 
-        <p>&#8220;<a href="375289f8-6cc5-2d38-3ce7-73ab50b8dff4">Long Beach Beer Lab</a>&#8221; by <a href="https://catalog.beer">Catalog.beer</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
+        <p>Data from <a href="https://catalog.beer">Catalog.beer</a>, licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+
+        <p>If you changed the data, say so&#8212;for example, &#8220;Adapted from data from Catalog.beer, licensed under CC BY 4.0.&#8221; Linking to the specific page you used, such as <a href="/brewer/375289f8-6cc5-2d38-3ce7-73ab50b8dff4">Long Beach Beer Lab</a>, is appreciated but not required. See our <a href="/terms">Terms of Use</a> for the full details.</p>
 
         <h3>Use the API Responsibly</h3>
 
         <p>A few guidelines and notes:</p>
 
         <ul>
-        <li>We may delete old accounts (more than a year old) without notice if we see that you haven&#8217;t used Catalog.beer in more than a year.</li>
+        <li>We may delete accounts that haven&#8217;t been used in more than a year, without notice.</li>
         <li>If you have questions, ask them. We respond quickly to messages sent via our website.</li>
         </ul>
     </div>
