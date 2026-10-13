@@ -12,8 +12,8 @@
  *                    against the brewery. Cleared by the API the moment a
  *                    non-admin edits it. Hollow dot, muted text, no container.
  *
- * An entity carrying both shows the brewer mark only. Unmarked entities draw
- * nothing — except in a list that marks any row, where verifyDot() emits an
+ * An entity carrying both shows the brewer mark only. Search hits carry no
+ * mark (the Trust filter narrows instead). Unmarked entities draw nothing — except in a list that marks any row, where verifyDot() emits an
  * invisible placeholder so names stay aligned.
  *
  * Styles: .cb-vdot / .cb-verify in assets/css/catalog-components.css.
@@ -43,7 +43,7 @@ function verifyLabel($tier){
 }
 
 /**
- * The dot that leads a name in a list row, card or search hit. Pass
+ * The dot that leads a name in a list row or card. Pass
  * $placeholder = true inside a list that marks any of its rows, so an
  * unmarked row keeps the same indent.
  */

@@ -424,8 +424,8 @@ function srRenderHit($hit){
             $html .= '<span class="sr-grad" style="background:' . SRM::gradient($lo, $hi) . ';"></span>';
         }
     }
-    // Provenance dot leads the name, as in every other list
-    $html .= verifyDot(verifyTier($hit));
+    // No provenance mark on a hit: brewers, locations and beers read alike
+    // here, and the marks live on the detail pages (Trust filter aside)
     $html .= '<span class="sr-hit__name">' . $name . '</span>';
     if(!empty($hit['beverage_type']) && $hit['beverage_type'] !== 'beer'){
         $html .= '<span class="cb-tag">' . h(ucfirst($hit['beverage_type'])) . '</span>';
