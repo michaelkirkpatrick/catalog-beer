@@ -83,7 +83,7 @@ Validation errors come back nested: `valid_state.address.line1`, `valid_msg.addr
 
 ## The address object (in responses)
 
-`line1`, `line2` (nullable), `locality`, `dependent_locality` (nullable), `sub_code` (nullable outside the US, e.g. `US-CA`, `BE-VWV`), `postal_code` (**string**, nullable), `formatted` (array of display lines in the country's own order, country name excluded — render these rather than composing an address yourself), `language_code` (`en`, `nl`, `fr` …), `telephone` (E.164 **string**, nullable), `validation` (`validated` today), `admin_area` (`{sub_code, name, type}` or null — `name` is the local official form: `California`, `West-Vlaanderen`).
+`line1`, `line2` (nullable), `locality`, `dependent_locality` (nullable), `sub_code` (nullable outside the US, e.g. `US-CA`, `BE-VWV`), `postal_code` (**string**, nullable), `formatted` (array of display lines in the country's own order, country name excluded — render these rather than composing an address yourself), `language_code` (`en`, `nl`, `fr` …), `telephone` (E.164 **string**, nullable), `admin_area` (`{sub_code, name, type}` or null — `name` is the local official form: `California`, `West-Vlaanderen`).
 
 **Postal codes are strings, not numbers.** US ZIPs are fixed-width identifiers whose leading zero is significant — `00501`–`09999` covers New England, New Jersey, Puerto Rico and the US Virgin Islands — and other countries' codes carry letters and spaces. Send `"01085"`, not `1085`; a 4-digit US value is rejected with `valid_state.postal_code: "invalid"`. Don't parse the response value as an integer and write it back, or you will strip the zero and the next write will fail. A US ZIP+4 comes back as one value: `"92101-1725"`.
 

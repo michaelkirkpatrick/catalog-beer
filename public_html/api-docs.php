@@ -1189,8 +1189,7 @@ curl -X GET \
         "formatted": ["1462 N Milwaukee Ave", "Chicago, IL 60622"],
         "language_code": "en",
         "telephone": null,
-        "validation": "validated",
-        "admin_area": {
+            "admin_area": {
           "sub_code": "US-IL",
           "name": "Illinois",
           "type": "state"
@@ -1219,8 +1218,7 @@ curl -X GET \
         "formatted": ["5401 Linda Vista Rd", "San Diego, CA 92110"],
         "language_code": "en",
         "telephone": "+16192952337",
-        "validation": "validated",
-        "admin_area": {
+            "admin_area": {
           "sub_code": "US-CA",
           "name": "California",
           "type": "state"
@@ -2880,7 +2878,6 @@ curl -X GET \
     "formatted": ["2215 India St", "San Diego, CA 92101-1725"],
     "language_code": "en",
     "telephone": "+16192557213",
-    "validation": "validated",
     "admin_area": {
       "sub_code": "US-CA",
       "name": "California",
@@ -2966,12 +2963,7 @@ curl -X GET \
                 <td>string or null</td>
                 <td>The phone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country code and the number, no spaces (<samp>+16192557213</samp>, <samp>+3257400376</samp>). Works as-is in a <code>tel:</code> link.</td>
             </tr>
-            <tr>
-                <td><var>validation</var></td>
-                <td>string</td>
-                <td>How the address was checked. <var>validated</var> means the validator matched it to a specific building, which is every address today. <var>geocoded</var> is reserved for countries the validator does not cover. <var>unverified</var> means it was stored as typed.</td>
-            </tr>
-            <tr>
+                        <tr>
                 <td><var>admin_area</var></td>
                 <td>object or null</td>
                 <td>The region behind <var>sub_code</var>, if any: its <var>sub_code</var>, its <var>name</var> in the local language (<samp>California</samp>, <samp>West-Vlaanderen</samp>, <samp>Bayern</samp>) and its <var>type</var> (<samp>state</samp>, <samp>province</samp>, <samp>region</samp>, <samp>canton</samp>, and so on).</td>
@@ -2995,7 +2987,6 @@ curl -X GET \
   "formatted": ["2215 India St", "San Diego, CA 92101-1725"],
   "language_code": "en",
   "telephone": "+16192557213",
-  "validation": "validated",
   "admin_area": {
     "sub_code": "US-CA",
     "name": "California",
@@ -3017,7 +3008,6 @@ curl -X GET \
   "formatted": ["Donkerstraat 12", "8640 Westvleteren"],
   "language_code": "nl",
   "telephone": "+3257400376",
-  "validation": "validated",
   "admin_area": {
     "sub_code": "BE-VWV",
     "name": "West-Vlaanderen",
@@ -3037,7 +3027,6 @@ curl -X GET \
   "formatted": ["Rue Gheude 56", "1070 Anderlecht"],
   "language_code": "fr",
   "telephone": null,
-  "validation": "validated",
   "admin_area": null
 }
 </pre>
@@ -3144,7 +3133,6 @@ curl -X POST \
     "formatted": ["Donkerstraat 12", "8640 Westvleteren"],
     "language_code": "nl",
     "telephone": "+3257400376",
-    "validation": "validated",
     "admin_area": null
   },
   "brewer": {
@@ -3258,7 +3246,6 @@ curl -X POST \
     "formatted": ["110 E 22nd St", "Warehouse No 9", "San Pedro, CA 90731-7202"],
     "language_code": "en",
     "telephone": "+13108339330",
-    "validation": "validated",
     "admin_area": {
       "sub_code": "US-CA",
       "name": "California",
@@ -3719,8 +3706,7 @@ curl -X GET \
           "formatted": ["3812 Grim Ave", "San Diego, CA 92104-3602"],
           "language_code": "en",
           "telephone": "+16192557136",
-          "validation": "validated",
-          "admin_area": {
+                "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
             "type": "state"
@@ -3843,8 +3829,7 @@ curl -X GET \
           "formatted": ["3000 Upas St", "San Diego, CA 92104-4221"],
           "language_code": "en",
           "telephone": "+16192695222",
-          "validation": "validated",
-          "admin_area": {
+                "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
             "type": "state"
@@ -3972,8 +3957,7 @@ curl -X GET \
           "formatted": ["627 8th Ave", "San Diego, CA 92101-6453"],
           "language_code": "en",
           "telephone": "+16197701844",
-          "validation": "validated",
-          "admin_area": {
+                "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
             "type": "state"
