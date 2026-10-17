@@ -287,12 +287,15 @@ function addressCountryField(array $countries, string $countryCode, array $valid
  * @param array  $fields       addressBlankFields() shape
  * @param array  $validState   per-field state from the API ('' when untouched)
  * @param array  $validMsg     per-field message from the API
+ * No hint under Telephone: the API reads a number in the national format of
+ * the location's country or with its country code, and stores E.164 either
+ * way, so there is nothing the contributor has to get right.
+ *
  * @param string $countryCode  the location's country
  * @param array  $subdivisions addressSubdivisions() rows for that country
- * @param string $callingCode  the country's telephone prefix ("+32"), for the hint
  * @param bool   $autofocus    put the cursor in the street field
  */
-function addressFormFields(array $fields, array $validState, array $validMsg, string $countryCode, array $subdivisions, string $callingCode = '', bool $autofocus = false): string {
+function addressFormFields(array $fields, array $validState, array $validMsg, string $countryCode, array $subdivisions, bool $autofocus = false): string {
     $html = '';
     $labels = addressFieldLabels($countryCode, $subdivisions);
     $isUS = ($countryCode === 'US');
@@ -394,7 +397,6 @@ function addressFormFields(array $fields, array $validState, array $validMsg, st
     $inputTelephone->type = 'tel';
     $inputTelephone->required = false;
     $inputTelephone->value = $fields['telephone'];
-    $inputTelephone->hint = $isUS ? '' : 'With the country code (' . ($callingCode !== '' ? $callingCode . ' …' : '+32 …') . ') or as dialled locally.';
     $inputTelephone->validState = $validState['telephone'] ?? '';
     $inputTelephone->validMsg = $validMsg['telephone'] ?? '';
     suppressAutofill($inputTelephone);

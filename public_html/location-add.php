@@ -236,7 +236,7 @@ echo $htmlHead->html;
             echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span></div>' . "\n";
             echo '<div class="cbf-sec">' . "\n";
             echo addressCountryField($countries, $country_code, $validState, $validMsg);
-            echo addressFormFields($addressFields, $validState, $validMsg, $country_code, $subdivisions, (string)($countries[$country_code]['calling_code'] ?? ''));
+            echo addressFormFields($addressFields, $validState, $validMsg, $country_code, $subdivisions);
             echo '</div>' . "\n";
 
             // Close Disabled
