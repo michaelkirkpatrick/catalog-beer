@@ -61,10 +61,11 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#location-delete">&gt; Delete a Location</a>
                     <a class="list-group-item list-group-item-action" href="#location-add-address">&gt; Add an Address to a Location</a>
                     <a class="list-group-item list-group-item-action" href="#location-replace-address">&gt; Replace an Address (PUT)</a>
+                    <a class="list-group-item list-group-item-action" href="#location-patch-address">&gt; Update an Address (PATCH)</a>
                     <a class="list-group-item list-group-item-action" href="#location-retrieve">&gt; Retrieve a Location</a>
                     <a class="list-group-item list-group-item-action" href="#location-list-all">&gt; List all Locations</a>
                     <a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
-                    <a class="list-group-item list-group-item-action" href="#location-zip">&gt; Find Locations by ZIP Code</a>
+                    <a class="list-group-item list-group-item-action" href="#location-zip">&gt; Find Locations by Postal Code</a>
                     <a class="list-group-item list-group-item-action" href="#location-city">&gt; Find Locations by City</a>
                     <a class="list-group-item list-group-item-action" href="#usage"><strong>Usage</strong></a>
                     <a class="list-group-item list-group-item-action" href="#usage-object">&gt; The Usage Object</a>
@@ -74,8 +75,10 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#billing-retrieve">&gt; Get Billing Status</a>
                     <a class="list-group-item list-group-item-action" href="#billing-update">&gt; Update Spend Cap</a>
                     <a class="list-group-item list-group-item-action" href="#billing-disable">&gt; Disable Billing</a>
-                    <a class="list-group-item list-group-item-action" href="#us-address"><strong>US Addresses</strong></a>
-                    <a class="list-group-item list-group-item-action" href="#us-address-object">&gt; The US Address Object</a>
+                    <a class="list-group-item list-group-item-action" href="#address"><strong>Addresses</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#address-object">&gt; The Address Object</a>
+                    <a class="list-group-item list-group-item-action" href="#address-countries">&gt; Supported Countries</a>
+                    <a class="list-group-item list-group-item-action" href="#address-subdivisions">&gt; Subdivisions</a>
                     <a class="list-group-item list-group-item-action" href="#users"><strong>Users</strong></a>
                     <a class="list-group-item list-group-item-action" href="#users-object">&gt; The User Object</a>
                     <a class="list-group-item list-group-item-action" href="#users-retrieve">&gt; Retrieve a User</a>
@@ -88,7 +91,7 @@ echo $htmlHead->html;
             </nav>
             <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p>Last Updated: August 3, 2026</p>
+                <p>Last Updated: October 17, 2026</p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
@@ -1181,15 +1184,21 @@ curl -X GET \
       "brewer_verified": false,
       "last_modified": 1541544607,
       "address": {
-        "address1": null,
-        "address2": "1462 N Milwaukee Ave",
-        "city": "Chicago",
+        "line1": "1462 N Milwaukee Ave",
+        "line2": null,
+        "locality": "Chicago",
+        "dependent_locality": null,
         "sub_code": "US-IL",
-        "state_short": "IL",
-        "state_long": "Illinois",
-        "zip5": "60622",
-        "zip4": null,
-        "telephone": null
+        "postal_code": "60622",
+        "formatted": ["1462 N Milwaukee Ave", "Chicago, IL 60622"],
+        "language_code": "en",
+        "telephone": null,
+        "validation": "validated",
+        "admin_area": {
+          "sub_code": "US-IL",
+          "name": "Illinois",
+          "type": "state"
+        }
       }
     },
     {
@@ -1205,15 +1214,21 @@ curl -X GET \
       "brewer_verified": false,
       "last_modified": 1541544607,
       "address": {
-        "address1": null,
-        "address2": "5401 Linda Vista Rd",
-        "city": "San Diego",
+        "line1": "5401 Linda Vista Rd",
+        "line2": null,
+        "locality": "San Diego",
+        "dependent_locality": null,
         "sub_code": "US-CA",
-        "state_short": "CA",
-        "state_long": "California",
-        "zip5": "92110",
-        "zip4": null,
-        "telephone": 6192952337
+        "postal_code": "92110",
+        "formatted": ["5401 Linda Vista Rd", "San Diego, CA 92110"],
+        "language_code": "en",
+        "telephone": "+16192952337",
+        "validation": "validated",
+        "admin_area": {
+          "sub_code": "US-CA",
+          "name": "California",
+          "type": "state"
+        }
       }
     }
   ]
@@ -2831,7 +2846,7 @@ curl -X GET \
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>At this time, the database supports addresses for locations in the United States. See the <a href="#us-address-object">US Addresses</a> object. The <var>telephone</var> field is included within this object.</td>
+                <td>The location&#8217;s street address, present once one has been added. See <a href="#address-object">the address object</a>; the <var>telephone</var> field is included within it.</td>
             </tr>
             <tr>
                 <td><var>brewer</var></td>
@@ -2844,7 +2859,7 @@ curl -X GET \
 
 <h4>Sample</h4>
 
-<p>Sample location object with a US address.</p>
+<p>Sample location object with an address.</p>
 
 <pre class="api-code">
 {
@@ -2860,15 +2875,21 @@ curl -X GET \
   "brewer_verified": false,
   "last_modified": 1589147029,
   "address": {
-    "address1": null,
-    "address2": "2215 India St",
-    "city": "San Diego",
+    "line1": "2215 India St",
+    "line2": null,
+    "locality": "San Diego",
+    "dependent_locality": null,
     "sub_code": "US-CA",
-    "state_short": "CA",
-    "state_long": "California",
-    "zip5": "92101",
-    "zip4": "1725",
-    "telephone": 6192557213
+    "postal_code": "92101-1725",
+    "formatted": ["2215 India St", "San Diego, CA 92101-1725"],
+    "language_code": "en",
+    "telephone": "+16192557213",
+    "validation": "validated",
+    "admin_area": {
+      "sub_code": "US-CA",
+      "name": "California",
+      "type": "state"
+    }
   },
   "brewer": {
     "id": "ab94abb7-a3e8-4cce-8945-4758cac66a53",
@@ -3092,11 +3113,11 @@ curl -X DELETE \
 
 <h3 id="location-add-address">Add an Address to a Location</h3>
 
-<p>Addresses and telephone numbers are stored separately from locations to allow for country specific addressing schemes and telephone numbers. Hence the need to make a second request to add an address to a location.</p>
+<p>Addresses and telephone numbers are stored separately from locations. The address takes its country from the location&#8217;s <var>country_code</var> &#8212; there is no country field on the address itself &#8212; and it is validated against that country&#8217;s postal data before anything is stored, which is why a location is created first and its address added second.</p>
 
-                                <p>To add an address or telephone number for a location, send a <strong>POST</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path and the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>.</p>
+<p>To add an address or telephone number for a location, send a <strong>POST</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path and the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>.</p>
 
-<p>Currently, only US addresses are supported. This documentation will be updated once support for other countries has been added.</p>
+<p>Addresses can be added for locations in the <a href="#address-countries">40 countries</a> the validator covers. Send the address the way it is written locally; what comes back is the validated form, with the street line spelled out, the postal code normalised and the latitude and longitude filled in. An address the validator cannot place at building level is refused with a <var>400</var> rather than stored approximately.</p>
 
 <pre class="api-code">POST https://api.catalog.beer/address/{location_id}</pre>
 
@@ -3111,39 +3132,39 @@ curl -X DELETE \
         </thead>
         <tbody>
             <tr>
-                <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>line1</var></td>
                 <td>string</td>
-                <td>The suite or unit number of the location (if applicable - e.g. Suite 101).</td>
+                <td>The street line, written the way the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d&#8217;Or</var>.</td>
             </tr>
             <tr>
-                <td><var>address2</var></td>
+                <td><var>line2</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The street address of the location.</td>
+                <td>The suite, unit, floor or building, if there is one (e.g. <var>Suite 101</var>, <var>bus 3</var>).</td>
             </tr>
             <tr>
-                <td><var>city</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td><var>locality</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided; in the US, <var>locality</var> needs <var>sub_code</var> beside it.</small></td>
                 <td>string</td>
-                <td>The name of the city.</td>
+                <td>The city, town or municipality.</td>
             </tr>
             <tr>
-                <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td><var>dependent_locality</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
+                <td>A district, village or neighbourhood within the locality, where the country addresses that way (a Belgian <em>deelgemeente</em>, a Mexican <em>colonia</em>). Usually left out; the validator fills it in when it applies.</td>
             </tr>
             <tr>
-                <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td><var>sub_code</var><br><small class="text-muted">(optional outside the US; required with <var>locality</var> in the US)</small></td>
                 <td>string</td>
-                <td>The traditional 5-digit ZIP Code for the location.</td>
+                <td>The <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code of the state, province or region (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). The bare suffix is accepted and prefixed with the location&#8217;s country (<var>CA</var> on a US location becomes <var>US-CA</var>). It must belong to the location&#8217;s country; see <a href="#address-subdivisions">Subdivisions</a> for the codes we hold. Where the validator reports a region of its own, that wins.</td>
             </tr>
             <tr>
-                <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>postal_code</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided.</small></td>
                 <td>string</td>
-                <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
+                <td>The postal code in the country&#8217;s own form: <var>90731</var> or <var>90731-7202</var> in the US, <var>8640</var> in Belgium, <var>1018 AL</var> in the Netherlands, <var>SW1A 1AA</var> in the UK. An obviously mis-shaped code is refused before validation; otherwise the validated form is what gets stored.</td>
             </tr>
             <tr>
                 <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The 10-digit telephone number for the location. You may submit the number with formatting (e.g. (555) 444&#8211;3333) or as an integer. Formatting will be stripped when the data is processed and an integer will be returned.</td>
+                <td>The telephone number, in international form (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or in the national format of the location&#8217;s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). Formatting is stripped and the number is returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
             </tr>
         </tbody>
     </table>
@@ -3157,7 +3178,7 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"address1":"Warehouse No 9","address2":"110 E 22nd St","city":"San Pedro","sub_code":"US-CA","telephone":"3108339330"}'
+  -d '{"line1":"110 E 22nd St","line2":"Warehouse No 9","locality":"San Pedro","sub_code":"US-CA","telephone":"3108339330"}'
 </pre>
 
 <h4>Sample Response</h4>
@@ -3176,15 +3197,21 @@ curl -X POST \
   "brewer_verified": false,
   "last_modified": 1589147029,
   "address": {
-    "address1": "Warehouse No 9",
-    "address2": "110 E 22nd St",
-    "city": "San Pedro",
+    "line1": "110 E 22nd St",
+    "line2": "Warehouse No 9",
+    "locality": "San Pedro",
+    "dependent_locality": null,
     "sub_code": "US-CA",
-    "state_short": "CA",
-    "state_long": "California",
-    "zip5": "90731",
-    "zip4": "7202",
-    "telephone": 3108339330
+    "postal_code": "90731-7202",
+    "formatted": ["110 E 22nd St", "Warehouse No 9", "San Pedro, CA 90731-7202"],
+    "language_code": "en",
+    "telephone": "+13108339330",
+    "validation": "validated",
+    "admin_area": {
+      "sub_code": "US-CA",
+      "name": "California",
+      "type": "state"
+    }
   },
   "brewer": {
     "id": "9f96b99b-9865-4cf0-8950-bdc0d675be9f",
@@ -3196,6 +3223,61 @@ curl -X POST \
     "cb_verified": true,
     "brewer_verified": false,
     "last_modified": 1517001234
+  }
+}
+</pre>
+
+<p>A Belgian location takes the same request. Here the validator reports no province, so <var>sub_code</var> and <var>admin_area</var> stay <var>null</var> unless you send one.</p>
+
+<pre class="api-code">
+curl -X POST \
+  https://api.catalog.beer/address/5fd1b7e0-3c2a-4b7e-9d41-0a8c1f6e2b90 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"line1":"Donkerstraat 12","locality":"Westvleteren","postal_code":"8640","telephone":"057 40 03 76"}'
+</pre>
+
+<pre class="api-code">
+{
+  "id": "5fd1b7e0-3c2a-4b7e-9d41-0a8c1f6e2b90",
+  "object": "location",
+  "name": null,
+  "url": "https://sintsixtus.be/",
+  "country_code": "BE",
+  "country_short_name": "Belgium",
+  "latitude": 50.8957083,
+  "longitude": 2.7200225,
+  "cb_verified": false,
+  "brewer_verified": false,
+  "last_modified": 1760400000,
+  "address": {
+    "line1": "Donkerstraat 12",
+    "line2": null,
+    "locality": "Westvleteren",
+    "dependent_locality": null,
+    "sub_code": null,
+    "postal_code": "8640",
+    "formatted": ["Donkerstraat 12", "8640 Westvleteren"],
+    "language_code": "nl",
+    "telephone": "+3257400376",
+    "validation": "validated",
+    "admin_area": null
+  },
+  "brewer": {
+    "id": "30f24653-8c0e-4f0b-a1d2-5e6f7a8b9c0d",
+    "object": "brewer",
+    "name": "Brouwerij De Sint-Sixtusabdij van Westvleteren",
+    "description": null,
+    "short_description": null,
+    "url": "https://sintsixtus.be/",
+    "status": "active",
+    "founded_year": 1838,
+    "closed_year": null,
+    "country_code": "BE",
+    "cb_verified": false,
+    "brewer_verified": false,
+    "last_modified": 1760400000
   }
 }
 </pre>
@@ -3219,39 +3301,39 @@ curl -X POST \
         </thead>
         <tbody>
             <tr>
-                <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>line1</var></td>
                 <td>string</td>
-                <td>The suite or unit number of the location (if applicable - e.g. Suite 101). Cleared if omitted.</td>
+                <td>The street line, written the way the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d&#8217;Or</var>.</td>
             </tr>
             <tr>
-                <td><var>address2</var></td>
+                <td><var>line2</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The street address of the location.</td>
+                <td>The suite, unit, floor or building, if there is one (e.g. <var>Suite 101</var>, <var>bus 3</var>). Cleared if omitted.</td>
             </tr>
             <tr>
-                <td><var>city</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td><var>locality</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided; in the US, <var>locality</var> needs <var>sub_code</var> beside it.</small></td>
                 <td>string</td>
-                <td>The name of the city.</td>
+                <td>The city, town or municipality.</td>
             </tr>
             <tr>
-                <td><var>sub_code</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td><var>dependent_locality</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. &#8220;US-CA&#8221; for California)</td>
+                <td>A district, village or neighbourhood within the locality, where the country addresses that way (a Belgian <em>deelgemeente</em>, a Mexican <em>colonia</em>). Usually left out; the validator fills it in when it applies. Cleared if omitted.</td>
             </tr>
             <tr>
-                <td><var>zip5</var><br><small class="text-muted">(optional) Either the <var>city</var> and <var>sub_code</var> must be provided OR the <var>zip5</var> must be provided.</small></td>
+                <td><var>sub_code</var><br><small class="text-muted">(optional outside the US; required with <var>locality</var> in the US)</small></td>
                 <td>string</td>
-                <td>The traditional 5-digit ZIP Code for the location.</td>
+                <td>The <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code of the state, province or region (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). The bare suffix is accepted and prefixed with the location&#8217;s country (<var>CA</var> on a US location becomes <var>US-CA</var>). It must belong to the location&#8217;s country; see <a href="#address-subdivisions">Subdivisions</a> for the codes we hold. Where the validator reports a region of its own, that wins. Cleared if omitted.</td>
             </tr>
             <tr>
-                <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>postal_code</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided.</small></td>
                 <td>string</td>
-                <td>The additional ZIP+4 Code used by the US Postal Service. Cleared if omitted.</td>
+                <td>The postal code in the country&#8217;s own form: <var>90731</var> or <var>90731-7202</var> in the US, <var>8640</var> in Belgium, <var>1018 AL</var> in the Netherlands, <var>SW1A 1AA</var> in the UK. An obviously mis-shaped code is refused before validation; otherwise the validated form is what gets stored. Cleared if omitted.</td>
             </tr>
             <tr>
                 <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The 10-digit telephone number for the location. Cleared if omitted.</td>
+                <td>The telephone number, in international form (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or in the national format of the location&#8217;s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). Formatting is stripped and the number is returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>. Cleared if omitted.</td>
             </tr>
         </tbody>
     </table>
@@ -3265,7 +3347,33 @@ curl -X PUT \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"address1":"Warehouse No 9","address2":"110 E 22nd St","city":"San Pedro","sub_code":"US-CA","zip5":"90731","zip4":"7202","telephone":"3108339330"}'
+  -d '{"line1":"110 E 22nd St","line2":"Warehouse No 9","locality":"San Pedro","sub_code":"US-CA","postal_code":"90731-7202","telephone":"3108339330"}'
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="location-patch-address">Update an Address (PATCH)</h3>
+
+<p>To change part of an existing address, send a <strong>PATCH</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path and only the fields you want to change. The location must already hold an address (use <strong>POST</strong> or <strong>PUT</strong> otherwise). Successful requests will return a <a href="#location-object">location object</a>.</p>
+
+<pre class="api-code">PATCH https://api.catalog.beer/address/{location_id}</pre>
+
+<p>Two things to know about a partial update:</p>
+
+<ul>
+    <li>Changing any address field re-validates the whole merged address, so <var>latitude</var> and <var>longitude</var> move with it. <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> are two spellings of the same place: when you send one group without the other, the stored other group is dropped and re-derived, so a stale ZIP can never contradict a fresh city.</li>
+    <li><var>telephone</var> alone is written without re-validating the address. Send <var>null</var> to clear it.</li>
+</ul>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X PATCH \
+  https://api.catalog.beer/address/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+  -H 'content-type: application/json' \
+  -d '{"telephone":"(310) 833-9331"}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -3514,7 +3622,7 @@ curl -X GET \
                 <td>
                     <p>An array containing all the locations that match your query parameters. Each result contains three objects:</p>
                     <ul>
-                        <li>A <var>location</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var>, <var>telephone</var>, and a nested <var>address</var> object</li>
+                        <li>A <var>location</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var>, and a nested <a href="#address-object"><var>address</var> object</a> (every key <var>null</var> when the location has no address yet)</li>
                         <li>A <var>distance</var> object described below</li>
                         <li>A <var>brewer</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>status</var>, <var>founded_year</var>, <var>closed_year</var>, <var>country_code</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
                     </ul>
@@ -3528,7 +3636,7 @@ curl -X GET \
             <tr>
                 <td><var>units</var></td>
                 <td>string</td>
-                <td>The unit of distance. The value of this field will be either &#8220;miles&#8221; (the default value) or &#8220;kilometers&#8221; if the <var>metric</var> query parameter is set to <var>true</var>.</td>
+                <td>The unit of distance: &#8220;miles&#8221; or &#8220;kilometers&#8221;, following the <var>metric</var> query parameter. For <code>/location/nearby</code> the default is miles; for the postal code and city lookups it follows the country.</td>
             </tr>
         </tbody>
     </table>
@@ -3563,16 +3671,22 @@ curl -X GET \
         "country_short_name": "United States of America",
         "latitude": 32.7476883,
         "longitude": -117.12854,
-        "telephone": 6192557136,
         "address": {
-          "address1": null,
-          "address2": "3812 Grim Ave",
-          "city": "San Diego",
+          "line1": "3812 Grim Ave",
+          "line2": null,
+          "locality": "San Diego",
+          "dependent_locality": null,
           "sub_code": "US-CA",
-          "state_short": "CA",
-          "state_long": "California",
-          "zip5": "92104",
-          "zip4": "3602"
+          "postal_code": "92104-3602",
+          "formatted": ["3812 Grim Ave", "San Diego, CA 92104-3602"],
+          "language_code": "en",
+          "telephone": "+16192557136",
+          "validation": "validated",
+          "admin_area": {
+            "sub_code": "US-CA",
+            "name": "California",
+            "type": "state"
+          }
         }
       },
       "distance": {
@@ -3598,11 +3712,11 @@ curl -X GET \
 
 <!----- LOCATION: ZIP CODE ----->
 
-<h3 id="location-zip">Find Locations by ZIP Code</h3>
+<h3 id="location-zip">Find Locations by Postal Code</h3>
 
-<p>Find nearby brewery locations by providing a US ZIP code. This endpoint geocodes the ZIP code and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
+<p>Find nearby brewery locations by providing a postal code. This endpoint geocodes the postal code within its country and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
 
-<p>Send a <strong>GET</strong> request to the <code>/location/zip</code> endpoint with the <var>zip_code</var> query parameter.</p>
+<p>Send a <strong>GET</strong> request to the <code>/location/zip</code> endpoint with the <var>postal_code</var> query parameter, and <var>country</var> for anywhere but the US.</p>
 
 <h4>Query Parameters</h4>
 <div class="table-responsive">
@@ -3616,19 +3730,24 @@ curl -X GET \
         </thead>
         <tbody>
             <tr>
-                <td><var>zip_code</var></td>
+                <td><var>postal_code</var></td>
                 <td>string</td>
-                <td>A 5-digit US ZIP code (e.g., <var>92104</var>).</td>
+                <td>A postal code in the country&#8217;s own form (e.g., <var>92104</var>, <var>8640</var>, <var>1018 AL</var>).</td>
+            </tr>
+            <tr>
+                <td><var>country</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 code of the country the postal code belongs to. Defaults to <var>US</var>.</td>
             </tr>
             <tr>
                 <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The radius of the search circle, centered at the provided ZIP code. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+                <td>The radius of the search circle, centered at the provided postal code. If left empty, the default value of <var>25</var> will be used, in the units described under <var>metric</var>.</td>
             </tr>
             <tr>
                 <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
                 <td>boolean</td>
-                <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
+                <td>Set this value to <var>true</var> for a search radius and results measured in kilometers, <var>false</var> for miles. When omitted it follows the country: miles for the US, kilometers everywhere else.</td>
             </tr>
             <tr>
                 <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
@@ -3651,7 +3770,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/location/zip?zip_code=92104&amp;search_radius=10&amp;count=1' \
+  'https://api.catalog.beer/location/zip?postal_code=92104&amp;search_radius=10&amp;count=1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -3676,16 +3795,22 @@ curl -X GET \
         "country_short_name": "United States of America",
         "latitude": 32.7414894,
         "longitude": -117.129921,
-        "telephone": 6192695222,
         "address": {
-          "address1": null,
-          "address2": "3000 Upas St",
-          "city": "San Diego",
+          "line1": "3000 Upas St",
+          "line2": null,
+          "locality": "San Diego",
+          "dependent_locality": null,
           "sub_code": "US-CA",
-          "state_short": "CA",
-          "state_long": "California",
-          "zip5": "92104",
-          "zip4": "4221"
+          "postal_code": "92104-4221",
+          "formatted": ["3000 Upas St", "San Diego, CA 92104-4221"],
+          "language_code": "en",
+          "telephone": "+16192695222",
+          "validation": "validated",
+          "admin_area": {
+            "sub_code": "US-CA",
+            "name": "California",
+            "type": "state"
+          }
         }
       },
       "distance": {
@@ -3713,9 +3838,9 @@ curl -X GET \
 
 <h3 id="location-city">Find Locations by City</h3>
 
-<p>Find nearby brewery locations by providing a city and state. This endpoint geocodes the city and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
+<p>Find nearby brewery locations by providing a city. This endpoint geocodes the city within its country and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
 
-<p>Send a <strong>GET</strong> request to the <code>/location/city</code> endpoint with the <var>city</var> and <var>state</var> query parameters.</p>
+<p>Send a <strong>GET</strong> request to the <code>/location/city</code> endpoint with the <var>city</var> query parameter, plus <var>region</var> in the US and <var>country</var> anywhere else.</p>
 
 <h4>Query Parameters</h4>
 <div class="table-responsive">
@@ -3734,19 +3859,24 @@ curl -X GET \
                 <td>The name of the city to search around (e.g., <var>San Diego</var>).</td>
             </tr>
             <tr>
-                <td><var>state</var></td>
+                <td><var>region</var><br><small class="text-muted">(required in the US, optional elsewhere)</small></td>
                 <td>string</td>
-                <td>The state name or abbreviation (e.g., <var>California</var> or <var>CA</var>).</td>
+                <td>The state, province or region, by name or abbreviation (e.g., <var>California</var> or <var>CA</var>). A US city name alone is ambiguous across fifty states, so it is required there.</td>
+            </tr>
+            <tr>
+                <td><var>country</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 code of the country the city is in. Defaults to <var>US</var>.</td>
             </tr>
             <tr>
                 <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The radius of the search circle, centered at the provided city. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+                <td>The radius of the search circle, centered at the provided city. If left empty, the default value of <var>25</var> will be used, in the units described under <var>metric</var>.</td>
             </tr>
             <tr>
                 <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
                 <td>boolean</td>
-                <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles.</td>
+                <td>Set this value to <var>true</var> for a search radius and results measured in kilometers, <var>false</var> for miles. When omitted it follows the country: miles for the US, kilometers everywhere else.</td>
             </tr>
             <tr>
                 <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
@@ -3769,7 +3899,7 @@ curl -X GET \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/location/city?city=San%20Diego&amp;state=CA&amp;search_radius=10&amp;count=1' \
+  'https://api.catalog.beer/location/city?city=San%20Diego&amp;region=CA&amp;search_radius=10&amp;count=1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -3794,16 +3924,22 @@ curl -X GET \
         "country_short_name": "United States of America",
         "latitude": 32.7119141,
         "longitude": -117.1571503,
-        "telephone": 6197701844,
         "address": {
-          "address1": null,
-          "address2": "627 8th Ave",
-          "city": "San Diego",
+          "line1": "627 8th Ave",
+          "line2": null,
+          "locality": "San Diego",
+          "dependent_locality": null,
           "sub_code": "US-CA",
-          "state_short": "CA",
-          "state_long": "California",
-          "zip5": "92101",
-          "zip4": "6453"
+          "postal_code": "92101-6453",
+          "formatted": ["627 8th Ave", "San Diego, CA 92101-6453"],
+          "language_code": "en",
+          "telephone": "+16197701844",
+          "validation": "validated",
+          "admin_area": {
+            "sub_code": "US-CA",
+            "name": "California",
+            "type": "state"
+          }
         }
       },
       "distance": {
@@ -4137,17 +4273,18 @@ curl -X PATCH \
 
 <p><a href="#top">^ Return to top</a></p>
 
-<!---------- US ADDRESSES ---------->
+<!---------- ADDRESSES ---------->
 
-<h2 id="us-address">US Addresses</h2>
+<h2 id="address">Addresses</h2>
+<hr>
 
-<p>For locations in the United States, data is stored and captured using the US Addresses data structure.</p>
+<p>A location holds at most one address, added and changed through the <code>/address/{location_id}</code> endpoint (see <a href="#location-add-address">Add an Address to a Location</a>). Every address is validated against its country&#8217;s postal data before it is stored, so what you read back is the validated form, not what was typed. The vocabulary is one shape for every country &#8212; a street line, an optional unit, a locality, a postal code and an optional region &#8212; plus ready-made display lines in the country&#8217;s own order.</p>
 
-<!----- US ADDRESSES: OBJECT ----->
+<!----- ADDRESSES: OBJECT ----->
 
-<h3 id="us-address-object">The US Address Object</h3>
+<h3 id="address-object">The Address Object</h3>
 
-<p>Addresses for the United States are stored in an object with the following parameters.</p>
+<p>The <var>address</var> block of a <a href="#location-object">location object</a> has the following parameters.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -4160,53 +4297,221 @@ curl -X PATCH \
         </thead>
         <tbody>
             <tr>
-                <td><var>address1</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>line1</var></td>
                 <td>string</td>
-                <td>The apartment, suite, or unit number of the location (if applicable).</td>
+                <td>The street line, in the country&#8217;s own order and spelled out: <samp>2215 India St</samp>, <samp>Donkerstraat 12</samp>, <samp>Köpenicker Straße 70</samp>.</td>
             </tr>
             <tr>
-                <td><var>address2</var></td>
-                <td>string</td>
-                <td>The street address of the location.</td>
+                <td><var>line2</var></td>
+                <td>string or null</td>
+                <td>The suite, unit, floor or building, when there is one (<samp>Ste 800</samp>, <samp>bus 3</samp>).</td>
             </tr>
             <tr>
-                <td><var>city</var></td>
+                <td><var>locality</var></td>
                 <td>string</td>
-                <td>The name of the city</td>
+                <td>The city, town or municipality as the postal service names it (<samp>San Diego</samp>, <samp>Westvleteren</samp>, <samp>London</samp>).</td>
+            </tr>
+            <tr>
+                <td><var>dependent_locality</var></td>
+                <td>string or null</td>
+                <td>A district, village or neighbourhood within the locality, where the country addresses that way (<samp>Cuauhtémoc</samp> in Mexico City). Usually <var>null</var>.</td>
             </tr>
             <tr>
                 <td><var>sub_code</var></td>
-                <td>string</td>
-                <td>The ISO 3166&#8211;2 Code for the subdivision in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. (e.g. US-CA)</td>
+                <td>string or null</td>
+                <td>The <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code of the state, province or region (<samp>US-CA</samp>, <samp>BE-VWV</samp>, <samp>CA-QC</samp>). Always present for the US; elsewhere only where the country addresses by region and the validator or the contributor named one. Brussels has no province, so a Brussels address carries <var>null</var> here.</td>
             </tr>
             <tr>
-                <td><var>state_short</var></td>
-                <td>string</td>
-                <td>The two character all-caps notation for the state (e.g. CA).</td>
+                <td><var>postal_code</var></td>
+                <td>string or null</td>
+                <td>The postal code in the country&#8217;s own form, as a string because codes have significant leading zeros and letters: <samp>01085</samp>, <samp>92101-1725</samp> (a US ZIP+4), <samp>8640</samp>, <samp>1018 AL</samp>, <samp>SW1A 1AA</samp>, <samp>100-0005</samp>.</td>
             </tr>
             <tr>
-                <td><var>state_long</var></td>
-                <td>string</td>
-                <td>The full name of the state or district (e.g. California)</td>
+                <td><var>formatted</var></td>
+                <td>array of strings</td>
+                <td>The address as display lines, in the order the country writes them, without the country name: <samp>["2215 India St", "San Diego, CA 92101-1725"]</samp> or <samp>["Donkerstraat 12", "8640 Westvleteren"]</samp>. Render these and you never need per-country layout rules; add <var>country_short_name</var> from the location when the reader is abroad.</td>
             </tr>
             <tr>
-                <td><var>zip5</var></td>
+                <td><var>language_code</var></td>
                 <td>string</td>
-                <td>The traditional 5-digit ZIP Code for the location. Returned as a string because ZIP Codes have significant leading zeros (e.g. <samp>01085</samp>).</td>
+                <td>The language the address is written in, as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a> tag (<samp>en</samp>, <samp>nl</samp>, <samp>fr</samp>, <samp>ja</samp>). Brussels addresses come back in whichever of Dutch or French the request used, and this says which.</td>
             </tr>
             <tr>
-                <td><var>zip4</var><br><small class="text-muted">(optional)</small></td>
-                <td>string</td>
-                <td>The additional ZIP+4 Code used by the US Postal Service. More on the <a href="https://faq.usps.com/s/article/ZIP-Code-The-Basics" target="_blank" rel="noopener">ZIP+4 Code</a>.</td>
+                <td><var>telephone</var></td>
+                <td>string or null</td>
+                <td>The telephone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country calling code and the national number with no separators (<samp>+16192557213</samp>, <samp>+3257400376</samp>). Usable as-is in a <code>tel:</code> link.</td>
             </tr>
             <tr>
-                <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
-                <td>integer</td>
-                <td>An unformatted integer representing the telephone number of the location. Does not include the country code. For example, a US telephone number written in the international format as +1 (555) 444&#8211;3333 is stored as 5554443333 in our database.</td>
+                <td><var>validation</var></td>
+                <td>string</td>
+                <td>How sure the record is: <var>validated</var> (placed at building level by the address validator, which is every address today), <var>geocoded</var> (reserved for countries the validator does not cover) or <var>unverified</var>.</td>
+            </tr>
+            <tr>
+                <td><var>admin_area</var></td>
+                <td>object or null</td>
+                <td>The region behind <var>sub_code</var>, when there is one: <var>sub_code</var>, its <var>name</var> in the local official form (<samp>California</samp>, <samp>West-Vlaanderen</samp>, <samp>Bayern</samp>) and its <var>type</var> (<samp>state</samp>, <samp>province</samp>, <samp>region</samp>, <samp>canton</samp>, &#8230;).</td>
             </tr>
         </tbody>
     </table>
 </div>
+
+<h4>Samples</h4>
+
+<p>A US address. The state is in <var>admin_area</var>, the ZIP+4 in <var>postal_code</var>.</p>
+
+<pre class="api-code">
+{
+  "line1": "2215 India St",
+  "line2": null,
+  "locality": "San Diego",
+  "dependent_locality": null,
+  "sub_code": "US-CA",
+  "postal_code": "92101-1725",
+  "formatted": ["2215 India St", "San Diego, CA 92101-1725"],
+  "language_code": "en",
+  "telephone": "+16192557213",
+  "validation": "validated",
+  "admin_area": {
+    "sub_code": "US-CA",
+    "name": "California",
+    "type": "state"
+  }
+}
+</pre>
+
+<p>A Belgian address with a province supplied by the contributor, and a Brussels one with none.</p>
+
+<pre class="api-code">
+{
+  "line1": "Donkerstraat 12",
+  "line2": null,
+  "locality": "Westvleteren",
+  "dependent_locality": null,
+  "sub_code": "BE-VWV",
+  "postal_code": "8640",
+  "formatted": ["Donkerstraat 12", "8640 Westvleteren"],
+  "language_code": "nl",
+  "telephone": "+3257400376",
+  "validation": "validated",
+  "admin_area": {
+    "sub_code": "BE-VWV",
+    "name": "West-Vlaanderen",
+    "type": "province"
+  }
+}
+</pre>
+
+<pre class="api-code">
+{
+  "line1": "Rue Gheude 56",
+  "line2": null,
+  "locality": "Anderlecht",
+  "dependent_locality": null,
+  "sub_code": null,
+  "postal_code": "1070",
+  "formatted": ["Rue Gheude 56", "1070 Anderlecht"],
+  "language_code": "fr",
+  "telephone": null,
+  "validation": "validated",
+  "admin_area": null
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- ADDRESSES: COUNTRIES ----->
+
+<h3 id="address-countries">Supported Countries</h3>
+
+<p>A location&#8217;s <var>country_code</var> must be one of the countries whose addresses can be validated. To list them, send a <strong>GET</strong> request to the <code>/address/countries</code> endpoint. Each entry carries the country&#8217;s name, how many <a href="#address-subdivisions">subdivisions</a> the catalog holds for it (zero means a region dropdown has nothing to offer) and its telephone calling code.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/address/countries</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/address/countries",
+  "has_more": false,
+  "data": [
+    {
+      "country_code": "AR",
+      "country_short_name": "Argentina",
+      "subdivisions": 24,
+      "calling_code": "+54"
+    },
+    {
+      "country_code": "AT",
+      "country_short_name": "Austria",
+      "subdivisions": 9,
+      "calling_code": "+43"
+    },
+    {
+      "country_code": "BE",
+      "country_short_name": "Belgium",
+      "subdivisions": 13,
+      "calling_code": "+32"
+    }
+  ]
+}
+</pre>
+
+<p><small class="text-muted">Response truncated for documentation &#8212; the list holds 40 countries: AR, AT, AU, BE, BG, BR, CA, CH, CL, CO, CZ, DE, DK, EE, ES, FI, FR, GB, HR, HU, IE, IN, IT, JP, LT, LU, LV, MX, MY, NL, NO, NZ, PL, PR, PT, SE, SG, SI, SK and US.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- ADDRESSES: SUBDIVISIONS ----->
+
+<h3 id="address-subdivisions">Subdivisions</h3>
+
+<p>The states, provinces and regions the catalog knows for a country, as <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> codes with their local official names. These are the values accepted in an address&#8217;s <var>sub_code</var>. To list them, send a <strong>GET</strong> request to the <code>/address/subdivisions</code> endpoint with the <var>country</var> query parameter.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/address/subdivisions?country={country_code}</pre>
+
+<p>Rows are in code order. Where ISO nests one level under another, <var>parent_code</var> says so: a Belgian province sits under its region, a Spanish province under its autonomous community.</p>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/address/subdivisions?country=BE' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/address/subdivisions",
+  "country_code": "BE",
+  "has_more": false,
+  "data": [
+    {
+      "sub_code": "BE-BRU",
+      "name": "Région de Bruxelles-Capitale",
+      "type": "region",
+      "parent_code": null
+    },
+    {
+      "sub_code": "BE-VAN",
+      "name": "Antwerpen",
+      "type": "province",
+      "parent_code": "BE-VLG"
+    },
+    {
+      "sub_code": "BE-VBR",
+      "name": "Vlaams-Brabant",
+      "type": "province",
+      "parent_code": "BE-VLG"
+    }
+  ]
+}
+</pre>
+
+<p><small class="text-muted">Response truncated for documentation &#8212; Belgium has 13 rows: 3 regions and 10 provinces.</small></p>
 
 <p><a href="#top">^ Return to top</a></p>
 
