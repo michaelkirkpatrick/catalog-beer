@@ -2772,7 +2772,7 @@ curl -X GET \
 
 <h3 id="location-object">The Location Object</h3>
 
-<p>When you add an address to a location, are looking for information on a specific location, or are updating a location in the database, successful requests will return the location object in JSON format. That object has the following parameters.</p>
+<p>A location is a place where you can drink a brewer&#8217;s beer: a taproom, a brewpub, a tasting room. Every request that creates, reads or updates a location returns this object.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -2905,7 +2905,9 @@ curl -X GET \
 
 <h3 id="location-address">The Address</h3>
 
-<p>A location holds at most one street address. It travels as the <var>address</var> object: nested in the <a href="#location-object">location object</a> on every read, and nested in the body of the location&#8217;s own <strong>POST</strong>, <strong>PUT</strong> and <strong>PATCH</strong> on every write &#8212; there is no separate address endpoint. The address takes its country from the location&#8217;s <var>country_code</var> and is validated against that country&#8217;s postal data before anything is written, so what you read back is the validated form: the street spelled out, the postal code normalised, <var>latitude</var> and <var>longitude</var> filled in. One shape for every country &#8212; a street line, an optional unit, a locality, a postal code, an optional region &#8212; plus ready-made display lines in the country&#8217;s own order.</p>
+<p>A location has one street address, held in its <var>address</var> field. You read it there, and you write it there too: send it inside the location when you create or update one. There is no separate address endpoint.</p>
+
+<p>The address is checked against the postal records of the location&#8217;s country before it is saved. What you get back is the corrected version: the street written out in full, the postal code in its standard form, and the map coordinates filled in. The same fields work in every country, and <var>formatted</var> gives you the address as display lines, already in the order that country uses.</p>
 
 <h4>In a response</h4>
 
