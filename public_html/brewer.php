@@ -293,7 +293,7 @@ echo $htmlHead->html;
                     }
                     foreach($locations as $loc){
                         // Short form: we're already on the brewer's page, so an
-                        // unnamed taproom is labelled by its city alone.
+                        // unnamed taproom is labeled by its city alone.
                         $locationName = locationShortName($loc);
                         $locationIDString = $loc->id;
                         ?>

@@ -262,7 +262,7 @@
 
         // US: shortText for the route ("NE Bellevue Dr", not "Northeast
         // Bellevue Drive") — the USPS-preferred abbreviation, which is what
-        // /address validation normalises to. Elsewhere the spelled-out form,
+        // /address validation normalizes to. Elsewhere the spelled-out form,
         // in the country's own order (number after the street in most of
         // Europe), which is also what the validator stores.
         var streetNumber = shortText(component(components, 'street_number'));

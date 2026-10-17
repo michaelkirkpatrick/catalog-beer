@@ -1487,7 +1487,7 @@ curl -X GET \
                             <tr>
                                 <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>How sure you are of the classification, used to prioritise editorial review. Usually omit it &#8212; we derive it. Send it only to record <em>less</em> certainty than the request implies. See <a href="#style-confidence">Style Confidence</a>.</td>
+                                <td>How sure you are of the classification, used to prioritize editorial review. Usually omit it &#8212; we derive it. Send it only to record <em>less</em> certainty than the request implies. See <a href="#style-confidence">Style Confidence</a>.</td>
                             </tr>
                             <tr>
                                 <td><var>description<br><small class="text-muted">(optional)</small></var></td>
@@ -2176,7 +2176,7 @@ curl -X GET \
     </table>
 </div>
 
-<p>Within a <var>match</var> level, candidates are ordered by how well they match and then by how many beers we hold in each, so a populous style can still outrank a better-fitting rare one. That is the response above: every candidate for &#8220;Cali Pilsner&#8221; is <var>partial</var>, and the closest one, <var>contemporary-american-pilsner</var>, comes back <em>last</em>. A list that is all <var>partial</var> is the API telling you it did not recognise your label. <var>class</var> may be <var>null</var> where the family sits outside the ale/lager split.</p>
+<p>Within a <var>match</var> level, candidates are ordered by how well they match and then by how many beers we hold in each, so a populous style can still outrank a better-fitting rare one. That is the response above: every candidate for &#8220;Cali Pilsner&#8221; is <var>partial</var>, and the closest one, <var>contemporary-american-pilsner</var>, comes back <em>last</em>. A list that is all <var>partial</var> is the API telling you it did not recognize your label. <var>class</var> may be <var>null</var> where the family sits outside the ale/lager split.</p>
 
 <p><var>families</var> and <var>classes</var> appear alongside <var>styles</var> when your label names a family or a super-class but no style matched it outright &#8212; &#8220;Crisp American Lager&#8221; returns the <var>lager</var> class. Filing one tier up is often the honest answer, and it is better than picking a specific style that happens to share a word with your label. Send the <var>parent</var> or <var>class</var> value back the same way you would a <var>style_id</var>.</p>
 
@@ -2188,7 +2188,7 @@ curl -X GET \
 
 <h3 id="style-confidence">Style Confidence</h3>
 
-<p>Classifying a beer sometimes means a judgement call, and those are the ones worth a second look. The optional <var>style_confidence</var> field on <a href="#beer-create">POST</a>, <a href="#beer-update">PUT</a>, and <a href="#beer-patch">PATCH</a> records how firm the classification is, so editorial review can go where it&#8217;s needed instead of everywhere. It is stored for our own review and is never returned in a beer object.</p>
+<p>Classifying a beer sometimes means a judgment call, and those are the ones worth a second look. The optional <var>style_confidence</var> field on <a href="#beer-create">POST</a>, <a href="#beer-update">PUT</a>, and <a href="#beer-patch">PATCH</a> records how firm the classification is, so editorial review can go where it&#8217;s needed instead of everywhere. It is stored for our own review and is never returned in a beer object.</p>
 
 <p><strong>In most cases, leave it out.</strong> We derive it from what we can check &#8212; whether your label matched the vocabulary on its own, and whether you filed under a catch-all:</p>
 
@@ -2468,7 +2468,7 @@ curl -X GET \
     <li><strong>Description match</strong> &#8212; the query appears only in the style&#8217;s editorial description. A style that merely mentions a term never outranks one named for it.</li>
 </ol>
 
-<p>Within a tier, styles are ordered by how many catalogued beers use them, so a search for a broad term surfaces styles that are actually brewed ahead of ones that exist only in the vocabulary. This ordering applies only between styles that match the query equally well &#8212; a precise match on a rare style always outranks a partial match on a common one.</p>
+<p>Within a tier, styles are ordered by how many cataloged beers use them, so a search for a broad term surfaces styles that are actually brewed ahead of ones that exist only in the vocabulary. This ordering applies only between styles that match the query equally well &#8212; a precise match on a rare style always outranks a partial match on a common one.</p>
 
 <p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query exactly names a style family, by slug, name, or alias, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it. Searching &#8220;ipa&#8221; returns the <var>ipa</var> family alongside the individual IPA styles.</p>
 
@@ -2768,7 +2768,7 @@ curl -X GET \
 
 <h2 id="location">Location</h2>
 
-<p>Brewers can have multiple locations associated with them. These should be public locations at which beer is served as opposed to a production or office space that does not offer beer tasting.</p>
+<p>A brewer can have any number of locations. Add the places where the public can drink the beer: taprooms, brewpubs, tasting rooms. Leave out production sites and offices that don&#8217;t serve.</p>
 
 <h3 id="location-object">The Location Object</h3>
 
@@ -2787,67 +2787,67 @@ curl -X GET \
             <tr>
                 <td><var>id</var></td>
                 <td>string</td>
-                <td>The location_id; a unique identifier for the location.</td>
+                <td>The location&#8217;s unique id.</td>
             </tr>
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object; in this case: &#8220;location&#8221;.</td>
+                <td>Always &#8220;location&#8221;.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
                 <td>string or null</td>
-                <td>The name of the location, or <var>null</var> when the location has no name of its own. Most taprooms aren&#8217;t named separately from the brewer and the community they sit in, so expect <var>null</var> here and compose a label from the nested <var>brewer</var> object and the <var>address</var> block (for example, &#8220;Avery Brewing &#8211; Boulder&#8221;).</td>
+                <td>The location&#8217;s own name, or <var>null</var> when it has none. Most taprooms go by their brewer and their town, so expect <var>null</var> and build a label from the nested <var>brewer</var> and the <var>address</var> (for example, &#8220;Avery Brewing &#8211; Boulder&#8221;).</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
                 <td>string</td>
-                <td>A URL that is specific to the location.</td>
+                <td>A web page for this location, if it has one.</td>
             </tr>
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
+                <td>The country, as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;1 alpha-2</a> code (<var>US</var>, <var>BE</var>).</td>
             </tr>
             <tr>
                 <td><var>country_short_name</var></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 short name for the country, in title case. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
+                <td>The country&#8217;s name (<var>United States of America</var>, <var>Belgium</var>).</td>
             </tr>
             <tr>
                 <td><var>latitude</var><br><small class="text-muted">(optional)</small></td>
                 <td>float</td>
-                <td>The latitude of the location.</td>
+                <td>The location&#8217;s latitude, set from the address.</td>
             </tr>
             <tr>
                 <td><var>longitude</var><br><small class="text-muted">(optional)</small></td>
                 <td>float</td>
-                <td>The longitude of the location.</td>
+                <td>The location&#8217;s longitude, set from the address.</td>
             </tr>
             <tr>
                 <td><var>cb_verified</var></td>
                 <td>Boolean</td>
-                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the location&#8217;s information.</td>
+                <td><var>true</var> when a Catalog.beer administrator has reviewed this location.</td>
             </tr>
             <tr>
                 <td><var>brewer_verified</var></td>
                 <td>Boolean</td>
-                <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified the location&#8217;s information.</td>
+                <td><var>true</var> when the brewery itself has contributed or confirmed this location.</td>
             </tr>
             <tr>
                 <td><var>last_modified</var></td>
                 <td>integer</td>
-                <td>A Unix timestamp indicating when the location was last modified.</td>
+                <td>When the location last changed, as a Unix timestamp.</td>
             </tr>
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>The location&#8217;s street address, present once one has been given. See <a href="#location-address">The Address</a>; the <var>telephone</var> field is included within it, and the same object is how an address is written.</td>
+                <td>The street address, once one has been given. See <a href="#location-address">The Address</a>. The same object is how you write an address, and <var>telephone</var> lives inside it.</td>
             </tr>
             <tr>
                 <td><var>brewer</var></td>
                 <td>object</td>
-                <td>A <a href="#brewer-object">brewer object</a> containing information on the brewer associated with this location.</td>
+                <td>The <a href="#brewer-object">brewer</a> this location belongs to.</td>
             </tr>
         </tbody>
     </table>
@@ -2855,7 +2855,7 @@ curl -X GET \
 
 <h4>Sample</h4>
 
-<p>Sample location object with an address.</p>
+<p>A location with an address.</p>
 
 <pre class="api-code">
 {
@@ -2924,57 +2924,57 @@ curl -X GET \
             <tr>
                 <td><var>line1</var></td>
                 <td>string</td>
-                <td>The street line, in the country&#8217;s own order and spelled out: <samp>2215 India St</samp>, <samp>Donkerstraat 12</samp>, <samp>Köpenicker Straße 70</samp>.</td>
+                <td>The street line, spelled out and in the country&#8217;s order: <samp>2215 India St</samp>, <samp>Donkerstraat 12</samp>, <samp>Köpenicker Straße 70</samp>.</td>
             </tr>
             <tr>
                 <td><var>line2</var></td>
                 <td>string or null</td>
-                <td>The suite, unit, floor or building, when there is one (<samp>Ste 800</samp>, <samp>bus 3</samp>).</td>
+                <td>The suite, unit, floor or building, if any (<samp>Ste 800</samp>, <samp>bus 3</samp>).</td>
             </tr>
             <tr>
                 <td><var>locality</var></td>
                 <td>string</td>
-                <td>The city, town or municipality as the postal service names it (<samp>San Diego</samp>, <samp>Westvleteren</samp>, <samp>London</samp>).</td>
+                <td>The city or town, as the postal service names it (<samp>San Diego</samp>, <samp>Westvleteren</samp>, <samp>London</samp>).</td>
             </tr>
             <tr>
                 <td><var>dependent_locality</var></td>
                 <td>string or null</td>
-                <td>A district, village or neighbourhood within the locality, where the country addresses that way (<samp>Cuauhtémoc</samp> in Mexico City). Usually <var>null</var>.</td>
+                <td>A district or village inside the locality, in countries that address that way (<samp>Cuauhtémoc</samp> in Mexico City). Usually <var>null</var>.</td>
             </tr>
             <tr>
                 <td><var>sub_code</var></td>
                 <td>string or null</td>
-                <td>The <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code of the state, province or region (<samp>US-CA</samp>, <samp>BE-VWV</samp>, <samp>CA-QC</samp>). Always present for the US; elsewhere only where the country addresses by region and the validator or the contributor named one. Brussels has no province, so a Brussels address carries <var>null</var> here.</td>
+                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code (<samp>US-CA</samp>, <samp>BE-VWV</samp>, <samp>CA-QC</samp>). Always set in the US. Elsewhere, set only when the country uses regions in its addresses and one was found or given. Brussels has no province, so a Brussels address has <var>null</var> here.</td>
             </tr>
             <tr>
                 <td><var>postal_code</var></td>
                 <td>string or null</td>
-                <td>The postal code in the country&#8217;s own form, as a string because codes have significant leading zeros and letters: <samp>01085</samp>, <samp>92101-1725</samp> (a US ZIP+4), <samp>8640</samp>, <samp>1018 AL</samp>, <samp>SW1A 1AA</samp>, <samp>100-0005</samp>.</td>
+                <td>The postal code as the country writes it, always a string: <samp>01085</samp>, <samp>92101-1725</samp> (a US ZIP+4), <samp>8640</samp>, <samp>1018 AL</samp>, <samp>SW1A 1AA</samp>, <samp>100-0005</samp>. Leading zeros and letters matter.</td>
             </tr>
             <tr>
                 <td><var>formatted</var></td>
                 <td>array of strings</td>
-                <td>The address as display lines, in the order the country writes them, without the country name: <samp>["2215 India St", "San Diego, CA 92101-1725"]</samp> or <samp>["Donkerstraat 12", "8640 Westvleteren"]</samp>. Render these and you never need per-country layout rules; add <var>country_short_name</var> from the location when the reader is abroad.</td>
+                <td>The address as lines ready to display, in that country&#8217;s order and without the country name: <samp>["2215 India St", "San Diego, CA 92101-1725"]</samp> or <samp>["Donkerstraat 12", "8640 Westvleteren"]</samp>. Show them as they are. Add <var>country_short_name</var> from the location when the reader is in another country.</td>
             </tr>
             <tr>
                 <td><var>language_code</var></td>
                 <td>string</td>
-                <td>The language the address is written in, as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a> tag (<samp>en</samp>, <samp>nl</samp>, <samp>fr</samp>, <samp>ja</samp>). Brussels addresses come back in whichever of Dutch or French the request used, and this says which.</td>
+                <td>The language the address is written in, as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a> tag (<samp>en</samp>, <samp>nl</samp>, <samp>fr</samp>, <samp>ja</samp>). A Brussels address comes back in Dutch or French depending on what was sent, and this tells you which.</td>
             </tr>
             <tr>
                 <td><var>telephone</var></td>
                 <td>string or null</td>
-                <td>The telephone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country calling code and the national number with no separators (<samp>+16192557213</samp>, <samp>+3257400376</samp>). Usable as-is in a <code>tel:</code> link.</td>
+                <td>The phone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country code and the number, no spaces (<samp>+16192557213</samp>, <samp>+3257400376</samp>). Works as-is in a <code>tel:</code> link.</td>
             </tr>
             <tr>
                 <td><var>validation</var></td>
                 <td>string</td>
-                <td>How sure the record is: <var>validated</var> (placed at building level by the address validator, which is every address today), <var>geocoded</var> (reserved for countries the validator does not cover) or <var>unverified</var>.</td>
+                <td>How the address was checked. <var>validated</var> means the validator matched it to a specific building, which is every address today. <var>geocoded</var> is reserved for countries the validator does not cover. <var>unverified</var> means it was stored as typed.</td>
             </tr>
             <tr>
                 <td><var>admin_area</var></td>
                 <td>object or null</td>
-                <td>The region behind <var>sub_code</var>, when there is one: <var>sub_code</var>, its <var>name</var> in the local official form (<samp>California</samp>, <samp>West-Vlaanderen</samp>, <samp>Bayern</samp>) and its <var>type</var> (<samp>state</samp>, <samp>province</samp>, <samp>region</samp>, <samp>canton</samp>, &#8230;).</td>
+                <td>The region behind <var>sub_code</var>, if any: its <var>sub_code</var>, its <var>name</var> in the local language (<samp>California</samp>, <samp>West-Vlaanderen</samp>, <samp>Bayern</samp>) and its <var>type</var> (<samp>state</samp>, <samp>province</samp>, <samp>region</samp>, <samp>canton</samp>, and so on).</td>
             </tr>
         </tbody>
     </table>
@@ -2982,7 +2982,7 @@ curl -X GET \
 
 <h4>Samples</h4>
 
-<p>A US address. The state is in <var>admin_area</var>, the ZIP+4 in <var>postal_code</var>.</p>
+<p>A US address. The state is in <var>admin_area</var> and the ZIP+4 is in <var>postal_code</var>.</p>
 
 <pre class="api-code">
 {
@@ -3004,7 +3004,7 @@ curl -X GET \
 }
 </pre>
 
-<p>A Belgian address with a province supplied by the contributor, and a Brussels one with none.</p>
+<p>A Belgian address with a province, and a Brussels address with none.</p>
 
 <pre class="api-code">
 {
@@ -3044,7 +3044,7 @@ curl -X GET \
 
 <h4>In a request</h4>
 
-<p>Send these inside <var>address</var>. Write the address the way it is written locally; the <a href="#location-countries">40 supported countries</a> are the ones the validator covers. An address the validator cannot place at building level is refused with a <var>400</var> rather than stored approximately &#8212; and on a <strong>POST</strong> that means no location is created.</p>
+<p>Send these fields inside <var>address</var>, written the way the address is written locally. The validator covers 40 countries; see <a href="#location-countries">Supported Countries</a>. If it cannot match the address to a specific building, the request fails with a <var>400</var> and nothing is saved. On a <strong>POST</strong>, that means no location is created.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -3059,52 +3059,52 @@ curl -X GET \
             <tr>
                 <td><var>line1</var></td>
                 <td>string</td>
-                <td>The street line, written the way the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d&#8217;Or</var>.</td>
+                <td>The street line, as the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d&#8217;Or</var>.</td>
             </tr>
             <tr>
                 <td><var>line2</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The suite, unit, floor or building, if there is one (e.g. <var>Suite 101</var>, <var>bus 3</var>).</td>
+                <td>The suite, unit, floor or building, if any (<var>Suite 101</var>, <var>bus 3</var>).</td>
             </tr>
             <tr>
-                <td><var>locality</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided; in the US, <var>locality</var> needs <var>sub_code</var> beside it.</small></td>
+                <td><var>locality</var><br><small class="text-muted">(send <var>locality</var> or <var>postal_code</var>; in the US, <var>locality</var> also needs <var>sub_code</var>)</small></td>
                 <td>string</td>
-                <td>The city, town or municipality.</td>
+                <td>The city or town.</td>
             </tr>
             <tr>
                 <td><var>dependent_locality</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>A district, village or neighbourhood within the locality, where the country addresses that way (a Belgian <em>deelgemeente</em>, a Mexican <em>colonia</em>). Usually left out; the validator fills it in when it applies.</td>
+                <td>A district or village inside the locality, in countries that address that way (a Belgian <em>deelgemeente</em>, a Mexican <em>colonia</em>). Usually leave it out; the validator fills it in.</td>
             </tr>
             <tr>
-                <td><var>sub_code</var><br><small class="text-muted">(optional outside the US; required with <var>locality</var> in the US)</small></td>
+                <td><var>sub_code</var><br><small class="text-muted">(required in the US when you send <var>locality</var>; optional elsewhere)</small></td>
                 <td>string</td>
-                <td>The <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code of the state, province or region (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). The bare suffix is accepted and prefixed with the location&#8217;s country (<var>CA</var> on a US location becomes <var>US-CA</var>). It must belong to the location&#8217;s country; see <a href="#location-subdivisions">Subdivisions</a> for the codes we hold. Where the validator reports a region of its own, that wins.</td>
+                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location&#8217;s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
             </tr>
             <tr>
-                <td><var>postal_code</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided.</small></td>
+                <td><var>postal_code</var><br><small class="text-muted">(send <var>locality</var> or <var>postal_code</var>)</small></td>
                 <td>string</td>
-                <td>The postal code in the country&#8217;s own form: <var>90731</var> or <var>90731-7202</var> in the US, <var>8640</var> in Belgium, <var>1018 AL</var> in the Netherlands, <var>SW1A 1AA</var> in the UK. An obviously mis-shaped code is refused before validation; otherwise the validated form is what gets stored.</td>
+                <td>The postal code as the country writes it: <var>90731</var> or <var>90731-7202</var> in the US, <var>8640</var> in Belgium, <var>1018 AL</var> in the Netherlands, <var>SW1A 1AA</var> in the UK. A code of clearly the wrong shape is refused before validation. Otherwise the validated form is what gets saved.</td>
             </tr>
             <tr>
                 <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The telephone number, in international form (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or in the national format of the location&#8217;s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). Formatting is stripped and the number is returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
+                <td>The phone number, either with its country code (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or as dialed locally in the location&#8217;s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). It is saved and returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
             </tr>
         </tbody>
     </table>
 </div>
 
-<h4>How each verb treats it</h4>
+<h4>What each verb does with it</h4>
 
 <ul>
-    <li><strong>POST</strong> &#8212; the address is created with the location. Omit <var>address</var> only for a venue the validator cannot place.</li>
-    <li><strong>PUT</strong> &#8212; replaces the address wholesale: sub-fields you omit are cleared, and omitting <var>address</var> altogether clears it (coordinates included), as with any optional field on a <strong>PUT</strong>.</li>
-    <li><strong>PATCH</strong> &#8212; merges the sub-fields you send over the stored address and re-validates the whole as one, so <var>latitude</var> and <var>longitude</var> move with it. Send <var>null</var> for a sub-field to clear it, or <var>"address": null</var> to remove the address entirely. <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> are two spellings of the same place: when you send one group without the other, the stored other group is dropped and re-derived, so a stale ZIP can never contradict a fresh city. A patch that sends only <var>telephone</var> is written without re-validating the address.</li>
-    <li><strong>Changing the country</strong> of a location that holds an address requires sending the address in the same request, so it can be validated in the new country &#8212; or <var>"address": null</var> to clear it. A country change on its own is a <var>400</var>.</li>
+    <li><strong>POST</strong> creates the address with the location. Leave <var>address</var> out only when the validator cannot place the venue.</li>
+    <li><strong>PUT</strong> replaces the address. Any field you leave out is cleared. Leave out <var>address</var> entirely and the address is removed, coordinates included, like any optional field on a PUT.</li>
+    <li><strong>PATCH</strong> changes only the fields you send. They are merged over the stored address and the result is validated as one, so <var>latitude</var> and <var>longitude</var> move with it. Send <var>null</var> for a field to clear it, or <var>"address": null</var> to remove the address. One rule to know: <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> describe the same place two ways, so if you send one without the other, the stored other is dropped and worked out again from what you sent. That way an old ZIP can never contradict a new city. A patch that sends only <var>telephone</var> skips validation.</li>
+    <li><strong>To move a location to another country</strong>, send the address in the same request so it can be validated there, or send <var>"address": null</var> to clear it. A country change on its own is refused with a <var>400</var>.</li>
 </ul>
 
-<p>Validation errors come back under <var>valid_state.address</var> and <var>valid_msg.address</var>, keyed by the seven fields above, beside the location&#8217;s own <var>brewer_id</var>, <var>name</var>, <var>url</var> and <var>country_code</var>.</p>
+<p>Validation errors come back under <var>valid_state.address</var> and <var>valid_msg.address</var>, keyed by the seven fields above, next to the location&#8217;s own <var>brewer_id</var>, <var>name</var>, <var>url</var> and <var>country_code</var>.</p>
 
 <h4>Sample Request</h4>
 
@@ -3180,7 +3180,7 @@ curl -X PATCH \
 
 <h3 id="location-add">Add a Location</h3>
 
-<p>To add a location for a brewer, send a <strong>POST</strong> request to the <code>/location</code> endpoint with the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>. Include the <var>address</var> in the same request: it is validated first, and the location is only created once the address passes, so a refused street never leaves a location without one.</p>
+<p>To add a location, send a <strong>POST</strong> request to <code>/location</code> with the fields below as JSON. Send the address in the same request: it is validated first, and the location is created only if the address passes, so a refused street never leaves a location behind without one. A successful request returns the <a href="#location-object">location object</a>.</p>
 
 <pre class="api-code">POST https://api.catalog.beer/location</pre>
 
@@ -3197,27 +3197,27 @@ curl -X PATCH \
             <tr>
                 <td><var>brewer_id</var></td>
                 <td>string</td>
-                <td>The brewer_id for the brewer you would like to associate the location with.</td>
+                <td>The brewer this location belongs to.</td>
             </tr>
             <tr>
                 <td><var>name</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The name of the location, if it has one of its own. Omit it for a taproom that simply goes by its brewer and city &#8212; don&#8217;t repeat the city here, since the address already records it.</td>
+                <td>The location&#8217;s own name, if it has one. Leave it out for a taproom that goes by its brewer and town, and don&#8217;t repeat the town here; the address already has it.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>A URL specific to the location. This URL should provide visitors additional information on the beer tasting location (e.g. address, hours, or more information). It should not be the same as the brewer&#8217;s URL.</td>
+                <td>A page for this location, with its hours or directions. It should not be the brewer&#8217;s main URL.</td>
             </tr>
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located, one of the <a href="#location-countries">supported countries</a>. The address is validated in this country.</td>
+                <td>The country, as an ISO 3166&#8211;1 alpha-2 code, from the <a href="#location-countries">supported list</a>. The address is validated in this country.</td>
             </tr>
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>The street address, nested &#8212; see <a href="#location-address">The Address</a> for its fields. Omit it only for a venue whose address the validator cannot place.</td>
+                <td>The street address; see <a href="#location-address">The Address</a> for its fields. Leave it out only when the validator cannot place the venue.</td>
             </tr>
         </tbody>
     </table>
@@ -3283,7 +3283,7 @@ curl -X POST \
 
 <h3 id="location-update">Update a Location (PUT)</h3>
 
-<p>To replace a location&#8217;s data, send a <strong>PUT</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the location does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#location-object">location object</a>.</p>
+<p>To replace a location, send a <strong>PUT</strong> request to <code>/location/{location_id}</code>. Send every required field. Any optional field you leave out is cleared. If the location does not exist it is created, with a <var>201 Created</var> response. A successful request returns the <a href="#location-object">location object</a>.</p>
 
 <pre class="api-code">PUT https://api.catalog.beer/location/{location_id}</pre>
 
@@ -3300,27 +3300,27 @@ curl -X POST \
             <tr>
                 <td><var>brewer_id</var></td>
                 <td>string</td>
-                <td>The brewer_id for the brewer you would like to associate the location with.</td>
+                <td>The brewer this location belongs to.</td>
             </tr>
             <tr>
                 <td><var>name</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The name of the location, if it has one of its own. As with any optional field on a <strong>PUT</strong>, omitting it clears the stored name to <var>null</var>.</td>
+                <td>The location&#8217;s own name. Like any optional field on a PUT, leaving it out clears it.</td>
             </tr>
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located, one of the <a href="#location-countries">supported countries</a>.</td>
+                <td>The country, as an ISO 3166&#8211;1 alpha-2 code, from the <a href="#location-countries">supported list</a>.</td>
             </tr>
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>The street address, nested &#8212; see <a href="#location-address">The Address</a> for its fields. As with any optional field on a <strong>PUT</strong>, omitting it clears the stored address (and the coordinates with it); a nested object replaces it wholesale.</td>
+                <td>The street address; see <a href="#location-address">The Address</a>. Leaving it out clears the stored address, coordinates included. Sending one replaces the stored address entirely.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>A URL specific to the location. Cleared if omitted.</td>
+                <td>A page for this location. Cleared if left out.</td>
             </tr>
         </tbody>
     </table>
@@ -3341,9 +3341,9 @@ curl -X PUT \
 
 <h3 id="location-patch">Update a Location (PATCH)</h3>
 
-<p>To partially update a location, send a <strong>PATCH</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#location-object">location object</a>.</p>
+<p>To change part of a location, send a <strong>PATCH</strong> request to <code>/location/{location_id}</code> with only the fields you want to change. Everything else stays as it is. A successful request returns the <a href="#location-object">location object</a>.</p>
 
-<p>The nested <var>address</var> may be sent too &#8212; merged over the stored one, re-validated as one; see <a href="#location-address">The Address</a>.</p>
+<p>You can send <var>address</var> too. It is merged over the stored address and validated as one; see <a href="#location-address">The Address</a>.</p>
 
 <pre class="api-code">PATCH https://api.catalog.beer/location/{location_id}</pre>
 
@@ -3360,24 +3360,29 @@ curl -X PUT \
             <tr>
                 <td><var>brewer_id</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The brewer_id for the brewer you would like to associate the location with.</td>
+                <td>The brewer this location belongs to.</td>
             </tr>
             <tr>
                 <td><var>name</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The name of the location. Send <var>null</var> or an empty string to clear a name that&#8217;s already stored.</td>
+                <td>The location&#8217;s name. Send <var>null</var> or an empty string to clear it.</td>
             </tr>
             <tr>
                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
+                <td>The country, as an ISO 3166&#8211;1 alpha-2 code. If the location has an address, send the address too; see <a href="#location-address">The Address</a>.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>A URL specific to the location.</td>
+                <td>A page for this location.</td>
             </tr>
-        </tbody>
+                    <tr>
+                <td><var>address</var><br><small class="text-muted">(optional)</small></td>
+                <td>object</td>
+                <td>The street address, merged over the stored one; see <a href="#location-address">The Address</a>. Send <var>null</var> to remove it.</td>
+            </tr>
+</tbody>
     </table>
 </div>
 
@@ -3396,7 +3401,7 @@ curl -X PATCH \
 
 <h3 id="location-delete">Delete a Location</h3>
 
-<p>To delete a location, send a <strong>DELETE</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting is limited to brewery staff &#8212; check <a href="#brewer-permissions">your permissions for the location&#8217;s brewer</a> before attempting it.</p>
+<p>To delete a location, send a <strong>DELETE</strong> request to <code>/location/{location_id}</code>. No body is needed. A successful request returns <var>204 No Content</var>. Only brewery staff and administrators can delete; check <a href="#brewer-permissions">your permissions</a> for the brewer first.</p>
 
 <pre class="api-code">DELETE https://api.catalog.beer/location/{location_id}</pre>
 
@@ -3413,11 +3418,11 @@ curl -X DELETE \
 
 <h3 id="location-retrieve">Retrieve a Location</h3>
 
-                                <p>To retrieve a location, send a <strong>GET</strong> request to the <code>/location</code> endpoint with the <var>{location_id}</var> parameter appended to the path.</p>
+                                <p>To get one location, send a <strong>GET</strong> request to <code>/location/{location_id}</code>.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location/{location_id}</pre>
 
-<p>A <a href="#location-object">location object</a> will be returned for successful requests.</p>
+<p>It returns the <a href="#location-object">location object</a>.</p>
 
 <h4>Sample Request</h4>
 
@@ -3434,7 +3439,7 @@ curl -X GET \
 
 <h3 id="location-list-all">List all Locations</h3>
 
-<p>Retrieves a list of all the locations in the database. To access this data, send a <strong>GET</strong> request to the <code>/location</code> endpoint.</p>
+<p>To list every location, send a <strong>GET</strong> request to <code>/location</code>.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location</pre>
 
@@ -3452,19 +3457,19 @@ curl -X GET \
             <tr>
                 <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                <td>Where to start. Pass the <var>next_cursor</var> value from the previous page.</td>
             </tr>
             <tr>
                 <td><var>count</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The number of results you would like returned from your request. The default value is 500.</td>
+                <td>How many results to return. Default 500.</td>
             </tr>
         </tbody>
     </table>
 </div>
 
 <h4>Response</h4>
-<p>This request returns a list object with the following parameters.</p>
+<p>The response is a list object:</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -3479,42 +3484,42 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: &ldquo;list&rdquo;.</td>
+                <td>Always &#8220;list&#8221;.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
                 <td>string</td>
-                <td>The API endpoint accessed to retrieve this object. In this case: <code>/location</code>.</td>
+                <td>The endpoint: <code>/location</code>.</td>
             </tr>
             <tr>
                 <td><var>has_more</var></td>
                 <td>Boolean</td>
-                <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
+                <td><var>true</var> when there are more results after this page.</td>
             </tr>
             <tr>
                 <td><var>next_cursor</var></td>
                 <td>string</td>
-                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request.</td>
+                <td>Pass this as <var>cursor</var> to get the next page.</td>
             </tr>
             <tr>
                 <td><var>data</var></td>
                 <td>array</td>
-                <td>An array containing all the locations in the database sorted alphabetically by name. Each array object has the following attributes: <var>id</var>, <var>name</var>, and <var>last_modified</var>, described below.</td>
+                <td>Every location, sorted by name. Each entry has <var>id</var>, <var>name</var> and <var>last_modified</var>.</td>
             </tr>
             <tr>
                 <td><var>id</var></td>
                 <td>string</td>
-                <td>The <var>location_id</var>.</td>
+                <td>The location&#8217;s id.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
                 <td>string</td>
-                <td>The name of the location. May be <var>null</var> &#8212; a location&#8217;s name is optional, and consumers that need a display title should compose one (for example, from the brewer name and city).</td>
+                <td>The location&#8217;s name, or <var>null</var>. If you need a title, build one from the brewer name and the town.</td>
             </tr>
             <tr>
                 <td><var>last_modified</var></td>
                 <td>integer</td>
-                <td>A Unix timestamp representing the date and time the location was last modified.</td>
+                <td>When the location last changed, as a Unix timestamp.</td>
             </tr>
         </tbody>
     </table>
@@ -3563,9 +3568,9 @@ curl -X GET \
 
 <h3 id="nearby-locations">Find Nearby Locations</h3>
 
-<p>One of the questions that gets asked most is &#8220;where is the nearest brewery?&#8221; or &#8220;I&#8217;m heading to Acme town, what breweries are local?&#8221;. To answer those questions or questions like them, use this endpoint.</p>
+<p>The question people ask most is &#8220;where is the nearest brewery?&#8221; This endpoint answers it.</p>
 
-<p>To retrieve a location, send a <strong>GET</strong> request to the <code>/location/nearby </code> endpoint with the <var>{latitude}</var> and <var>{longitude}</var> query parameters appended to the path.</p>
+<p>Send a <strong>GET</strong> request to <code>/location/nearby</code> with <var>latitude</var> and <var>longitude</var> as query parameters.</p>
 
 <h4>Query Parameters</h4>
 <div class="table-responsive">
@@ -3581,32 +3586,32 @@ curl -X GET \
             <tr>
                 <td><var>latitude</var></td>
                 <td>float</td>
-                <td>The latitude of the location where you would like to search around. Combined with longitude, this pair describes the center of your search radius.</td>
+                <td>The latitude of the center of your search.</td>
             </tr>
             <tr>
                 <td><var>longitude</var></td>
                 <td>float</td>
-                <td>The longitude of the location where you would like to search around. Combined with latitude, this pair describes the center of your search radius.</td>
+                <td>The longitude of the center of your search.</td>
             </tr>
             <tr>
                 <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The radius of the search circle, centered at the provided latitude and longitude. If left empty, the default value of <var>25</var> will be used. The default units are miles. Use the <var>metric</var> flag to search in kilometers.</td>
+                <td>How far to search from the center. Default 25, in the units set by <var>metric</var>.</td>
             </tr>
             <tr>
                 <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
                 <td>boolean</td>
-                <td>Set this value to <var>true</var> if you would like your search radius and results to be measured in kilometers. The default value for this variable is <var>false</var>, yielding a search radius and results measured in miles, though you can state it explicitly.</td>
+                <td><var>true</var> for kilometers, <var>false</var> for miles. Default <var>false</var>.</td>
             </tr>
             <tr>
                 <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                <td>Where to start. Pass the <var>next_cursor</var> value from the previous page.</td>
             </tr>
             <tr>
                 <td><var>count</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The number of results you would like returned from your request. The default value is 100.</td>
+                <td>How many results to return. Default 100.</td>
             </tr>
         </tbody>
     </table>
@@ -3617,7 +3622,7 @@ curl -X GET \
 <pre class="api-code">GET https://api.catalog.beer/location/nearby?latitude={latitude}&amp;longitude={longitude}</pre>
 
 <h4>Response</h4>
-<p>This request returns a list object with the following parameters.</p>
+<p>The response is a list object:</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -3632,44 +3637,44 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: “list”.</td>
+                <td>Always &#8220;list&#8221;.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
                 <td>string</td>
-                <td>The API endpoint accessed to retrieve this object. In this case: <code>/location/nearby</code>.</td>
+                <td>The endpoint: <code>/location/nearby</code>.</td>
             </tr>
             <tr>
                 <td><var>has_more</var></td>
                 <td>Boolean</td>
-                <td>Whether or not there is more data available after this set. If <var>false</var>, you have reached the last items on the list.</td>
+                <td><var>true</var> when there are more results after this page.</td>
             </tr>
             <tr>
                 <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+                <td>Pass this as <var>cursor</var> to get the next page. Only present when <var>has_more</var> is <var>true</var>.</td>
             </tr>
             <tr>
                 <td><var>data</var></td>
                 <td>array</td>
                 <td>
-                    <p>An array containing all the locations that match your query parameters. Each result contains three objects:</p>
+                    <p>The locations in range. Each result has three objects:</p>
                     <ul>
-                        <li>A <var>location</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var>, and a nested <a href="#location-address"><var>address</var> object</a> (every key <var>null</var> when the location has no address yet)</li>
-                        <li>A <var>distance</var> object described below</li>
-                        <li>A <var>brewer</var> object containing: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>status</var>, <var>founded_year</var>, <var>closed_year</var>, <var>country_code</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
+                        <li><var>location</var>: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var> and the nested <a href="#location-address"><var>address</var></a> (every key <var>null</var> when the location has no address yet)</li>
+                        <li><var>distance</var>, described below</li>
+                        <li><var>brewer</var>: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>status</var>, <var>founded_year</var>, <var>closed_year</var>, <var>country_code</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
                     </ul>
                 </td>
             </tr>
             <tr>
                 <td><var>distance</var></td>
                 <td>float</td>
-                <td>The straight line distance from the query <var>latitude</var> and <var>longitude</var> to the brewery, rounded to the tenths place (a single decimal place).</td>
+                <td>The straight-line distance from your point to the location, to one decimal place.</td>
             </tr>
             <tr>
                 <td><var>units</var></td>
                 <td>string</td>
-                <td>The unit of distance: &#8220;miles&#8221; or &#8220;kilometers&#8221;, following the <var>metric</var> query parameter. For <code>/location/nearby</code> the default is miles; for the postal code and city lookups it follows the country.</td>
+                <td>&#8220;miles&#8221; or &#8220;kilometers&#8221;, following <var>metric</var>. The default here is miles; the postal code and city lookups follow the country.</td>
             </tr>
         </tbody>
     </table>
@@ -3747,9 +3752,9 @@ curl -X GET \
 
 <h3 id="location-zip">Find Locations by Postal Code</h3>
 
-<p>Find nearby brewery locations by providing a postal code. This endpoint geocodes the postal code within its country and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
+<p>Find locations near a postal code. The code is geocoded within its country, and the search then works like <a href="#nearby-locations">Find Nearby Locations</a>.</p>
 
-<p>Send a <strong>GET</strong> request to the <code>/location/zip</code> endpoint with the <var>postal_code</var> query parameter, and <var>country</var> for anywhere but the US.</p>
+<p>Send a <strong>GET</strong> request to <code>/location/zip</code> with <var>postal_code</var>, plus <var>country</var> for anywhere outside the US.</p>
 
 <h4>Query Parameters</h4>
 <div class="table-responsive">
@@ -3765,39 +3770,39 @@ curl -X GET \
             <tr>
                 <td><var>postal_code</var></td>
                 <td>string</td>
-                <td>A postal code in the country&#8217;s own form (e.g., <var>92104</var>, <var>8640</var>, <var>1018 AL</var>).</td>
+                <td>A postal code as the country writes it (<var>92104</var>, <var>8640</var>, <var>1018 AL</var>).</td>
             </tr>
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 code of the country the postal code belongs to. Defaults to <var>US</var>.</td>
+                <td>The country of the postal code, as an ISO 3166&#8211;1 alpha-2 code. Default <var>US</var>.</td>
             </tr>
             <tr>
                 <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The radius of the search circle, centered at the provided postal code. If left empty, the default value of <var>25</var> will be used, in the units described under <var>metric</var>.</td>
+                <td>How far to search from the postal code. Default 25, in the units set by <var>metric</var>.</td>
             </tr>
             <tr>
                 <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
                 <td>boolean</td>
-                <td>Set this value to <var>true</var> for a search radius and results measured in kilometers, <var>false</var> for miles. When omitted it follows the country: miles for the US, kilometers everywhere else.</td>
+                <td><var>true</var> for kilometers, <var>false</var> for miles. If left out, miles in the US and kilometers everywhere else.</td>
             </tr>
             <tr>
                 <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                <td>Where to start. Pass the <var>next_cursor</var> value from the previous page.</td>
             </tr>
             <tr>
                 <td><var>count</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The number of results you would like returned from your request. The default value is 100.</td>
+                <td>How many results to return. Default 100.</td>
             </tr>
         </tbody>
     </table>
 </div>
 
 <h4>Response</h4>
-<p>The response format is identical to the <a href="#nearby-locations">Find Nearby Locations</a> endpoint, returning a list object with <var>location</var>, <var>distance</var>, and <var>brewer</var> objects for each result. The <var>url</var> field will be <code>/location/zip</code>.</p>
+<p>The response is the same as <a href="#nearby-locations">Find Nearby Locations</a>; <var>url</var> is <code>/location/zip</code>.</p>
 
 <h4>Sample Request</h4>
 
@@ -3871,9 +3876,9 @@ curl -X GET \
 
 <h3 id="location-city">Find Locations by City</h3>
 
-<p>Find nearby brewery locations by providing a city. This endpoint geocodes the city within its country and returns locations within the search radius, just like the <a href="#nearby-locations">Find Nearby Locations</a> endpoint.</p>
+<p>Find locations near a city. The city is geocoded within its country, and the search then works like <a href="#nearby-locations">Find Nearby Locations</a>.</p>
 
-<p>Send a <strong>GET</strong> request to the <code>/location/city</code> endpoint with the <var>city</var> query parameter, plus <var>region</var> in the US and <var>country</var> anywhere else.</p>
+<p>Send a <strong>GET</strong> request to <code>/location/city</code> with <var>city</var>, plus <var>region</var> in the US and <var>country</var> anywhere else.</p>
 
 <h4>Query Parameters</h4>
 <div class="table-responsive">
@@ -3889,44 +3894,44 @@ curl -X GET \
             <tr>
                 <td><var>city</var></td>
                 <td>string</td>
-                <td>The name of the city to search around (e.g., <var>San Diego</var>).</td>
+                <td>The city to search around (<var>San Diego</var>).</td>
             </tr>
             <tr>
                 <td><var>region</var><br><small class="text-muted">(required in the US, optional elsewhere)</small></td>
                 <td>string</td>
-                <td>The state, province or region, by name or abbreviation (e.g., <var>California</var> or <var>CA</var>). A US city name alone is ambiguous across fifty states, so it is required there.</td>
+                <td>The state, province or region, by name or abbreviation (<var>California</var> or <var>CA</var>). Required in the US, where a city name alone could be in any of fifty states. Optional elsewhere.</td>
             </tr>
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 code of the country the city is in. Defaults to <var>US</var>.</td>
+                <td>The country of the city, as an ISO 3166&#8211;1 alpha-2 code. Default <var>US</var>.</td>
             </tr>
             <tr>
                 <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The radius of the search circle, centered at the provided city. If left empty, the default value of <var>25</var> will be used, in the units described under <var>metric</var>.</td>
+                <td>How far to search from the city. Default 25, in the units set by <var>metric</var>.</td>
             </tr>
             <tr>
                 <td><var>metric</var><br><small class="text-muted">(optional)</small></td>
                 <td>boolean</td>
-                <td>Set this value to <var>true</var> for a search radius and results measured in kilometers, <var>false</var> for miles. When omitted it follows the country: miles for the US, kilometers everywhere else.</td>
+                <td><var>true</var> for kilometers, <var>false</var> for miles. If left out, miles in the US and kilometers everywhere else.</td>
             </tr>
             <tr>
                 <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+                <td>Where to start. Pass the <var>next_cursor</var> value from the previous page.</td>
             </tr>
             <tr>
                 <td><var>count</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The number of results you would like returned from your request. The default value is 100.</td>
+                <td>How many results to return. Default 100.</td>
             </tr>
         </tbody>
     </table>
 </div>
 
 <h4>Response</h4>
-<p>The response format is identical to the <a href="#nearby-locations">Find Nearby Locations</a> endpoint, returning a list object with <var>location</var>, <var>distance</var>, and <var>brewer</var> objects for each result. The <var>url</var> field will be <code>/location/city</code>.</p>
+<p>The response is the same as <a href="#nearby-locations">Find Nearby Locations</a>; <var>url</var> is <code>/location/city</code>.</p>
 
 <h4>Sample Request</h4>
 
@@ -4000,7 +4005,7 @@ curl -X GET \
 
 <h3 id="location-countries">Supported Countries</h3>
 
-<p>A location&#8217;s <var>country_code</var> must be one of the countries whose addresses can be validated. To list them, send a <strong>GET</strong> request to the <code>/location/countries</code> endpoint. Each entry carries the country&#8217;s name, how many <a href="#location-subdivisions">subdivisions</a> the catalog holds for it (zero means a region dropdown has nothing to offer) and its telephone calling code.</p>
+<p>A location&#8217;s <var>country_code</var> must be one of the countries the validator covers. To list them, send a <strong>GET</strong> request to <code>/location/countries</code>. Each entry has the country&#8217;s name, how many <a href="#location-subdivisions">subdivisions</a> the catalog holds for it (zero means there is no region list to offer) and its telephone calling code.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location/countries</pre>
 
@@ -4042,11 +4047,11 @@ curl -X GET \
 
 <h3 id="location-subdivisions">Subdivisions</h3>
 
-<p>The states, provinces and regions the catalog knows for a country, as <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> codes with their local official names. These are the values accepted in an address&#8217;s <var>sub_code</var>. To list them, send a <strong>GET</strong> request to the <code>/location/subdivisions</code> endpoint with the <var>country</var> query parameter.</p>
+<p>The states, provinces and regions the catalog knows for a country, as <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> codes with their names in the local language. These are the values <var>sub_code</var> accepts. To list them, send a <strong>GET</strong> request to <code>/location/subdivisions</code> with the <var>country</var> query parameter.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location/subdivisions?country={country_code}</pre>
 
-<p>Rows are in code order. Where ISO nests one level under another, <var>parent_code</var> says so: a Belgian province sits under its region, a Spanish province under its autonomous community.</p>
+<p>Rows are in code order. Where one level sits under another, <var>parent_code</var> says so: a Belgian province under its region, a Spanish province under its autonomous community.</p>
 
 <h4>Sample Request</h4>
 

@@ -113,7 +113,7 @@ The taxonomy has three tiers — **class** (`ale`/`lager`) → **family** (26, e
   | `partial` | Only some words matched. **Never take `[0]` on faith.** Read the list; prefer `families`/`classes` or a catch-all. |
   | `description` | Matched only our prose about the style. Weakest signal we return. |
 
-  Within a `match` level ties break on how many beers we hold in each style, so a populous style can outrank a better-fitting rare one (for "Cali Pilsner" every candidate is `partial` and the closest is last of six). An all-`partial` list means the API did not recognise your label — that is a cue to file one tier up, not to pick the first row.
+  Within a `match` level ties break on how many beers we hold in each style, so a populous style can outrank a better-fitting rare one (for "Cali Pilsner" every candidate is `partial` and the closest is last of six). An all-`partial` list means the API did not recognize your label — that is a cue to file one tier up, not to pick the first row.
 
   **`families[]` and `classes[]` ride along** when your label names a family or super-class but no style matched outright — "Crisp American Lager" returns the `lager` class. Send `parent`/`class` back the same way you would a `style_id`. **`matched_on`** appears when we could not match your whole label and fell back to its last two words; the candidates describe that shorter phrase, not what you sent.
 
@@ -134,7 +134,7 @@ So **always try the write with the correct URL**, even when your own fetch of it
 Two consequences still hold:
 
 - **A refused URL fails the entire request** — `POST /brewer` with a dead `url` creates *no brewer at all*, not a brewer without a URL.
-- **Nothing is inferred from a blocked site.** When the answer was not a served page, the URL is stored exactly as submitted — no `https://` upgrade, no `www.` normalisation — so send the form a browser lands on.
+- **Nothing is inferred from a blocked site.** When the answer was not a served page, the URL is stored exactly as submitted — no `https://` upgrade, no `www.` normalization — so send the form a browser lands on.
 - **A domain may be shared; a homepage may not.** One brewer per *homepage*, not per domain: an acquired brand that still sells under its own name stores its page on the owner's site (`https://northchair.com/whetstone-beer/`) as its `url`, beside the owner's record at the root. A second brewer at a homepage or a page another brewer already holds is refused with `valid_msg.url` naming that brewer — send the right page, never the owner's homepage.
 
 When a write fails with `valid_msg.url` set (the message says "something seems to be wrong with your URL" for bad syntax and a dead host alike):

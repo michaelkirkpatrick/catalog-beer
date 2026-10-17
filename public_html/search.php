@@ -453,7 +453,7 @@ function srRenderHit($hit){
         // A brewer's subtitle is "City, ST" — but older index records fall back
         // to the short description when the brewer has no located taproom, and
         // that same prose renders as the snippet below. Compare against the
-        // source attributes, not the snippet, which arrives ellipsised.
+        // source attributes, not the snippet, which arrives ellipsized.
         $subtitle = (string)($hit['subtitle'] ?? '');
         if($subtitle !== '' && $subtitle !== (string)($hit['short_description'] ?? '') && $subtitle !== (string)($hit['description'] ?? '')){
             $context[] = h($subtitle);

@@ -61,7 +61,7 @@ function addressFieldsFromLocation($locationData): array {
 
 /**
  * Unpack a submitted form. Nothing is split or reshaped here — the API takes
- * the postal code whole and normalises the telephone itself.
+ * the postal code whole and normalizes the telephone itself.
  */
 function addressFieldsFromPost(): array {
     $fields = addressBlankFields();
@@ -282,7 +282,7 @@ function addressFormFields(array $fields, array $validState, array $validMsg, st
 
     /* Every control below opts out of autofill via suppressAutofill()
        (classes/helpers/forms.php holds the how and why): the person filling
-       this in is cataloguing a BREWERY's address, not their own, so their
+       this in is cataloging a BREWERY's address, not their own, so their
        saved home address is never the right answer — at best noise, at worst
        a contributor's home address in a public database. */
 

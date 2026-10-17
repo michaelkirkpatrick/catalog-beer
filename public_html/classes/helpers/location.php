@@ -6,7 +6,7 @@
  * separately from the community it sits in, and while the field was required it
  * simply collected the city over and over (266 of 416 locations had a name that
  * was exactly their city). A location with no name of its own therefore has to
- * be labelled from what else is known about it.
+ * be labeled from what else is known about it.
  *
  * Which label depends on context, so there are two functions rather than one
  * with a flag. Pick by asking whether the brewer is already on screen:
@@ -290,7 +290,7 @@ function formatTelephone($e164): string {
  * the mapping app's best guess. The address text is the fallback so a location
  * with no fix on file still resolves to something.
  *
- * Two hrefs, because there is no one URL that honours every platform's default:
+ * Two hrefs, because there is no one URL that honors every platform's default:
  * the Google form is universal (opens the Google Maps app on Android, the web
  * everywhere else), and maps.apple.com hands off to Maps.app on iOS/macOS.
  * assets/js/maps-link.js picks the Apple one on Apple platforms.
@@ -306,7 +306,7 @@ function locationMapsLinks($location, string $label = ''): array {
     if(!empty($location->latitude) && !empty($location->longitude)){
         $coords = (float)$location->latitude . ',' . (float)$location->longitude;
         $links['google'] = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($coords);
-        // ll centres the map, q labels the pin that lands on it.
+        // ll centers the map, q labels the pin that lands on it.
         $links['apple'] = 'https://maps.apple.com/?ll=' . rawurlencode($coords);
         if(trim($label) !== ''){
             $links['apple'] .= '&q=' . rawurlencode(trim($label));
