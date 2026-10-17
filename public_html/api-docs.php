@@ -3035,6 +3035,8 @@ curl -X GET \
 
 <p>Send these fields inside <var>address</var>, written the way the address is written locally. The validator covers 40 countries; see <a href="#location-countries">Supported Countries</a>. If it cannot match the address to a specific building, the request fails with a <var>400</var> and nothing is saved. On a <strong>POST</strong>, that means no location is created.</p>
 
+<p>The validator itself needs only the street line, and given only that it will pick a town: &#8220;Donkerstraat 12&#8221; alone lands in Sint-Niklaas, not Westvleteren. So we ask for the town or the postal code as well, and in the US the state with the town, where a city name alone could mean several places.</p>
+
 <div class="table-responsive">
     <table class="table">
         <thead>
