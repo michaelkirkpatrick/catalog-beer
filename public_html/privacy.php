@@ -27,10 +27,10 @@ echo $htmlHead->html;
     <div class="cb-page cb-page--narrow">
         <h1>Privacy Policy</h1>
 
-        <?php // ACTION REQUIRED: same effective date as /terms. ?>
-        <p>Effective [EFFECTIVE DATE]</p>
+        <?php // Same effective date as /terms. ?>
+        <p>Effective October 17, 2026</p>
 
-        <p>Your privacy is important to us at Catalog.beer. This Privacy Policy explains what information we collect, how we use it, who we share it with, and the choices you have. Catalog.beer is operated by Michael Eason Kirkpatrick, an individual doing business as Catalog.beer, in San Diego, California; “Catalog.beer,” “we,” “us,” and “our” refer to him in that capacity, as in our <a href="/terms">Terms of Use</a>. Please <a href="/contact">let us know</a> if you have any questions.</p>
+        <p>Your privacy is important to us at Catalog.beer. This Privacy Policy explains what information we collect, how we use it, who we share it with, and the choices you have. Catalog.beer is operated by Michael Eason Kirkpatrick in San Diego, California; “Catalog.beer,” “we,” “us,” and “our” refer to him in that capacity, as in our <a href="/terms">Terms of Use</a>. Please <a href="/contact">let us know</a> if you have any questions.</p>
 
         <h2>Information We Collect</h2>
         <hr>
@@ -71,13 +71,13 @@ echo $htmlHead->html;
         <p>We use the information we collect to:</p>
 
         <ul>
-            <li>provide the Site and the API, including your account, your API key, and brewery staff access;</li>
-            <li>send you email about your account, such as email verification, password resets, and billing notices;</li>
-            <li>send you important notices, such as changes to our Terms of Use or this Privacy Policy. Because this information is important to your use of Catalog.beer, you may not opt out of receiving these communications;</li>
-            <li>bill for paid API usage;</li>
-            <li>reply to your messages;</li>
-            <li>keep the Services secure, review Contributions, and prevent spam, fraud, and abuse; and</li>
-            <li>understand how the Services are used and improve them, using statistics that do not identify individuals.</li>
+            <li>Provide the Site and the API, including your account, your API key, and brewery staff access.</li>
+            <li>Send you email about your account, such as email verification, password resets, and billing notices.</li>
+            <li>Send you important notices, such as changes to our Terms of Use or this Privacy Policy. Because this information is important to your use of Catalog.beer, you may not opt out of receiving these communications.</li>
+            <li>Bill for paid API usage.</li>
+            <li>Reply to your messages.</li>
+            <li>Keep the Services secure, review Contributions, and prevent spam, fraud, and abuse.</li>
+            <li>Understand how the Services are used and improve them, using statistics that do not identify individuals.</li>
         </ul>
 
         <p>We do not sell your personal information, and we do not share it for targeted advertising.</p>

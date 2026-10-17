@@ -29,24 +29,19 @@ echo $htmlHead->html;
 
         <?php
         /*---
-        ACTION REQUIRED before this ships:
-        1. Fill in the effective date below (and on /privacy, same date).
-        2. Rent a PO box, then register a DMCA designated agent with the US
-           Copyright Office (https://dmca.copyright.gov). Section 9's safe
-           harbor only applies once the agent is registered. Fill in the
-           Section 18 placeholders with the same name/address/email.
-        3. "Doing business as Catalog.beer": a sole proprietor using a name
-           other than their own files a Fictitious Business Name statement
-           with San Diego County. Confirm that's done (or file it).
-        4. Section 8 (API Fees and Billing) is new draft language — review.
+        Effective date: keep in step with /privacy.
+        DMCA: Section 9's safe harbor only applies once a designated agent is
+        registered with the US Copyright Office (https://dmca.copyright.gov),
+        and the registration must carry the same name/address/email as
+        Section 18. Update both together.
         ---*/
         ?>
-        <p>Effective [EFFECTIVE DATE]</p>
+        <p>Effective October 17, 2026</p>
 
-        <h2>1. Who We Are; Agreement to Terms of Use</h2>
+        <h2>1. Who We Are</h2>
         <hr>
 
-        <p>These Terms and Conditions of Use (the “Terms of Use”) apply to the Catalog.beer website located at https://catalog.beer, all associated sites and services on that domain, and the Catalog.beer API. Catalog.beer is operated by Michael Eason Kirkpatrick, an individual doing business as Catalog.beer, in San Diego, California. In these Terms of Use, “Catalog.beer,” “we,” “us,” and “our” refer to him in that capacity. By using the Services, you agree to these Terms of Use; if you do not agree, do not use the Services.</p>
+        <p>These Terms and Conditions of Use (the “Terms of Use”) apply to the Catalog.beer website (https://catalog.beer), all associated sites and services on that domain, and the Catalog.beer API (https://api.catalog.beer). Catalog.beer is owned and operated by Michael Eason Kirkpatrick in San Diego, California. In these Terms of Use, “Catalog.beer,” “we,” “us,” and “our” refer to him in that capacity. By using the Services, you agree to these Terms of Use; if you do not agree, do not use the Services.</p>
 
         <p>Catalog.beer reserves the right, at its sole discretion, to change, modify, add, or remove portions of these Terms of Use at any time. Material changes will be posted on this page with a new effective date. It is your responsibility to check these Terms of Use periodically for changes. Your continued use of the Services following the posting of changes will mean that you accept and agree to the changes. As long as you comply with these Terms of Use, Catalog.beer grants you a personal, non-exclusive, non-transferable, limited privilege to enter and use the Site.</p>
 
@@ -146,14 +141,14 @@ echo $htmlHead->html;
 
         <h3>4.6 Your representations</h3>
 
-        <p>By submitting a Contribution, you represent and warrant that:</p>
+        <p>By submitting a Contribution, you represent and warrant all of the following:</p>
 
         <ol>
-            <li>you have all rights necessary to submit it and to grant the license in Section 4.3;</li>
-            <li>the Contribution does not infringe or misappropriate any copyright, trademark, trade secret, right of privacy or publicity, or other right of any third party;</li>
-            <li>the Contribution is accurate to the best of your knowledge;</li>
-            <li>the Contribution does not contain confidential information you are not authorized to disclose; and</li>
-            <li>the Contribution does not violate Section 6 (Your Use of the Services) or any applicable law.</li>
+            <li>You have all rights necessary to submit it and to grant the license in Section 4.3.</li>
+            <li>The Contribution does not infringe or misappropriate any copyright, trademark, trade secret, right of privacy or publicity, or other right of any third party.</li>
+            <li>The Contribution is accurate to the best of your knowledge.</li>
+            <li>The Contribution does not contain confidential information you are not authorized to disclose.</li>
+            <li>The Contribution does not violate Section 6 (Your Use of the Services) or any applicable law.</li>
         </ol>
 
         <h3>4.7 No obligation to publish; moderation</h3>
@@ -236,15 +231,15 @@ echo $htmlHead->html;
 
         <p>Catalog.beer respects the intellectual property rights of others and asks users of the Services to do the same.</p>
 
-        <p>If you believe that material available on or through the Services infringes your copyright, you may send a written notice under the Digital Millennium Copyright Act (17 U.S.C. § 512) to Catalog.beer’s designated agent at the address in Section 18. Your notice must include:</p>
+        <p>If you believe that material available on or through the Services infringes your copyright, you may send a written notice under the Digital Millennium Copyright Act (17 U.S.C. § 512) to Catalog.beer’s designated agent at the address in Section 18. Your notice must include all of the following:</p>
 
         <ol>
-            <li>a physical or electronic signature of a person authorized to act on behalf of the owner of an exclusive right that is allegedly infringed;</li>
-            <li>identification of the copyrighted work claimed to have been infringed;</li>
-            <li>identification of the material that is claimed to be infringing, and information reasonably sufficient to permit Catalog.beer to locate the material;</li>
-            <li>your name, address, telephone number, and email address;</li>
-            <li>a statement that you have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law; and</li>
-            <li>a statement that the information in the notice is accurate, and, under penalty of perjury, that you are authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.</li>
+            <li>A physical or electronic signature of a person authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.</li>
+            <li>Identification of the copyrighted work claimed to have been infringed.</li>
+            <li>Identification of the material that is claimed to be infringing, and information reasonably sufficient to permit Catalog.beer to locate the material.</li>
+            <li>Your name, address, telephone number, and email address.</li>
+            <li>A statement that you have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.</li>
+            <li>A statement that the information in the notice is accurate, and, under penalty of perjury, that you are authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.</li>
         </ol>
 
         <p>Catalog.beer will respond to properly submitted notices and may remove or disable access to material claimed to be infringing. If you believe your material was removed or disabled in error, you may submit a counter-notification containing the elements required by 17 U.S.C. § 512(g)(3).</p>
@@ -280,13 +275,13 @@ echo $htmlHead->html;
         <h2>14. Indemnity</h2>
         <hr>
 
-        <p>You agree to indemnify, defend, and hold Catalog.beer harmless from any demands, loss, liability, claims, or expenses (including reasonable attorneys’ fees) made against Catalog.beer by any third party due to, arising out of, or in connection with:</p>
+        <p>You agree to indemnify, defend, and hold Catalog.beer harmless from any demands, loss, liability, claims, or expenses (including reasonable attorneys’ fees) made against Catalog.beer by any third party due to, arising out of, or in connection with, any of the following:</p>
 
         <ol>
-            <li>your use of the Services;</li>
-            <li>your Contributions, including any claim that a Contribution infringes or misappropriates the rights of any third party;</li>
-            <li>your breach of these Terms of Use, including the representations you make in Sections 4.6 and 5; or</li>
-            <li>your violation of any applicable law or the rights of any third party.</li>
+            <li>Your use of the Services.</li>
+            <li>Your Contributions, including any claim that a Contribution infringes or misappropriates the rights of any third party.</li>
+            <li>Your breach of these Terms of Use, including the representations you make in Sections 4.6 and 5.</li>
+            <li>Your violation of any applicable law or the rights of any third party.</li>
         </ol>
 
         <h2>15. Violation of These Terms of Use</h2>
@@ -315,15 +310,15 @@ echo $htmlHead->html;
         <h2>18. Notices and Contact</h2>
         <hr>
 
-        <?php // ACTION REQUIRED: fill in once the PO box is rented and the DMCA agent is registered (see the note at the top of this file). ?>
+        <?php // Must match the DMCA agent registration (see the note at the top of this file). ?>
         <p>Legal notices to Catalog.beer, including copyright notices under Section 9, should be sent to:</p>
 
         <blockquote>
             <p>Catalog.beer<br>
-            Attn: [DESIGNATED AGENT NAME]<br>
-            [PO BOX]<br>
-            [CITY, STATE ZIP]<br>
-            Email: [LEGAL/DMCA EMAIL ADDRESS]</p>
+            Attn: Michael Kirkpatrick<br>
+            5561 Churchward St<br>
+            San Diego, CA 92114<br>
+            Email: michael@catalog.beer</p>
         </blockquote>
 
         <p>For anything else, please use our <a href="/contact">contact form</a>.</p>
