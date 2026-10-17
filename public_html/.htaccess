@@ -74,7 +74,15 @@ RewriteRule ^privacy/?$		privacy.php	[L]
 RewriteRule ^signup/?$		create-account.php [L]
 RewriteRule ^terms/?$		terms.php	[L]
 RewriteRule ^search/?$	search.php	[L]
-RewriteRule ^whats-new/?$	whats-new.php	[L]
+# News and the API changelog (posts.php, feed.php). /whats-new was the hand-
+# edited page these replaced; it is linked from old GitHub release notes.
+RewriteRule ^whats-new/?$	/news	[R=301,L]
+RewriteRule ^news/feed\.xml$	feed.php?channel=news	[L]
+RewriteRule ^news/?$	posts.php?channel=news	[QSA,L]
+RewriteRule ^news/([a-z0-9][a-z0-9.-]*)$	posts.php?channel=news&slug=$1	[L]
+RewriteRule ^changelog/feed\.xml$	feed.php?channel=api	[L]
+RewriteRule ^changelog/?$	posts.php?channel=api	[QSA,L]
+RewriteRule ^changelog/([a-z0-9][a-z0-9.-]*)$	posts.php?channel=api&slug=$1	[L]
 RewriteRule ^build-info/?$	build-info.php	[L]
 
 # Admin
@@ -83,6 +91,9 @@ RewriteRule ^admin/reviews/([-0-9a-f]{36})/?$	admin/reviews.php?reviewID=$1	[QSA
 RewriteRule ^admin/reviews/?$	admin/reviews.php	[L]
 RewriteRule ^admin/leads/([-0-9a-f]{36})/?$	admin/leads.php?leadID=$1	[QSA,L]
 RewriteRule ^admin/leads/?$	admin/leads.php	[QSA,L]
+RewriteRule ^admin/posts/new/?$	admin/posts.php?new=1	[QSA,L]
+RewriteRule ^admin/posts/([-0-9a-f]{36})/?$	admin/posts.php?postID=$1	[QSA,L]
+RewriteRule ^admin/posts/?$	admin/posts.php	[QSA,L]
 
 
 # Redirect Pages

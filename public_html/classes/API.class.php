@@ -84,6 +84,11 @@ class API {
             if(strpos($endpoint, $prefix) === 0){ return $this->usersAPIKey; }
         }
         if(preg_match('#^/brewer/[-0-9a-f]{36}/permissions#', $endpoint)){ return $this->usersAPIKey; }
+        // Posts: the public pages read by channel/slug and list published
+        // posts under the master key like any catalog read. The admin editor
+        // reads by id and lists drafts (?status=), which the API shows only to
+        // an admin's key.
+        if(preg_match('#^/post/[-0-9a-f]{36}#', $endpoint) || (strpos($endpoint, '/post?') === 0 && strpos($endpoint, 'status=') !== false)){ return $this->usersAPIKey; }
         return $this->masterAPIKey;
     }
 

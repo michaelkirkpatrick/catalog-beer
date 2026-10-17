@@ -153,7 +153,8 @@ $pages = [
     'api-pricing' => ['file' => 'api-pricing.php',  'priority' => 0.3],
     'api-usage' => ['file' => 'api-usage.php',      'priority' => 0.3],
     'ai'        => ['file' => 'ai.php',             'priority' => 0.3],
-    'whats-new' => ['file' => 'whats-new.php',      'priority' => 0.3],
+    'news'      => ['file' => 'posts.php',          'priority' => 0.3],
+    'changelog' => ['file' => 'posts.php',          'priority' => 0.3],
     'contact'   => ['file' => 'contact.php',        'priority' => 0.3],
     'privacy'   => ['file' => 'privacy.php',        'priority' => 0.3],
     'terms'     => ['file' => 'terms.php',          'priority' => 0.3],
@@ -269,6 +270,38 @@ if(!$apiData || !isset($apiData->data)){
         checkSitemapLimit($file, $urlCount, $sitemapNumber);
     }
     echo "Families complete\n";
+}
+
+// --- (6) Posts: /news and the API changelog ---
+//
+// The list caps a page at 100, so this follows next_cursor. Each post's own
+// last_modified is its lastmod; the slug is the URL (a release's is v{version}).
+$postPaths = ['news' => 'news/', 'api' => 'changelog/'];
+foreach($postPaths as $channel => $pathPrefix){
+    echo "Starting $channel posts...\n";
+    $cursor = '';
+    while(true){
+        $apiData = request('/post?channel=' . $channel . '&count=100' . ($cursor !== '' ? '&cursor=' . rawurlencode($cursor) : ''));
+        if(!$apiData || !isset($apiData->data)){
+            echo "Error: Failed to fetch $channel posts. Aborting $channel section.\n";
+            $hadErrors = true;
+            break;
+        }
+        foreach($apiData->data as $post){
+            if(!isset($post->slug, $post->last_modified)){
+                echo "Warning: Skipping post with missing data\n";
+                continue;
+            }
+            writeUrl($file, $prefix . $pathPrefix . $post->slug, $post->last_modified, 'yearly', 0.3);
+            $urlCount++;
+            checkSitemapLimit($file, $urlCount, $sitemapNumber);
+        }
+        if(empty($apiData->next_cursor) || $apiData->next_cursor === $cursor){
+            break;
+        }
+        $cursor = $apiData->next_cursor;
+    }
+    echo "Posts ($channel) complete\n";
 }
 
 // --- Close final sitemap file ---

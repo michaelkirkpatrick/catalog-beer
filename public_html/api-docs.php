@@ -66,6 +66,10 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
                     <a class="list-group-item list-group-item-action" href="#location-zip">&gt; Find Locations by ZIP Code</a>
                     <a class="list-group-item list-group-item-action" href="#location-city">&gt; Find Locations by City</a>
+                    <a class="list-group-item list-group-item-action" href="#changelog"><strong>Changelog</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#post-object">&gt; The Post Object</a>
+                    <a class="list-group-item list-group-item-action" href="#post-list">&gt; List Releases</a>
+                    <a class="list-group-item list-group-item-action" href="#post-retrieve">&gt; Retrieve a Release</a>
                     <a class="list-group-item list-group-item-action" href="#usage"><strong>Usage</strong></a>
                     <a class="list-group-item list-group-item-action" href="#usage-object">&gt; The Usage Object</a>
                     <a class="list-group-item list-group-item-action" href="#usage-my-usage">&gt; Get My Usage</a>
@@ -3823,6 +3827,208 @@ curl -X GET \
     }
   ]
 }
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!---------- CHANGELOG ---------->
+
+<h2 id="changelog">Changelog</h2>
+
+<p>Every release of this API is written up in the <a href="/changelog">API changelog</a>, which is also an <a href="/changelog/feed.xml">RSS feed</a>. The same posts are available from the API, so a client or an agent can check what changed since the version it was built against. Announcements for everyone, published at <a href="/news">/news</a>, come from the same endpoint with <var>channel=news</var>.</p>
+
+<p>These endpoints are read-only for every API key.</p>
+
+<!----- CHANGELOG: OBJECT ----->
+
+<h3 id="post-object">The Post Object</h3>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>id</var></td>
+                <td>string</td>
+                <td>The post_id; a unique identifier for the post.</td>
+            </tr>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: &#8220;post&#8221;.</td>
+            </tr>
+            <tr>
+                <td><var>channel</var></td>
+                <td>string</td>
+                <td><var>api</var> for a release of this API, <var>news</var> for an announcement.</td>
+            </tr>
+            <tr>
+                <td><var>slug</var></td>
+                <td>string</td>
+                <td>The post&#8217;s name in its URL. A release&#8217;s slug is <var>v</var> followed by its version (<var>v5.4.0</var>).</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The post&#8217;s page on Catalog.beer.</td>
+            </tr>
+            <tr>
+                <td><var>title</var></td>
+                <td>string</td>
+                <td>The post&#8217;s title, as plain text.</td>
+            </tr>
+            <tr>
+                <td><var>summary</var></td>
+                <td>string</td>
+                <td>A one- or two-sentence summary, as plain text. May be <var>null</var>.</td>
+            </tr>
+            <tr>
+                <td><var>body</var></td>
+                <td>string</td>
+                <td>The full post, as HTML.</td>
+            </tr>
+            <tr>
+                <td><var>version</var></td>
+                <td>string</td>
+                <td>For a release, the API version it describes (<var>5.4.0</var>). <var>null</var> for news.</td>
+            </tr>
+            <tr>
+                <td><var>breaking</var></td>
+                <td>Boolean</td>
+                <td><var>true</var> when the release changes something a working client may depend on: a field removed or retyped, or a request that used to succeed and now fails. Always <var>false</var> for news.</td>
+            </tr>
+            <tr>
+                <td><var>status</var></td>
+                <td>string</td>
+                <td>Always <var>published</var> in the responses you&#8217;ll see.</td>
+            </tr>
+            <tr>
+                <td><var>published_at</var></td>
+                <td>integer</td>
+                <td>Unix timestamp of the release, or of when the announcement was published.</td>
+            </tr>
+            <tr>
+                <td><var>created_at</var></td>
+                <td>integer</td>
+                <td>Unix timestamp of when the post was written. A release can be written up after it ships, so use <var>published_at</var> to order releases.</td>
+            </tr>
+            <tr>
+                <td><var>last_modified</var></td>
+                <td>integer</td>
+                <td>Unix timestamp of the post&#8217;s last edit.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- CHANGELOG: LIST ----->
+
+<h3 id="post-list">List Releases</h3>
+
+<p>To list releases, newest first, send a <strong>GET</strong> request to the <code>/post</code> endpoint with <var>channel=api</var>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/post?channel=api</pre>
+
+<h4>Parameters</h4>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>channel</var></td>
+                <td>string</td>
+                <td><em>Optional.</em> <var>api</var> for releases, <var>news</var> for announcements. Omit it to list both.</td>
+            </tr>
+            <tr>
+                <td><var>count</var></td>
+                <td>integer</td>
+                <td><em>Optional.</em> The number of posts per page, from 1 to 100. Default: 20.</td>
+            </tr>
+            <tr>
+                <td><var>cursor</var></td>
+                <td>string</td>
+                <td><em>Optional.</em> The <var>next_cursor</var> from the previous page.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>The response is a list object whose <var>data</var> holds <a href="#post-object">post objects</a>. <var>has_more</var> is <var>true</var> when there is another page, and <var>next_cursor</var> fetches it.</p>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/post?channel=api&count=1' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}'
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/post",
+  "has_more": true,
+  "next_cursor": "MQ==",
+  "data": [
+    {
+      "id": "6f1d0c3a-8b2e-4f7a-9c41-2d5e8a7b3f90",
+      "object": "post",
+      "channel": "api",
+      "slug": "v5.3.2",
+      "url": "https://catalog.beer/changelog/v5.3.2",
+      "title": "Long descriptions stay searchable",
+      "summary": "Search records truncate brewer and beer descriptions to 3,000 bytes.",
+      "body": "&lt;ul&gt;\n&lt;li&gt;&lt;strong&gt;Fixed:&lt;/strong&gt; search records truncate brewer and beer descriptions to 3,000 bytes ...&lt;/li&gt;\n&lt;/ul&gt;",
+      "version": "5.3.2",
+      "breaking": false,
+      "status": "published",
+      "published_at": 1791323104,
+      "created_at": 1792274400,
+      "last_modified": 1792274400
+    }
+  ]
+}
+</pre>
+
+<p>To check for releases since the one your code was written against, page through until you reach that <var>version</var>: everything before it in the list is newer.</p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<!----- CHANGELOG: RETRIEVE ----->
+
+<h3 id="post-retrieve">Retrieve a Release</h3>
+
+<p>To retrieve one release, send a <strong>GET</strong> request to <code>/post/api/{slug}</code>, where the slug is <var>v</var> and the version. A news post is <code>/post/news/{slug}</code>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/post/api/v5.3.2</pre>
+
+<p>A <a href="#post-object">post object</a> will be returned for successful requests, and a <var>404</var> when there is no such post.</p>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/post/api/v5.3.2 \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
