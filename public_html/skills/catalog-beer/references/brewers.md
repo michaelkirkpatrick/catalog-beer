@@ -29,7 +29,7 @@
 | `status` | no | `"active"` (default) or `"closed"` |
 | `founded_year` | no | four-digit year, not in the future; only when the brewery or a named source states it ("est. 2014") — never from a copyright footer |
 | `closed_year` | no | four-digit year; needs `status: "closed"` and cannot precede `founded_year` |
-| `country_code` | no | ISO 3166-1 alpha-2, default `"US"`; any assigned code, case-insensitive. The brewer may be anywhere; a location may be in any of the 40 countries `GET /address/countries` lists |
+| `country_code` | no | ISO 3166-1 alpha-2, default `"US"`; any assigned code, case-insensitive. The brewer may be anywhere; a location may be in any of the 40 countries `GET /location/countries` lists |
 
 Returns the created brewer object (grab `id` for subsequent beer/location creates).
 

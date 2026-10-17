@@ -151,7 +151,7 @@ When a write fails with `valid_msg.url` set (the message says "something seems t
 | Get one | `GET /beer/{id}` · `/brewer/{id}` · `/location/{id}` · `/style/{slug}` |
 | A brewery's beers / locations | `GET /brewer/{id}/beer` · `/brewer/{id}/locations` |
 | Breweries near me | `GET /location/nearby?latitude=&longitude=` · `/location/zip?postal_code=&country=` · `/location/city?city=&region=&country=` |
-| Create | `POST /brewer` · `/beer` · `/location`, then `POST /address/{location_id}` |
+| Create | `POST /brewer` · `/beer` · `/location` (address nested) |
 | Edit | `PATCH /beer/{id}` etc. (partial) · `PUT` (full replace — clears omitted fields) |
 | Styles | `GET /style` (all, with `version`) · `/style/parent` (families) · `/style/class` |
 | My usage / billing status | `GET /usage/my-usage` · `GET /billing` (never blocked by the usage limit, not counted) |
@@ -175,7 +175,7 @@ All entity IDs are 36-char UUIDs; style IDs are slugs. List endpoints use cursor
 - Using PUT to change one field — it nulls every optional field you omitted.
 - Sending `beverage_type` or verification flags (`cb_verified`, `brewer_verified`) — these are server-controlled and cannot be set.
 - Writing a closure into the description alone. A brewery that has stopped brewing is `PATCH /brewer/{id}` with `{"status": "closed"}` (plus `closed_year` when a source states it); the record and its beers stay. A closed brewer takes no new locations, and a PUT that omits `status` reopens it — see `references/brewers.md` → "Closed breweries".
-- Forgetting the address is a **second request**: `POST /location` creates the location (needs `brewer_id` + `country_code`, ISO 3166-1 alpha-2, one of the 40 countries `GET /address/countries` lists); `POST /address/{location_id}` adds the street address (needs `line1` = street, plus `locality` or `postal_code`; in the US, `locality` needs `sub_code` beside it). The old `address2`/`address1`/`city`/`zip5` keys are gone as of API 6.0 — a body that still uses them gets a `400` naming `line1`.
+- Creating a location without its address. `POST /location` takes the address **nested**: `{"brewer_id": …, "country_code": "BE", "address": {"line1": "Donkerstraat 12", "locality": "Westvleteren", "postal_code": "8640"}}` — one request, validated before anything is written, so a refused street creates nothing. `country_code` is one of the 40 countries `GET /location/countries` lists; `line1` is the street, plus `locality` or `postal_code` (in the US, `locality` needs `sub_code` beside it). There is no `/address` endpoint and the old `address2`/`city`/`zip5` keys are gone as of API 6.0.
 - Giving a location a `name` that's just the city, or leaving `name` null when a brewer runs several venues in one city. `name` is for what the address doesn't already say: a venue with its own name uses it ("The Barrel House"), siblings in one city use the **neighborhood** ("South Park", "Bay Park"), and a brewer's only location in a city needs no `name`. Read the neighborhood off the brewery's page — never supply one from your own knowledge of the city.
 - Calling billing endpoints (`PATCH /billing`, `DELETE /billing`) without the user explicitly asking. They spend the user's money. On a free-tier `402`, report the options — wait for the monthly reset, or add a payment method at https://catalog.beer/billing — and let the user decide.
 - Error responses use `error`, `error_msg`, and per-field `valid_state`/`valid_msg` objects — read `valid_msg` to see exactly which field failed and why.

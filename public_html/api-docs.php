@@ -59,9 +59,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#location-update">&gt; Update a Location (PUT)</a>
                     <a class="list-group-item list-group-item-action" href="#location-patch">&gt; Update a Location (PATCH)</a>
                     <a class="list-group-item list-group-item-action" href="#location-delete">&gt; Delete a Location</a>
-                    <a class="list-group-item list-group-item-action" href="#location-add-address">&gt; Add an Address to a Location</a>
-                    <a class="list-group-item list-group-item-action" href="#location-replace-address">&gt; Replace an Address (PUT)</a>
-                    <a class="list-group-item list-group-item-action" href="#location-patch-address">&gt; Update an Address (PATCH)</a>
+                    <a class="list-group-item list-group-item-action" href="#location-address">&gt; The Nested Address</a>
                     <a class="list-group-item list-group-item-action" href="#location-retrieve">&gt; Retrieve a Location</a>
                     <a class="list-group-item list-group-item-action" href="#location-list-all">&gt; List all Locations</a>
                     <a class="list-group-item list-group-item-action" href="#nearby-locations">&gt; Find Nearby Locations</a>
@@ -2846,7 +2844,7 @@ curl -X GET \
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>The location&#8217;s street address, present once one has been added. See <a href="#address-object">the address object</a>; the <var>telephone</var> field is included within it.</td>
+                <td>The location&#8217;s street address, present once one has been given. See <a href="#address-object">the address object</a>; the <var>telephone</var> field is included within it. Written as a nested <var>address</var> on the location&#8217;s own POST, PUT and PATCH &#8212; see <a href="#location-address">The Nested Address</a>.</td>
             </tr>
             <tr>
                 <td><var>brewer</var></td>
@@ -2909,7 +2907,7 @@ curl -X GET \
 
 <h3 id="location-add">Add a Location</h3>
 
-<p>To add a location for a brewer, send a <strong>POST</strong> request to the <code>/location</code> endpoint with the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>.</p>
+<p>To add a location for a brewer, send a <strong>POST</strong> request to the <code>/location</code> endpoint with the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>. Include the <var>address</var> in the same request: it is validated first, and the location is only created once the address passes, so a refused street never leaves a location without one.</p>
 
 <pre class="api-code">POST https://api.catalog.beer/location</pre>
 
@@ -2941,7 +2939,12 @@ curl -X GET \
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located. Reference the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard.</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located, one of the <a href="#address-countries">supported countries</a>. The address is validated in this country.</td>
+            </tr>
+            <tr>
+                <td><var>address</var><br><small class="text-muted">(optional)</small></td>
+                <td>object</td>
+                <td>The street address, nested &#8212; see <a href="#location-address">The Nested Address</a> for its fields. Omit it only for a venue whose address the validator cannot place.</td>
             </tr>
         </tbody>
     </table>
@@ -2955,7 +2958,7 @@ curl -X POST \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"9f96b99b-9865-4cf0-8950-bdc0d675be9f","name":"San Pedro","country_code":"US"}'
+  -d '{"brewer_id":"9f96b99b-9865-4cf0-8950-bdc0d675be9f","name":"San Pedro","country_code":"US","address":{"line1":"110 E 22nd St","line2":"Warehouse No 9","locality":"San Pedro","sub_code":"US-CA","telephone":"3108339330"}}'
   </pre>
 
 <h4>Sample Response</h4>
@@ -2967,11 +2970,28 @@ curl -X POST \
   "url": null,
   "country_code": "US",
   "country_short_name": "United States of America",
-  "latitude": null,
-  "longitude": null,
+  "latitude": 33.7273445,
+  "longitude": -118.2799377,
   "cb_verified": false,
   "brewer_verified": false,
   "last_modified": 1589147029,
+  "address": {
+    "line1": "110 E 22nd St",
+    "line2": "Warehouse No 9",
+    "locality": "San Pedro",
+    "dependent_locality": null,
+    "sub_code": "US-CA",
+    "postal_code": "90731-7202",
+    "formatted": ["110 E 22nd St", "Warehouse No 9", "San Pedro, CA 90731-7202"],
+    "language_code": "en",
+    "telephone": "+13108339330",
+    "validation": "validated",
+    "admin_area": {
+      "sub_code": "US-CA",
+      "name": "California",
+      "type": "state"
+    }
+  },
   "brewer": {
     "id": "9f96b99b-9865-4cf0-8950-bdc0d675be9f",
     "object": "brewer",
@@ -3017,7 +3037,12 @@ curl -X POST \
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located.</td>
+                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country in which the location is located, one of the <a href="#address-countries">supported countries</a>.</td>
+            </tr>
+            <tr>
+                <td><var>address</var><br><small class="text-muted">(optional)</small></td>
+                <td>object</td>
+                <td>The street address, nested &#8212; see <a href="#location-address">The Nested Address</a> for its fields. As with any optional field on a <strong>PUT</strong>, omitting it clears the stored address (and the coordinates with it); a nested object replaces it wholesale.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
@@ -3044,6 +3069,8 @@ curl -X PUT \
 <h3 id="location-patch">Update a Location (PATCH)</h3>
 
 <p>To partially update a location, send a <strong>PATCH</strong> request to the <code>/location</code> endpoint with the <var>location_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#location-object">location object</a>.</p>
+
+<p>The nested <var>address</var> may be sent too &#8212; merged over the stored one, re-validated as one; see <a href="#location-address">The Nested Address</a>.</p>
 
 <pre class="api-code">PATCH https://api.catalog.beer/location/{location_id}</pre>
 
@@ -3111,15 +3138,11 @@ curl -X DELETE \
 
 <p><a href="#top">^ Return to top</a></p>
 
-<h3 id="location-add-address">Add an Address to a Location</h3>
+<h3 id="location-address">The Nested Address</h3>
 
-<p>Addresses and telephone numbers are stored separately from locations. The address takes its country from the location&#8217;s <var>country_code</var> &#8212; there is no country field on the address itself &#8212; and it is validated against that country&#8217;s postal data before anything is stored, which is why a location is created first and its address added second.</p>
+<p>A location&#8217;s street address is written as the <var>address</var> object on its own <strong>POST</strong>, <strong>PUT</strong> or <strong>PATCH</strong> request &#8212; there is no separate address endpoint. The address takes its country from the location&#8217;s <var>country_code</var> and is validated against that country&#8217;s postal data before anything is written; what comes back in the <a href="#address-object">address object</a> is the validated form, with the street spelled out, the postal code normalised and <var>latitude</var> and <var>longitude</var> filled in. An address the validator cannot place at building level is refused with a <var>400</var> rather than stored approximately, and on a <strong>POST</strong> that means no location is created.</p>
 
-<p>To add an address or telephone number for a location, send a <strong>POST</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path and the following parameters encoded in the body of the request as JSON. Successful requests will return a <a href="#location-object">location object</a>.</p>
-
-<p>Addresses can be added for locations in the <a href="#address-countries">40 countries</a> the validator covers. Send the address the way it is written locally; what comes back is the validated form, with the street line spelled out, the postal code normalised and the latitude and longitude filled in. An address the validator cannot place at building level is refused with a <var>400</var> rather than stored approximately.</p>
-
-<pre class="api-code">POST https://api.catalog.beer/address/{location_id}</pre>
+<p>Addresses are supported for the <a href="#address-countries">40 countries</a> the validator covers. Send the address the way it is written locally.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -3170,80 +3193,38 @@ curl -X DELETE \
     </table>
 </div>
 
+<h4>How each verb treats it</h4>
+
+<ul>
+    <li><strong>POST</strong> &#8212; the address is created with the location. Omit <var>address</var> only for a venue the validator cannot place.</li>
+    <li><strong>PUT</strong> &#8212; replaces the address wholesale: sub-fields you omit are cleared, and omitting <var>address</var> altogether clears it (coordinates included), as with any optional field on a <strong>PUT</strong>.</li>
+    <li><strong>PATCH</strong> &#8212; merges the sub-fields you send over the stored address and re-validates the whole as one, so <var>latitude</var> and <var>longitude</var> move with it. Send <var>null</var> for a sub-field to clear it, or <var>"address": null</var> to remove the address entirely. <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> are two spellings of the same place: when you send one group without the other, the stored other group is dropped and re-derived, so a stale ZIP can never contradict a fresh city. A patch that sends only <var>telephone</var> is written without re-validating the address.</li>
+    <li><strong>Changing the country</strong> of a location that holds an address requires sending the address in the same request, so it can be validated in the new country &#8212; or <var>"address": null</var> to clear it. A country change on its own is a <var>400</var>.</li>
+</ul>
+
+<p>Validation errors come back under <var>valid_state.address</var> and <var>valid_msg.address</var>, keyed by the seven fields above, beside the location&#8217;s own <var>brewer_id</var>, <var>name</var>, <var>url</var> and <var>country_code</var>.</p>
+
 <h4>Sample Request</h4>
+
+<p>A Belgian location created with its address. The validator reports no province for Belgium, so <var>sub_code</var> and <var>admin_area</var> stay <var>null</var> unless you send one.</p>
 
 <pre class="api-code">
 curl -X POST \
-  https://api.catalog.beer/address/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
+  https://api.catalog.beer/location \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"line1":"110 E 22nd St","line2":"Warehouse No 9","locality":"San Pedro","sub_code":"US-CA","telephone":"3108339330"}'
+  -d '{"brewer_id":"30f24653-8c0e-4f0b-a1d2-5e6f7a8b9c0d","country_code":"BE","address":{"line1":"Donkerstraat 12","locality":"Westvleteren","postal_code":"8640","telephone":"057 40 03 76"}}'
 </pre>
 
 <h4>Sample Response</h4>
 
 <pre class="api-code">
 {
-  "id": "9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b",
-  "object": "location",
-  "name": "San Pedro",
-  "url": null,
-  "country_code": "US",
-  "country_short_name": "United States of America",
-  "latitude": 33.7273445,
-  "longitude": -118.2799377,
-  "cb_verified": false,
-  "brewer_verified": false,
-  "last_modified": 1589147029,
-  "address": {
-    "line1": "110 E 22nd St",
-    "line2": "Warehouse No 9",
-    "locality": "San Pedro",
-    "dependent_locality": null,
-    "sub_code": "US-CA",
-    "postal_code": "90731-7202",
-    "formatted": ["110 E 22nd St", "Warehouse No 9", "San Pedro, CA 90731-7202"],
-    "language_code": "en",
-    "telephone": "+13108339330",
-    "validation": "validated",
-    "admin_area": {
-      "sub_code": "US-CA",
-      "name": "California",
-      "type": "state"
-    }
-  },
-  "brewer": {
-    "id": "9f96b99b-9865-4cf0-8950-bdc0d675be9f",
-    "object": "brewer",
-    "name": "Brouwerij West",
-    "description": null,
-    "short_description": null,
-    "url": "https://www.brouwerijwest.com/",
-    "cb_verified": true,
-    "brewer_verified": false,
-    "last_modified": 1517001234
-  }
-}
-</pre>
-
-<p>A Belgian location takes the same request. Here the validator reports no province, so <var>sub_code</var> and <var>admin_area</var> stay <var>null</var> unless you send one.</p>
-
-<pre class="api-code">
-curl -X POST \
-  https://api.catalog.beer/address/5fd1b7e0-3c2a-4b7e-9d41-0a8c1f6e2b90 \
-  -H 'accept: application/json' \
-  -H 'authorization: Basic {secret_key}' \
-  -H 'content-type: application/json' \
-  -d '{"line1":"Donkerstraat 12","locality":"Westvleteren","postal_code":"8640","telephone":"057 40 03 76"}'
-</pre>
-
-<pre class="api-code">
-{
   "id": "5fd1b7e0-3c2a-4b7e-9d41-0a8c1f6e2b90",
   "object": "location",
   "name": null,
-  "url": "https://sintsixtus.be/",
+  "url": null,
   "country_code": "BE",
   "country_short_name": "Belgium",
   "latitude": 50.8957083,
@@ -3282,98 +3263,15 @@ curl -X POST \
 }
 </pre>
 
-<p><a href="#top">^ Return to top</a></p>
-
-<h3 id="location-replace-address">Replace an Address</h3>
-
-<p>To create or replace an address for a location, send a <strong>PUT</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path. This will completely replace any existing address data for the location. Omitted optional fields will be cleared to null. Successful requests will return a <a href="#location-object">location object</a>.</p>
-
-<pre class="api-code">PUT https://api.catalog.beer/address/{location_id}</pre>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Parameter</th>
-                <th scope="col">Type</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><var>line1</var></td>
-                <td>string</td>
-                <td>The street line, written the way the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d&#8217;Or</var>.</td>
-            </tr>
-            <tr>
-                <td><var>line2</var><br><small class="text-muted">(optional)</small></td>
-                <td>string</td>
-                <td>The suite, unit, floor or building, if there is one (e.g. <var>Suite 101</var>, <var>bus 3</var>). Cleared if omitted.</td>
-            </tr>
-            <tr>
-                <td><var>locality</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided; in the US, <var>locality</var> needs <var>sub_code</var> beside it.</small></td>
-                <td>string</td>
-                <td>The city, town or municipality.</td>
-            </tr>
-            <tr>
-                <td><var>dependent_locality</var><br><small class="text-muted">(optional)</small></td>
-                <td>string</td>
-                <td>A district, village or neighbourhood within the locality, where the country addresses that way (a Belgian <em>deelgemeente</em>, a Mexican <em>colonia</em>). Usually left out; the validator fills it in when it applies. Cleared if omitted.</td>
-            </tr>
-            <tr>
-                <td><var>sub_code</var><br><small class="text-muted">(optional outside the US; required with <var>locality</var> in the US)</small></td>
-                <td>string</td>
-                <td>The <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code of the state, province or region (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). The bare suffix is accepted and prefixed with the location&#8217;s country (<var>CA</var> on a US location becomes <var>US-CA</var>). It must belong to the location&#8217;s country; see <a href="#address-subdivisions">Subdivisions</a> for the codes we hold. Where the validator reports a region of its own, that wins. Cleared if omitted.</td>
-            </tr>
-            <tr>
-                <td><var>postal_code</var><br><small class="text-muted">(optional) Either <var>locality</var> or <var>postal_code</var> must be provided.</small></td>
-                <td>string</td>
-                <td>The postal code in the country&#8217;s own form: <var>90731</var> or <var>90731-7202</var> in the US, <var>8640</var> in Belgium, <var>1018 AL</var> in the Netherlands, <var>SW1A 1AA</var> in the UK. An obviously mis-shaped code is refused before validation; otherwise the validated form is what gets stored. Cleared if omitted.</td>
-            </tr>
-            <tr>
-                <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
-                <td>string</td>
-                <td>The telephone number, in international form (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or in the national format of the location&#8217;s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). Formatting is stripped and the number is returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>. Cleared if omitted.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<h4>Sample Request</h4>
-
-<pre class="api-code">
-curl -X PUT \
-  https://api.catalog.beer/address/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
-  -H 'accept: application/json' \
-  -H 'authorization: Basic {secret_key}' \
-  -H 'content-type: application/json' \
-  -d '{"line1":"110 E 22nd St","line2":"Warehouse No 9","locality":"San Pedro","sub_code":"US-CA","postal_code":"90731-7202","telephone":"3108339330"}'
-</pre>
-
-<p><a href="#top">^ Return to top</a></p>
-
-<h3 id="location-patch-address">Update an Address (PATCH)</h3>
-
-<p>To change part of an existing address, send a <strong>PATCH</strong> request to the <code>/address</code> endpoint with the <var>location_id</var> appended to the path and only the fields you want to change. The location must already hold an address (use <strong>POST</strong> or <strong>PUT</strong> otherwise). Successful requests will return a <a href="#location-object">location object</a>.</p>
-
-<pre class="api-code">PATCH https://api.catalog.beer/address/{location_id}</pre>
-
-<p>Two things to know about a partial update:</p>
-
-<ul>
-    <li>Changing any address field re-validates the whole merged address, so <var>latitude</var> and <var>longitude</var> move with it. <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> are two spellings of the same place: when you send one group without the other, the stored other group is dropped and re-derived, so a stale ZIP can never contradict a fresh city.</li>
-    <li><var>telephone</var> alone is written without re-validating the address. Send <var>null</var> to clear it.</li>
-</ul>
-
-<h4>Sample Request</h4>
+<p>Changing only the phone of an existing location:</p>
 
 <pre class="api-code">
 curl -X PATCH \
-  https://api.catalog.beer/address/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
+  https://api.catalog.beer/location/9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"telephone":"(310) 833-9331"}'
+  -d '{"address":{"telephone":"(310) 833-9331"}}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -4278,7 +4176,7 @@ curl -X PATCH \
 <h2 id="address">Addresses</h2>
 <hr>
 
-<p>A location holds at most one address, added and changed through the <code>/address/{location_id}</code> endpoint (see <a href="#location-add-address">Add an Address to a Location</a>). Every address is validated against its country&#8217;s postal data before it is stored, so what you read back is the validated form, not what was typed. The vocabulary is one shape for every country &#8212; a street line, an optional unit, a locality, a postal code and an optional region &#8212; plus ready-made display lines in the country&#8217;s own order.</p>
+<p>A location holds at most one address, written as the nested <var>address</var> on the location&#8217;s own POST, PUT and PATCH (see <a href="#location-address">The Nested Address</a>). Every address is validated against its country&#8217;s postal data before it is stored, so what you read back is the validated form, not what was typed. The vocabulary is one shape for every country &#8212; a street line, an optional unit, a locality, a postal code and an optional region &#8212; plus ready-made display lines in the country&#8217;s own order.</p>
 
 <!----- ADDRESSES: OBJECT ----->
 
@@ -4423,16 +4321,16 @@ curl -X PATCH \
 
 <h3 id="address-countries">Supported Countries</h3>
 
-<p>A location&#8217;s <var>country_code</var> must be one of the countries whose addresses can be validated. To list them, send a <strong>GET</strong> request to the <code>/address/countries</code> endpoint. Each entry carries the country&#8217;s name, how many <a href="#address-subdivisions">subdivisions</a> the catalog holds for it (zero means a region dropdown has nothing to offer) and its telephone calling code.</p>
+<p>A location&#8217;s <var>country_code</var> must be one of the countries whose addresses can be validated. To list them, send a <strong>GET</strong> request to the <code>/location/countries</code> endpoint. Each entry carries the country&#8217;s name, how many <a href="#address-subdivisions">subdivisions</a> the catalog holds for it (zero means a region dropdown has nothing to offer) and its telephone calling code.</p>
 
-<pre class="api-code">GET https://api.catalog.beer/address/countries</pre>
+<pre class="api-code">GET https://api.catalog.beer/location/countries</pre>
 
 <h4>Sample Response</h4>
 
 <pre class="api-code">
 {
   "object": "list",
-  "url": "/address/countries",
+  "url": "/location/countries",
   "has_more": false,
   "data": [
     {
@@ -4465,9 +4363,9 @@ curl -X PATCH \
 
 <h3 id="address-subdivisions">Subdivisions</h3>
 
-<p>The states, provinces and regions the catalog knows for a country, as <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> codes with their local official names. These are the values accepted in an address&#8217;s <var>sub_code</var>. To list them, send a <strong>GET</strong> request to the <code>/address/subdivisions</code> endpoint with the <var>country</var> query parameter.</p>
+<p>The states, provinces and regions the catalog knows for a country, as <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> codes with their local official names. These are the values accepted in an address&#8217;s <var>sub_code</var>. To list them, send a <strong>GET</strong> request to the <code>/location/subdivisions</code> endpoint with the <var>country</var> query parameter.</p>
 
-<pre class="api-code">GET https://api.catalog.beer/address/subdivisions?country={country_code}</pre>
+<pre class="api-code">GET https://api.catalog.beer/location/subdivisions?country={country_code}</pre>
 
 <p>Rows are in code order. Where ISO nests one level under another, <var>parent_code</var> says so: a Belgian province sits under its region, a Spanish province under its autonomous community.</p>
 
@@ -4475,7 +4373,7 @@ curl -X PATCH \
 
 <pre class="api-code">
 curl -X GET \
-  'https://api.catalog.beer/address/subdivisions?country=BE' \
+  'https://api.catalog.beer/location/subdivisions?country=BE' \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
 </pre>
@@ -4485,7 +4383,7 @@ curl -X GET \
 <pre class="api-code">
 {
   "object": "list",
-  "url": "/address/subdivisions",
+  "url": "/location/subdivisions",
   "country_code": "BE",
   "has_more": false,
   "data": [

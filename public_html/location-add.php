@@ -8,18 +8,14 @@ $api = new API();
 $alert = new Alert();
 
 /* ---
-Add a location — name, URL and address in one form.
+Add a location — name, URL and address in one form, and one request.
 
-This used to be a two-step wizard: create the location, then bounce to
-/add-address. A person who stopped at the seam left behind a location with no
-address and (since the name became optional) no name either — a row that is
-nothing but a UUID and a brewer. One form closes that gap.
-
-The API still needs two calls, and here the order is forced: POST /location has
-to happen first because PUT /address/{location_id} needs the id. So the failure
-this page has to handle is a location that got created and an address that then
-got rejected. See $_SESSION['locationAddPending'] below — without it, correcting
-the ZIP and resubmitting would create a second location every time.
+POST /location takes the address nested, validates it first and writes the
+row only when it passes, so a refused street never leaves a half-made
+location behind. (It used to: the address was a second request that could
+fail after the location existed, and this page held a "pending location" in
+the session to survive a retry. API 6.0 made that whole mechanism
+unnecessary.)
 --- */
 
 // Default Values
@@ -74,86 +70,28 @@ if(isset($_GET['brewerID'])){
                 $url = $_POST['url'] ?? '';
                 $addressFields = addressFieldsFromPost();
 
-                // ----- Is there a location left over from a failed attempt? -----
-                // A previous submit may have created the location and then failed
-                // on the address. Reuse that one rather than minting another. It's
-                // held in the session, not a hidden field, so it can't be pointed
-                // at someone else's location by editing the form.
-                $locationError = false;
-                $newLocationID = '';
-                $pendingID = $_SESSION['locationAddPending'][$brewerID] ?? '';
-                if($pendingID !== ''){
-                    $pendingResp = $api->request('GET', '/location/' . $pendingID, '');
-                    $pendingData = json_decode($pendingResp);
-                    // Only reuse it while it's still the empty shell we left: same
-                    // brewer, still no address. Anything else and we start clean.
-                    if(isset($pendingData->id) && !isset($pendingData->error)
-                        && ($pendingData->brewer->id ?? '') === $brewerID
-                        && !isset($pendingData->address)){
-                        $newLocationID = $pendingID;
-                        // Carry over any edits to the name/URL made since the failed
-                        // attempt. Errors here matter as much as they do on a create.
-                        $patchData = array('name'=>$name, 'url'=>$url);
-                        $patchResult = json_decode($api->request('PATCH', '/location/' . $newLocationID, $patchData), true);
-                        if(!is_array($patchResult) || isset($patchResult['error'])){
-                            $locationError = true;
-                            $alert->msg = (is_array($patchResult) ? ($patchResult['error_msg'] ?? '') : '');
-                            if($alert->msg === ''){
-                                $alert->msg = 'Sorry, we couldn\'t save this location just now. Please try again in a few minutes.';
-                            }
-                            $alert->type = 'error';
-                            foreach((is_array($patchResult) ? ($patchResult['valid_state'] ?? array()) : array()) as $field => $state){
-                                $validState[$field] = $state;
-                                $validMsg[$field] = $patchResult['valid_msg'][$field] ?? '';
-                            }
-                        }
-                    }else{
-                        unset($_SESSION['locationAddPending'][$brewerID]);
-                    }
+                // One request: the location with its address nested. The API
+                // validates the address before writing anything.
+                $locationPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'url'=>$url, 'country_code'=>$country_code);
+                if(addressHasContent($addressFields)){
+                    $locationPOST['address'] = $addressFields;
                 }
-
-                // ----- Create the location -----
-                // Only when there was no reusable shell. The $locationError guard is
-                // belt-and-braces: a failed reuse already leaves $newLocationID set,
-                // and creating a second location here is the exact bug this whole
-                // pending-ID dance exists to prevent.
-                if(!$locationError && $newLocationID === ''){
-                    $locationPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'url'=>$url, 'country_code'=>$country_code);
-                    $locationResponse = $api->request('POST', '/location', $locationPOST);
-                    $locationResult = json_decode($locationResponse, true);
-                    if(is_array($locationResult) && !isset($locationResult['error']) && isset($locationResult['id'])){
-                        $newLocationID = $locationResult['id'];
-                        $_SESSION['locationAddPending'][$brewerID] = $newLocationID;
-                    }else{
-                        $locationError = true;
-                        $alert->msg = $locationResult['error_msg'] ?? 'Sorry, we couldn\'t add this location.';
-                        $alert->type = 'error';
-                        foreach(($locationResult['valid_state'] ?? array()) as $field => $state){
-                            $validState[$field] = $state;
-                            $validMsg[$field] = $locationResult['valid_msg'][$field] ?? '';
-                        }
-                    }
+                $locationResult = json_decode($api->request('POST', '/location', $locationPOST), true);
+                if(is_array($locationResult) && !isset($locationResult['error']) && isset($locationResult['id'])){
+                    // Successfully Added
+                    header('location: /location/' . $locationResult['id']);
+                    exit();
                 }
-
-                // ----- Attach the address -----
-                if(!$locationError){
-                    $addressResult = addressPut($api, $newLocationID, $addressFields);
-                    if($addressResult['error']){
-                        // The location exists but has no address yet. It stays in
-                        // the session so the next submit finishes it off instead of
-                        // creating another.
-                        $alert->msg = $addressResult['error_msg'];
-                        $alert->type = 'error';
-                        foreach($addressResult['valid_state'] as $field => $state){
-                            $validState[$field] = $state;
-                            $validMsg[$field] = $addressResult['valid_msg'][$field] ?? '';
-                        }
-                    }else{
-                        // Successfully Added
-                        unset($_SESSION['locationAddPending'][$brewerID]);
-                        header('location: /location/' . $newLocationID);
-                        exit();
-                    }
+                $alert->msg = is_array($locationResult) ? ($locationResult['error_msg'] ?? '') : '';
+                if($alert->msg === ''){
+                    $alert->msg = 'Sorry, we couldn\'t add this location. Please check the fields below.';
+                }
+                $alert->type = 'error';
+                foreach(locationFormState(is_array($locationResult) ? ($locationResult['valid_state'] ?? array()) : array()) as $field => $state){
+                    $validState[$field] = $state;
+                }
+                foreach(locationFormState(is_array($locationResult) ? ($locationResult['valid_msg'] ?? array()) : array()) as $field => $msg){
+                    $validMsg[$field] = $msg;
                 }
             }
         }

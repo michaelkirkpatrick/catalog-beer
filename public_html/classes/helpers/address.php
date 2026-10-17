@@ -2,11 +2,12 @@
 /**
  * Address form helpers. Required from initialize.php.
  *
- * A location and its address are one thing to the person filling the form in,
- * and two things to the API: POST/PATCH /location carries the name, URL and
- * country, PUT /address/{location_id} carries the street. location-add.php and
- * location-edit.php both present them as a single form, so the field rendering,
- * the $_POST unpacking and the reference lists live here rather than twice.
+ * A location and its address are one thing to the person filling the form in
+ * and, since API 6.0, one thing to the API too: POST /location creates the
+ * location with its address nested, and PATCH /location/{id} changes either.
+ * location-add.php and location-edit.php present them as a single form, so the
+ * field rendering, the $_POST unpacking and the reference lists live here
+ * rather than twice.
  *
  * The address takes its country from the location (there is no country field
  * on the address resource), so the form's Country select is a LOCATION field
@@ -18,16 +19,11 @@
  * change (it validated the address for the country it is in), so the edit form
  * shows the country as fixed text.
  *
- * Why PUT for the address, always: all three verbs land in the same add() method
- * on the API side, which checks whether a row exists and INSERTs or UPDATEs to
- * suit. POST 405s when an address already exists and PATCH 405s when one
- * doesn't, but PUT carries no such guard — it is the one verb that works without
- * the caller having to know which case it's in. That's what lets a single form
- * serve both "adding an address" and "editing one".
- *
- * Note there is no DELETE on /address — the endpoint allows POST, PUT and PATCH
- * only. An address can be corrected but not removed, so a blank address section
- * means "leave whatever is on file alone", never "clear it".
+ * The nested object is sent whole (every field, '' for an empty box). On the
+ * API a PATCH merges it over the stored address and re-validates the result
+ * as one, so sending the whole form is the same as replacing it — and a blank
+ * address section on the edit form is left out entirely, meaning "leave
+ * whatever is on file alone", never "clear it".
  */
 
 /**
@@ -93,40 +89,24 @@ function addressHasContent(array $fields): bool {
 }
 
 /**
- * Write the address. PUT upserts, so this is the same call whether the location
- * already had an address or not.
- *
- * @return array  ['error' => bool, 'error_msg' => string, 'valid_state' => array, 'valid_msg' => array]
+ * Flatten the API's per-field state onto the form's keys: the location's own
+ * fields as they are, the nested address state as its field names. The form
+ * draws every control from one flat $validState / $validMsg.
  */
-function addressPut($api, string $locationID, array $fields): array {
-    $response = $api->request('PUT', '/address/' . $locationID, $fields);
-    $decoded = json_decode($response, true);
-
-    if(!is_array($decoded)){
-        // Unparseable response — treat as a failure rather than reporting a save
-        // that may not have happened.
-        return array(
-            'error' => true,
-            'error_msg' => 'Sorry, we couldn\'t save the address just now. Please try again in a few minutes.',
-            'valid_state' => array(),
-            'valid_msg' => array()
-        );
+function locationFormState(array $apiState): array {
+    $flat = array();
+    foreach($apiState as $field => $state){
+        if($field === 'address' && is_array($state)){
+            foreach($state as $sub => $subState){ $flat[$sub] = $subState; }
+        }else{
+            $flat[$field] = $state;
+        }
     }
-
-    if(!isset($decoded['error'])){
-        return array('error' => false, 'error_msg' => '', 'valid_state' => array(), 'valid_msg' => array());
-    }
-
-    return array(
-        'error' => true,
-        'error_msg' => $decoded['error_msg'] ?? 'Sorry, we couldn\'t save the address.',
-        'valid_state' => $decoded['valid_state'] ?? array(),
-        'valid_msg' => $decoded['valid_msg'] ?? array()
-    );
+    return $flat;
 }
 
 /**
- * The countries a location may be in — GET /address/countries, cached a day.
+ * The countries a location may be in — GET /location/countries, cached a day.
  * Each row: country_code, country_short_name, subdivisions (count), calling_code.
  * Keyed by code, in the API's order (alphabetical by code).
  *
@@ -138,7 +118,7 @@ function addressCountries($api): array {
     if(is_array($cached)){
         return $cached;
     }
-    $decoded = json_decode($api->request('GET', '/address/countries', ''), true);
+    $decoded = json_decode($api->request('GET', '/location/countries', ''), true);
     $countries = array();
     foreach(($decoded['data'] ?? array()) as $row){
         if(!empty($row['country_code'])){
@@ -153,7 +133,7 @@ function addressCountries($api): array {
 
 /**
  * The subdivisions the catalog holds for one country — GET
- * /address/subdivisions?country=XX, cached a day. Each row: sub_code, name,
+ * /location/subdivisions?country=XX, cached a day. Each row: sub_code, name,
  * type, parent_code. Empty for a country with none (or when unreachable), in
  * which case the form shows no region control at all.
  */
@@ -164,7 +144,7 @@ function addressSubdivisions($api, string $countryCode): array {
     if(is_array($cached)){
         return $cached;
     }
-    $decoded = json_decode($api->request('GET', '/address/subdivisions?country=' . rawurlencode($countryCode), ''), true);
+    $decoded = json_decode($api->request('GET', '/location/subdivisions?country=' . rawurlencode($countryCode), ''), true);
     $rows = array();
     foreach(($decoded['data'] ?? array()) as $row){
         if(!empty($row['sub_code'])){
