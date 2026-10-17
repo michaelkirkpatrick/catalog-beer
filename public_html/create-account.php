@@ -161,12 +161,11 @@ echo $htmlHead->html;
             $inputPassword->validMsg = $validMsg['password'];
             echo $inputPassword->display();
 
-            // Terms and conditions
+            // Terms of Use
             $checkbox = new Checkbox();
             $checkbox->validState = $validState['terms_agreement'];
-            // Label is raw HTML by contract (see Checkbox's docblock), so the &
-            // is written as an entity — nothing escapes it on our behalf now.
-            echo $checkbox->display('terms_agreement', 'I agree to the <a href="/terms">Terms &amp; Conditions</a> for using this site.', true, $termsAgreement);
+            // Label is raw HTML by contract (see Checkbox's docblock).
+            echo $checkbox->display('terms_agreement', 'I agree to the <a href="/terms">Terms of Use</a> for using this site.', true, $termsAgreement);
             ?>
             <div class="cbf-actions">
                 <button class="cbf-btn cbf-btn--wide" data-callback="onSubmit">Sign Up</button>

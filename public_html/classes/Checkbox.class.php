@@ -11,7 +11,7 @@ echo $checkbox->display('name', 'text', 'value', $variable);
 *** $text is DEVELOPER-AUTHORED HTML and is emitted RAW. ***
 
 It is the checkbox label, and the one caller needs a link in it ("I agree to
-the <a href="/terms">Terms &amp; Conditions</a>"), so this argument carries
+the <a href="/terms">Terms of Use</a>"), so this argument carries
 markup by contract -- the same deal as Alert::$msg. It used to be Markdown,
 which made that link possible while looking like plain text.
 

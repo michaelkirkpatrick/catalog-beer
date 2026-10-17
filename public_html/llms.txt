@@ -43,7 +43,7 @@ List endpoints are cursor-paginated (`?count=&cursor=`) and include `last_modifi
 
 - A [sitemap](https://catalog.beer/sitemap.xml) indexes all ~68,000 pages.
 - Our [robots.txt](https://catalog.beer/robots.txt) welcomes search engines and user-triggered agents. Bulk **training** crawlers are disallowed — we're happy to answer questions and be cited; we'd rather not be silently absorbed.
-- Attribution appreciated: link back to the beer, brewer, or style page you used.
+- The data is licensed under CC BY 4.0, which requires attribution: "Data from [Catalog.beer](https://catalog.beer), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)." Linking to the beer, brewer, or style page you used is appreciated.
 
 ## Contributing data (AI agents welcome)
 
