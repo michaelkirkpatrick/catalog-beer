@@ -51,7 +51,7 @@ $brewerID = $locationData->brewer->id;
 $locationIDString = $locationData->id;
 
 // Default Values from Existing Data
-$validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
+$validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'', 'line1'=>'', 'line2'=>'', 'locality'=>'', 'dependent_locality'=>'', 'sub_code'=>'', 'postal_code'=>'', 'telephone'=>'');
 $validMsg = $validState;
 // Raw stored name, not the display stand-in — this prefills the form field, and
 // an unnamed location must show an empty box rather than a composed label the
@@ -59,9 +59,18 @@ $validMsg = $validState;
 $name = $locationData->name ?? '';
 $url = $locationData->url ?? '';
 $addressFields = addressFieldsFromLocation($locationData);
-// Whether this location had an address before this edit. Only used to word the
-// "we couldn't save" message accurately.
+// Whether this location had an address before this edit. Words the "we
+// couldn't save" message, and fixes the country: the API refuses a country
+// change on a location that holds an address.
 $hadAddress = isset($locationData->address);
+$countries = addressCountries($api);
+$country_code = $hadAddress
+    ? strtoupper((string)($locationData->country_code ?? 'US'))
+    : addressFormCountry($countries, (string)($locationData->country_code ?? 'US'));
+if(!$hadAddress && isset($_POST['submit']) && !empty($_POST['country_code']) && isset($countries[strtoupper($_POST['country_code'])])){
+    $country_code = strtoupper($_POST['country_code']);
+}
+$subdivisions = addressSubdivisions($api, $country_code);
 
 // Process Form
 if(isset($_POST['submit'])){
@@ -94,6 +103,12 @@ if(isset($_POST['submit'])){
 
         if($addressSaved){
             $patchData = array('name'=>$name, 'url'=>$url);
+            if(!$hadAddress && $country_code !== strtoupper((string)($locationData->country_code ?? 'US'))){
+                // A country chosen for a location that had no address yet. The
+                // address PUT above already validated against the location's
+                // stored country, so this only runs when no address was sent.
+                $patchData['country_code'] = $country_code;
+            }
             $patchResponse = $api->request('PATCH', '/location/' . $locationID, $patchData);
             $patchArray = json_decode($patchResponse, true);
             if(is_array($patchArray) && !isset($patchArray['error'])){
@@ -177,10 +192,13 @@ echo $htmlHead->html;
 
             echo '</div>' . "\n";
 
-            // Address — the dead US-only Country select became the note here
-            echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span><span class="cbf-subhead__n">United States only, for now</span></div>' . "\n";
+            // Address. The country is fixed once an address exists (the API
+            // validated it for that country); before that it is a select that
+            // reloads the form for the chosen country.
+            echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span></div>' . "\n";
             echo '<div class="cbf-sec">' . "\n";
-            echo addressFormFields($addressFields, $validState, $validMsg);
+            echo addressCountryField($countries, $country_code, $validState, $validMsg, $hadAddress);
+            echo addressFormFields($addressFields, $validState, $validMsg, $country_code, $subdivisions, (string)($countries[$country_code]['calling_code'] ?? ''));
             echo '</div>' . "\n";
             ?>
             <div class="cbf-actions">

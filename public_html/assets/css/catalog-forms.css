@@ -111,6 +111,9 @@ textarea.cbf-input{min-height:6rem;line-height:1.6;resize:vertical;}
 
 /* Hints and field-level errors */
 .cbf-hint{margin:.42rem 0 0;font-size:.8125rem;line-height:1.5;color:#5C564C;}
+/* A field shown as fixed text rather than a control (the country of a location
+   that already holds an address). */
+.cbf-static{margin:0;padding:.55rem 0;font-size:1rem;line-height:1.4;}
 .cbf-err{display:flex;gap:.42rem;align-items:flex-start;margin:.42rem 0 0;font-size:.8125rem;font-weight:500;line-height:1.45;color:var(--cb-error);}
 .cbf-err__m{font-family:var(--cb-mono);}
 /* No `.cbf-err p` rule: validMsg used to arrive Markdown-wrapped in <p> and

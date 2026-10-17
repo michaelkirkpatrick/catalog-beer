@@ -307,25 +307,22 @@ echo $htmlHead->html;
                         ?></h3>
                         <div class="bp-loc-meta">
                             <?php
-                            if(isset($loc->address)){
-                                // Street Address (address2 is the street line; address1 the unit)
-                                echo '<div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"><meta itemprop="addressCountry" content="' . h($loc->country_code ?? 'US') . '" /><p><span itemprop="streetAddress">' . h($loc->address->address2);
-                                if(!empty($loc->address->address1)){
-                                    echo ' ' . h($loc->address->address1);
+                            // Formatted in classes/helpers/location.php: the
+                            // street, then the country-ordered lines with the
+                            // schema.org microdata already inside (cityHtml is
+                            // HTML, echoed as-is).
+                            $cardAddress = locationAddressFacts($loc);
+                            if($cardAddress['street'] !== '' || $cardAddress['cityHtml'] !== ''){
+                                echo '<div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"><meta itemprop="addressCountry" content="' . h($loc->country_code ?? 'US') . '" /><p>';
+                                if($cardAddress['street'] !== ''){
+                                    echo '<span itemprop="streetAddress">' . h($cardAddress['street']) . '</span><br>';
                                 }
-                                echo '</span><br>';
-                                if(!empty($loc->address->zip4)){
-                                    $zipCode = $loc->address->zip5 . '-' . $loc->address->zip4;
-                                }else{
-                                    $zipCode = $loc->address->zip5;
-                                }
-                                echo '<span itemprop="addressLocality">' . h($loc->address->city) . '</span>, <span itemprop="addressRegion">' . h($loc->address->state_short) . '</span> <span itemprop="postalCode">' . h($zipCode) . '</span>';
+                                echo $cardAddress['cityHtml'];
                                 echo '</p></div>';
 
                                 // Telephone
-                                $telephone = formatTelephone($loc->address->telephone ?? '');
-                                if($telephone !== ''){
-                                    echo '<p itemprop="telephone">' . h($telephone) . '</p>';
+                                if($cardAddress['telephone'] !== ''){
+                                    echo '<p itemprop="telephone">' . h($cardAddress['telephone']) . '</p>';
                                 }
                             }
                             ?>
@@ -509,7 +506,7 @@ echo $htmlHead->html;
 
                     <?php
                     if($singleAddress['telephone'] !== ''){
-                        echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . h($singleAddress['telephoneDigits']) . '" itemprop="telephone">' . h($singleAddress['telephone']) . '</a></span></div>' . "\n";
+                        echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($singleAddress['telephoneHref']) . '" itemprop="telephone">' . h($singleAddress['telephone']) . '</a></span></div>' . "\n";
                     }
 
                     if(!empty($singleLocation->url)){

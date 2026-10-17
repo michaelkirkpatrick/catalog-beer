@@ -24,16 +24,21 @@ the ZIP and resubmitting would create a second location every time.
 
 // Default Values
 $disabled = false;
-$validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
+$validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'', 'line1'=>'', 'line2'=>'', 'locality'=>'', 'dependent_locality'=>'', 'sub_code'=>'', 'postal_code'=>'', 'telephone'=>'');
 $validMsg = $validState;
 $brewerID = '';
 $brewerURL = '';
 $brewerName = '';
 $name = '';
 $url = '';
-$country_code = 'US';
 $autofocus = true;
 $addressFields = addressBlankFields();
+// The location's country: the ?country= override (the Country select reloads
+// with it), else the brewer's own country, else US. The address controls and
+// the region list follow it; see classes/helpers/address.php.
+$countries = addressCountries($api);
+$country_code = 'US';
+$subdivisions = array();
 
 // Get Brewery Info
 if(isset($_GET['brewerID'])){
@@ -49,6 +54,11 @@ if(isset($_GET['brewerID'])){
         // escape their own arguments.
         $brewerName = $brewerData->name;
         $brewerURL = $brewerData->id;
+        $country_code = addressFormCountry($countries, (string)($brewerData->country_code ?? 'US'));
+        if(isset($_POST['submit']) && !empty($_POST['country_code']) && isset($countries[strtoupper($_POST['country_code'])])){
+            $country_code = strtoupper($_POST['country_code']);
+        }
+        $subdivisions = addressSubdivisions($api, $country_code);
 
         // Process Form
         if(isset($_POST['submit'])){
@@ -221,10 +231,12 @@ echo $htmlHead->html;
 
             echo '</div>' . "\n";
 
-            // Address — the dead US-only Country select became the note here
-            echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span><span class="cbf-subhead__n">United States only, for now</span></div>' . "\n";
+            // Address. The Country select is a location field that sits with the
+            // address because the address controls follow it (reload on change).
+            echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span></div>' . "\n";
             echo '<div class="cbf-sec">' . "\n";
-            echo addressFormFields($addressFields, $validState, $validMsg);
+            echo addressCountryField($countries, $country_code, $validState, $validMsg);
+            echo addressFormFields($addressFields, $validState, $validMsg, $country_code, $subdivisions, (string)($countries[$country_code]['calling_code'] ?? ''));
             echo '</div>' . "\n";
 
             // Close Disabled
