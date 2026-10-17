@@ -1,6 +1,6 @@
 # Locations & Addresses
 
-A **location** is a physical place (taproom, brewery, brewpub) belonging to a brewer. Street addresses are stored separately and added with a **second request** after the location is created. Addresses are US-only for now.
+A **location** is a physical place (taproom, brewery, brewpub) belonging to a brewer. Street addresses are stored separately and added with a **second request** after the location is created. The address takes its country from the location's `country_code`, which must be one of the 40 countries the validator covers — `GET /address/countries` lists them (AR AT AU BE BG BR CA CH CL CO CZ DE DK EE ES FI FR GB HR HU IE IN IT JP LT LU LV MX MY NL NO NZ PL PR PT SE SG SI SK US); any other code is a `400` on `country_code`.
 
 ## The location object
 
@@ -10,12 +10,12 @@ A **location** is a physical place (taproom, brewery, brewpub) belonging to a br
 | `object` | string | `"location"` |
 | `name` | string \| null | what the address can't convey — the venue's own name, or its neighborhood when the brewer has siblings in one city; null when the city already identifies it. See "Naming a location" |
 | `url` | string \| null | location-specific page; should differ from the brewer's main URL |
-| `country_code` | string | ISO 3166-1 alpha-2 (e.g. `US`) |
-| `country_short_name` | string | server-derived from `country_code`; currently always `United States of America` |
+| `country_code` | string | ISO 3166-1 alpha-2 (e.g. `US`, `BE`) |
+| `country_short_name` | string | server-derived from `country_code`; the ISO short name (`United States of America`, `Belgium`) |
 | `latitude`, `longitude` | float \| null | geocoded server-side when an address is added |
 | `cb_verified`, `brewer_verified` | boolean | server-controlled |
 | `last_modified` | integer | Unix timestamp |
-| `address` | object \| null | US address object (below) |
+| `address` | object \| null | address object (below); absent until one has been added |
 | `brewer` | object | nested brewer object |
 
 ## POST /location — create
@@ -57,41 +57,54 @@ All optional: `brewer_id`, `name`, `country_code`, `url`.
 
 ## POST /address/{location_id} — add the street address
 
-Validated and geocoded server-side (returns the full location object with `address`, `latitude`, `longitude` populated). US addresses only.
+Validated and geocoded server-side (returns the full location object with `address`, `latitude`, `longitude` populated). Send the address the way the country writes it; what comes back is the validated form. One vocabulary for every country (API 6.0, October 2026 — the old `address2`/`address1`/`city`/`zip5`/`zip4` keys are gone, and a body using them is a `400` on `line1`).
 
 | Field | Required | Constraints |
 |---|---|---|
-| `address2` | **yes** | the street address (yes, `address2` — `address1` is the suite/unit) |
-| `address1` | no | suite/unit, e.g. "Suite 101" |
-| `city` | either/or | provide (`city` AND `sub_code`) OR `zip5` |
-| `sub_code` | either/or | ISO 3166-2 subdivision, e.g. `US-CA` |
-| `zip5` | either/or | 5-digit ZIP, as a **string** — keep the leading zero (`"01085"`) |
-| `zip4` | no | ZIP+4, as a string |
-| `telephone` | no | 10-digit; formatting accepted but stripped (returned as integer) |
+| `line1` | **yes** | the street line, in the country's order: `110 E 22nd St`, `Donkerstraat 12`, `28 Rue de la Goutte d'Or` |
+| `line2` | no | suite/unit/building, e.g. `Suite 101`, `bus 3` |
+| `locality` | either/or | the city or town; provide `locality` OR `postal_code`. In the US, `locality` needs `sub_code` beside it |
+| `dependent_locality` | no | district/village within the locality; the validator fills it in where it applies, so usually omit |
+| `sub_code` | US: with `locality` | ISO 3166-2 region, e.g. `US-CA`, `BE-VWV`, `CA-QC`; a bare suffix (`CA`) is prefixed with the location's country. Must belong to that country — `GET /address/subdivisions?country=BE` lists the codes. Optional outside the US; where the validator reports a region itself, that wins |
+| `postal_code` | either/or | the country's own form, as a **string**: `90731`, `90731-7202`, `8640`, `1018 AL`, `SW1A 1AA`. An obviously wrong shape for the country is a `400` before validation |
+| `telephone` | no | international (`+32 57 40 03 76`) or the country's national format (`057 40 03 76`, `(310) 833-9330`); returned as an E.164 **string** (`+3257400376`) |
 
-`PUT /address/{location_id}` replaces the address entirely: `address1` and `telephone` *will* clear if omitted, while `city`, `sub_code` and `zip4` re-derive from the street address and ZIP whether you send them or not.
+`PUT /address/{location_id}` replaces the address entirely: `line2` and `telephone` *will* clear if omitted, while `locality`, `sub_code`, `dependent_locality` and `postal_code` re-derive from the validated address whether you send them or not.
 
-`PATCH /address/{location_id}` updates only the fields you send — they are merged with the stored address and the whole thing re-validates as one. Send `null` to clear `telephone`; `address1` and `zip4` re-derive from the validated address rather than clearing directly. One asymmetry to know: `city`+`sub_code` and `zip5` are two spellings of the same locality, so when you patch one group the stored other group is dropped and re-derived rather than merged — patching a new ZIP with an old stored city would otherwise hand the validator a contradiction. Patch whichever group you trust and let the other come back derived.
+`PATCH /address/{location_id}` updates only the fields you send — they are merged with the stored address and the whole thing re-validates as one. Send `null` to clear `telephone`; `line2` re-derives from the validated address rather than clearing directly. One asymmetry to know: `locality`+`sub_code` and `postal_code` are two spellings of the same place, so when you patch one group the stored other group is dropped and re-derived rather than merged — patching a new postal code with an old stored city would otherwise hand the validator a contradiction. Patch whichever group you trust and let the other come back derived.
 
-## The US address object (in responses)
+**The country cannot change once an address exists.** `PATCH /location/{id}` with a different `country_code` is a `400` on a location that holds an address (it was validated for the country it is in). For a location created under the wrong country, delete it and create it again.
 
-`address1` (nullable), `address2`, `city`, `sub_code` (e.g. `US-CA`), `state_short` (`CA`), `state_long` (`California`), `zip5` (**string**), `zip4` (string, nullable), `telephone` (integer, nullable — no country code).
+## The address object (in responses)
 
-**ZIP codes are strings, not numbers.** They are fixed-width identifiers whose leading zero is significant — `00501`–`09999` covers New England, New Jersey, Puerto Rico and the US Virgin Islands — and nothing ever does arithmetic on one. Send `"01085"`, not `1085`; a 4-digit value is rejected with `valid_state.zip5: "invalid"`. Don't parse the response value as an integer and write it back, or you will strip the zero and the next write will fail.
+`line1`, `line2` (nullable), `locality`, `dependent_locality` (nullable), `sub_code` (nullable outside the US, e.g. `US-CA`, `BE-VWV`), `postal_code` (**string**, nullable), `formatted` (array of display lines in the country's own order, country name excluded — render these rather than composing an address yourself), `language_code` (`en`, `nl`, `fr` …), `telephone` (E.164 **string**, nullable), `validation` (`validated` today), `admin_area` (`{sub_code, name, type}` or null — `name` is the local official form: `California`, `West-Vlaanderen`).
 
-**The whole address is standardised — `address1` included.** Every write runs through Google Address Validation with USPS CASS. The street stores with its words spelled out (`Woodinville Redmond Rd NE`, even where USPS abbreviates); the city stores as USPS's mailing city, falling back to Google's locality where USPS's 13-character field truncates the name; and the suite/unit is re-derived from the CASS secondary line, not passed through. Casing is normalised with directionals and unit letters intact (`Rd NE`, `Ste 105B`). Send whatever form you have and treat what comes back as canonical — a re-submit of your original spelling will standardise the same way, so don't retry when the stored form differs from what you sent.
+**Postal codes are strings, not numbers.** US ZIPs are fixed-width identifiers whose leading zero is significant — `00501`–`09999` covers New England, New Jersey, Puerto Rico and the US Virgin Islands — and other countries' codes carry letters and spaces. Send `"01085"`, not `1085`; a 4-digit US value is rejected with `valid_state.postal_code: "invalid"`. Don't parse the response value as an integer and write it back, or you will strip the zero and the next write will fail. A US ZIP+4 comes back as one value: `"92101-1725"`.
+
+**The whole address is standardised — `line2` included.** Every write runs through Google Address Validation; US addresses also go through USPS CASS. In the US the street stores with its words spelled out (`Woodinville Redmond Rd NE`, even where USPS abbreviates); the city stores as USPS's mailing city, falling back to Google's locality where USPS's 13-character field truncates the name; and the suite/unit is re-derived from the CASS secondary line, not passed through. Casing is normalised with directionals and unit letters intact (`Rd NE`, `Ste 105B`). Outside the US, Google's own rendering is stored: the street spelled out in the local language (`Köpenicker Straße 70`, not `Str.`), the locality as the postal service names it (Westvleteren, not the municipality Vleteren), the postal code normalised (`1018 AL`). Send whatever form you have and treat what comes back as canonical — a re-submit of your original spelling will standardise the same way, so don't retry when the stored form differs from what you sent.
 
 **The mailing city is frequently not the municipality the venue sits in**, and that is correct rather than a bug. A ZIP has one preferred city name, and it is often a larger neighbour: a taproom in Maplewood, MO stores as `Saint Louis` (the preferred name for `63143`), and most of St. Louis County, Brooklyn and much of LA County behave the same way. Unincorporated communities resolve to their post office — Paoli, WI stores as Belleville. A `PATCH` putting the municipality back re-derives straight to the mailing city again. To check what a ZIP's preferred city is, use [USPS's lookup **by ZIP code**](https://tools.usps.com/zip-code-lookup.htm?bycitystate), not by address: the by-address form echoes back whichever acceptable alias you typed, which makes the stored value look wrong when it isn't.
+
+**An address the validator cannot place at building level is refused**, not stored approximately: an unnumbered street (`Chiswick Lane South`) or a premise name with no street (`St James's Gate`) comes back `400`. Find the numbered street address on the brewery's site or a map, or leave the location without an address and say so in your notes.
+
+**Belgium reports no province.** The validator returns none for Belgian addresses, so `sub_code` and `admin_area` are null unless you send one (`BE-VWV` for West-Vlaanderen); Brussels has no province at all. That is the normal shape, not a failed write.
 
 ## Finding breweries near a place
 
 All three return the same shape and are cursor-paginated (`count` default 100):
 
 - `GET /location/nearby?latitude=&longitude=` — `search_radius` optional (default 25 miles; `metric=true` for km)
-- `GET /location/zip?zip_code=` — 5-digit US ZIP, geocoded then as nearby
-- `GET /location/city?city=&state=` — state as name or abbreviation
+- `GET /location/zip?postal_code=&country=` — a postal code in its country's form (`country` defaults to `US`), geocoded then as nearby
+- `GET /location/city?city=&region=&country=` — `region` (state/province, name or abbreviation) is required in the US and optional elsewhere; `country` defaults to `US`
 
-Each `data[]` element has three keys: `location` (with flattened address), `distance` (`{distance, units}` — straight-line, 1 decimal), and `brewer`.
+`metric` defaults to kilometres outside the US (and Liberia and Myanmar), miles there; say it explicitly if the unit matters.
+
+Each `data[]` element has three keys: `location` (with its `address` object; every key null when the location has no address yet), `distance` (`{distance, units}` — straight-line, 1 decimal), and `brewer`.
+
+## Reference lists
+
+- `GET /address/countries` — the 40 countries a location may be in: `country_code`, `country_short_name`, `subdivisions` (how many ISO 3166-2 rows the catalog holds; 0 means send no `sub_code`), `calling_code`.
+- `GET /address/subdivisions?country=BE` — that country's regions: `sub_code`, `name` (local official form), `type` (`state`, `province`, …), `parent_code`. These are the only values `sub_code` accepts.
 
 ## Reads
 
