@@ -3033,9 +3033,11 @@ curl -X GET \
 
 <h4>In a request</h4>
 
-<p>Send these fields inside <var>address</var>, written the way the address is written locally. The validator covers 40 countries; see <a href="#location-countries">Supported Countries</a>. If it cannot match the address to a specific building, the request fails with a <var>400</var> and nothing is saved. On a <strong>POST</strong>, that means no location is created.</p>
+<p>Send these fields inside <var>address</var>, written the way the address is written locally. <strong>Required:</strong> <var>line1</var>, plus either <var>locality</var> or <var>postal_code</var>. In the US, a <var>locality</var> without a <var>postal_code</var> also needs <var>sub_code</var>. Everything else is optional.</p>
 
-<p>The validator itself needs only the street line, and given only that it will pick a town: &#8220;Donkerstraat 12&#8221; alone lands in Sint-Niklaas, not Westvleteren. So we ask for the town or the postal code as well, and in the US the state with the town, where a city name alone could mean several places.</p>
+<p>The validator covers 40 countries; see <a href="#location-countries">Supported Countries</a>. If it cannot match the address to a specific building, the request fails with a <var>400</var> and nothing is saved. On a <strong>POST</strong>, that means no location is created.</p>
+
+<p>Why more than the street: the validator itself needs only <var>line1</var>, and given only that it will pick a town. &#8220;Donkerstraat 12&#8221; alone lands in Sint-Niklaas, not Westvleteren. The town or the postal code pins it down, and in the US the state does the same for a city name that several states share.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -3048,7 +3050,7 @@ curl -X GET \
         </thead>
         <tbody>
             <tr>
-                <td><var>line1</var></td>
+                <td><var>line1</var><br><small class="text-muted">(required)</small></td>
                 <td>string</td>
                 <td>The street line, as the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d&#8217;Or</var>.</td>
             </tr>
@@ -3058,7 +3060,7 @@ curl -X GET \
                 <td>The suite, unit, floor or building, if any (<var>Suite 101</var>, <var>bus 3</var>).</td>
             </tr>
             <tr>
-                <td><var>locality</var><br><small class="text-muted">(send <var>locality</var> or <var>postal_code</var>; in the US, <var>locality</var> also needs <var>sub_code</var>)</small></td>
+                <td><var>locality</var><br><small class="text-muted">(required unless you send <var>postal_code</var>)</small></td>
                 <td>string</td>
                 <td>The city or town.</td>
             </tr>
@@ -3068,12 +3070,12 @@ curl -X GET \
                 <td>A district or village inside the locality, in countries that address that way (a Belgian <em>deelgemeente</em>, a Mexican <em>colonia</em>). Usually leave it out; the validator fills it in.</td>
             </tr>
             <tr>
-                <td><var>sub_code</var><br><small class="text-muted">(required in the US when you send <var>locality</var>; optional elsewhere)</small></td>
+                <td><var>sub_code</var><br><small class="text-muted">(required in the US when <var>locality</var> stands in for <var>postal_code</var>; optional otherwise)</small></td>
                 <td>string</td>
                 <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location&#8217;s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
             </tr>
             <tr>
-                <td><var>postal_code</var><br><small class="text-muted">(send <var>locality</var> or <var>postal_code</var>)</small></td>
+                <td><var>postal_code</var><br><small class="text-muted">(required unless you send <var>locality</var>)</small></td>
                 <td>string</td>
                 <td>The postal code as the country writes it: <var>90731</var> or <var>90731-7202</var> in the US, <var>8640</var> in Belgium, <var>1018 AL</var> in the Netherlands, <var>SW1A 1AA</var> in the UK. A code of clearly the wrong shape is refused before validation. Otherwise the validated form is what gets saved.</td>
             </tr>
