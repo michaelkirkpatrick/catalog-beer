@@ -261,7 +261,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: “brewer”.</td>
+                                <td>The type of object, in this case “brewer”.</td>
                             </tr>
                             <tr>
                                 <td><var>name</var></td>
@@ -645,7 +645,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: “list”.</td>
+                                <td>The type of object, in this case “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -738,7 +738,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: “count”.</td>
+                                <td>The type of object, in this case “count”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -831,7 +831,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: “list”.</td>
+                                <td>The type of object, in this case “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -950,7 +950,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: “list”.</td>
+                                <td>The type of object, in this case “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -1115,7 +1115,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: “list”.</td>
+                                <td>The type of object, in this case “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -1253,7 +1253,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: “permissions”.</td>
+                                <td>The type of object, in this case “permissions”.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_id</var></td>
@@ -1330,7 +1330,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object; in this case: “beer”.</td>
+                                <td>The type of object, in this case “beer”.</td>
                             </tr>
                             <tr>
                                 <td><var>name</var></td>
@@ -1764,7 +1764,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: “list”.</td>
+                <td>The type of object, in this case “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -1928,7 +1928,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: “list”.</td>
+                <td>The type of object, in this case “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -2015,11 +2015,11 @@ curl -X GET \
 <h2 id="location">Location</h2>
 <hr>
 
-<p>Locations are public venues where you can drink a brewer’s beer: taprooms, brewpubs, tasting rooms. We aren’t looking to catalog production facilities, offices, or locations where you can’t grab a pint.</p>
+<p>Locations are public venues where you can drink a brewer’s beer — places like taprooms, brewpubs, and tasting rooms. We aren’t looking to catalog production facilities, offices, or locations where you can’t grab a pint.</p>
 
 <h3 id="location-object">The Location Object</h3>
 
-<p>A location is a place where you can drink a brewer’s beer: a taproom, a brewpub, a tasting room. The object has the following parameters</p>
+<p>A location is a place where you can drink a brewer’s beer. The object has the following parameters</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -2039,7 +2039,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>Always “location”.</td>
+                <td>The type of object, in this case “location”.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
@@ -2724,7 +2724,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>Always “list”.</td>
+                <td>The type of object, in this case “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -2877,7 +2877,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>Always “list”.</td>
+                <td>The type of object, in this case “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -3547,7 +3547,7 @@ curl -X GET \
         </thead>
         <tbody>
             <tr><td><var>id</var></td><td>string</td><td>The style’s slug (e.g. <var>american-ipa</var>) — the value used as <var>style_id</var> on a beer.</td></tr>
-            <tr><td><var>object</var></td><td>string</td><td>Always <var>style</var>.</td></tr>
+            <tr><td><var>object</var></td><td>string</td><td>The type of object, in this case “style”.</td></tr>
             <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. “American-Style India Pale Ale”).</td></tr>
             <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
             <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) — the canonical family tier you can file a beer at.</td></tr>
@@ -3805,7 +3805,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: “list”.</td>
+                <td>The type of object, in this case “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -3928,7 +3928,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object; in this case: “style_parent”.</td>
+                <td>The type of object, in this case “style_parent”.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
@@ -4022,7 +4022,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object; in this case: “style_class”.</td>
+                <td>The type of object, in this case “style_class”.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
@@ -4110,7 +4110,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: “usage”.</td>
+                <td>The type of object, in this case “usage”.</td>
             </tr>
             <tr>
                 <td><var>year</var></td>
@@ -4231,7 +4231,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The type of object returned. Value will be <code>billing</code>.</td>
+                <td>The type of object, in this case “billing”.</td>
             </tr>
             <tr>
                 <td><var>billing_enabled</var></td>
@@ -4429,7 +4429,7 @@ curl -X PATCH \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: “users”.</td>
+                <td>The type of object, in this case “users”.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
@@ -4526,7 +4526,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: “api_key”.</td>
+                <td>The type of object, in this case “api_key”.</td>
             </tr>
             <tr>
                 <td><var>user_id</var></td>
