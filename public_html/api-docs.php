@@ -2089,7 +2089,7 @@ curl -X GET \
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>The street address, once one has been given. See <a href="#location-address">The Address</a>. The same object is how you write an address, and <var>telephone</var> lives inside it.</td>
+                <td>The street address. Every location is created with one; a few older locations have none, and the key is then absent. See <a href="#location-address">The Address</a>. The same object is how you write an address, and <var>telephone</var> lives inside it.</td>
             </tr>
             <tr>
                 <td><var>brewer</var></td>
@@ -2340,10 +2340,10 @@ curl -X GET \
 <h4>What each verb does with it</h4>
 
 <ul>
-    <li><strong>POST</strong> creates the address with the location. Leave <var>address</var> out only when the validator cannot place the venue.</li>
-    <li><strong>PUT</strong> replaces the address. Any field you leave out is cleared. Leave out <var>address</var> entirely and the address is removed, coordinates included, like any optional field on a PUT.</li>
-    <li><strong>PATCH</strong> changes only the fields you send. They are merged over the stored address and the result is validated as one, so <var>latitude</var> and <var>longitude</var> move with it. Send <var>null</var> for a field to clear it, or <var>"address": null</var> to remove the address. One rule to know: <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> describe the same place two ways, so if you send one without the other, the stored other is dropped and worked out again from what you sent. That way an old ZIP can never contradict a new city. A patch that sends only <var>telephone</var> skips validation.</li>
-    <li><strong>To move a location to another country</strong>, send the address in the same request so it can be validated there, or send <var>"address": null</var> to clear it. A country change on its own is refused with a <var>400</var>.</li>
+    <li><strong>POST</strong> creates the address with the location, and requires it. A location without an address is refused with a <var>400</var> that names the fields the country needs.</li>
+    <li><strong>PUT</strong> replaces the address, and requires it. Any field you leave out of it is cleared.</li>
+    <li><strong>PATCH</strong> changes only the fields you send; leave <var>address</var> out and the stored one is kept. The fields you send are merged over the stored address and the result is validated as one, so <var>latitude</var> and <var>longitude</var> move with it. Send <var>null</var> for an optional field to clear it. An address can be corrected but not removed, so <var>"address": null</var> is refused with a <var>400</var>. One rule to know: <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> describe the same place two ways, so if you send one without the other, the stored other is dropped and worked out again from what you sent. That way an old ZIP can never contradict a new city. A patch that sends only <var>telephone</var> skips validation.</li>
+    <li><strong>To move a location to another country</strong>, send the address in the same request so it can be validated there. A country change on its own is refused with a <var>400</var>.</li>
 </ul>
 
 <p>Validation errors come back under <var>valid_state.address</var> and <var>valid_msg.address</var>, keyed by the seven fields above, next to the location’s own <var>brewer_id</var>, <var>name</var>, <var>url</var> and <var>country_code</var>.</p>
@@ -2456,9 +2456,9 @@ curl -X PATCH \
                 <td>The country, as an ISO 3166–1 alpha-2 code, from the <a href="#location-countries">supported list</a>. The address is validated in this country.</td>
             </tr>
             <tr>
-                <td><var>address</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>address</var></td>
                 <td>object</td>
-                <td>The street address; see <a href="#location-address">The Address</a> for its fields. Leave it out only when the validator cannot place the venue.</td>
+                <td>The street address; see <a href="#location-address">The Address</a> for its fields. If the validator can’t place it, nothing is created.</td>
             </tr>
         </tbody>
     </table>
@@ -2553,9 +2553,9 @@ curl -X POST \
                 <td>The country, as an ISO 3166–1 alpha-2 code, from the <a href="#location-countries">supported list</a>.</td>
             </tr>
             <tr>
-                <td><var>address</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>address</var></td>
                 <td>object</td>
-                <td>The street address; see <a href="#location-address">The Address</a>. Leaving it out clears the stored address, coordinates included. Sending one replaces the stored address entirely.</td>
+                <td>The street address; see <a href="#location-address">The Address</a>. It replaces the stored address entirely.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
@@ -2620,7 +2620,7 @@ curl -X PUT \
                     <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>The street address, merged over the stored one; see <a href="#location-address">The Address</a>. Send <var>null</var> to remove it.</td>
+                <td>The street address, merged over the stored one; see <a href="#location-address">The Address</a>. Leave it out to keep the stored address. It can’t be removed, so <var>null</var> is refused.</td>
             </tr>
 </tbody>
     </table>
