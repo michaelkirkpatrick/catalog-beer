@@ -301,17 +301,17 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>country_code</var></td>
                                 <td>string</td>
-                                <td>The ISO 3166–1 Alpha–2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses (e.g. “US”, “CA”, “BE”). See <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a> or the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. Locations can only be added for US brewers at this time; the brewer record itself may be from anywhere.</td>
+                                <td>The ISO 3166–1 Alpha–2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses. See <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a> or the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. Locations can only be added for US brewers at this time; the brewer record itself may be from anywhere.</td>
                             </tr>
                             <tr>
                                 <td><var>cb_verified</var></td>
                                 <td>Boolean</td>
-                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer’s information.</td>
+                                <td><var>true</var> when a Catalog.beer administrator has reviewed this brewer. An edit by a general user sets it back to <var>false</var> until an administrator reviews it again.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_verified</var></td>
                                 <td>Boolean</td>
-                                <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
+                                <td><var>true</var> when the brewery itself has provided or confirmed this brewer. General users can’t edit it; see <a href="#brewer-permissions">Your Permissions for a Brewer</a>.</td>
                             </tr>
                             <tr>
                                 <td><var>last_modified</var></td>
@@ -1015,12 +1015,12 @@ curl -X GET \
                             <tr>
                                 <td><var>cb_verified</var></td>
                                 <td>Boolean</td>
-                                <td>Whether the beer’s information has been verified by Catalog.beer against the brewery’s website.</td>
+                                <td><var>true</var> when a Catalog.beer administrator has reviewed this beer. An edit by a general user sets it back to <var>false</var> until an administrator reviews it again.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_verified</var></td>
                                 <td>Boolean</td>
-                                <td>Whether the beer’s information was provided by the brewery (first-party data).</td>
+                                <td><var>true</var> when the brewery itself has provided or confirmed this beer. General users can’t edit it; see <a href="#brewer-permissions">Your Permissions for a Brewer</a>.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1340,7 +1340,7 @@ curl -X GET \
                             <tr>
                                 <td><var>style</var></td>
                                 <td>string</td>
-                                <td>The style of the beer as a human-readable label — the brewer’s own wording, preserved exactly (e.g. “West Coast IPA”).</td>
+                                <td>The style of the beer as a human-readable label — the brewer’s own wording, preserved exactly (e.g. <var>West Coast IPA</var>).</td>
                             </tr>
                             <tr>
                                 <td><var>style_id</var></td>
@@ -1380,12 +1380,12 @@ curl -X GET \
                             <tr>
                                 <td><var>cb_verified</var></td>
                                 <td>Boolean</td>
-                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer’s information.</td>
+                                <td><var>true</var> when a Catalog.beer administrator has reviewed this beer. An edit by a general user sets it back to <var>false</var> until an administrator reviews it again.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_verified</var></td>
                                 <td>Boolean</td>
-                                <td>A <var>true</var> or <var>false</var> value denoting whether or not the brewer themselves has contributed and verified their information.</td>
+                                <td><var>true</var> when the brewery itself has provided or confirmed this beer. General users can’t edit it; see <a href="#brewer-permissions">Your Permissions for a Brewer</a>.</td>
                             </tr>
                             <tr>
                                 <td><var>last_modified</var></td>
@@ -2044,7 +2044,7 @@ curl -X GET \
             <tr>
                 <td><var>name</var></td>
                 <td>string or null</td>
-                <td>The location’s own name, or <var>null</var> when it has none. Most taprooms go by their brewer and their town, so expect <var>null</var> and build a label from the nested <var>brewer</var> and the <var>address</var> (for example, “Avery Brewing – Boulder”).</td>
+                <td>The location’s own name, or <var>null</var> when it has none. Most taprooms don’t have a unique name, they’re simply named for their city or town. If you’re building a label for locations with a <var>null</var> name, we suggest something like “{brewer_name} - {city/town_name}”</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -2054,32 +2054,32 @@ curl -X GET \
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The country, as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–1 alpha-2</a> code (<var>US</var>, <var>BE</var>).</td>
+                <td>The country, as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–1 alpha-2</a> code.</td>
             </tr>
             <tr>
                 <td><var>country_short_name</var></td>
                 <td>string</td>
-                <td>The country’s name (<var>United States of America</var>, <var>Belgium</var>).</td>
+                <td>The country’s name.</td>
             </tr>
             <tr>
                 <td><var>latitude</var><br><small class="text-muted">(optional)</small></td>
                 <td>float</td>
-                <td>The location’s latitude, set from the address.</td>
+                <td>The location’s latitude.</td>
             </tr>
             <tr>
                 <td><var>longitude</var><br><small class="text-muted">(optional)</small></td>
                 <td>float</td>
-                <td>The location’s longitude, set from the address.</td>
+                <td>The location’s longitude.</td>
             </tr>
             <tr>
                 <td><var>cb_verified</var></td>
                 <td>Boolean</td>
-                <td><var>true</var> when a Catalog.beer administrator has reviewed this location.</td>
+                <td><var>true</var> when a Catalog.beer administrator has reviewed this location. An edit by a general user sets it back to <var>false</var> until an administrator reviews it again.</td>
             </tr>
             <tr>
                 <td><var>brewer_verified</var></td>
                 <td>Boolean</td>
-                <td><var>true</var> when the brewery itself has contributed or confirmed this location.</td>
+                <td><var>true</var> when the brewery itself has provided or confirmed this location. General users can’t edit it; see <a href="#brewer-permissions">Your Permissions for a Brewer</a>.</td>
             </tr>
             <tr>
                 <td><var>last_modified</var></td>
@@ -2087,9 +2087,9 @@ curl -X GET \
                 <td>When the location last changed, as a Unix timestamp.</td>
             </tr>
             <tr>
-                <td><var>address</var><br><small class="text-muted">(optional)</small></td>
+                <td><var>address</var></td>
                 <td>object</td>
-                <td>The street address. Every location is created with one; a few older locations have none, and the key is then absent. See <a href="#location-address">The Address</a>. The same object is how you write an address, and <var>telephone</var> lives inside it.</td>
+                <td>The street address. Every location has one. See <a href="#location-address">The Address</a>. The same object is how you write an address, and <var>telephone</var> lives inside it.</td>
             </tr>
             <tr>
                 <td><var>brewer</var></td>
@@ -2170,52 +2170,52 @@ curl -X GET \
             <tr>
                 <td><var>line1</var></td>
                 <td>string</td>
-                <td>The street line, spelled out and in the country’s order: <samp>2215 India St</samp>, <samp>Donkerstraat 12</samp>, <samp>Köpenicker Straße 70</samp>.</td>
+                <td>The street line, spelled out and in the country’s order: <var>2215 India St</var>, <var>Donkerstraat 12</var>, <var>Köpenicker Straße 70</var>.</td>
             </tr>
             <tr>
                 <td><var>line2</var></td>
                 <td>string or null</td>
-                <td>The suite, unit, floor or building, if any (<samp>Ste 800</samp>, <samp>bus 3</samp>).</td>
+                <td>The suite, unit, floor or building, if any (e.g. <var>Ste 800</var>, <var>bus 3</var>).</td>
             </tr>
             <tr>
                 <td><var>locality</var></td>
                 <td>string</td>
-                <td>The city or town, as the postal service names it (<samp>San Diego</samp>, <samp>Westvleteren</samp>, <samp>London</samp>).</td>
+                <td>The city or town, as the postal service names it (e.g. <var>San Diego</var>, <var>Westvleteren</var>, <var>London</var>).</td>
             </tr>
             <tr>
                 <td><var>dependent_locality</var></td>
                 <td>string or null</td>
-                <td>A district or village inside the locality, in countries that address that way (<samp>Cuauhtémoc</samp> in Mexico City). Usually <var>null</var>.</td>
+                <td>A district or village inside the locality, in countries that address that way (e.g. <var>Cuauhtémoc</var> in Mexico City). Usually <var>null</var>.</td>
             </tr>
             <tr>
                 <td><var>sub_code</var></td>
                 <td>string or null</td>
-                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (<samp>US-CA</samp>, <samp>BE-VWV</samp>, <samp>CA-QC</samp>). Always set in the US. Elsewhere, set only when the country uses regions in its addresses and one was found or given. Brussels has no province, so a Brussels address has <var>null</var> here.</td>
+                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (e.g. <var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). Always set in the US. Elsewhere, set only when the country uses regions in its addresses and one was found or given. Brussels has no province, so a Brussels address has <var>null</var> here.</td>
             </tr>
             <tr>
                 <td><var>postal_code</var></td>
                 <td>string or null</td>
-                <td>The postal code as the country writes it, always a string: <samp>01085</samp>, <samp>92101-1725</samp> (a US ZIP+4), <samp>8640</samp>, <samp>1018 AL</samp>, <samp>SW1A 1AA</samp>, <samp>100-0005</samp>. Leading zeros and letters matter.</td>
+                <td>The postal code as the country writes it, always a string: <var>01085</var>, <var>92101-1725</var> (a US ZIP+4), <var>8640</var>, <var>1018 AL</var>, <var>SW1A 1AA</var>, <var>100-0005</var>. Leading zeros and letters matter.</td>
             </tr>
             <tr>
                 <td><var>formatted</var></td>
                 <td>array of strings</td>
-                <td>The address as lines ready to display, in that country’s order and without the country name: <samp>["2215 India St", "San Diego, CA 92101-1725"]</samp> or <samp>["Donkerstraat 12", "8640 Westvleteren"]</samp>. Show them as they are. Add <var>country_short_name</var> from the location when the reader is in another country.</td>
+                <td>The address as lines ready to display, in that country’s order and without the country name: <code>["2215 India St", "San Diego, CA 92101-1725"]</code> or <code>["Donkerstraat 12", "8640 Westvleteren"]</code>. Show them as they are. Add <var>country_short_name</var> from the location when the reader is in another country.</td>
             </tr>
             <tr>
                 <td><var>language_code</var></td>
                 <td>string</td>
-                <td>The language the address is written in, as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a> tag (<samp>en</samp>, <samp>nl</samp>, <samp>fr</samp>, <samp>ja</samp>). A Brussels address comes back in Dutch or French depending on what was sent, and this tells you which.</td>
+                <td>The language the address is written in, as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a> tag (e.g. <var>en</var>, <var>nl</var>, <var>fr</var>, <var>ja</var>). A Brussels address comes back in Dutch or French depending on what was sent, and this tells you which.</td>
             </tr>
             <tr>
                 <td><var>telephone</var></td>
                 <td>string or null</td>
-                <td>The phone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country code and the number, no spaces (<samp>+16192557213</samp>, <samp>+3257400376</samp>). Works as-is in a <code>tel:</code> link.</td>
+                <td>The phone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country code and the number, no spaces (e.g. <var>+16192557213</var>, <var>+3257400376</var>). Works as-is in a <code>tel:</code> link.</td>
             </tr>
                         <tr>
                 <td><var>admin_area</var></td>
                 <td>object or null</td>
-                <td>The region behind <var>sub_code</var>, if any: its <var>sub_code</var>, its <var>name</var> in the local language (<samp>California</samp>, <samp>West-Vlaanderen</samp>, <samp>Bayern</samp>) and its <var>type</var> (<samp>state</samp>, <samp>province</samp>, <samp>region</samp>, <samp>canton</samp>, and so on).</td>
+                <td>The region behind <var>sub_code</var>, if any: its <var>sub_code</var>, its <var>name</var> in the local language (e.g. <var>California</var>, <var>West-Vlaanderen</var>, <var>Bayern</var>) and its <var>type</var> (<var>state</var>, <var>province</var>, <var>region</var>, <var>canton</var>, and so on).</td>
             </tr>
         </tbody>
     </table>
@@ -2306,7 +2306,7 @@ curl -X GET \
             <tr>
                 <td><var>line2</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The suite, unit, floor or building, if any (<var>Suite 101</var>, <var>bus 3</var>).</td>
+                <td>The suite, unit, floor or building, if any (e.g. <var>Suite 101</var>, <var>bus 3</var>).</td>
             </tr>
             <tr>
                 <td><var>locality</var><br><small class="text-muted">(required unless you send <var>postal_code</var>)</small></td>
@@ -2321,7 +2321,7 @@ curl -X GET \
             <tr>
                 <td><var>sub_code</var><br><small class="text-muted">(required in the US when <var>locality</var> stands in for <var>postal_code</var>; optional otherwise)</small></td>
                 <td>string</td>
-                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location’s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
+                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (e.g. <var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location’s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
             </tr>
             <tr>
                 <td><var>postal_code</var><br><small class="text-muted">(required unless you send <var>locality</var>)</small></td>
@@ -2331,7 +2331,7 @@ curl -X GET \
             <tr>
                 <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The phone number, either with its country code (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or as dialed locally in the location’s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). It is saved and returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
+                <td>The phone number, either with its country code (e.g. <var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or as dialed locally in the location’s country (e.g. <var>057 40 03 76</var>, <var>(310) 833-9330</var>). It is saved and returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
             </tr>
         </tbody>
     </table>
@@ -2900,7 +2900,7 @@ curl -X GET \
                 <td>
                     <p>The locations in range. Each result has three objects:</p>
                     <ul>
-                        <li><var>location</var>: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var> and the nested <a href="#location-address"><var>address</var></a> (every key <var>null</var> when the location has no address yet)</li>
+                        <li><var>location</var>: <var>id</var>, <var>object</var>, <var>name</var>, <var>brewer_id</var>, <var>url</var>, <var>country_code</var>, <var>country_short_name</var>, <var>latitude</var>, <var>longitude</var> and the nested <a href="#location-address"><var>address</var></a></li>
                         <li><var>distance</var>, described below</li>
                         <li><var>brewer</var>: <var>id</var>, <var>object</var>, <var>name</var>, <var>description</var>, <var>short_description</var>, <var>url</var>, <var>status</var>, <var>founded_year</var>, <var>closed_year</var>, <var>country_code</var>, <var>cb_verified</var>, <var>brewer_verified</var></li>
                     </ul>
@@ -3009,7 +3009,7 @@ curl -X GET \
             <tr>
                 <td><var>postal_code</var></td>
                 <td>string</td>
-                <td>A postal code as the country writes it (<var>92104</var>, <var>8640</var>, <var>1018 AL</var>).</td>
+                <td>A postal code as the country writes it (e.g. <var>92104</var>, <var>8640</var>, <var>1018 AL</var>).</td>
             </tr>
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
@@ -3132,12 +3132,12 @@ curl -X GET \
             <tr>
                 <td><var>city</var></td>
                 <td>string</td>
-                <td>The city to search around (<var>San Diego</var>).</td>
+                <td>The city to search around (e.g. <var>San Diego</var>).</td>
             </tr>
             <tr>
                 <td><var>region</var><br><small class="text-muted">(required in the US, optional elsewhere)</small></td>
                 <td>string</td>
-                <td>The state, province or region, by name or abbreviation (<var>California</var> or <var>CA</var>). Required in the US, where a city name alone could be in any of fifty states. Optional elsewhere.</td>
+                <td>The state, province or region, by name or abbreviation (e.g. <var>California</var> or <var>CA</var>). Required in the US, where a city name alone could be in any of fifty states. Optional elsewhere.</td>
             </tr>
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
@@ -3548,11 +3548,11 @@ curl -X GET \
         <tbody>
             <tr><td><var>id</var></td><td>string</td><td>The style’s slug (e.g. <var>american-ipa</var>) — the value used as <var>style_id</var> on a beer.</td></tr>
             <tr><td><var>object</var></td><td>string</td><td>The type of object, in this case “style”.</td></tr>
-            <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. “American-Style India Pale Ale”).</td></tr>
+            <tr><td><var>name</var></td><td>string</td><td>The canonical style name.</td></tr>
             <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
             <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) — the canonical family tier you can file a beer at.</td></tr>
             <tr><td><var>class</var></td><td>string</td><td>The slug of the <a href="#style-classes">class</a> the style rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> for families that do not roll up to one.</td></tr>
-            <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family (e.g. “India Pale Ale”).</td></tr>
+            <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family.</td></tr>
             <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
             <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard “catch-all” styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits. Use it to separate fallback buckets from standard styles — for example, keeping catch-alls out of a picker’s ranked matches.</td></tr>
             <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side — for example, in a typeahead — without an API request per keystroke.</td></tr>
@@ -3933,7 +3933,7 @@ curl -X GET \
             <tr>
                 <td><var>name</var></td>
                 <td>string</td>
-                <td>The name of the family (e.g. “India Pale Ale”).</td>
+                <td>The name of the family.</td>
             </tr>
             <tr>
                 <td><var>beverage_type</var></td>
@@ -4027,7 +4027,7 @@ curl -X GET \
             <tr>
                 <td><var>name</var></td>
                 <td>string</td>
-                <td>The name of the class (e.g. “Ale”).</td>
+                <td>The name of the class.</td>
             </tr>
             <tr>
                 <td><var>beverage_type</var></td>
@@ -4115,7 +4115,7 @@ curl -X GET \
             <tr>
                 <td><var>year</var></td>
                 <td>integer</td>
-                <td>The year of the current billing period (e.g. 2026).</td>
+                <td>The year of the current billing period.</td>
             </tr>
             <tr>
                 <td><var>month</var></td>
