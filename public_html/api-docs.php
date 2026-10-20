@@ -45,14 +45,6 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#beer-list-all">&gt; List all Beer</a>
                     <a class="list-group-item list-group-item-action" href="#beer-count">&gt; Number of Beers</a>
                     <a class="list-group-item list-group-item-action" href="#beer-search">&gt; Search Beer</a>
-                    <a class="list-group-item list-group-item-action" href="#styles"><strong>Styles</strong></a>
-                    <a class="list-group-item list-group-item-action" href="#style-confidence">&gt; Style Confidence</a>
-                    <a class="list-group-item list-group-item-action" href="#style-object">&gt; The Style Object</a>
-                    <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
-                    <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
-                    <a class="list-group-item list-group-item-action" href="#style-search">&gt; Search Styles</a>
-                    <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
-                    <a class="list-group-item list-group-item-action" href="#style-classes">&gt; List Classes</a>
                     <a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
                     <a class="list-group-item list-group-item-action" href="#location-object">&gt; The Location Object</a>
                     <a class="list-group-item list-group-item-action" href="#location-address">&gt; The Address</a>
@@ -67,6 +59,14 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#location-city">&gt; Find Locations by City</a>
                     <a class="list-group-item list-group-item-action" href="#location-countries">&gt; Supported Countries</a>
                     <a class="list-group-item list-group-item-action" href="#location-subdivisions">&gt; Subdivisions</a>
+                    <a class="list-group-item list-group-item-action" href="#styles"><strong>Styles</strong></a>
+                    <a class="list-group-item list-group-item-action" href="#style-confidence">&gt; Style Confidence</a>
+                    <a class="list-group-item list-group-item-action" href="#style-object">&gt; The Style Object</a>
+                    <a class="list-group-item list-group-item-action" href="#style-list">&gt; List Styles</a>
+                    <a class="list-group-item list-group-item-action" href="#style-detail">&gt; Retrieve a Style</a>
+                    <a class="list-group-item list-group-item-action" href="#style-search">&gt; Search Styles</a>
+                    <a class="list-group-item list-group-item-action" href="#style-parents">&gt; List Families</a>
+                    <a class="list-group-item list-group-item-action" href="#style-classes">&gt; List Classes</a>
                     <a class="list-group-item list-group-item-action" href="#usage"><strong>Usage</strong></a>
                     <a class="list-group-item list-group-item-action" href="#usage-object">&gt; The Usage Object</a>
                     <a class="list-group-item list-group-item-action" href="#usage-my-usage">&gt; Get My Usage</a>
@@ -107,7 +107,7 @@ echo $htmlHead->html;
 
                 <p>Authenticate your account when using the API by including your secret API key in the request. You can find your API key on your <a href="/account">Account</a> page. Your API key carries many privileges, so be sure to keep it secret! Do not share your secret API key in publicly accessible areas such GitHub, client-side code, and so forth.</p>
 
-                <p>Authentication to the API is performed via the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank" rel="noopener">'Basic' HTTP authentication</a> scheme. <strong>Provide your API key as the username value.</strong> You do not need to provide a password.</p>
+                <p>Authentication to the API is performed via the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank" rel="noopener">‘Basic’ HTTP authentication</a> scheme. <strong>Provide your API key as the username value.</strong> You do not need to provide a password.</p>
 
                 <p>When making a request using basic HTTP authentication, your request should contain a header field in the form of <code>Authorization: Basic &lt;credentials&gt;</code>, where <code>&lt;credentials&gt;</code> is the <code>base64_encode('username:password')</code> (Recall that your username in this case is your API Key and the password field should be left blank).</p>
 
@@ -129,7 +129,7 @@ echo $htmlHead->html;
                 <h2 id="errors">Errors</h2>
                 <hr>
 
-                <p>Catalog.beer uses conventional HTTP response codes to indicate the success or failure of an API request. In general, codes in the <var>2xx</var> range indicate success, codes in the <var>4xx</var> range indicate an error that failed given the information provided (e.g., a required parameter was omitted), and codes in the <var>5xx</var> range indicate an error with Catalog.beer&#8217;s servers.</p>
+                <p>Catalog.beer uses conventional HTTP response codes to indicate the success or failure of an API request. In general, codes in the <var>2xx</var> range indicate success, codes in the <var>4xx</var> range indicate an error that failed given the information provided (e.g., a required parameter was omitted), and codes in the <var>5xx</var> range indicate an error with Catalog.beer’s servers.</p>
 
                 <p>The following parameters are returned in JSON format when an error occurs</p>
 
@@ -156,7 +156,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>valid_state</var><br><small class="text-muted">(optional)</small></td>
                                 <td>array</td>
-                                <td>An array containing the attribute names and their validation state. A field&#8217;s state is binary: either &#8216;valid&#8217; or &#8216;invalid&#8217;. You can use this parameter to help target which attributes are invalid. &#8216;valid&#8217; means the field passed validation &mdash; not that it was saved. When any attribute is &#8216;invalid&#8217; the whole write is rejected and nothing is stored.</td>
+                                <td>An array containing the attribute names and their validation state. A field’s state is binary: either ‘valid’ or ‘invalid’. You can use this parameter to help target which attributes are invalid. ‘valid’ means the field passed validation — not that it was saved. When any attribute is ‘invalid’ the whole write is rejected and nothing is stored.</td>
                             </tr>
                             <tr>
                                 <td><var>valid_msg</var><br><small class="text-muted">(optional)</small></td>
@@ -166,7 +166,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>suggestions</var><br><small class="text-muted">(optional)</small></td>
                                 <td>array</td>
-                                <td>Keyed by attribute name, like <var>valid_state</var> and <var>valid_msg</var>. Where we can work out what an invalid value probably meant, this carries the values that would fix it, so you can retry without a second lookup. Present only when we have candidates &mdash; always treat it as optional. Currently returned for <var>style</var> on <a href="#beer">/beer</a> writes; see <a href="#styles">Styles</a>.</td>
+                                <td>Keyed by attribute name, like <var>valid_state</var> and <var>valid_msg</var>. Where we can work out what an invalid value probably meant, this carries the values that would fix it, so you can retry without a second lookup. Present only when we have candidates — always treat it as optional. Currently returned for <var>style</var> on <a href="#beer">/beer</a> writes; see <a href="#styles">Styles</a>.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -220,7 +220,7 @@ echo $htmlHead->html;
                             </tr>
                             <tr>
                                 <td><strong>PATCH</strong></td>
-                                <td>Partial update of a resource. Only the fields you provide will be modified; all other fields remain unchanged. The resource must already exist (returns <var>404 Not Found</var> otherwise). A PATCH is applied <strong>all or nothing</strong>: if any field in the request fails validation, the response is a <var>400 Bad Request</var> and none of the fields are written &mdash; including the ones <var>valid_state</var> reports as valid.</td>
+                                <td>Partial update of a resource. Only the fields you provide will be modified; all other fields remain unchanged. The resource must already exist (returns <var>404 Not Found</var> otherwise). A PATCH is applied <strong>all or nothing</strong>: if any field in the request fails validation, the response is a <var>400 Bad Request</var> and none of the fields are written — including the ones <var>valid_state</var> reports as valid.</td>
                             </tr>
                             <tr>
                                 <td><strong>DELETE</strong></td>
@@ -241,7 +241,7 @@ echo $htmlHead->html;
 
                 <h3 id="brewer-object">The Brewer Object</h3>
 
-                <p>Whether you&#8217;re retrieving information on a specific brewer, adding a new brewer, or updating an existing brewer, successful requests will return the brewer object in JSON format. That object has the following parameters.</p>
+                <p>Whether you’re retrieving information on a specific brewer, adding a new brewer, or updating an existing brewer, successful requests will return the brewer object in JSON format. That object has the following parameters.</p>
 
                 <div class="table-responsive">
                     <table class="table">
@@ -256,12 +256,12 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>id</var></td>
                                 <td>string</td>
-                                <td>The brewer_id; a unique identifier for the brewer.</td>
+                                <td>A unique identifier for the brewer.</td>
                             </tr>
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: &#8220;brewer&#8221;.</td>
+                                <td>The name of the object. In this case: “brewer”.</td>
                             </tr>
                             <tr>
                                 <td><var>name</var></td>
@@ -271,7 +271,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>description</var></td>
                                 <td>string</td>
-                                <td>A description of the brewer. Plain text, which may contain new line characters &#8212; those are meaningful and worth preserving. It is not markup: catalog.beer displays it as written, with line breaks kept and nothing else interpreted.</td>
+                                <td>A description of the brewer. Plain text, which may contain new line characters — those are meaningful and worth preserving. It is not markup: catalog.beer displays it as written, with line breaks kept and nothing else interpreted.</td>
                             </tr>
                             <tr>
                                 <td><var>short_description</var></td>
@@ -281,12 +281,12 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>url</var></td>
                                 <td>string</td>
-                                <td>The URL of the brewer&#8217;s website. A homepage (e.g. northchair.com) can belong to only one brewer. However, a brewery&#8217;s URL may be a page on another brewery&#8217;s site (e.g. northchair.com/whetstone-beer) &mdash; an acquired brand that lives on its owner&#8217;s site &mdash; so a domain may be shared as long as no two brewers store the same page.</td>
+                                <td>The URL of the brewer’s website. A homepage (e.g. northchair.com) can belong to only one brewer. However, a brewery’s URL may be a page on another brewery’s site (e.g. northchair.com/whetstone-beer) — an acquired brand that lives on its owner’s site — so a domain may be shared as long as no two brewers store the same page.</td>
                             </tr>
                             <tr>
                                 <td><var>status</var></td>
                                 <td>string</td>
-                                <td>&#8220;active&#8221; or &#8220;closed&#8221;. A brewery that has stopped brewing keeps its record and its beers; this flag is how the catalog says so. A closed brewer accepts no new locations.</td>
+                                <td>“active” or “closed”. A brewery that has stopped brewing keeps its record and its beers; this flag is how the catalog says so. A closed brewer accepts no new locations.</td>
                             </tr>
                             <tr>
                                 <td><var>founded_year</var></td>
@@ -296,17 +296,17 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>closed_year</var></td>
                                 <td>integer</td>
-                                <td>The year the brewery closed, or <var>null</var>. Only ever set when <var>status</var> is &#8220;closed&#8221;; a closure whose year is unknown is &#8220;closed&#8221; with a <var>null</var> year.</td>
+                                <td>The year the brewery closed, or <var>null</var>. Only ever set when <var>status</var> is “closed”; a closure whose year is unknown is “closed” with a <var>null</var> year.</td>
                             </tr>
                             <tr>
                                 <td><var>country_code</var></td>
                                 <td>string</td>
-                                <td>The ISO 3166&#8211;1 Alpha&#8211;2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses (e.g. &#8220;US&#8221;, &#8220;CA&#8221;, &#8220;BE&#8221;). See <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a> or the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. Locations can only be added for US brewers at this time; the brewer record itself may be from anywhere.</td>
+                                <td>The ISO 3166–1 Alpha–2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses (e.g. “US”, “CA”, “BE”). See <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a> or the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. Locations can only be added for US brewers at this time; the brewer record itself may be from anywhere.</td>
                             </tr>
                             <tr>
                                 <td><var>cb_verified</var></td>
                                 <td>Boolean</td>
-                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer&#8217;s information.</td>
+                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer’s information.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_verified</var></td>
@@ -367,7 +367,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>description</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>A description of the brewer. This should be like the &#8220;About&#8221; page posted by the brewer. A brief origin story coupled with who they are. Send plain text: we store the bytes you send, and catalog.beer displays them with your line breaks kept. Markup is not interpreted, so formatting syntax will show up literally.</td>
+                                <td>A description of the brewer. This should be like the “About” page posted by the brewer. A brief origin story coupled with who they are. Send plain text: we store the bytes you send, and catalog.beer displays them with your line breaks kept. Markup is not interpreted, so formatting syntax will show up literally.</td>
                             </tr>
                             <tr>
                                 <td><var>short_description</var><br><small class="text-muted">(optional)</small></td>
@@ -377,12 +377,12 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>The URL of the brewer&#8217;s website.</td>
+                                <td>The URL of the brewer’s website.</td>
                             </tr>
                             <tr>
                                 <td><var>status</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>&#8220;active&#8221; (the default) or &#8220;closed&#8221;.</td>
+                                <td>“active” (the default) or “closed”.</td>
                             </tr>
                             <tr>
                                 <td><var>founded_year</var><br><small class="text-muted">(optional)</small></td>
@@ -392,12 +392,12 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>closed_year</var><br><small class="text-muted">(optional)</small></td>
                                 <td>integer</td>
-                                <td>A four-digit year; requires <var>status</var> &#8220;closed&#8221; and cannot precede <var>founded_year</var>.</td>
+                                <td>A four-digit year; requires <var>status</var> “closed” and cannot precede <var>founded_year</var>.</td>
                             </tr>
                             <tr>
                                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>ISO 3166&#8211;1 Alpha&#8211;2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>); defaults to &#8220;US&#8221;. Case-insensitive; an unassigned code is a 400.</td>
+                                <td>ISO 3166–1 Alpha–2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>); defaults to “US”. Case-insensitive; an unassigned code is a 400.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -417,7 +417,7 @@ curl -X POST \
 
                 <h3 id="brewer-update">Update a Brewer (PUT)</h3>
 
-                <p>To replace a brewer&#8217;s data, send a <strong>PUT</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the brewer does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#brewer-object">brewer object</a>.</p>
+                <p>To replace a brewer’s data, send a <strong>PUT</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the brewer does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#brewer-object">brewer object</a>.</p>
 
                 <pre class="api-code">PUT https://api.catalog.beer/brewer/{brewer_id}</pre>
 
@@ -449,12 +449,12 @@ curl -X POST \
                             <tr>
                                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>The URL of the brewer&#8217;s website. Cleared if omitted.</td>
+                                <td>The URL of the brewer’s website. Cleared if omitted.</td>
                             </tr>
                             <tr>
                                 <td><var>status</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>&#8220;active&#8221; or &#8220;closed&#8221;. Reset to &#8220;active&#8221; if omitted &#8212; a PUT that omits it reopens a closed brewer, so prefer PATCH to change anything else on one.</td>
+                                <td>“active” or “closed”. Reset to “active” if omitted — a PUT that omits it reopens a closed brewer, so prefer PATCH to change anything else on one.</td>
                             </tr>
                             <tr>
                                 <td><var>founded_year</var><br><small class="text-muted">(optional)</small></td>
@@ -464,12 +464,12 @@ curl -X POST \
                             <tr>
                                 <td><var>closed_year</var><br><small class="text-muted">(optional)</small></td>
                                 <td>integer</td>
-                                <td>A four-digit year; requires <var>status</var> &#8220;closed&#8221; and cannot precede <var>founded_year</var>. Cleared if omitted.</td>
+                                <td>A four-digit year; requires <var>status</var> “closed” and cannot precede <var>founded_year</var>. Cleared if omitted.</td>
                             </tr>
                             <tr>
                                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>ISO 3166&#8211;1 Alpha&#8211;2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>); reset to &#8220;US&#8221; if omitted.</td>
+                                <td>ISO 3166–1 Alpha–2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>); reset to “US” if omitted.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -521,12 +521,12 @@ curl -X PUT \
                             <tr>
                                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>The URL of the brewer&#8217;s website.</td>
+                                <td>The URL of the brewer’s website.</td>
                             </tr>
                             <tr>
                                 <td><var>status</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>&#8220;active&#8221; or &#8220;closed&#8221;. Patching a closed brewer back to &#8220;active&#8221; also clears its <var>closed_year</var>.</td>
+                                <td>“active” or “closed”. Patching a closed brewer back to “active” also clears its <var>closed_year</var>.</td>
                             </tr>
                             <tr>
                                 <td><var>founded_year</var><br><small class="text-muted">(optional)</small></td>
@@ -536,12 +536,12 @@ curl -X PUT \
                             <tr>
                                 <td><var>closed_year</var><br><small class="text-muted">(optional)</small></td>
                                 <td>integer</td>
-                                <td>A four-digit year; requires <var>status</var> &#8220;closed&#8221; and cannot precede <var>founded_year</var>.</td>
+                                <td>A four-digit year; requires <var>status</var> “closed” and cannot precede <var>founded_year</var>.</td>
                             </tr>
                             <tr>
                                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>ISO 3166&#8211;1 Alpha&#8211;2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>). Case-insensitive; an unassigned code is a 400.</td>
+                                <td>ISO 3166–1 Alpha–2 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a>). Case-insensitive; an unassigned code is a 400.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -561,7 +561,7 @@ curl -X PATCH \
 
                 <h3 id="brewer-delete">Delete a Brewer</h3>
 
-                <p>To delete a brewer, send a <strong>DELETE</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting a brewer also permanently deletes all of its beers and locations. Deleting is limited to brewery staff &#8212; check <a href="#brewer-permissions">your permissions</a> before attempting it.</p>
+                <p>To delete a brewer, send a <strong>DELETE</strong> request to the <code>/brewer</code> endpoint with the <var>brewer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting a brewer also permanently deletes all of its beers and locations. Deleting is limited to brewery staff — check <a href="#brewer-permissions">your permissions</a> before attempting it.</p>
 
                 <pre class="api-code">DELETE https://api.catalog.beer/brewer/{brewer_id}</pre>
 
@@ -645,7 +645,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                                <td>The name of the object. In this case: “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -738,7 +738,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: &#8220;count&#8221;.</td>
+                                <td>The name of the object. In this case: “count”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -831,7 +831,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                                <td>The name of the object. In this case: “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -856,7 +856,7 @@ curl -X GET \
                             <tr>
                                 <td><var>data</var></td>
                                 <td>array</td>
-                                <td>An array of <a href="#brewer-object">brewer objects</a> matching the search query, sorted by relevance. Each result additionally carries a <var>match</var> field describing why it matched: <code>exact</code> (the name equals the query), <code>all_terms</code> (every query term matches the start of a word in the name), <code>partial</code> (at least one query term matches the name), or <code>description</code> (the name matched nothing &mdash; the hit is in the description text). When checking whether a brewer already exists, only the first three values are evidence of a name match.</td>
+                                <td>An array of <a href="#brewer-object">brewer objects</a> matching the search query, sorted by relevance. Each result additionally carries a <var>match</var> field describing why it matched: <code>exact</code> (the name equals the query), <code>all_terms</code> (every query term matches the start of a word in the name), <code>partial</code> (at least one query term matches the name), or <code>description</code> (the name matched nothing — the hit is in the description text). When checking whether a brewer already exists, only the first three values are evidence of a name match.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -900,7 +900,7 @@ curl -X GET \
 
                 <h3 id="brewer-beers">List all Beers made by a Brewer</h3>
 
-                <p>If you would like a list of all the beers made by a brewer, send a request to the <code>/brewer/{brewer_id}/beer</code> endpoint. Without query parameters it returns the brewery&#8217;s whole catalog in one response, however large.</p>
+                <p>If you would like a list of all the beers made by a brewer, send a request to the <code>/brewer/{brewer_id}/beer</code> endpoint. Without query parameters it returns the brewery’s whole catalog in one response, however large.</p>
 
                 <p>Three optional query parameters narrow the list. Any of them with an invalid value returns a <code>400</code> rather than being ignored.</p>
 
@@ -933,7 +933,7 @@ curl -X GET \
                     </table>
                 </div>
 
-                <p>For example, <code>/brewer/{brewer_id}/beer?parent=ipa&amp;exclude={beer_id}&amp;count=6</code> returns up to six of the brewery&#8217;s other IPAs.</p>
+                <p>For example, <code>/brewer/{brewer_id}/beer?parent=ipa&amp;exclude={beer_id}&amp;count=6</code> returns up to six of the brewery’s other IPAs.</p>
 
                 <p>This request returns a list object with the following parameters.</p>
 
@@ -950,7 +950,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                                <td>The name of the object. In this case: “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -1015,12 +1015,12 @@ curl -X GET \
                             <tr>
                                 <td><var>cb_verified</var></td>
                                 <td>Boolean</td>
-                                <td>Whether the beer&#8217;s information has been verified by Catalog.beer against the brewery&#8217;s website.</td>
+                                <td>Whether the beer’s information has been verified by Catalog.beer against the brewery’s website.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_verified</var></td>
                                 <td>Boolean</td>
-                                <td>Whether the beer&#8217;s information was provided by the brewery (first-party data).</td>
+                                <td>Whether the beer’s information was provided by the brewery (first-party data).</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1093,7 +1093,7 @@ curl -X GET \
 }
 </pre>
 
-                <p><small class="text-muted">Response truncated for documentation &#8212; this brewer has 81 beers in its <var>data</var> array.</small></p>
+                <p><small class="text-muted">Response truncated for documentation — this brewer has 81 beers in its <var>data</var> array.</small></p>
                 <p><a href="#top">^ Return to top</a></p>
 
                 <h3 id="brewer-locations">List all the Locations for a Brewer</h3>
@@ -1115,7 +1115,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                                <td>The name of the object. In this case: “list”.</td>
                             </tr>
                             <tr>
                                 <td><var>url</var></td>
@@ -1135,7 +1135,7 @@ curl -X GET \
                             <tr>
                                 <td><var>data</var></td>
                                 <td>array</td>
-                                <td>An array containing all the locations associated with this brewer in the database sorted alphabetically by name. Each array object is a <a href="#location-object">location object</a> &#8212; including its <var>address</var> block, <var>latitude</var>, and <var>longitude</var> &#8212; without the nested <var>brewer</var> object (the list&#8217;s top-level <var>brewer</var> already carries it).</td>
+                                <td>An array containing all the locations associated with this brewer in the database sorted alphabetically by name. Each array object is a <a href="#location-object">location object</a> — including its <var>address</var> block, <var>latitude</var>, and <var>longitude</var> — without the nested <var>brewer</var> object (the list’s top-level <var>brewer</var> already carries it).</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1229,16 +1229,16 @@ curl -X GET \
 }
 </pre>
 
-                <p><small class="text-muted">Response truncated for documentation &#8212; this brewer has 9 locations in its <var>data</var> array.</small></p>
+                <p><small class="text-muted">Response truncated for documentation — this brewer has 9 locations in its <var>data</var> array.</small></p>
                 <p><a href="#top">^ Return to top</a></p>
 
                 <h3 id="brewer-permissions">Your Permissions for a Brewer</h3>
 
-                <p>Before attempting to update or delete a brewer &#8212; or any of its beers or locations &#8212; you can ask what your API key is allowed to do by sending a <strong>GET</strong> request to the <code>/brewer/{brewer_id}/permissions</code> endpoint. This is the polite alternative to attempting a write and handling the <var>403</var>: agents and applications should preflight destructive or gated operations here.</p>
+                <p>Before attempting to update or delete a brewer — or any of its beers or locations — you can ask what your API key is allowed to do by sending a <strong>GET</strong> request to the <code>/brewer/{brewer_id}/permissions</code> endpoint. This is the polite alternative to attempting a write and handling the <var>403</var>: agents and applications should preflight destructive or gated operations here.</p>
 
                 <pre class="api-code">GET https://api.catalog.beer/brewer/{brewer_id}/permissions</pre>
 
-                <p>The response is computed for the API key making the request, at the time of the request. Different keys receive different answers for the same brewer, and your answer can change (for example, if the brewer becomes verified, or your account is granted brewery-staff privileges) &#8212; so don&#8217;t cache it across keys or for long periods.</p>
+                <p>The response is computed for the API key making the request, at the time of the request. Different keys receive different answers for the same brewer, and your answer can change (for example, if the brewer becomes verified, or your account is granted brewery-staff privileges) — so don’t cache it across keys or for long periods.</p>
 
                 <div class="table-responsive">
                     <table class="table">
@@ -1253,7 +1253,7 @@ curl -X GET \
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object. In this case: &#8220;permissions&#8221;.</td>
+                                <td>The name of the object. In this case: “permissions”.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_id</var></td>
@@ -1263,7 +1263,7 @@ curl -X GET \
                             <tr>
                                 <td><var>role</var></td>
                                 <td>string</td>
-                                <td>Your relationship to this brewer. Possible values include <var>staff</var> (your account is associated with the brewery &#8212; e.g., your verified email address is at the brewery&#8217;s domain) and <var>general</var> (no association). Other values may be added over time; treat any value you don&#8217;t recognize as <var>general</var>.</td>
+                                <td>Your relationship to this brewer. Possible values include <var>staff</var> (your account is associated with the brewery — e.g., your verified email address is at the brewery’s domain) and <var>general</var> (no association). Other values may be added over time; treat any value you don’t recognize as <var>general</var>.</td>
                             </tr>
                             <tr>
                                 <td><var>edit</var></td>
@@ -1279,7 +1279,7 @@ curl -X GET \
                     </table>
                 </div>
 
-                <p>The same rules extend to everything under the brewer. If your role is <var>staff</var>, you may edit and delete the brewer&#8217;s beers and locations as well. If your role is <var>general</var>, you may edit a beer or location unless that specific entity is <var>brewer_verified</var> (check its own flag; editing a <var>cb_verified</var> entity is allowed and clears that flag), and you may not delete anything. <var>edit</var> and <var>delete</var> in this response describe the brewer itself.</p>
+                <p>The same rules extend to everything under the brewer. If your role is <var>staff</var>, you may edit and delete the brewer’s beers and locations as well. If your role is <var>general</var>, you may edit a beer or location unless that specific entity is <var>brewer_verified</var> (check its own flag; editing a <var>cb_verified</var> entity is allowed and clears that flag), and you may not delete anything. <var>edit</var> and <var>delete</var> in this response describe the brewer itself.</p>
 
                 <h4>Sample Request</h4>
 
@@ -1325,12 +1325,12 @@ curl -X GET \
                             <tr>
                                 <td><var>id</var></td>
                                 <td>string</td>
-                                <td>The beer_id; a unique identifier for the beer.</td>
+                                <td>A unique identifier for the beer.</td>
                             </tr>
                             <tr>
                                 <td><var>object</var></td>
                                 <td>string</td>
-                                <td>The name of the object; in this case: &#8220;beer&#8221;.</td>
+                                <td>The name of the object; in this case: “beer”.</td>
                             </tr>
                             <tr>
                                 <td><var>name</var></td>
@@ -1340,7 +1340,7 @@ curl -X GET \
                             <tr>
                                 <td><var>style</var></td>
                                 <td>string</td>
-                                <td>The style of the beer as a human-readable label &#8212; the brewer&#8217;s own wording, preserved exactly (e.g. &#8220;West Coast IPA&#8221;).</td>
+                                <td>The style of the beer as a human-readable label — the brewer’s own wording, preserved exactly (e.g. “West Coast IPA”).</td>
                             </tr>
                             <tr>
                                 <td><var>style_id</var></td>
@@ -1365,7 +1365,7 @@ curl -X GET \
                             <tr>
                                 <td><var>description</var></td>
                                 <td>string</td>
-                                <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer&#8217;s notes. Plain text, which may contain new line characters &#8212; those are meaningful and worth preserving. It is not markup: catalog.beer displays it as written, with line breaks kept and nothing else interpreted.</td>
+                                <td>A description of the beer. This field may contain a basic description, may contain tasting notes and/or brewer’s notes. Plain text, which may contain new line characters — those are meaningful and worth preserving. It is not markup: catalog.beer displays it as written, with line breaks kept and nothing else interpreted.</td>
                             </tr>
                             <tr>
                                 <td><var>abv</var></td>
@@ -1375,12 +1375,12 @@ curl -X GET \
                             <tr>
                                 <td><var>ibu</var></td>
                                 <td>integer</td>
-                                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. <var>null</var> when the bitterness has never been recorded &#8212; which is a different statement from <var>0</var>, meaning a beer with no measurable bitterness.</td>
+                                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. <var>null</var> when the bitterness has never been recorded — which is a different statement from <var>0</var>, meaning a beer with no measurable bitterness.</td>
                             </tr>
                             <tr>
                                 <td><var>cb_verified</var></td>
                                 <td>Boolean</td>
-                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer's information.</td>
+                                <td>A <var>true</var> or <var>false</var> value denoting whether or not a Catalog.beer administrator has verified the brewer’s information.</td>
                             </tr>
                             <tr>
                                 <td><var>brewer_verified</var></td>
@@ -1440,7 +1440,7 @@ curl -X GET \
 
                                 <pre class="api-code">POST https://api.catalog.beer/beer</pre>
 
-                <p>The <var>style</var> you submit is kept exactly as you wrote it and matched to the catalog&#8217;s standard list of styles &#8212; for example, &#8220;West Coast IPA&#8221; resolves to the <var>west-coast-ipa</var> style, &#8220;IPA&#8221; to the <var>ipa</var> family, and &#8220;Lager&#8221; to the <var>lager</var> class. To name the classification yourself, send <var>style_id</var>, <var>parent</var>, or <var>class</var>; if you send more than one, the most specific wins. If the label doesn&#8217;t match and no classification is given, the request returns a <var>400 Bad Request</var> error. See <a href="#styles">Styles</a>.</p>
+                <p>The <var>style</var> you submit is kept exactly as you wrote it and matched to the catalog’s standard list of styles — for example, “West Coast IPA” resolves to the <var>west-coast-ipa</var> style, “IPA” to the <var>ipa</var> family, and “Lager” to the <var>lager</var> class. To name the classification yourself, send <var>style_id</var>, <var>parent</var>, or <var>class</var>; if you send more than one, the most specific wins. If the label doesn’t match and no classification is given, the request returns a <var>400 Bad Request</var> error. See <a href="#styles">Styles</a>.</p>
 
                 <div class="table-responsive">
                     <table class="table">
@@ -1465,7 +1465,7 @@ curl -X GET \
                             <tr>
                                 <td><var>style</var></td>
                                 <td>string</td>
-                                <td>The brewer&#8217;s style label, resolved to a canonical style/family/class (see note above). Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
+                                <td>The brewer’s style label, resolved to a canonical style/family/class (see note above). Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
                             </tr>
                             <tr>
                                 <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
@@ -1485,17 +1485,17 @@ curl -X GET \
                             <tr>
                                 <td><var>style_confidence</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>How sure you are of the classification, used to prioritize editorial review. Usually omit it &#8212; we derive it. Send it only to record <em>less</em> certainty than the request implies. See <a href="#style-confidence">Style Confidence</a>.</td>
+                                <td>How sure you are of the classification, used to prioritize editorial review. Usually omit it — we derive it. Send it only to record <em>less</em> certainty than the request implies. See <a href="#style-confidence">Style Confidence</a>.</td>
                             </tr>
                             <tr>
                                 <td><var>description<br><small class="text-muted">(optional)</small></var></td>
                                 <td>string</td>
-                                <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer&#8217;s notes. Send plain text: we store the bytes you send, and catalog.beer displays them with your line breaks kept. Markup is not interpreted, so formatting syntax will show up literally.</td>
+                                <td>A description of the beer. This may be a basic description, or it can be detailed, containing tasting notes and brewer’s notes. Send plain text: we store the bytes you send, and catalog.beer displays them with your line breaks kept. Markup is not interpreted, so formatting syntax will show up literally.</td>
                             </tr>
                             <tr>
                                 <td><var>abv</var></td>
                                 <td>float</td>
-                                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Required &#8212; send <var>0</var> for a non-alcoholic beer. Rounded to one decimal place.</td>
+                                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Required — send <var>0</var> for a non-alcoholic beer. Rounded to one decimal place.</td>
                             </tr>
                             <tr>
                                 <td><var>ibu<br><small class="text-muted">(optional)</small></var></td>
@@ -1521,11 +1521,11 @@ curl -X POST \
 
 <h3 id="beer-update">Update a Beer (PUT)</h3>
 
-<p>To replace a beer&#8217;s data, send a <strong>PUT</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the beer does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#beer-object">beer object</a>.</p>
+<p>To replace a beer’s data, send a <strong>PUT</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. All required fields must be present. Omitted optional fields will be cleared to null. If the beer does not exist, it will be created and a <var>201 Created</var> response will be returned. Successful requests return a <a href="#beer-object">beer object</a>.</p>
 
 <pre class="api-code">PUT https://api.catalog.beer/beer/{beer_id}</pre>
 
-<p>The style fields work the same as when <a href="#beer-create">adding a beer</a>: send the label as <var>style</var>, or name the classification with <var>style_id</var>, <var>parent</var>, or <var>class</var>. If the label doesn&#8217;t match and no classification is given, the request returns a <var>400 Bad Request</var> error &#8212; unless the label is unchanged from the beer&#8217;s current <var>style</var>, in which case the update succeeds and the beer keeps its current classification. See <a href="#styles">Styles</a>.</p>
+<p>The style fields work the same as when <a href="#beer-create">adding a beer</a>: send the label as <var>style</var>, or name the classification with <var>style_id</var>, <var>parent</var>, or <var>class</var>. If the label doesn’t match and no classification is given, the request returns a <var>400 Bad Request</var> error — unless the label is unchanged from the beer’s current <var>style</var>, in which case the update succeeds and the beer keeps its current classification. See <a href="#styles">Styles</a>.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -1550,7 +1550,7 @@ curl -X POST \
             <tr>
                 <td><var>style</var></td>
                 <td>string</td>
-                <td>The brewer&#8217;s style label, resolved to a canonical style/family/class. Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
+                <td>The brewer’s style label, resolved to a canonical style/family/class. Required unless you supply <var>style_id</var>, <var>parent</var>, or <var>class</var>.</td>
             </tr>
             <tr>
                 <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
@@ -1570,7 +1570,7 @@ curl -X POST \
             <tr>
                 <td><var>abv</var></td>
                 <td>float</td>
-                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Required &#8212; send <var>0</var> for a non-alcoholic beer. Rounded to one decimal place.</td>
+                <td>The Alcohol by Volume (ABV) percentage of the beer, from <var>0</var> to <var>99.9</var>. Required — send <var>0</var> for a non-alcoholic beer. Rounded to one decimal place.</td>
             </tr>
             <tr>
                 <td><var>description</var><br><small class="text-muted">(optional)</small></td>
@@ -1580,7 +1580,7 @@ curl -X POST \
             <tr>
                 <td><var>ibu</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
-                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. Whole numbers only. Cleared if omitted. Send <var>0</var> only to state that the beer has no measurable bitterness &#8212; a cleared field means the bitterness is unknown.</td>
+                <td>The International Bitterness/Bittering Units (IBU) value of the beer, from <var>0</var> to <var>1000</var>. Whole numbers only. Cleared if omitted. Send <var>0</var> only to state that the beer has no measurable bitterness — a cleared field means the bitterness is unknown.</td>
             </tr>
         </tbody>
     </table>
@@ -1605,7 +1605,7 @@ curl -X PUT \
 
 <pre class="api-code">PATCH https://api.catalog.beer/beer/{beer_id}</pre>
 
-<p>To change a beer&#8217;s style, send any of <var>style</var>, <var>style_id</var>, <var>parent</var>, or <var>class</var>. The style is re-resolved and all of the beer&#8217;s classification fields are updated together. Resending the beer&#8217;s current <var>style</var> unchanged never fails &#8212; the beer keeps its current classification. See <a href="#styles">Styles</a>.</p>
+<p>To change a beer’s style, send any of <var>style</var>, <var>style_id</var>, <var>parent</var>, or <var>class</var>. The style is re-resolved and all of the beer’s classification fields are updated together. Resending the beer’s current <var>style</var> unchanged never fails — the beer keeps its current classification. See <a href="#styles">Styles</a>.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -1630,7 +1630,7 @@ curl -X PUT \
             <tr>
                 <td><var>style</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The brewer&#8217;s style label, re-resolved to a canonical style/family/class.</td>
+                <td>The brewer’s style label, re-resolved to a canonical style/family/class.</td>
             </tr>
             <tr>
                 <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
@@ -1681,7 +1681,7 @@ curl -X PATCH \
 
 <h3 id="beer-delete">Delete a Beer</h3>
 
-<p>To delete a beer, send a <strong>DELETE</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting is limited to brewery staff &#8212; check <a href="#brewer-permissions">your permissions for the beer&#8217;s brewer</a> before attempting it.</p>
+<p>To delete a beer, send a <strong>DELETE</strong> request to the <code>/beer</code> endpoint with the <var>beer_id</var> appended to the path. No request body is required. Successful requests return a <var>204 No Content</var> response with no body. Deleting is limited to brewery staff — check <a href="#brewer-permissions">your permissions for the beer’s brewer</a> before attempting it.</p>
 
 <pre class="api-code">DELETE https://api.catalog.beer/beer/{beer_id}</pre>
 
@@ -1928,7 +1928,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
+                <td>The name of the object. In this case: “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -1953,7 +1953,7 @@ curl -X GET \
             <tr>
                 <td><var>data</var></td>
                 <td>array</td>
-                <td>An array of <a href="#beer-object">beer objects</a> matching the search query, sorted by relevance. Each beer object includes a nested <a href="#brewer-object">brewer object</a> and a <var>match</var> field describing why it matched: <code>exact</code>, <code>all_terms</code>, or <code>partial</code> (the beer's name matched the query, fully or in part) or <code>description</code> (the name matched nothing &mdash; the hit is in the style or description text).</td>
+                <td>An array of <a href="#beer-object">beer objects</a> matching the search query, sorted by relevance. Each beer object includes a nested <a href="#brewer-object">brewer object</a> and a <var>match</var> field describing why it matched: <code>exact</code>, <code>all_terms</code>, or <code>partial</code> (the beer’s name matched the query, fully or in part) or <code>description</code> (the name matched nothing — the hit is in the style or description text).</td>
             </tr>
         </tbody>
     </table>
@@ -2012,765 +2012,14 @@ curl -X GET \
 
 <p><a href="#top">^ Return to top</a></p>
 
-<h2 id="styles">Styles</h2>
+<h2 id="location">Location</h2>
 <hr>
 
-<p>Catalog.beer records a beer&#8217;s style in two parts: the brewer&#8217;s own label and a canonical classification. The label (<var>beer.style</var>) is plain text, stored and returned exactly as submitted. The classification files the beer against a standard vocabulary of styles, which is what allows the catalog to be sorted, filtered, and counted by style. The vocabulary is drawn from the <a href="https://www.brewersassociation.org/edu/brewers-association-beer-style-guidelines/" target="_blank" rel="noopener">Brewers Association (BA)</a> and <a href="https://www.bjcp.org/bjcp-style-guidelines/" target="_blank" rel="noopener">Beer Judge Certification Program (BJCP)</a> style guidelines.</p>
-
-<p>The vocabulary has three tiers, from broadest to most specific. Each tier corresponds to a field on the <a href="#beer-object">beer object</a>.</p>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Tier</th>
-                <th scope="col">Beer Field</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Class</td>
-                <td><var>class</var></td>
-                <td>The broadest grouping: <var>ale</var> or <var>lager</var>. Some families (e.g. wheat beers, sours, ciders, meads) do not roll up to a class; for those, <var>class</var> is <var>null</var>.</td>
-            </tr>
-            <tr>
-                <td>Family</td>
-                <td><var>parent</var></td>
-                <td>A group of related styles, such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var>.</td>
-            </tr>
-            <tr>
-                <td>Style</td>
-                <td><var>style_id</var></td>
-                <td>One specific style, such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<p>A beer may be filed at any tier. The API derives the broader tiers from the one you provide &#8212; file a beer as <var>west-coast-ipa</var> and its <var>parent</var> is set to <var>ipa</var> and its <var>class</var> to <var>ale</var>. The API never fills in a more specific tier than the one you gave it.</p>
-
-<p>When <a href="#beer-create">adding</a> or <a href="#beer-patch">updating</a> a beer, there are two ways to set the classification:</p>
-
-<ol>
-    <li>Send the label as <var>style</var> and let the API match it. The label is checked against every canonical name and alias in the vocabulary &#8212; first as an exact style name, then as a class alias, a family alias, and a style alias. For example, &#8220;NEIPA,&#8221; &#8220;New England IPA,&#8221; and &#8220;Juicy IPA&#8221; all resolve to the same style.</li>
-    <li>Name the classification directly with <var>style_id</var>, <var>parent</var>, or <var>class</var>. These take precedence over <var>style</var>; if you send more than one, the most specific wins. Your label is still kept verbatim.</li>
-</ol>
-
-<p>If the label doesn&#8217;t match anything in the vocabulary and no classification is given, the request returns a <var>400 Bad Request</var> error. The vocabulary includes catch-all styles (<var>catch_all: true</var> &#8212; e.g. <var>specialty-beer</var>) for beers that don&#8217;t fit a more specific style. One exception: when updating an existing beer, resending its current label unchanged never fails &#8212; the beer keeps its current classification, even if that label wouldn&#8217;t resolve on its own.</p>
-
-<p>That <var>400</var> comes back with a <var>suggestions</var> object holding the closest styles, so you can recover without a second lookup. Resend the same label alongside one of the suggested values: the classification comes from the field you name, and your label is stored exactly as you wrote it.</p>
-
-<pre class="api-code">
-{
-  "error": true,
-  "valid_state": {
-    "style": "invalid"
-  },
-  "valid_msg": {
-    "style": "We couldn't match \"Cali Pilsner\" to a known style, family, or class. Choose the closest match, or a catch-all so nothing is lost, and send it back with your label unchanged."
-  },
-  "suggestions": {
-    "style": {
-      "styles": [
-        {
-          "style_id": "german-pilsner",
-          "name": "German-Style Pilsener",
-          "parent": "pilsner",
-          "class": "lager",
-          "catch_all": false,
-          "match": "partial",
-          "aliases": ["German Pils", "German Pilsner"]
-        },
-        {
-          "style_id": "pre-prohibition-lager",
-          "name": "Pre-Prohibition Lager",
-          "parent": "historical",
-          "class": null,
-          "catch_all": false,
-          "match": "partial",
-          "aliases": ["Classic American Pilsner", "CAP"]
-        },
-        {
-          "style_id": "czech-pilsner",
-          "name": "Czech-Style Pale Lager",
-          "parent": "pilsner",
-          "class": "lager",
-          "catch_all": false,
-          "match": "partial",
-          "aliases": ["Bohemian Pilsner", "Czech Pilsner"]
-        },
-        {
-          "style_id": "international-pilsner",
-          "name": "International-Style Pilsener",
-          "parent": "pilsner",
-          "class": "lager",
-          "catch_all": false,
-          "match": "partial",
-          "aliases": ["Euro Pale Lager", "International Pilsner"]
-        },
-        {
-          "style_id": "italian-pilsner",
-          "name": "Italian-Style Pilsener",
-          "parent": "pilsner",
-          "class": "lager",
-          "catch_all": false,
-          "match": "partial",
-          "aliases": ["Italian Pils", "Italian Pilsner"]
-        },
-        {
-          "style_id": "contemporary-american-pilsner",
-          "name": "Contemporary American-Style Pilsener",
-          "parent": "pilsner",
-          "class": "lager",
-          "catch_all": false,
-          "match": "partial",
-          "aliases": ["American Hoppy Pilsner", "Craft American Pilsner"]
-        }
-      ],
-      "families": [
-        {
-          "parent": "pilsner",
-          "name": "Pilsner",
-          "class": "lager",
-          "beverage_type": "beer"
-        }
-      ]
-    }
-  }
-}
-</pre>
-
-<p><small class="text-muted">Alias lists are abridged in the sample above; the API returns all of them.</small></p>
-
-<p><strong>Check <var>match</var> before you trust the order.</strong> It tells you how each candidate was reached, and it is the difference between a recommendation and a guess:</p>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Value</th>
-                <th>Meaning</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><var>exact</var></td>
-                <td>Your label is this style&#8217;s name or one of its aliases. Safe to take as the answer.</td>
-            </tr>
-            <tr>
-                <td><var>all_terms</var></td>
-                <td>Every word in your label appears in this style&#8217;s name or aliases. Usually right; worth a glance.</td>
-            </tr>
-            <tr>
-                <td><var>partial</var></td>
-                <td>Some of your words matched. <strong>Do not take the first entry on faith.</strong> Read the list, and consider filing at <var>parent</var> or <var>class</var> instead.</td>
-            </tr>
-            <tr>
-                <td><var>description</var></td>
-                <td>Nothing matched the name or aliases &#8212; only our written description of the style. The weakest signal we return.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<p>Within a <var>match</var> level, candidates are ordered by how well they match and then by how many beers we hold in each, so a populous style can still outrank a better-fitting rare one. That is the response above: every candidate for &#8220;Cali Pilsner&#8221; is <var>partial</var>, and the closest one, <var>contemporary-american-pilsner</var>, comes back <em>last</em>. A list that is all <var>partial</var> is the API telling you it did not recognize your label. <var>class</var> may be <var>null</var> where the family sits outside the ale/lager split.</p>
-
-<p><var>families</var> and <var>classes</var> appear alongside <var>styles</var> when your label names a family or a super-class but no style matched it outright &#8212; &#8220;Crisp American Lager&#8221; returns the <var>lager</var> class. Filing one tier up is often the honest answer, and it is better than picking a specific style that happens to share a word with your label. Send the <var>parent</var> or <var>class</var> value back the same way you would a <var>style_id</var>.</p>
-
-<p>A <var>matched_on</var> key appears when we could not match your whole label and fell back to the last two words of it &#8212; &#8220;Crisp American Lager&#8221; is matched on &#8220;American Lager.&#8221; The candidates describe that shorter phrase, not what you sent, so read it before trusting an <var>exact</var> on the list.</p>
-
-<p>Retrying the example above as <code>{"style": "Cali Pilsner", "style_id": "contemporary-american-pilsner"}</code> succeeds, and the beer keeps &#8220;Cali Pilsner&#8221; as its label. Sending <var>style_id</var>, <var>parent</var>, or <var>class</var> <em>without</em> <var>style</var> stores our canonical name as the label instead of the brewery&#8217;s own wording, so send both.</p>
-
-<p>The beer&#8217;s <var>beverage_type</var> (<var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>) is set from the resolved classification. It cannot be set directly.</p>
-
-<h3 id="style-confidence">Style Confidence</h3>
-
-<p>Classifying a beer sometimes means a judgment call, and those are the ones worth a second look. The optional <var>style_confidence</var> field on <a href="#beer-create">POST</a>, <a href="#beer-update">PUT</a>, and <a href="#beer-patch">PATCH</a> records how firm the classification is, so editorial review can go where it&#8217;s needed instead of everywhere. It is stored for our own review and is never returned in a beer object.</p>
-
-<p><strong>In most cases, leave it out.</strong> We derive it from what we can check &#8212; whether your label matched the vocabulary on its own, and whether you filed under a catch-all:</p>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr><th scope="col">Value</th><th scope="col">Derived when</th></tr>
-        </thead>
-        <tbody>
-            <tr><td><var>confident</var></td><td>Your label matched a canonical name or alias, whether or not you also named a tier.</td></tr>
-            <tr><td><var>override</var></td><td>You named a specific <var>style_id</var> for a label that doesn&#8217;t match it &#8212; a mapping only you can vouch for.</td></tr>
-            <tr><td><var>catch-all</var></td><td>As above, but the style you chose is a catch-all (<var>catch_all: true</var>).</td></tr>
-            <tr><td><var>family</var></td><td>You filed at the family or class tier rather than at a specific style.</td></tr>
-        </tbody>
-    </table>
-</div>
-
-<p>Send the field yourself only to record <strong>less</strong> certainty than we would otherwise assume &#8212; for example, you inferred the style from the beer&#8217;s name rather than a stated one, or picked the least-wrong of two plausible families. Sending <var>catch-all</var> or <var>family</var> where we would have derived <var>override</var> is an honest downgrade, and we keep it.</p>
-
-<p>You cannot use the field to claim more certainty than the request supports. Whether your label matches the vocabulary is something we check rather than take on trust, so pairing an unmatched label with <var>style_confidence: confident</var> is reduced to <var>override</var>. This happens silently &#8212; your write still succeeds.</p>
-
-<p>The <code>/style</code> endpoints are read-only. Use them to browse the vocabulary, build a style picker, or check a label before submitting a beer.</p>
-
-<h3 id="style-object">The Style Object</h3>
-
-<p>The <code>/style</code> endpoints return style objects. <a href="#style-list">List Styles</a> returns a compact form of each; <a href="#style-detail">Retrieve a Style</a> returns the full object, adding <var>parent_name</var>, <var>source</var>, and <var>specs</var>.</p>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Field</th>
-                <th scope="col">Type</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td><var>id</var></td><td>string</td><td>The style&#8217;s slug (e.g. <var>american-ipa</var>) &#8212; the value used as <var>style_id</var> on a beer.</td></tr>
-            <tr><td><var>object</var></td><td>string</td><td>Always <var>style</var>.</td></tr>
-            <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. &#8220;American-Style India Pale Ale&#8221;).</td></tr>
-            <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
-            <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) &#8212; the canonical family tier you can file a beer at.</td></tr>
-            <tr><td><var>class</var></td><td>string</td><td>The slug of the <a href="#style-classes">class</a> the style rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> for families that do not roll up to one.</td></tr>
-            <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family (e.g. &#8220;India Pale Ale&#8221;).</td></tr>
-            <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
-            <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard &#8220;catch-all&#8221; styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits. Use it to separate fallback buckets from standard styles &#8212; for example, keeping catch-alls out of a picker&#8217;s ranked matches.</td></tr>
-            <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side &#8212; for example, in a typeahead &#8212; without an API request per keystroke.</td></tr>
-            <tr><td><var>srm</var><br><small class="text-muted">(list only)</small></td><td>object</td><td>The style&#8217;s <a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">SRM</a> color range as a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline gives no color (cider, mead, perry, and catch-alls). The one spec included in list rows &#8212; enough to render color swatches without a request per style. On the detail endpoint the same range lives in <var>specs.srm</var>.</td></tr>
-            <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style&#8217;s guideline ranges &#8212; <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">the <var>specs</var> field</a> below.</td></tr>
-            <tr><td><var>description</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>An editorial description of the style &#8212; what it is and what to expect in the glass. Plain prose; paragraphs separated by blank lines.</td></tr>
-            <tr><td><var>appearance</var>, <var>aroma</var>, <var>flavor</var>, <var>mouthfeel</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Short tasting-note fields describing the style in the glass. <var>null</var> for catch-all styles, which have no fixed sensory profile.</td></tr>
-            <tr><td><var>history</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The style&#8217;s origin and evolution &#8212; editorial prose with claims anchored to the citations in <var>sources.history_sources</var>.</td></tr>
-            <tr><td><var>notes</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Occasional editorial notes &#8212; e.g. how this entry relates to neighboring styles. <var>null</var> when there&#8217;s nothing to add.</td></tr>
-            <tr><td><var>commercial_examples</var><br><small class="text-muted">(detail only)</small></td><td>array</td><td>Classic or defining commercial examples of the style, as beer names (strings). Curated &#8212; not derived from the Catalog.beer database.</td></tr>
-            <tr><td><var>sources</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>Provenance: the style&#8217;s entry in each guideline it appears in (<var>brewers_association</var>, <var>bjcp</var> with year and code, <var>naba_2024</var>; the one marked <code>"primary": true</code> supplies the canonical name), plus <var>history_sources</var> &#8212; an array of <code>{ "citation", "url" }</code> objects backing the <var>history</var> prose.</td></tr>
-        </tbody>
-    </table>
-</div>
-
-<h4 id="style-specs">The <var>specs</var> Field</h4>
-
-<p>The <var>specs</var> field (detail only) holds the style&#8217;s guideline ranges, drawn from the same <var>source</var> as the style. Each field is a <code>{ "min": &#8230;, "max": &#8230; }</code> object, or <var>null</var> when the guideline doesn&#8217;t specify that measurement. An individual <var>min</var> or <var>max</var> may also be <var>null</var> when the guideline gives only one bound.</p>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Field</th>
-                <th scope="col">Type</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td><var>abv</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Alcohol_by_volume" target="_blank" rel="noopener">Alcohol by Volume</a> range, as a percentage (e.g. <code>6.3</code> means 6.3%).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-            <tr><td><var>ibu</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Beer_measurement#Bitterness" target="_blank" rel="noopener">International Bitterness Units</a> range &#8212; the measure of hop bitterness.<br><span class="text-muted"><var>min</var> and <var>max</var> are integers.</span></td></tr>
-            <tr><td><var>srm</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">Standard Reference Method</a> range &#8212; beer color, from pale straw (low) to black (high).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-            <tr><td><var>og</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Original Gravity</a> range &#8212; the wort&#8217;s specific gravity before fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-            <tr><td><var>fg</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Final Gravity</a> range &#8212; the beer&#8217;s specific gravity after fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
-        </tbody>
-    </table>
-</div>
-
-<h4>Sample</h4>
-
-<pre class="api-code">
-{
-  "id": "american-ipa",
-  "object": "style",
-  "name": "American-Style India Pale Ale",
-  "beverage_type": "beer",
-  "parent": "ipa",
-  "class": "ale",
-  "parent_name": "India Pale Ale",
-  "source": "BA-2026",
-  "catch_all": false,
-  "aliases": ["American India Pale Ale", "American IPA"],
-  "specs": {
-    "abv": { "min": 6.3, "max": 7.5 },
-    "ibu": { "min": 50, "max": 70 },
-    "srm": { "min": 4, "max": 12 },
-    "og":  { "min": 1.06, "max": 1.07 },
-    "fg":  { "min": 1.01, "max": 1.016 }
-  },
-  "description": "The defining style of American craft beer &#8212; medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. [&#8230;]",
-  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
-  "aroma": "Prominent American or New World hop character &#8212; citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. [&#8230;]",
-  "flavor": "Medium to high hop bitterness with matching hop flavor. [&#8230;]",
-  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
-  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. [&#8230;]",
-  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog [&#8230;]",
-  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
-  "sources": {
-    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
-    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
-    "naba_2024": { "name": "American-Style India Pale Ale" },
-    "history_sources": [
-      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
-      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
-    ]
-  }
-}
-</pre>
-
-<p><small class="text-muted">Prose fields truncated for documentation ([&#8230;]) &#8212; the live response returns the full text.</small></p>
-
-<p><a href="#top">^ Return to top</a></p>
-
-<h3 id="style-list">List Styles</h3>
-
-<p>To list every style in the vocabulary, send a <strong>GET</strong> request to the <code>/style</code> endpoint. Styles are returned alphabetically by name as compact <a href="#style-object">style objects</a>. The response also includes a <var>version</var> field identifying the current version of the vocabulary; when it changes, refresh any cached copy.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style</pre>
-
-<h4>Sample Request</h4>
-
-<pre class="api-code">
-curl -X GET \
-  https://api.catalog.beer/style \
-  -H 'accept: application/json' \
-  -H 'authorization: Basic {secret_key}' \
-</pre>
-
-<h4>Sample Response</h4>
-<pre class="api-code">
-{
-  "object": "list",
-  "url": "/style",
-  "version": "2.3.0",
-  "has_more": false,
-  "data": [
-    {
-      "id": "american-ipa",
-      "object": "style",
-      "name": "American-Style India Pale Ale",
-      "beverage_type": "beer",
-      "parent": "ipa",
-      "class": "ale",
-      "catch_all": false,
-      "aliases": ["American India Pale Ale", "American IPA"],
-      "srm": { "min": 4, "max": 12 }
-    }
-  ]
-}
-</pre>
-
-<p><small class="text-muted">Response truncated for documentation &#8212; the full response contains every style in the vocabulary.</small></p>
-
-<p><a href="#top">^ Return to top</a></p>
-
-<h3 id="style-detail">Retrieve a Style</h3>
-
-<p>To retrieve a single style, send a <strong>GET</strong> request to the <code>/style</code> endpoint with the <var>{style_id}</var> parameter appended to the path. The <var>style_id</var> is the style&#8217;s slug (e.g. <var>american-ipa</var>), not a UUID. Successful requests return a full <a href="#style-object">style object</a>, including its <a href="#style-specs">specs</a>.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style/{style_id}</pre>
-
-<h4>Sample Request</h4>
-
-<pre class="api-code">
-curl -X GET \
-  https://api.catalog.beer/style/american-ipa \
-  -H 'accept: application/json' \
-  -H 'authorization: Basic {secret_key}' \
-</pre>
-
-<h4>Sample Response</h4>
-<pre class="api-code">
-{
-  "id": "american-ipa",
-  "object": "style",
-  "name": "American-Style India Pale Ale",
-  "beverage_type": "beer",
-  "parent": "ipa",
-  "class": "ale",
-  "parent_name": "India Pale Ale",
-  "source": "BA-2026",
-  "catch_all": false,
-  "aliases": ["American India Pale Ale", "American IPA"],
-  "specs": {
-    "abv": { "min": 6.3, "max": 7.5 },
-    "ibu": { "min": 50, "max": 70 },
-    "srm": { "min": 4, "max": 12 },
-    "og":  { "min": 1.06, "max": 1.07 },
-    "fg":  { "min": 1.01, "max": 1.016 }
-  },
-  "description": "The defining style of American craft beer &#8212; medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. [&#8230;]",
-  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
-  "aroma": "Prominent American or New World hop character &#8212; citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. [&#8230;]",
-  "flavor": "Medium to high hop bitterness with matching hop flavor. [&#8230;]",
-  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
-  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. [&#8230;]",
-  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog [&#8230;]",
-  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
-  "sources": {
-    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
-    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
-    "naba_2024": { "name": "American-Style India Pale Ale" },
-    "history_sources": [
-      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
-      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
-    ]
-  }
-}
-</pre>
-
-<p><small class="text-muted">Prose fields truncated for documentation ([&#8230;]) &#8212; the live response returns the full text.</small></p>
-
-<p><a href="#top">^ Return to top</a></p>
-
-<h3 id="style-search">Search Styles</h3>
-
-<p>Search the style vocabulary by canonical name, alias, or description using full-text search. To search, send a <strong>GET</strong> request to the <code>/style/search</code> endpoint with a <var>q</var> query parameter. Alias matches are first-class: a search for &#8220;NEIPA&#8221; or &#8220;Juicy IPA&#8221; finds <var>hazy-ipa</var> even though neither term appears in the canonical name.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style/search?q={query}</pre>
-
-<h4>Query Parameters</h4>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><var>q</var></td>
-                <td>string</td>
-                <td>The search query string. Maximum 255 characters.</td>
-            </tr>
-            <tr>
-                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
-                <td>integer</td>
-                <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
-            </tr>
-            <tr>
-                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
-                <td>string</td>
-                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style/search?q=oktoberfest&amp;count=5</pre>
-
-<h4>Response</h4>
-
-<p>This request returns a list object with the following parameters. Results are ranked in three tiers, and relevance orders results within a tier rather than across tiers:</p>
-
-<ol>
-    <li><strong>Exact match</strong> &#8212; the query is exactly the style&#8217;s name or one of its aliases. Searching &#8220;American IPA&#8221; puts <var>american-ipa</var> first.</li>
-    <li><strong>Full name match</strong> &#8212; every term in the query appears in the style&#8217;s name or aliases. Aliases count as part of the name, which is why &#8220;NEIPA&#8221; finds <var>hazy-ipa</var> and &#8220;IPA&#8221; finds styles whose names spell out &#8220;India Pale Ale&#8221;.</li>
-    <li><strong>Partial name match</strong> &#8212; some but not all query terms appear in the name or aliases.</li>
-    <li><strong>Description match</strong> &#8212; the query appears only in the style&#8217;s editorial description. A style that merely mentions a term never outranks one named for it.</li>
-</ol>
-
-<p>Within a tier, styles are ordered by how many cataloged beers use them, so a search for a broad term surfaces styles that are actually brewed ahead of ones that exist only in the vocabulary. This ordering applies only between styles that match the query equally well &#8212; a precise match on a rare style always outranks a partial match on a common one.</p>
-
-<p>Broad queries often have no single correct style answer &#8212; &#8220;IPA&#8221; is not one style but twelve. When a query exactly names a style family, by slug, name, or alias, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it. Searching &#8220;ipa&#8221; returns the <var>ipa</var> family alongside the individual IPA styles.</p>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Parameter</th>
-                <th scope="col">Type</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><var>object</var></td>
-                <td>string</td>
-                <td>The name of the object. In this case: &#8220;list&#8221;.</td>
-            </tr>
-            <tr>
-                <td><var>url</var></td>
-                <td>string</td>
-                <td>The API endpoint accessed to retrieve this object. In this case: <code>/style/search</code>.</td>
-            </tr>
-            <tr>
-                <td><var>query</var></td>
-                <td>string</td>
-                <td>The search query that was submitted.</td>
-            </tr>
-            <tr>
-                <td><var>has_more</var></td>
-                <td>Boolean</td>
-                <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
-            </tr>
-            <tr>
-                <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
-                <td>string</td>
-                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
-            </tr>
-            <tr>
-                <td><var>families</var></td>
-                <td>array</td>
-                <td>An array of <a href="#style-parents">style family objects</a> whose slug, name, or alias <em>exactly</em> matches the query. Empty when no family matches. Families are never paginated &#8212; there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. They are returned on the first page only, so an empty array on a later page means &#8220;not repeated here&#8221;, not &#8220;no family matched&#8221;. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
-            </tr>
-            <tr>
-                <td><var>data</var></td>
-                <td>array</td>
-                <td>An array of compact <a href="#style-object">style objects</a> matching the search query, in ranked order &#8212; the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<h4>Sample Request</h4>
-
-<pre class="api-code">
-curl -X GET \
-  'https://api.catalog.beer/style/search?q=NEIPA' \
-  -H 'accept: application/json' \
-  -H 'authorization: Basic {secret_key}' \
-</pre>
-
-<h4>Sample Response</h4>
-
-<pre class="api-code">
-{
-  "object": "list",
-  "url": "/style/search",
-  "query": "NEIPA",
-  "has_more": false,
-  "families": [],
-  "data": [
-    {
-      "id": "hazy-ipa",
-      "object": "style",
-      "name": "Juicy or Hazy India Pale Ale",
-      "beverage_type": "beer",
-      "parent": "ipa",
-      "class": "ale",
-      "catch_all": false,
-      "aliases": ["Hazy IPA", "Hazy/Juicy IPA", "Juicy IPA", "NE IPA", "NEIPA", "New England IPA"],
-      "srm": { "min": 3, "max": 7 }
-    }
-  ]
-}
-</pre>
-
-<h4>Sample Response &#8212; Broad Query</h4>
-
-<p>A query naming a whole family returns that family in <var>families</var> alongside its member styles in <var>data</var>. Offering the family is usually a better answer than the top-ranked individual style.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style/search?q=ipa
-
-{
-  "object": "list",
-  "url": "/style/search",
-  "query": "ipa",
-  "has_more": true,
-  "next_cursor": "Mw==",
-  "families": [
-    {
-      "slug": "ipa",
-      "object": "style_parent",
-      "name": "India Pale Ale",
-      "beverage_type": "beer",
-      "class": "ale",
-      "description": "...",
-      "sort_order": 2
-    }
-  ],
-  "data": [ ... ]
-}
-</pre>
-
-<p><a href="#top">^ Return to top</a></p>
-
-<h3 id="style-parents">List Families</h3>
-
-<p>To list the families in the vocabulary (the <var>parent</var> tier), send a <strong>GET</strong> request to the <code>/style/parent</code> endpoint. Families are returned in display order. Each family object has the following parameters.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style/parent</pre>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Parameter</th>
-                <th scope="col">Type</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><var>slug</var></td>
-                <td>string</td>
-                <td>The family&#8217;s slug (e.g. <var>ipa</var>) &#8212; the value used as <var>parent</var> on a beer.</td>
-            </tr>
-            <tr>
-                <td><var>object</var></td>
-                <td>string</td>
-                <td>The name of the object; in this case: &#8220;style_parent&#8221;.</td>
-            </tr>
-            <tr>
-                <td><var>name</var></td>
-                <td>string</td>
-                <td>The name of the family (e.g. &#8220;India Pale Ale&#8221;).</td>
-            </tr>
-            <tr>
-                <td><var>beverage_type</var></td>
-                <td>string</td>
-                <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
-            </tr>
-            <tr>
-                <td><var>class</var></td>
-                <td>string</td>
-                <td>The slug of the <a href="#style-classes">class</a> this family rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> if it does not roll up to one.</td>
-            </tr>
-            <tr>
-                <td><var>description</var></td>
-                <td>string</td>
-                <td>A brief description of the family.</td>
-            </tr>
-            <tr>
-                <td><var>sort_order</var></td>
-                <td>integer</td>
-                <td>The family&#8217;s position in display order.</td>
-            </tr>
-            <tr>
-                <td><var>aliases</var></td>
-                <td>array</td>
-                <td>Names and spellings that resolve to this family when sent as a beer&#8217;s <var>style</var>.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<h4>Sample Request</h4>
-
-<pre class="api-code">
-curl -X GET \
-  https://api.catalog.beer/style/parent \
-  -H 'accept: application/json' \
-  -H 'authorization: Basic {secret_key}' \
-</pre>
-
-<h4>Sample Response</h4>
-<pre class="api-code">
-{
-  "object": "list",
-  "url": "/style/parent",
-  "has_more": false,
-  "data": [
-    {
-      "slug": "ipa",
-      "object": "style_parent",
-      "name": "India Pale Ale",
-      "beverage_type": "beer",
-      "class": "ale",
-      "description": "The hop showcase of brewing: pale, bitter, and intensely aromatic ales ranging from crisp, resinous West Coast versions to soft, juicy hazy ones, plus session, double, Belgian, and black variations. Hops drive the aroma, flavor, and bitterness, with malt kept in a supporting role.",
-      "sort_order": 2,
-      "aliases": ["India Pale Ale", "IPA", "IPAs"]
-    }
-  ]
-}
-</pre>
-
-<p><small class="text-muted">Response truncated for documentation &#8212; the full response contains every family.</small></p>
-
-<p><a href="#top">^ Return to top</a></p>
-
-<h3 id="style-classes">List Classes</h3>
-
-<p>To list the classes in the vocabulary &#8212; currently <var>ale</var> and <var>lager</var> &#8212; send a <strong>GET</strong> request to the <code>/style/class</code> endpoint. Classes are returned in display order. Each class object has the following parameters.</p>
-
-<pre class="api-code">GET https://api.catalog.beer/style/class</pre>
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Parameter</th>
-                <th scope="col">Type</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><var>slug</var></td>
-                <td>string</td>
-                <td>The class&#8217;s slug (e.g. <var>ale</var>) &#8212; the value used as <var>class</var> on a beer.</td>
-            </tr>
-            <tr>
-                <td><var>object</var></td>
-                <td>string</td>
-                <td>The name of the object; in this case: &#8220;style_class&#8221;.</td>
-            </tr>
-            <tr>
-                <td><var>name</var></td>
-                <td>string</td>
-                <td>The name of the class (e.g. &#8220;Ale&#8221;).</td>
-            </tr>
-            <tr>
-                <td><var>beverage_type</var></td>
-                <td>string</td>
-                <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
-            </tr>
-            <tr>
-                <td><var>sort_order</var></td>
-                <td>integer</td>
-                <td>The class&#8217;s position in display order.</td>
-            </tr>
-            <tr>
-                <td><var>aliases</var></td>
-                <td>array</td>
-                <td>Names and spellings that resolve to this class when sent as a beer&#8217;s <var>style</var>.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<h4>Sample Request</h4>
-
-<pre class="api-code">
-curl -X GET \
-  https://api.catalog.beer/style/class \
-  -H 'accept: application/json' \
-  -H 'authorization: Basic {secret_key}' \
-</pre>
-
-<h4>Sample Response</h4>
-<pre class="api-code">
-{
-  "object": "list",
-  "url": "/style/class",
-  "has_more": false,
-  "data": [
-    {
-      "slug": "ale",
-      "object": "style_class",
-      "name": "Ale",
-      "beverage_type": "beer",
-      "sort_order": 1,
-      "aliases": ["Ale", "Ales"]
-    },
-    {
-      "slug": "lager",
-      "object": "style_class",
-      "name": "Lager",
-      "beverage_type": "beer",
-      "sort_order": 2,
-      "aliases": ["Lager", "Lagers"]
-    }
-  ]
-}
-</pre>
-
-<p><a href="#top">^ Return to top</a></p>
-
-<h2 id="location">Location</h2>
-
-<p>A brewer can have any number of locations. Add the places where the public can drink the beer: taprooms, brewpubs, tasting rooms. Leave out production sites and offices that don&#8217;t serve.</p>
+<p>Locations are public venues where you can drink a brewer’s beer: taprooms, brewpubs, tasting rooms. We aren’t looking to catalog production facilities, offices, or locations where you can’t grab a pint.</p>
 
 <h3 id="location-object">The Location Object</h3>
 
-<p>A location is a place where you can drink a brewer&#8217;s beer: a taproom, a brewpub, a tasting room. Every request that creates, reads or updates a location returns this object.</p>
+<p>A location is a place where you can drink a brewer’s beer: a taproom, a brewpub, a tasting room. The object has the following parameters</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -2785,17 +2034,17 @@ curl -X GET \
             <tr>
                 <td><var>id</var></td>
                 <td>string</td>
-                <td>The location&#8217;s unique id.</td>
+                <td>The location’s unique id.</td>
             </tr>
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>Always &#8220;location&#8221;.</td>
+                <td>Always “location”.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
                 <td>string or null</td>
-                <td>The location&#8217;s own name, or <var>null</var> when it has none. Most taprooms go by their brewer and their town, so expect <var>null</var> and build a label from the nested <var>brewer</var> and the <var>address</var> (for example, &#8220;Avery Brewing &#8211; Boulder&#8221;).</td>
+                <td>The location’s own name, or <var>null</var> when it has none. Most taprooms go by their brewer and their town, so expect <var>null</var> and build a label from the nested <var>brewer</var> and the <var>address</var> (for example, “Avery Brewing – Boulder”).</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -2805,22 +2054,22 @@ curl -X GET \
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The country, as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;1 alpha-2</a> code (<var>US</var>, <var>BE</var>).</td>
+                <td>The country, as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–1 alpha-2</a> code (<var>US</var>, <var>BE</var>).</td>
             </tr>
             <tr>
                 <td><var>country_short_name</var></td>
                 <td>string</td>
-                <td>The country&#8217;s name (<var>United States of America</var>, <var>Belgium</var>).</td>
+                <td>The country’s name (<var>United States of America</var>, <var>Belgium</var>).</td>
             </tr>
             <tr>
                 <td><var>latitude</var><br><small class="text-muted">(optional)</small></td>
                 <td>float</td>
-                <td>The location&#8217;s latitude, set from the address.</td>
+                <td>The location’s latitude, set from the address.</td>
             </tr>
             <tr>
                 <td><var>longitude</var><br><small class="text-muted">(optional)</small></td>
                 <td>float</td>
-                <td>The location&#8217;s longitude, set from the address.</td>
+                <td>The location’s longitude, set from the address.</td>
             </tr>
             <tr>
                 <td><var>cb_verified</var></td>
@@ -2904,7 +2153,7 @@ curl -X GET \
 
 <p>A location has one street address, held in its <var>address</var> field. You read it there, and you write it there too: send it inside the location when you create or update one. There is no separate address endpoint.</p>
 
-<p>The address is checked against the postal records of the location&#8217;s country before it is saved. What you get back is the corrected version: the street written out in full, the postal code in its standard form, and the map coordinates filled in. The same fields work in every country, and <var>formatted</var> gives you the address as display lines, already in the order that country uses.</p>
+<p>The address is checked against the postal records of the location’s country before it is saved. What you get back is the corrected version: the street written out in full, the postal code in its standard form, and the map coordinates filled in. The same fields work in every country, and <var>formatted</var> gives you the address as display lines, already in the order that country uses.</p>
 
 <h4>In a response</h4>
 
@@ -2921,7 +2170,7 @@ curl -X GET \
             <tr>
                 <td><var>line1</var></td>
                 <td>string</td>
-                <td>The street line, spelled out and in the country&#8217;s order: <samp>2215 India St</samp>, <samp>Donkerstraat 12</samp>, <samp>Köpenicker Straße 70</samp>.</td>
+                <td>The street line, spelled out and in the country’s order: <samp>2215 India St</samp>, <samp>Donkerstraat 12</samp>, <samp>Köpenicker Straße 70</samp>.</td>
             </tr>
             <tr>
                 <td><var>line2</var></td>
@@ -2941,7 +2190,7 @@ curl -X GET \
             <tr>
                 <td><var>sub_code</var></td>
                 <td>string or null</td>
-                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code (<samp>US-CA</samp>, <samp>BE-VWV</samp>, <samp>CA-QC</samp>). Always set in the US. Elsewhere, set only when the country uses regions in its addresses and one was found or given. Brussels has no province, so a Brussels address has <var>null</var> here.</td>
+                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (<samp>US-CA</samp>, <samp>BE-VWV</samp>, <samp>CA-QC</samp>). Always set in the US. Elsewhere, set only when the country uses regions in its addresses and one was found or given. Brussels has no province, so a Brussels address has <var>null</var> here.</td>
             </tr>
             <tr>
                 <td><var>postal_code</var></td>
@@ -2951,7 +2200,7 @@ curl -X GET \
             <tr>
                 <td><var>formatted</var></td>
                 <td>array of strings</td>
-                <td>The address as lines ready to display, in that country&#8217;s order and without the country name: <samp>["2215 India St", "San Diego, CA 92101-1725"]</samp> or <samp>["Donkerstraat 12", "8640 Westvleteren"]</samp>. Show them as they are. Add <var>country_short_name</var> from the location when the reader is in another country.</td>
+                <td>The address as lines ready to display, in that country’s order and without the country name: <samp>["2215 India St", "San Diego, CA 92101-1725"]</samp> or <samp>["Donkerstraat 12", "8640 Westvleteren"]</samp>. Show them as they are. Add <var>country_short_name</var> from the location when the reader is in another country.</td>
             </tr>
             <tr>
                 <td><var>language_code</var></td>
@@ -3037,7 +2286,7 @@ curl -X GET \
 
 <p>The validator covers 40 countries; see <a href="#location-countries">Supported Countries</a>. If it cannot match the address to a specific building, the request fails with a <var>400</var> and nothing is saved. On a <strong>POST</strong>, that means no location is created.</p>
 
-<p>Why more than the street: the validator itself needs only <var>line1</var>, and given only that it will pick a town. &#8220;Donkerstraat 12&#8221; alone lands in Sint-Niklaas, not Westvleteren. The town or the postal code pins it down, and in the US the state does the same for a city name that several states share.</p>
+<p>Why more than the street: the validator itself needs only <var>line1</var>, and given only that it will pick a town. “Donkerstraat 12” alone lands in Sint-Niklaas, not Westvleteren. The town or the postal code pins it down, and in the US the state does the same for a city name that several states share.</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -3052,7 +2301,7 @@ curl -X GET \
             <tr>
                 <td><var>line1</var><br><small class="text-muted">(required)</small></td>
                 <td>string</td>
-                <td>The street line, as the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d&#8217;Or</var>.</td>
+                <td>The street line, as the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d’Or</var>.</td>
             </tr>
             <tr>
                 <td><var>line2</var><br><small class="text-muted">(optional)</small></td>
@@ -3072,7 +2321,7 @@ curl -X GET \
             <tr>
                 <td><var>sub_code</var><br><small class="text-muted">(required in the US when <var>locality</var> stands in for <var>postal_code</var>; optional otherwise)</small></td>
                 <td>string</td>
-                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> code (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location&#8217;s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
+                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (<var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location’s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
             </tr>
             <tr>
                 <td><var>postal_code</var><br><small class="text-muted">(required unless you send <var>locality</var>)</small></td>
@@ -3082,7 +2331,7 @@ curl -X GET \
             <tr>
                 <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The phone number, either with its country code (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or as dialed locally in the location&#8217;s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). It is saved and returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
+                <td>The phone number, either with its country code (<var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or as dialed locally in the location’s country (<var>057 40 03 76</var>, <var>(310) 833-9330</var>). It is saved and returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
             </tr>
         </tbody>
     </table>
@@ -3097,7 +2346,7 @@ curl -X GET \
     <li><strong>To move a location to another country</strong>, send the address in the same request so it can be validated there, or send <var>"address": null</var> to clear it. A country change on its own is refused with a <var>400</var>.</li>
 </ul>
 
-<p>Validation errors come back under <var>valid_state.address</var> and <var>valid_msg.address</var>, keyed by the seven fields above, next to the location&#8217;s own <var>brewer_id</var>, <var>name</var>, <var>url</var> and <var>country_code</var>.</p>
+<p>Validation errors come back under <var>valid_state.address</var> and <var>valid_msg.address</var>, keyed by the seven fields above, next to the location’s own <var>brewer_id</var>, <var>name</var>, <var>url</var> and <var>country_code</var>.</p>
 
 <h4>Sample Request</h4>
 
@@ -3194,17 +2443,17 @@ curl -X PATCH \
             <tr>
                 <td><var>name</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The location&#8217;s own name, if it has one. Leave it out for a taproom that goes by its brewer and town, and don&#8217;t repeat the town here; the address already has it.</td>
+                <td>The location’s own name, if it has one. Leave it out for a taproom that goes by its brewer and town, and don’t repeat the town here; the address already has it.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>A page for this location, with its hours or directions. It should not be the brewer&#8217;s main URL.</td>
+                <td>A page for this location, with its hours or directions. It should not be the brewer’s main URL.</td>
             </tr>
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The country, as an ISO 3166&#8211;1 alpha-2 code, from the <a href="#location-countries">supported list</a>. The address is validated in this country.</td>
+                <td>The country, as an ISO 3166–1 alpha-2 code, from the <a href="#location-countries">supported list</a>. The address is validated in this country.</td>
             </tr>
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
@@ -3296,12 +2545,12 @@ curl -X POST \
             <tr>
                 <td><var>name</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The location&#8217;s own name. Like any optional field on a PUT, leaving it out clears it.</td>
+                <td>The location’s own name. Like any optional field on a PUT, leaving it out clears it.</td>
             </tr>
             <tr>
                 <td><var>country_code</var></td>
                 <td>string</td>
-                <td>The country, as an ISO 3166&#8211;1 alpha-2 code, from the <a href="#location-countries">supported list</a>.</td>
+                <td>The country, as an ISO 3166–1 alpha-2 code, from the <a href="#location-countries">supported list</a>.</td>
             </tr>
             <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
@@ -3356,12 +2605,12 @@ curl -X PUT \
             <tr>
                 <td><var>name</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The location&#8217;s name. Send <var>null</var> or an empty string to clear it.</td>
+                <td>The location’s name. Send <var>null</var> or an empty string to clear it.</td>
             </tr>
             <tr>
                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The country, as an ISO 3166&#8211;1 alpha-2 code. If the location has an address, send the address too; see <a href="#location-address">The Address</a>.</td>
+                <td>The country, as an ISO 3166–1 alpha-2 code. If the location has an address, send the address too; see <a href="#location-address">The Address</a>.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
@@ -3475,7 +2724,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>Always &#8220;list&#8221;.</td>
+                <td>Always “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -3500,12 +2749,12 @@ curl -X GET \
             <tr>
                 <td><var>id</var></td>
                 <td>string</td>
-                <td>The location&#8217;s id.</td>
+                <td>The location’s id.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
                 <td>string</td>
-                <td>The location&#8217;s name, or <var>null</var>. If you need a title, build one from the brewer name and the town.</td>
+                <td>The location’s name, or <var>null</var>. If you need a title, build one from the brewer name and the town.</td>
             </tr>
             <tr>
                 <td><var>last_modified</var></td>
@@ -3559,7 +2808,7 @@ curl -X GET \
 
 <h3 id="nearby-locations">Find Nearby Locations</h3>
 
-<p>The question people ask most is &#8220;where is the nearest brewery?&#8221; This endpoint answers it.</p>
+<p>The question people ask most is “where is the nearest brewery?” This endpoint answers it.</p>
 
 <p>Send a <strong>GET</strong> request to <code>/location/nearby</code> with <var>latitude</var> and <var>longitude</var> as query parameters.</p>
 
@@ -3628,7 +2877,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>Always &#8220;list&#8221;.</td>
+                <td>Always “list”.</td>
             </tr>
             <tr>
                 <td><var>url</var></td>
@@ -3665,7 +2914,7 @@ curl -X GET \
             <tr>
                 <td><var>units</var></td>
                 <td>string</td>
-                <td>&#8220;miles&#8221; or &#8220;kilometers&#8221;, following <var>metric</var>. The default here is miles; the postal code and city lookups follow the country.</td>
+                <td>“miles” or “kilometers”, following <var>metric</var>. The default here is miles; the postal code and city lookups follow the country.</td>
             </tr>
         </tbody>
     </table>
@@ -3765,7 +3014,7 @@ curl -X GET \
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The country of the postal code, as an ISO 3166&#8211;1 alpha-2 code. Default <var>US</var>.</td>
+                <td>The country of the postal code, as an ISO 3166–1 alpha-2 code. Default <var>US</var>.</td>
             </tr>
             <tr>
                 <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
@@ -3893,7 +3142,7 @@ curl -X GET \
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The country of the city, as an ISO 3166&#8211;1 alpha-2 code. Default <var>US</var>.</td>
+                <td>The country of the city, as an ISO 3166–1 alpha-2 code. Default <var>US</var>.</td>
             </tr>
             <tr>
                 <td><var>search_radius</var><br><small class="text-muted">(optional)</small></td>
@@ -3993,7 +3242,7 @@ curl -X GET \
 
 <h3 id="location-countries">Supported Countries</h3>
 
-<p>A location&#8217;s <var>country_code</var> must be one of the countries the validator covers. To list them, send a <strong>GET</strong> request to <code>/location/countries</code>. Each entry has the country&#8217;s name, how many <a href="#location-subdivisions">subdivisions</a> the catalog holds for it (zero means there is no region list to offer) and its telephone calling code.</p>
+<p>A location’s <var>country_code</var> must be one of the countries the validator covers. To list them, send a <strong>GET</strong> request to <code>/location/countries</code>. Each entry has the country’s name, how many <a href="#location-subdivisions">subdivisions</a> the catalog holds for it (zero means there is no region list to offer) and its telephone calling code.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location/countries</pre>
 
@@ -4027,7 +3276,7 @@ curl -X GET \
 }
 </pre>
 
-<p><small class="text-muted">Response truncated for documentation &#8212; the list holds 40 countries: AR, AT, AU, BE, BG, BR, CA, CH, CL, CO, CZ, DE, DK, EE, ES, FI, FR, GB, HR, HU, IE, IN, IT, JP, LT, LU, LV, MX, MY, NL, NO, NZ, PL, PR, PT, SE, SG, SI, SK and US.</small></p>
+<p><small class="text-muted">Response truncated for documentation — the list holds 40 countries: AR, AT, AU, BE, BG, BR, CA, CH, CL, CO, CZ, DE, DK, EE, ES, FI, FR, GB, HR, HU, IE, IN, IT, JP, LT, LU, LV, MX, MY, NL, NO, NZ, PL, PR, PT, SE, SG, SI, SK and US.</small></p>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -4035,7 +3284,7 @@ curl -X GET \
 
 <h3 id="location-subdivisions">Subdivisions</h3>
 
-<p>The states, provinces and regions the catalog knows for a country, as <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166&#8211;2</a> codes with their names in the local language. These are the values <var>sub_code</var> accepts. To list them, send a <strong>GET</strong> request to <code>/location/subdivisions</code> with the <var>country</var> query parameter.</p>
+<p>The states, provinces and regions the catalog knows for a country, as <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> codes with their names in the local language. These are the values <var>sub_code</var> accepts. To list them, send a <strong>GET</strong> request to <code>/location/subdivisions</code> with the <var>country</var> query parameter.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location/subdivisions?country={country_code}</pre>
 
@@ -4081,13 +3330,766 @@ curl -X GET \
 }
 </pre>
 
-<p><small class="text-muted">Response truncated for documentation &#8212; Belgium has 13 rows: 3 regions and 10 provinces.</small></p>
+<p><small class="text-muted">Response truncated for documentation — Belgium has 13 rows: 3 regions and 10 provinces.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h2 id="styles">Styles</h2>
+<hr>
+
+<p>Catalog.beer records a beer’s style in two parts: the brewer’s own label and a canonical classification. The label (<var>beer.style</var>) is plain text, stored and returned exactly as submitted. The classification files the beer against a standard vocabulary of styles, which is what allows the catalog to be sorted, filtered, and counted by style. The vocabulary is drawn from the <a href="https://www.brewersassociation.org/edu/brewers-association-beer-style-guidelines/" target="_blank" rel="noopener">Brewers Association (BA)</a> and <a href="https://www.bjcp.org/bjcp-style-guidelines/" target="_blank" rel="noopener">Beer Judge Certification Program (BJCP)</a> style guidelines.</p>
+
+<p>The vocabulary has three tiers, from broadest to most specific. Each tier corresponds to a field on the <a href="#beer-object">beer object</a>.</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Tier</th>
+                <th scope="col">Beer Field</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Class</td>
+                <td><var>class</var></td>
+                <td>The broadest grouping: <var>ale</var> or <var>lager</var>. Some families (e.g. wheat beers, sours, ciders, meads) do not roll up to a class; for those, <var>class</var> is <var>null</var>.</td>
+            </tr>
+            <tr>
+                <td>Family</td>
+                <td><var>parent</var></td>
+                <td>A group of related styles, such as <var>ipa</var>, <var>stout</var>, or <var>pilsner</var>.</td>
+            </tr>
+            <tr>
+                <td>Style</td>
+                <td><var>style_id</var></td>
+                <td>One specific style, such as <var>american-ipa</var> or <var>west-coast-ipa</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>A beer may be filed at any tier. The API derives the broader tiers from the one you provide — file a beer as <var>west-coast-ipa</var> and its <var>parent</var> is set to <var>ipa</var> and its <var>class</var> to <var>ale</var>. The API never fills in a more specific tier than the one you gave it.</p>
+
+<p>When <a href="#beer-create">adding</a> or <a href="#beer-patch">updating</a> a beer, there are two ways to set the classification:</p>
+
+<ol>
+    <li>Send the label as <var>style</var> and let the API match it. The label is checked against every canonical name and alias in the vocabulary — first as an exact style name, then as a class alias, a family alias, and a style alias. For example, “NEIPA,” “New England IPA,” and “Juicy IPA” all resolve to the same style.</li>
+    <li>Name the classification directly with <var>style_id</var>, <var>parent</var>, or <var>class</var>. These take precedence over <var>style</var>; if you send more than one, the most specific wins. Your label is still kept verbatim.</li>
+</ol>
+
+<p>If the label doesn’t match anything in the vocabulary and no classification is given, the request returns a <var>400 Bad Request</var> error. The vocabulary includes catch-all styles (<var>catch_all: true</var> — e.g. <var>specialty-beer</var>) for beers that don’t fit a more specific style. One exception: when updating an existing beer, resending its current label unchanged never fails — the beer keeps its current classification, even if that label wouldn’t resolve on its own.</p>
+
+<p>That <var>400</var> comes back with a <var>suggestions</var> object holding the closest styles, so you can recover without a second lookup. Resend the same label alongside one of the suggested values: the classification comes from the field you name, and your label is stored exactly as you wrote it.</p>
+
+<pre class="api-code">
+{
+  "error": true,
+  "valid_state": {
+    "style": "invalid"
+  },
+  "valid_msg": {
+    "style": "We couldn't match \"Cali Pilsner\" to a known style, family, or class. Choose the closest match, or a catch-all so nothing is lost, and send it back with your label unchanged."
+  },
+  "suggestions": {
+    "style": {
+      "styles": [
+        {
+          "style_id": "german-pilsner",
+          "name": "German-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["German Pils", "German Pilsner"]
+        },
+        {
+          "style_id": "pre-prohibition-lager",
+          "name": "Pre-Prohibition Lager",
+          "parent": "historical",
+          "class": null,
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Classic American Pilsner", "CAP"]
+        },
+        {
+          "style_id": "czech-pilsner",
+          "name": "Czech-Style Pale Lager",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Bohemian Pilsner", "Czech Pilsner"]
+        },
+        {
+          "style_id": "international-pilsner",
+          "name": "International-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Euro Pale Lager", "International Pilsner"]
+        },
+        {
+          "style_id": "italian-pilsner",
+          "name": "Italian-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["Italian Pils", "Italian Pilsner"]
+        },
+        {
+          "style_id": "contemporary-american-pilsner",
+          "name": "Contemporary American-Style Pilsener",
+          "parent": "pilsner",
+          "class": "lager",
+          "catch_all": false,
+          "match": "partial",
+          "aliases": ["American Hoppy Pilsner", "Craft American Pilsner"]
+        }
+      ],
+      "families": [
+        {
+          "parent": "pilsner",
+          "name": "Pilsner",
+          "class": "lager",
+          "beverage_type": "beer"
+        }
+      ]
+    }
+  }
+}
+</pre>
+
+<p><small class="text-muted">Alias lists are abridged in the sample above; the API returns all of them.</small></p>
+
+<p><strong>Check <var>match</var> before you trust the order.</strong> It tells you how each candidate was reached, and it is the difference between a recommendation and a guess:</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Meaning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>exact</var></td>
+                <td>Your label is this style’s name or one of its aliases. Safe to take as the answer.</td>
+            </tr>
+            <tr>
+                <td><var>all_terms</var></td>
+                <td>Every word in your label appears in this style’s name or aliases. Usually right; worth a glance.</td>
+            </tr>
+            <tr>
+                <td><var>partial</var></td>
+                <td>Some of your words matched. <strong>Do not take the first entry on faith.</strong> Read the list, and consider filing at <var>parent</var> or <var>class</var> instead.</td>
+            </tr>
+            <tr>
+                <td><var>description</var></td>
+                <td>Nothing matched the name or aliases — only our written description of the style. The weakest signal we return.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>Within a <var>match</var> level, candidates are ordered by how well they match and then by how many beers we hold in each, so a populous style can still outrank a better-fitting rare one. That is the response above: every candidate for “Cali Pilsner” is <var>partial</var>, and the closest one, <var>contemporary-american-pilsner</var>, comes back <em>last</em>. A list that is all <var>partial</var> is the API telling you it did not recognize your label. <var>class</var> may be <var>null</var> where the family sits outside the ale/lager split.</p>
+
+<p><var>families</var> and <var>classes</var> appear alongside <var>styles</var> when your label names a family or a super-class but no style matched it outright — “Crisp American Lager” returns the <var>lager</var> class. Filing one tier up is often the honest answer, and it is better than picking a specific style that happens to share a word with your label. Send the <var>parent</var> or <var>class</var> value back the same way you would a <var>style_id</var>.</p>
+
+<p>A <var>matched_on</var> key appears when we could not match your whole label and fell back to the last two words of it — “Crisp American Lager” is matched on “American Lager.” The candidates describe that shorter phrase, not what you sent, so read it before trusting an <var>exact</var> on the list.</p>
+
+<p>Retrying the example above as <code>{"style": "Cali Pilsner", "style_id": "contemporary-american-pilsner"}</code> succeeds, and the beer keeps “Cali Pilsner” as its label. Sending <var>style_id</var>, <var>parent</var>, or <var>class</var> <em>without</em> <var>style</var> stores our canonical name as the label instead of the brewery’s own wording, so send both.</p>
+
+<p>The beer’s <var>beverage_type</var> (<var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>) is set from the resolved classification. It cannot be set directly.</p>
+
+<h3 id="style-confidence">Style Confidence</h3>
+
+<p>Classifying a beer sometimes means a judgment call, and those are the ones worth a second look. The optional <var>style_confidence</var> field on <a href="#beer-create">POST</a>, <a href="#beer-update">PUT</a>, and <a href="#beer-patch">PATCH</a> records how firm the classification is, so editorial review can go where it’s needed instead of everywhere. It is stored for our own review and is never returned in a beer object.</p>
+
+<p><strong>In most cases, leave it out.</strong> We derive it from what we can check — whether your label matched the vocabulary on its own, and whether you filed under a catch-all:</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr><th scope="col">Value</th><th scope="col">Derived when</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><var>confident</var></td><td>Your label matched a canonical name or alias, whether or not you also named a tier.</td></tr>
+            <tr><td><var>override</var></td><td>You named a specific <var>style_id</var> for a label that doesn’t match it — a mapping only you can vouch for.</td></tr>
+            <tr><td><var>catch-all</var></td><td>As above, but the style you chose is a catch-all (<var>catch_all: true</var>).</td></tr>
+            <tr><td><var>family</var></td><td>You filed at the family or class tier rather than at a specific style.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<p>Send the field yourself only to record <strong>less</strong> certainty than we would otherwise assume — for example, you inferred the style from the beer’s name rather than a stated one, or picked the least-wrong of two plausible families. Sending <var>catch-all</var> or <var>family</var> where we would have derived <var>override</var> is an honest downgrade, and we keep it.</p>
+
+<p>You cannot use the field to claim more certainty than the request supports. Whether your label matches the vocabulary is something we check rather than take on trust, so pairing an unmatched label with <var>style_confidence: confident</var> is reduced to <var>override</var>. This happens silently — your write still succeeds.</p>
+
+<p>The <code>/style</code> endpoints are read-only. Use them to browse the vocabulary, build a style picker, or check a label before submitting a beer.</p>
+
+<h3 id="style-object">The Style Object</h3>
+
+<p>The <code>/style</code> endpoints return style objects. <a href="#style-list">List Styles</a> returns a compact form of each; <a href="#style-detail">Retrieve a Style</a> returns the full object, adding <var>parent_name</var>, <var>source</var>, and <var>specs</var>.</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><var>id</var></td><td>string</td><td>The style’s slug (e.g. <var>american-ipa</var>) — the value used as <var>style_id</var> on a beer.</td></tr>
+            <tr><td><var>object</var></td><td>string</td><td>Always <var>style</var>.</td></tr>
+            <tr><td><var>name</var></td><td>string</td><td>The canonical style name (e.g. “American-Style India Pale Ale”).</td></tr>
+            <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
+            <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) — the canonical family tier you can file a beer at.</td></tr>
+            <tr><td><var>class</var></td><td>string</td><td>The slug of the <a href="#style-classes">class</a> the style rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> for families that do not roll up to one.</td></tr>
+            <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family (e.g. “India Pale Ale”).</td></tr>
+            <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
+            <tr><td><var>catch_all</var></td><td>Boolean</td><td><var>true</var> for non-standard “catch-all” styles (e.g. <var>specialty-beer</var>) used when nothing more specific fits. Use it to separate fallback buckets from standard styles — for example, keeping catch-alls out of a picker’s ranked matches.</td></tr>
+            <tr><td><var>aliases</var></td><td>array</td><td>Other names and spellings that resolve to this style, excluding the canonical <var>name</var>. Use these to match user-entered labels client-side — for example, in a typeahead — without an API request per keystroke.</td></tr>
+            <tr><td><var>srm</var><br><small class="text-muted">(list only)</small></td><td>object</td><td>The style’s <a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">SRM</a> color range as a <code>{ "min": …, "max": … }</code> object, or <var>null</var> when the guideline gives no color (cider, mead, perry, and catch-alls). The one spec included in list rows — enough to render color swatches without a request per style. On the detail endpoint the same range lives in <var>specs.srm</var>.</td></tr>
+            <tr><td><var>specs</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>The style’s guideline ranges — <var>abv</var>, <var>ibu</var>, <var>srm</var>, <var>og</var>, and <var>fg</var>. See <a href="#style-specs">the <var>specs</var> field</a> below.</td></tr>
+            <tr><td><var>description</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>An editorial description of the style — what it is and what to expect in the glass. Plain prose; paragraphs separated by blank lines.</td></tr>
+            <tr><td><var>appearance</var>, <var>aroma</var>, <var>flavor</var>, <var>mouthfeel</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Short tasting-note fields describing the style in the glass. <var>null</var> for catch-all styles, which have no fixed sensory profile.</td></tr>
+            <tr><td><var>history</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The style’s origin and evolution — editorial prose with claims anchored to the citations in <var>sources.history_sources</var>.</td></tr>
+            <tr><td><var>notes</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>Occasional editorial notes — e.g. how this entry relates to neighboring styles. <var>null</var> when there’s nothing to add.</td></tr>
+            <tr><td><var>commercial_examples</var><br><small class="text-muted">(detail only)</small></td><td>array</td><td>Classic or defining commercial examples of the style, as beer names (strings). Curated — not derived from the Catalog.beer database.</td></tr>
+            <tr><td><var>sources</var><br><small class="text-muted">(detail only)</small></td><td>object</td><td>Provenance: the style’s entry in each guideline it appears in (<var>brewers_association</var>, <var>bjcp</var> with year and code, <var>naba_2024</var>; the one marked <code>"primary": true</code> supplies the canonical name), plus <var>history_sources</var> — an array of <code>{ "citation", "url" }</code> objects backing the <var>history</var> prose.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h4 id="style-specs">The <var>specs</var> Field</h4>
+
+<p>The <var>specs</var> field (detail only) holds the style’s guideline ranges, drawn from the same <var>source</var> as the style. Each field is a <code>{ "min": …, "max": … }</code> object, or <var>null</var> when the guideline doesn’t specify that measurement. An individual <var>min</var> or <var>max</var> may also be <var>null</var> when the guideline gives only one bound.</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><var>abv</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Alcohol_by_volume" target="_blank" rel="noopener">Alcohol by Volume</a> range, as a percentage (e.g. <code>6.3</code> means 6.3%).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+            <tr><td><var>ibu</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Beer_measurement#Bitterness" target="_blank" rel="noopener">International Bitterness Units</a> range — the measure of hop bitterness.<br><span class="text-muted"><var>min</var> and <var>max</var> are integers.</span></td></tr>
+            <tr><td><var>srm</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Standard_Reference_Method" target="_blank" rel="noopener">Standard Reference Method</a> range — beer color, from pale straw (low) to black (high).<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+            <tr><td><var>og</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Original Gravity</a> range — the wort’s specific gravity before fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+            <tr><td><var>fg</var></td><td>object</td><td><a href="https://en.wikipedia.org/wiki/Gravity_(alcoholic_beverage)" target="_blank" rel="noopener">Final Gravity</a> range — the beer’s specific gravity after fermentation.<br><span class="text-muted"><var>min</var> and <var>max</var> are floats.</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample</h4>
+
+<pre class="api-code">
+{
+  "id": "american-ipa",
+  "object": "style",
+  "name": "American-Style India Pale Ale",
+  "beverage_type": "beer",
+  "parent": "ipa",
+  "class": "ale",
+  "parent_name": "India Pale Ale",
+  "source": "BA-2026",
+  "catch_all": false,
+  "aliases": ["American India Pale Ale", "American IPA"],
+  "specs": {
+    "abv": { "min": 6.3, "max": 7.5 },
+    "ibu": { "min": 50, "max": 70 },
+    "srm": { "min": 4, "max": 12 },
+    "og":  { "min": 1.06, "max": 1.07 },
+    "fg":  { "min": 1.01, "max": 1.016 }
+  },
+  "description": "The defining style of American craft beer — medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. […]",
+  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
+  "aroma": "Prominent American or New World hop character — citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. […]",
+  "flavor": "Medium to high hop bitterness with matching hop flavor. […]",
+  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
+  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. […]",
+  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog […]",
+  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
+  "sources": {
+    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
+    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
+    "naba_2024": { "name": "American-Style India Pale Ale" },
+    "history_sources": [
+      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
+      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
+    ]
+  }
+}
+</pre>
+
+<p><small class="text-muted">Prose fields truncated for documentation ([…]) — the live response returns the full text.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-list">List Styles</h3>
+
+<p>To list every style in the vocabulary, send a <strong>GET</strong> request to the <code>/style</code> endpoint. Styles are returned alphabetically by name as compact <a href="#style-object">style objects</a>. The response also includes a <var>version</var> field identifying the current version of the vocabulary; when it changes, refresh any cached copy.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style",
+  "version": "2.3.0",
+  "has_more": false,
+  "data": [
+    {
+      "id": "american-ipa",
+      "object": "style",
+      "name": "American-Style India Pale Ale",
+      "beverage_type": "beer",
+      "parent": "ipa",
+      "class": "ale",
+      "catch_all": false,
+      "aliases": ["American India Pale Ale", "American IPA"],
+      "srm": { "min": 4, "max": 12 }
+    }
+  ]
+}
+</pre>
+
+<p><small class="text-muted">Response truncated for documentation — the full response contains every style in the vocabulary.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-detail">Retrieve a Style</h3>
+
+<p>To retrieve a single style, send a <strong>GET</strong> request to the <code>/style</code> endpoint with the <var>{style_id}</var> parameter appended to the path. The <var>style_id</var> is the style’s slug (e.g. <var>american-ipa</var>), not a UUID. Successful requests return a full <a href="#style-object">style object</a>, including its <a href="#style-specs">specs</a>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/{style_id}</pre>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style/american-ipa \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "id": "american-ipa",
+  "object": "style",
+  "name": "American-Style India Pale Ale",
+  "beverage_type": "beer",
+  "parent": "ipa",
+  "class": "ale",
+  "parent_name": "India Pale Ale",
+  "source": "BA-2026",
+  "catch_all": false,
+  "aliases": ["American India Pale Ale", "American IPA"],
+  "specs": {
+    "abv": { "min": 6.3, "max": 7.5 },
+    "ibu": { "min": 50, "max": 70 },
+    "srm": { "min": 4, "max": 12 },
+    "og":  { "min": 1.06, "max": 1.07 },
+    "fg":  { "min": 1.01, "max": 1.016 }
+  },
+  "description": "The defining style of American craft beer — medium-bodied, golden to copper-colored, and built around the tropical, citrus, pine, and resinous character of American hops. […]",
+  "appearance": "Gold to deep copper, clear to slightly hazy, with a long-lasting off-white head.",
+  "aroma": "Prominent American or New World hop character — citrus, grapefruit, pine, tropical fruit, stone fruit, or resinous notes. […]",
+  "flavor": "Medium to high hop bitterness with matching hop flavor. […]",
+  "mouthfeel": "Medium body, medium carbonation. Smooth without being heavy; alcohol is not prominent.",
+  "history": "The American IPA lineage begins with the post-Prohibition remnants of the older East Coast tradition. […]",
+  "notes": "The clear West Coast and soft Hazy interpretations are now treated as separate entries in the catalog […]",
+  "commercial_examples": ["Bell's Two Hearted Ale", "Stone IPA", "Russian River Blind Pig", "Lagunitas IPA", "Founders Centennial IPA"],
+  "sources": {
+    "brewers_association": { "name": "American-Style India Pale Ale", "category_group": "IPA", "primary": true },
+    "bjcp": { "year": 2021, "code": "21A", "name": "American IPA" },
+    "naba_2024": { "name": "American-Style India Pale Ale" },
+    "history_sources": [
+      { "citation": "Oliver, Garrett, ed. The Oxford Companion to Beer. New York: Oxford University Press, 2012." },
+      { "citation": "All About Beer. \"A Bitter Beginning: The First Anchor Liberty Ale Bottles.\" Accessed April 23, 2026.", "url": "https://allaboutbeer.com/anchor-liberty-ale/" }
+    ]
+  }
+}
+</pre>
+
+<p><small class="text-muted">Prose fields truncated for documentation ([…]) — the live response returns the full text.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-search">Search Styles</h3>
+
+<p>Search the style vocabulary by canonical name, alias, or description using full-text search. To search, send a <strong>GET</strong> request to the <code>/style/search</code> endpoint with a <var>q</var> query parameter. Alias matches are first-class: a search for “NEIPA” or “Juicy IPA” finds <var>hazy-ipa</var> even though neither term appears in the canonical name.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q={query}</pre>
+
+<h4>Query Parameters</h4>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>q</var></td>
+                <td>string</td>
+                <td>The search query string. Maximum 255 characters.</td>
+            </tr>
+            <tr>
+                <td><var>count</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>The number of results you would like returned. The default value is 25. Maximum is 100.</td>
+            </tr>
+            <tr>
+                <td><var>cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>An opaque string value that indicates where the results should start from. This value is returned as <var>next_cursor</var> after an initial query to the endpoint.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>A sample request with query parameters. Be sure to encode all non-alphanumeric characters except <code>-_</code>.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q=oktoberfest&amp;count=5</pre>
+
+<h4>Response</h4>
+
+<p>This request returns a list object with the following parameters. Results are ranked in three tiers, and relevance orders results within a tier rather than across tiers:</p>
+
+<ol>
+    <li><strong>Exact match</strong> — the query is exactly the style’s name or one of its aliases. Searching “American IPA” puts <var>american-ipa</var> first.</li>
+    <li><strong>Full name match</strong> — every term in the query appears in the style’s name or aliases. Aliases count as part of the name, which is why “NEIPA” finds <var>hazy-ipa</var> and “IPA” finds styles whose names spell out “India Pale Ale”.</li>
+    <li><strong>Partial name match</strong> — some but not all query terms appear in the name or aliases.</li>
+    <li><strong>Description match</strong> — the query appears only in the style’s editorial description. A style that merely mentions a term never outranks one named for it.</li>
+</ol>
+
+<p>Within a tier, styles are ordered by how many cataloged beers use them, so a search for a broad term surfaces styles that are actually brewed ahead of ones that exist only in the vocabulary. This ordering applies only between styles that match the query equally well — a precise match on a rare style always outranks a partial match on a common one.</p>
+
+<p>Broad queries often have no single correct style answer — “IPA” is not one style but twelve. When a query exactly names a style family, by slug, name, or alias, that family is returned separately in <var>families</var> so you can offer the group rather than an arbitrary member of it. Searching “ipa” returns the <var>ipa</var> family alongside the individual IPA styles.</p>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object. In this case: “list”.</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The API endpoint accessed to retrieve this object. In this case: <code>/style/search</code>.</td>
+            </tr>
+            <tr>
+                <td><var>query</var></td>
+                <td>string</td>
+                <td>The search query that was submitted.</td>
+            </tr>
+            <tr>
+                <td><var>has_more</var></td>
+                <td>Boolean</td>
+                <td>Whether or not there are more results available. If <var>false</var>, you have reached the last items in the result set.</td>
+            </tr>
+            <tr>
+                <td><var>next_cursor</var><br><small class="text-muted">(optional)</small></td>
+                <td>string</td>
+                <td>To retrieve the next set of results, provide this value as the <var>cursor</var> parameter on your subsequent API request. Only present when <var>has_more</var> is <var>true</var>.</td>
+            </tr>
+            <tr>
+                <td><var>families</var></td>
+                <td>array</td>
+                <td>An array of <a href="#style-parents">style family objects</a> whose slug, name, or alias <em>exactly</em> matches the query. Empty when no family matches. Families are never paginated — there are only 26 in total, and <var>has_more</var> and <var>next_cursor</var> describe <var>data</var> only. They are returned on the first page only, so an empty array on a later page means “not repeated here”, not “no family matched”. These rows omit <var>aliases</var>; use <a href="#style-parents">List Style Families</a> for the full object.</td>
+            </tr>
+            <tr>
+                <td><var>data</var></td>
+                <td>array</td>
+                <td>An array of compact <a href="#style-object">style objects</a> matching the search query, in ranked order — the same shape as <a href="#style-list">List Styles</a> rows, including <var>aliases</var> and <var>srm</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  'https://api.catalog.beer/style/search?q=NEIPA' \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/search",
+  "query": "NEIPA",
+  "has_more": false,
+  "families": [],
+  "data": [
+    {
+      "id": "hazy-ipa",
+      "object": "style",
+      "name": "Juicy or Hazy India Pale Ale",
+      "beverage_type": "beer",
+      "parent": "ipa",
+      "class": "ale",
+      "catch_all": false,
+      "aliases": ["Hazy IPA", "Hazy/Juicy IPA", "Juicy IPA", "NE IPA", "NEIPA", "New England IPA"],
+      "srm": { "min": 3, "max": 7 }
+    }
+  ]
+}
+</pre>
+
+<h4>Sample Response — Broad Query</h4>
+
+<p>A query naming a whole family returns that family in <var>families</var> alongside its member styles in <var>data</var>. Offering the family is usually a better answer than the top-ranked individual style.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/search?q=ipa
+
+{
+  "object": "list",
+  "url": "/style/search",
+  "query": "ipa",
+  "has_more": true,
+  "next_cursor": "Mw==",
+  "families": [
+    {
+      "slug": "ipa",
+      "object": "style_parent",
+      "name": "India Pale Ale",
+      "beverage_type": "beer",
+      "class": "ale",
+      "description": "...",
+      "sort_order": 2
+    }
+  ],
+  "data": [ ... ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-parents">List Families</h3>
+
+<p>To list the families in the vocabulary (the <var>parent</var> tier), send a <strong>GET</strong> request to the <code>/style/parent</code> endpoint. Families are returned in display order. Each family object has the following parameters.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/parent</pre>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>slug</var></td>
+                <td>string</td>
+                <td>The family’s slug (e.g. <var>ipa</var>) — the value used as <var>parent</var> on a beer.</td>
+            </tr>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object; in this case: “style_parent”.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The name of the family (e.g. “India Pale Ale”).</td>
+            </tr>
+            <tr>
+                <td><var>beverage_type</var></td>
+                <td>string</td>
+                <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+            </tr>
+            <tr>
+                <td><var>class</var></td>
+                <td>string</td>
+                <td>The slug of the <a href="#style-classes">class</a> this family rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> if it does not roll up to one.</td>
+            </tr>
+            <tr>
+                <td><var>description</var></td>
+                <td>string</td>
+                <td>A brief description of the family.</td>
+            </tr>
+            <tr>
+                <td><var>sort_order</var></td>
+                <td>integer</td>
+                <td>The family’s position in display order.</td>
+            </tr>
+            <tr>
+                <td><var>aliases</var></td>
+                <td>array</td>
+                <td>Names and spellings that resolve to this family when sent as a beer’s <var>style</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style/parent \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/parent",
+  "has_more": false,
+  "data": [
+    {
+      "slug": "ipa",
+      "object": "style_parent",
+      "name": "India Pale Ale",
+      "beverage_type": "beer",
+      "class": "ale",
+      "description": "The hop showcase of brewing: pale, bitter, and intensely aromatic ales ranging from crisp, resinous West Coast versions to soft, juicy hazy ones, plus session, double, Belgian, and black variations. Hops drive the aroma, flavor, and bitterness, with malt kept in a supporting role.",
+      "sort_order": 2,
+      "aliases": ["India Pale Ale", "IPA", "IPAs"]
+    }
+  ]
+}
+</pre>
+
+<p><small class="text-muted">Response truncated for documentation — the full response contains every family.</small></p>
+
+<p><a href="#top">^ Return to top</a></p>
+
+<h3 id="style-classes">List Classes</h3>
+
+<p>To list the classes in the vocabulary — currently <var>ale</var> and <var>lager</var> — send a <strong>GET</strong> request to the <code>/style/class</code> endpoint. Classes are returned in display order. Each class object has the following parameters.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/style/class</pre>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>slug</var></td>
+                <td>string</td>
+                <td>The class’s slug (e.g. <var>ale</var>) — the value used as <var>class</var> on a beer.</td>
+            </tr>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The name of the object; in this case: “style_class”.</td>
+            </tr>
+            <tr>
+                <td><var>name</var></td>
+                <td>string</td>
+                <td>The name of the class (e.g. “Ale”).</td>
+            </tr>
+            <tr>
+                <td><var>beverage_type</var></td>
+                <td>string</td>
+                <td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td>
+            </tr>
+            <tr>
+                <td><var>sort_order</var></td>
+                <td>integer</td>
+                <td>The class’s position in display order.</td>
+            </tr>
+            <tr>
+                <td><var>aliases</var></td>
+                <td>array</td>
+                <td>Names and spellings that resolve to this class when sent as a beer’s <var>style</var>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Request</h4>
+
+<pre class="api-code">
+curl -X GET \
+  https://api.catalog.beer/style/class \
+  -H 'accept: application/json' \
+  -H 'authorization: Basic {secret_key}' \
+</pre>
+
+<h4>Sample Response</h4>
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/style/class",
+  "has_more": false,
+  "data": [
+    {
+      "slug": "ale",
+      "object": "style_class",
+      "name": "Ale",
+      "beverage_type": "beer",
+      "sort_order": 1,
+      "aliases": ["Ale", "Ales"]
+    },
+    {
+      "slug": "lager",
+      "object": "style_class",
+      "name": "Lager",
+      "beverage_type": "beer",
+      "sort_order": 2,
+      "aliases": ["Lager", "Lagers"]
+    }
+  ]
+}
+</pre>
 
 <p><a href="#top">^ Return to top</a></p>
 
 <!---------- USAGE ---------->
 
 <h2 id="usage">Usage</h2>
+<hr>
 
 <p>The usage endpoints allow you to check your API usage for the current billing period. Each API key has a monthly request limit (default: 1,000 requests). Requests to the <code>/usage</code> endpoints are not counted against your limit.</p>
 
@@ -4108,7 +4110,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: &#8220;usage&#8221;.</td>
+                <td>The name of the object. In this case: “usage”.</td>
             </tr>
             <tr>
                 <td><var>year</var></td>
@@ -4118,7 +4120,7 @@ curl -X GET \
             <tr>
                 <td><var>month</var></td>
                 <td>integer</td>
-                <td>The month of the current billing period (1&#8211;12).</td>
+                <td>The month of the current billing period (1–12).</td>
             </tr>
             <tr>
                 <td><var>count</var></td>
@@ -4149,7 +4151,7 @@ curl -X GET \
     </table>
 </div>
 
-<p>The response does not include the API key itself&#8212;you authenticated with it, and nothing in the usage or <a href="#billing-object">billing</a> objects will echo it back.</p>
+<p>The response does not include the API key itself—you authenticated with it, and nothing in the usage or <a href="#billing-object">billing</a> objects will echo it back.</p>
 
 <p><a href="#top">^ Return to top</a></p>
 
@@ -4157,7 +4159,7 @@ curl -X GET \
 
 <h3 id="usage-my-usage">Get My Usage</h3>
 
-<p>To retrieve your current API usage and limits, send a <strong>GET</strong> request to the <code>/usage/my-usage</code> endpoint. This returns your usage for the current billing period. No special permissions are required&#8212;the endpoint returns data for the authenticated API key.</p>
+<p>To retrieve your current API usage and limits, send a <strong>GET</strong> request to the <code>/usage/my-usage</code> endpoint. This returns your usage for the current billing period. No special permissions are required—the endpoint returns data for the authenticated API key.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/usage/my-usage</pre>
 
@@ -4189,7 +4191,7 @@ curl -X GET \
 
 <h4>Usage Limits</h4>
 
-<p>When your usage exceeds your <var>request_limit</var> + <var>request_buffer</var>, the API will return a <var>402 Payment Required</var> response for all endpoints except <code>/usage</code> and <code>/billing</code>. Your count resets on the first of each month. To keep going past the free tier, add a payment method&#8212;see <a href="#billing">Billing</a>.</p>
+<p>When your usage exceeds your <var>request_limit</var> + <var>request_buffer</var>, the API will return a <var>402 Payment Required</var> response for all endpoints except <code>/usage</code> and <code>/billing</code>. Your count resets on the first of each month. To keep going past the free tier, add a payment method—see <a href="#billing">Billing</a>.</p>
 
 <p>Note that this is a monthly allowance, not a rate limit: there is no per-second or per-minute throttle, and retrying a <var>402</var> will not clear it. Either add a payment method or wait for the monthly reset.</p>
 
@@ -4198,15 +4200,16 @@ curl -X GET \
 <!---------- BILLING ---------->
 
 <h2 id="billing">Billing</h2>
+<hr>
 
-<p>Every account includes 1,000 free API requests per month. With a payment method on file, your key keeps working past the free tier and usage is billed at <strong>$1 per 1,000 requests</strong>, rounded up to whole blocks of 1,000. Billing is powered by Stripe: cards are collected on a Stripe-hosted checkout page and never touch Catalog.beer&#8217;s servers. Add or manage your payment method on your <a href="/billing">Billing page</a>; the endpoints below let you check your status and manage your spend cap programmatically.</p>
+<p>Every account includes 1,000 free API requests per month. With a payment method on file, your key keeps working past the free tier and usage is billed at <strong>$1 per 1,000 requests</strong>, rounded up to whole blocks of 1,000. Billing is powered by Stripe: cards are collected on a Stripe-hosted checkout page and never touch Catalog.beer’s servers. Add or manage your payment method on your <a href="/billing">Billing page</a>; the endpoints below let you check your status and manage your spend cap programmatically.</p>
 
 <p>A few things to know:</p>
 
 <ul>
     <li><strong>Invoicing.</strong> Overage is invoiced on the first of the following month and charged automatically to your saved card. Balances under $5 roll forward to a later invoice rather than being charged immediately.</li>
-    <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month&#8217;s usage would cost more than the cap, further requests receive a <var>402</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage.</li>
-    <li><strong>Exempt endpoints.</strong> The <code>/billing</code> and <code>/usage</code> endpoints are never blocked by the usage limit and don&#8217;t count toward your usage, so you can always check your status and manage billing&#8212;even when your key is over its cap.</li>
+    <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month’s usage would cost more than the cap, further requests receive a <var>402</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage.</li>
+    <li><strong>Exempt endpoints.</strong> The <code>/billing</code> and <code>/usage</code> endpoints are never blocked by the usage limit and don’t count toward your usage, so you can always check your status and manage billing—even when your key is over its cap.</li>
 </ul>
 
 <!----- BILLING: OBJECT ----->
@@ -4268,12 +4271,12 @@ curl -X GET \
             <tr>
                 <td><var>estimated_charge_cents</var></td>
                 <td>integer</td>
-                <td>What this month&#8217;s usage would cost so far, in cents ($1 per 1,000 billable requests, rounded up, capped at your spend cap). <code>0</code> when billing is not enabled.</td>
+                <td>What this month’s usage would cost so far, in cents ($1 per 1,000 billable requests, rounded up, capped at your spend cap). <code>0</code> when billing is not enabled.</td>
             </tr>
             <tr>
                 <td><var>unbilled_balance_cents</var></td>
                 <td>integer</td>
-                <td>Charges from earlier months that haven&#8217;t been invoiced yet because they&#8217;re under the $5 invoice minimum.</td>
+                <td>Charges from earlier months that haven’t been invoiced yet because they’re under the $5 invoice minimum.</td>
             </tr>
         </tbody>
     </table>
@@ -4285,7 +4288,7 @@ curl -X GET \
 
 <h3 id="billing-retrieve">Get Billing Status</h3>
 
-<p>To retrieve your billing status, send a <strong>GET</strong> request to the <code>/billing</code> endpoint. No special permissions are required&#8212;the endpoint returns data for the authenticated API key.</p>
+<p>To retrieve your billing status, send a <strong>GET</strong> request to the <code>/billing</code> endpoint. No special permissions are required—the endpoint returns data for the authenticated API key.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/billing</pre>
 
@@ -4426,22 +4429,22 @@ curl -X PATCH \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: &#8220;users&#8221;.</td>
+                <td>The name of the object. In this case: “users”.</td>
             </tr>
             <tr>
                 <td><var>name</var></td>
                 <td>string</td>
-                <td>The user&#8217;s name.</td>
+                <td>The user’s name.</td>
             </tr>
             <tr>
                 <td><var>email</var></td>
                 <td>string</td>
-                <td>The user&#8217;s email address.</td>
+                <td>The user’s email address.</td>
             </tr>
             <tr>
                 <td><var>email_verified</var></td>
                 <td>Boolean</td>
-                <td>A <var>true</var> or <var>false</var> value denoting whether the user&#8217;s email address has been verified.</td>
+                <td>A <var>true</var> or <var>false</var> value denoting whether the user’s email address has been verified.</td>
             </tr>
             <tr>
                 <td><var>email_auth</var></td>
@@ -4523,7 +4526,7 @@ curl -X GET \
             <tr>
                 <td><var>object</var></td>
                 <td>string</td>
-                <td>The name of the object. In this case: &#8220;api_key&#8221;.</td>
+                <td>The name of the object. In this case: “api_key”.</td>
             </tr>
             <tr>
                 <td><var>user_id</var></td>
@@ -4533,7 +4536,7 @@ curl -X GET \
             <tr>
                 <td><var>api_key</var></td>
                 <td>string/null</td>
-                <td>The API key, or <var>null</var> if the user&#8217;s email has not been verified.</td>
+                <td>The API key, or <var>null</var> if the user’s email has not been verified.</td>
             </tr>
         </tbody>
     </table>
@@ -4581,12 +4584,12 @@ curl -X GET \
             <tr>
                 <td><var>name</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The user&#8217;s name. Max 255 characters.</td>
+                <td>The user’s name. Max 255 characters.</td>
             </tr>
             <tr>
                 <td><var>email</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The user&#8217;s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain.</td>
+                <td>The user’s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain.</td>
             </tr>
             <tr>
                 <td><var>password</var><br><small class="text-muted">(optional)</small></td>
@@ -4633,7 +4636,7 @@ curl -X DELETE \
 
 <h3 id="users-reset-password">Request Password Reset</h3>
 
-<p>To request a password reset, send a <strong>POST</strong> request to the <code>/users/{user_id}/reset-password</code> endpoint. The user&#8217;s email must be verified. A password reset email will be sent to the email address on file. This endpoint is rate limited to one request per 15 minutes; requests made too soon return a <var>429 Too Many Requests</var> response with a <var>Retry-After</var> header giving the seconds remaining. Successful requests return a <var>204 No Content</var> response.</p>
+<p>To request a password reset, send a <strong>POST</strong> request to the <code>/users/{user_id}/reset-password</code> endpoint. The user’s email must be verified. A password reset email will be sent to the email address on file. This endpoint is rate limited to one request per 15 minutes; requests made too soon return a <var>429 Too Many Requests</var> response with a <var>Retry-After</var> header giving the seconds remaining. Successful requests return a <var>204 No Content</var> response.</p>
 
 <pre class="api-code">POST https://api.catalog.beer/users/{user_id}/reset-password</pre>
 
