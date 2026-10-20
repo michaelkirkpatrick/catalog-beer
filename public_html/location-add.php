@@ -70,12 +70,10 @@ if(isset($_GET['brewerID'])){
                 $url = $_POST['url'] ?? '';
                 $addressFields = addressFieldsFromPost();
 
-                // One request: the location with its address nested. The API
-                // validates the address before writing anything.
-                $locationPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'url'=>$url, 'country_code'=>$country_code);
-                if(addressHasContent($addressFields)){
-                    $locationPOST['address'] = $addressFields;
-                }
+                // One request: the location with its address nested. The
+                // address is required, and the API validates it before writing
+                // anything; a blank one comes back naming the missing fields.
+                $locationPOST = array('brewer_id'=>$brewerID, 'name'=>$name, 'url'=>$url, 'country_code'=>$country_code, 'address'=>$addressFields);
                 $locationResult = json_decode($api->request('POST', '/location', $locationPOST), true);
                 if(is_array($locationResult) && !isset($locationResult['error']) && isset($locationResult['id'])){
                     // Successfully Added
