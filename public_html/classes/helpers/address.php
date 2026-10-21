@@ -203,9 +203,12 @@ function addressFieldLabels(string $countryCode, array $subdivisions): array {
 
 /**
  * The Country select for a location form, reloading the page with ?country=
- * when changed so the address controls can follow. $locked renders the country
- * as fixed text instead — the edit form once an address exists, since the API
- * refuses a country change on a location that holds one.
+ * when changed so the address controls can follow. The reload also carries the
+ * Name and URL typed so far (?name=, ?url=), since those sit above the select
+ * and would otherwise be wiped; the pages read them back only when ?country=
+ * is present. $locked renders the country as fixed text instead — the edit
+ * form once an address exists, since the API refuses a country change on a
+ * location that holds one.
  *
  * @param array  $countries   addressCountries() rows keyed by code
  * @param string $countryCode the selected code
@@ -251,7 +254,7 @@ function addressCountryField(array $countries, string $countryCode, array $valid
     // Reload with the chosen country so the region list and labels follow.
     // Progressive: with JS off the select still posts, and the API validates
     // the address for whatever country was chosen.
-    $html .= '<script>(function(){var s=document.getElementById("country_codeField");if(!s){return;}s.addEventListener("change",function(){var u=new URL(window.location.href);u.searchParams.set("country",s.value);window.location.assign(u.toString());});})();</script>' . "\n";
+    $html .= '<script>(function(){var s=document.getElementById("country_codeField");if(!s){return;}s.addEventListener("change",function(){var u=new URL(window.location.href);u.searchParams.set("country",s.value);["name","url"].forEach(function(n){var e=s.form&&s.form.elements[n];if(e&&e.value!==""){u.searchParams.set(n,e.value);}else{u.searchParams.delete(n);}});window.location.assign(u.toString());});})();</script>' . "\n";
     return $html;
 }
 
@@ -264,13 +267,13 @@ function addressCountryField(array $countries, string $countryCode, array $valid
  * subdivisions for. Postal code and telephone stay optional — the API doesn't
  * need either, and the validator fills the postal code in from the rest.
  *
- * @param array  $fields       addressBlankFields() shape
- * @param array  $validState   per-field state from the API ('' when untouched)
- * @param array  $validMsg     per-field message from the API
  * No hint under Telephone: the API reads a number in the national format of
  * the location's country or with its country code, and stores E.164 either
  * way, so there is nothing the contributor has to get right.
  *
+ * @param array  $fields       addressBlankFields() shape
+ * @param array  $validState   per-field state from the API ('' when untouched)
+ * @param array  $validMsg     per-field message from the API
  * @param string $countryCode  the location's country
  * @param array  $subdivisions addressSubdivisions() rows for that country
  * @param bool   $autofocus    put the cursor in the street field

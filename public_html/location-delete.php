@@ -15,9 +15,7 @@ if($api->unavailable()){
     serve503();
 }
 if(isset($locationData->error) || !isset($locationData->id)){
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 // Permissions — deleting is admin/staff only; everyone else goes back to the

@@ -301,7 +301,7 @@ echo $htmlHead->html;
                             <tr>
                                 <td><var>country_code</var></td>
                                 <td>string</td>
-                                <td>The ISO 3166–1 Alpha–2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses. See <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a> or the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. Locations can only be added for US brewers at this time; the brewer record itself may be from anywhere.</td>
+                                <td>The ISO 3166–1 Alpha–2 Code for the country the brewer is based in, the same standard the <a href="#location-object">location object</a> uses. See <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank" rel="noopener">the full list of assigned codes</a> or the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166</a> standard. The brewer may be anywhere; its locations may be in any of the <a href="#location-countries">supported countries</a>.</td>
                             </tr>
                             <tr>
                                 <td><var>cb_verified</var></td>
@@ -1189,7 +1189,7 @@ curl -X GET \
         "formatted": ["1462 N Milwaukee Ave", "Chicago, IL 60622"],
         "language_code": "en",
         "telephone": null,
-            "admin_area": {
+        "admin_area": {
           "sub_code": "US-IL",
           "name": "Illinois",
           "type": "state"
@@ -1218,7 +1218,7 @@ curl -X GET \
         "formatted": ["5401 Linda Vista Rd", "San Diego, CA 92110"],
         "language_code": "en",
         "telephone": "+16192952337",
-            "admin_area": {
+        "admin_area": {
           "sub_code": "US-CA",
           "name": "California",
           "type": "state"
@@ -2048,7 +2048,7 @@ curl -X GET \
             </tr>
             <tr>
                 <td><var>url</var></td>
-                <td>string</td>
+                <td>string or null</td>
                 <td>A web page for this location, if it has one.</td>
             </tr>
             <tr>
@@ -2089,7 +2089,7 @@ curl -X GET \
             <tr>
                 <td><var>address</var></td>
                 <td>object</td>
-                <td>The street address. See <a href="#location-address">The Address Object</a>.</td>
+                <td>The street address. See <a href="#location-address">The Address Object</a>. Every write carries one, so the field is absent only on the few locations added before that was required.</td>
             </tr>
             <tr>
                 <td><var>brewer</var></td>
@@ -2466,10 +2466,10 @@ curl -X POST \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
   -d '{"brewer_id":"9f96b99b-9865-4cf0-8950-bdc0d675be9f","name":"San Pedro","country_code":"US","address":{"line1":"110 E 22nd St","line2":"Warehouse No 9","locality":"San Pedro","sub_code":"US-CA","telephone":"3108339330"}}'
-  </pre>
+</pre>
 
 <h4>Sample Response</h4>
- <pre class="api-code">
+<pre class="api-code">
 {
   "id": "9c6a2a29-6c1d-4fdc-ba34-b9c7e2c1e14b",
   "object": "location",
@@ -2567,7 +2567,7 @@ curl -X PUT \
   -H 'accept: application/json' \
   -H 'authorization: Basic {secret_key}' \
   -H 'content-type: application/json' \
-  -d '{"brewer_id":"9f96b99b-9865-4cf0-8950-bdc0d675be9f","name":"San Pedro","country_code":"US"}'
+  -d '{"brewer_id":"9f96b99b-9865-4cf0-8950-bdc0d675be9f","name":"San Pedro","country_code":"US","address":{"line1":"110 E 22nd St","line2":"Warehouse No 9","locality":"San Pedro","sub_code":"US-CA","telephone":"3108339330"}}'
 </pre>
 
 <p><a href="#top">^ Return to top</a></p>
@@ -2612,12 +2612,12 @@ curl -X PUT \
                 <td>string</td>
                 <td>A page for this location.</td>
             </tr>
-                    <tr>
+            <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
                 <td>The street address, merged over the stored one; see <a href="#address-request">The Address Object › In a request</a>. Leave it out to keep the stored address. It can’t be removed, so <var>null</var> is refused.</td>
             </tr>
-</tbody>
+        </tbody>
     </table>
 </div>
 
@@ -2653,7 +2653,7 @@ curl -X DELETE \
 
 <h3 id="location-retrieve">Retrieve a Location</h3>
 
-                                <p>To get one location, send a <strong>GET</strong> request to <code>/location/{location_id}</code>.</p>
+<p>To get one location, send a <strong>GET</strong> request to <code>/location/{location_id}</code>.</p>
 
 <pre class="api-code">GET https://api.catalog.beer/location/{location_id}</pre>
 
@@ -2954,7 +2954,7 @@ curl -X GET \
           "formatted": ["3812 Grim Ave", "San Diego, CA 92104-3602"],
           "language_code": "en",
           "telephone": "+16192557136",
-                "admin_area": {
+          "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
             "type": "state"
@@ -2972,6 +2972,10 @@ curl -X GET \
         "description": null,
         "short_description": null,
         "url": "https://www.mikehessbrewing.com/",
+        "status": "active",
+        "founded_year": null,
+        "closed_year": null,
+        "country_code": "US",
         "cb_verified": true,
         "brewer_verified": false
       }
@@ -3077,7 +3081,7 @@ curl -X GET \
           "formatted": ["3000 Upas St", "San Diego, CA 92104-4221"],
           "language_code": "en",
           "telephone": "+16192695222",
-                "admin_area": {
+          "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
             "type": "state"
@@ -3095,6 +3099,10 @@ curl -X GET \
         "description": null,
         "short_description": null,
         "url": "http://www.moderntimesbeer.com/",
+        "status": "active",
+        "founded_year": null,
+        "closed_year": null,
+        "country_code": "US",
         "cb_verified": true,
         "brewer_verified": false
       }
@@ -3205,7 +3213,7 @@ curl -X GET \
           "formatted": ["627 8th Ave", "San Diego, CA 92101-6453"],
           "language_code": "en",
           "telephone": "+16197701844",
-                "admin_area": {
+          "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
             "type": "state"
@@ -3223,6 +3231,10 @@ curl -X GET \
         "description": "Our brewing facility is located in the heart of San Diego between Mission Bay and San Diego Bay. From craft beer and cocktails to delicious food and wine, we strive to make every experience memorable.\r\n\r\nThe Bay City Brewing Company was established in San Diego, California in 1912 (incorporated in 1911). It was initially controlled by F.C. and August Lang, J.H. Zitt’s father-in-law and brother-in-law. Today, the Bay City Brewing Company is owned and operated by its partners Chad Robley, Ben Dubois, and Greg Anderson – all local San Diegans.",
         "short_description": null,
         "url": "http://baycitybrewingco.com/",
+        "status": "active",
+        "founded_year": null,
+        "closed_year": null,
+        "country_code": "US",
         "cb_verified": true,
         "brewer_verified": false
       }

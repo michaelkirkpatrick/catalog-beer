@@ -27,6 +27,12 @@ $brewerURL = '';
 $brewerName = '';
 $name = '';
 $url = '';
+// The Country select reloads the page with ?country= and carries the name and
+// URL typed so far, so changing the country doesn't wipe them (address.php).
+if(isset($_GET['country'])){
+    $name = (string)($_GET['name'] ?? '');
+    $url = (string)($_GET['url'] ?? '');
+}
 $autofocus = true;
 $addressFields = addressBlankFields();
 // The location's country: the ?country= override (the Country select reloads

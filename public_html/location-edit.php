@@ -26,9 +26,7 @@ if($api->unavailable()){
     serve503();
 }
 if(isset($locationData->error) || !isset($locationData->id)){
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 // Permissions — brewer_verified locations are staff/admin-editable only; bounce back
@@ -58,6 +56,12 @@ $addressFields = addressFieldsFromLocation($locationData);
 // couldn't save" message, and fixes the country: the API refuses a country
 // change on a location that holds an address.
 $hadAddress = isset($locationData->address);
+if(!$hadAddress && isset($_GET['country'])){
+    // The Country select reloaded the page; keep the name and URL typed so
+    // far rather than resetting them to the stored values (address.php).
+    $name = (string)($_GET['name'] ?? '');
+    $url = (string)($_GET['url'] ?? '');
+}
 $countries = addressCountries($api);
 $country_code = $hadAddress
     ? strtoupper((string)($locationData->country_code ?? 'US'))

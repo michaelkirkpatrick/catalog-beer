@@ -15,7 +15,7 @@ A **location** is a physical place (taproom, brewery, brewpub) belonging to a br
 | `latitude`, `longitude` | float \| null | geocoded server-side when an address is added |
 | `cb_verified`, `brewer_verified` | boolean | server-controlled |
 | `last_modified` | integer | Unix timestamp |
-| `address` | object \| null | address object (below); absent until one has been given |
+| `address` | object | address object (below). Every write carries one, so the key is absent only on the few locations that predate the rule |
 | `brewer` | object | nested brewer object |
 
 ## POST /location — create
@@ -23,7 +23,8 @@ A **location** is a physical place (taproom, brewery, brewpub) belonging to a br
 | Field | Required | Constraints |
 |---|---|---|
 | `brewer_id` | **yes** | |
-| `country_code` | **yes** | ISO 3166-1 alpha-2 |
+| `country_code` | **yes** | ISO 3166-1 alpha-2, from the 40 supported countries |
+| `address` | **yes** | the nested address object — see "The nested `address`" below. Validated before anything is written; omitting it is a `400` naming the fields the country needs |
 | `name` | no | the venue's own name, or its neighborhood — see "Naming a location"; never the bare city |
 | `url` | no | location-specific URL — subject to the same **live reachability check** as the brewer's `url` (see [brewers.md](brewers.md)); only a host that does not answer, or answers `404`/`410`, is refused (a bot-protection `403` is accepted), and a refused URL 400s the whole write, so retry once then send without `url` |
 
@@ -41,7 +42,7 @@ A location already in the catalog with a null or city-only `name` is corrected w
 
 ## PATCH /location/{location_id}
 
-All optional: `brewer_id`, `name`, `country_code`, `url`.
+All optional: `brewer_id`, `name`, `country_code`, `url`, and `address` (merged over the stored one — it can be corrected but not removed; see below).
 
 **Send `null` to clear a nullable field** — `name` and `url`. An absent key means "leave this alone". Prefer this over PUT for clearing, since PUT clears by omission and will take the other optional fields with it.
 
@@ -49,7 +50,7 @@ All optional: `brewer_id`, `name`, `country_code`, `url`.
 
 ## PUT /location/{location_id}
 
-`brewer_id` + `country_code` required; omitted `name`/`url` cleared to null.
+`brewer_id`, `country_code` and `address` required; omitted `name`/`url` cleared to null.
 
 ## DELETE /location/{location_id}
 
@@ -75,11 +76,11 @@ Send the address inside the location request. It is validated and geocoded serve
 
 Validation errors come back nested: `valid_state.address.line1`, `valid_msg.address.postal_code`, and so on, beside the location's own `brewer_id`/`name`/`url`/`country_code`.
 
-**`PUT /location/{id}`** replaces the address wholesale: sub-fields you omit clear, and omitting `address` entirely clears the address (and the coordinates). `locality`, `sub_code`, `dependent_locality` and `postal_code` re-derive from the validated address whether you send them or not.
+**`PUT /location/{id}`** replaces the address wholesale: sub-fields you omit clear. `address` itself is required on a PUT — leaving it out is a `400`, not a way to clear it. `locality`, `sub_code`, `dependent_locality` and `postal_code` re-derive from the validated address whether you send them or not.
 
-**`PATCH /location/{id}`** merges the sub-fields you send over the stored address and re-validates the whole as one. Send `null` for a sub-field to clear it (`{"address": {"telephone": null}}`), or `"address": null` to remove the address. A patch that sends only `telephone` is written without re-validating the street. One asymmetry to know: `locality`+`sub_code` and `postal_code` are two spellings of the same place, so when you patch one group the stored other group is dropped and re-derived rather than merged — patching a new postal code with an old stored city would otherwise hand the validator a contradiction. Patch whichever group you trust and let the other come back derived.
+**`PATCH /location/{id}`** merges the sub-fields you send over the stored address and re-validates the whole as one. Send `null` for a sub-field to clear it (`{"address": {"telephone": null}}`). The address itself can be corrected but not removed: `"address": null` is a `400`. A patch that sends only `telephone` is written without re-validating the street. One asymmetry to know: `locality`+`sub_code` and `postal_code` are two spellings of the same place, so when you patch one group the stored other group is dropped and re-derived rather than merged — patching a new postal code with an old stored city would otherwise hand the validator a contradiction. Patch whichever group you trust and let the other come back derived.
 
-**Changing the country of a location that holds an address** needs the address in the same request (it re-validates in the new country) or `"address": null`; a `country_code` change on its own is a `400`.
+**Changing the country of a location that holds an address** needs the address in the same request (it re-validates in the new country); a `country_code` change on its own is a `400`.
 
 ## The address object (in responses)
 
@@ -91,7 +92,7 @@ Validation errors come back nested: `valid_state.address.line1`, `valid_msg.addr
 
 **The mailing city is frequently not the municipality the venue sits in**, and that is correct rather than a bug. A ZIP has one preferred city name, and it is often a larger neighbour: a taproom in Maplewood, MO stores as `Saint Louis` (the preferred name for `63143`), and most of St. Louis County, Brooklyn and much of LA County behave the same way. Unincorporated communities resolve to their post office — Paoli, WI stores as Belleville. A `PATCH` putting the municipality back re-derives straight to the mailing city again. To check what a ZIP's preferred city is, use [USPS's lookup **by ZIP code**](https://tools.usps.com/zip-code-lookup.htm?bycitystate), not by address: the by-address form echoes back whichever acceptable alias you typed, which makes the stored value look wrong when it isn't.
 
-**An address the validator cannot place at building level is refused**, not stored approximately: an unnumbered street (`Chiswick Lane South`) or a premise name with no street (`St James's Gate`) comes back `400` — and on a `POST` the location is not created either. Find the numbered street address on the brewery's site or a map, or create the location without an `address` and say so in your notes.
+**An address the validator cannot place at building level is refused**, not stored approximately: an unnumbered street (`Chiswick Lane South`) or a premise name with no street (`St James's Gate`) comes back `400` — and on a `POST` the location is not created either. Find the numbered street address on the brewery's site or a map. A location cannot be created without an address, so if none can be found, report that rather than guessing one.
 
 **Belgium reports no province.** The validator returns none for Belgian addresses, so `sub_code` and `admin_area` are null unless you send one (`BE-VWV` for West-Vlaanderen); Brussels has no province at all. That is the normal shape, not a failed write.
 

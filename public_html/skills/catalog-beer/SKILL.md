@@ -4,8 +4,8 @@ description: >-
   Read from and contribute to Catalog.beer, an open database of breweries, beers, and brewery locations, via its REST API. Use when the user wants to add or update a beer, brewery, or taproom on catalog.beer; search the beer catalog; find breweries near a location; or needs authoritative beer style specifications (ABV/IBU/SRM ranges from Brewers Association / BJCP guidelines).
 license: MIT
 metadata:
-  version: "3.0.0"
-  updated: "2026-10-17"
+  version: "3.0.1"
+  updated: "2026-10-20"
 ---
 
 # Catalog.beer API
@@ -57,7 +57,7 @@ The most common task. Order of operations:
 2. If not: fetch the brewery's website, then POST /brewer
 3. GET /brewer/{brewer_id}/beer            → does the beer exist?
 4. If not: find the beer on the brewery's site, then POST /beer
-5. (Optional) POST /location + POST /address/{location_id} for taprooms
+5. (Optional) POST /location, address nested, for taprooms
 ```
 
 Step 2 — create the brewery (verify name/URL/description from their site). `short_description` is a subtitle shown in search results and is **limited to 160 characters** — exceeding it returns a 400. `url` is **fetched live by the API** — a dead host or a `404` fails the whole write, but a bot-blocked `403` is accepted, so always send the correct URL; see "The URL field is checked live" below:

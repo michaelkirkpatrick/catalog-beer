@@ -16,9 +16,7 @@ if($api->unavailable()){
     serve503();
 }
 if(isset($beerData->error) || !isset($beerData->id)){
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 // Permissions — brewer_verified beers are staff/admin-editable only; bounce back

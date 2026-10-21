@@ -16,9 +16,7 @@ if($api->unavailable()){
     serve503();
 }
 if(isset($brewerData->error) || !isset($brewerData->id)){
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 // Permissions — brewer_verified brewers are staff/admin-editable only; bounce back
@@ -151,7 +149,8 @@ echo $htmlHead->html;
             echo $inputURL->display();
 
             // Country: every assigned ISO 3166-1 code, US first then by name.
-            // The brewer may be anywhere; locations are still US-only.
+            // The brewer may be anywhere; its locations are limited to the 40
+            // countries the address validator covers (GET /location/countries).
             $countryCodes = CountryCode::CODES;
             asort($countryCodes);
             $countryValues = array_merge(array('US'), array_values(array_diff(array_keys($countryCodes), array('US'))));
