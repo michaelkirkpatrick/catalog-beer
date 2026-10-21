@@ -259,10 +259,14 @@ a:hover { color: var(--cb-link-hover); }
 
 .cb-footer__cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-6); align-items: start; }
 .cb-footer__col--wide { grid-column: 1 / -1; }              /* full width until lg */
+@media (min-width: 576px) {
+  /* Project / Developers / Legal side by side once three fit */
+  .cb-footer__cols { grid-template-columns: repeat(3, 1fr); }
+}
 @media (min-width: 992px) {
-  /* 2 / 2 / 1 / 7 of a 12-column bed — the third track is a deliberate gutter,
-     so the license block lines up where it always has. */
-  .cb-footer__cols { grid-template-columns: 2fr 2fr 1fr 7fr; }
+  /* 2 / 2 / 2 / 6 of a 12-column bed: three link columns, then the license.
+     Until Oct 2026 there were two link columns and a 1fr gutter track. */
+  .cb-footer__cols { grid-template-columns: 2fr 2fr 2fr 6fr; }
   .cb-footer__col--wide { grid-column: 4; }
 }
 
