@@ -224,22 +224,52 @@ function locationAddressFacts($location): array {
     }
 
     $e164 = trim((string)($address->telephone ?? ''));
-    $facts['telephone'] = formatTelephone($e164);
+    $facts['telephone'] = locationTelephoneDisplay($address, $countryCode);
     $facts['telephoneHref'] = ($facts['telephone'] !== '') ? 'tel:' . $e164 : '';
 
     return $facts;
 }
 
 /**
- * A stored phone number for display: "(503) 555-0100" for the North American
- * numbering plan, "+32 57 40 03 76" for everything else.
+ * A phone number for display. The API sends the number grouped the way its
+ * country writes it (`telephone_national`, "(619) 255-7213"; and
+ * `telephone_formatted`, "+32 57 40 03 76"), worked out from the numbering
+ * plan on the API side, where the country knowledge lives. A US location
+ * shows the national form, since that is what a US reader dials; everywhere
+ * else the international form, calling code included. A record without
+ * those fields (a search-index hit written before they existed) falls back
+ * to formatTelephone()'s generic grouping. Raw.
+ *
+ * @param object|array|null $address      The address object, or the array a search hit carries
+ * @param string            $countryCode  The LOCATION's country
+ */
+function locationTelephoneDisplay($address, string $countryCode): string {
+    $address = (object)($address ?? array());
+    $e164 = trim((string)($address->telephone ?? ''));
+    if($e164 === ''){
+        return '';
+    }
+    if($countryCode === 'US' && strpos($e164, '+1') === 0 && !empty($address->telephone_national)){
+        return trim((string)$address->telephone_national);
+    }
+    if(!empty($address->telephone_formatted)){
+        return trim((string)$address->telephone_formatted);
+    }
+    return formatTelephone($e164);
+}
+
+/**
+ * FALLBACK grouping for a stored phone number: "(503) 555-0100" for the North
+ * American numbering plan, "+32 57 40 03 76" for everything else. Used only
+ * when the API's own `telephone_formatted` / `telephone_national` are absent
+ * (see locationTelephoneDisplay()); those are grouped from the numbering
+ * plan and are right where this is a guess.
  *
  * The API stores E.164 — a plus sign, the country calling code and the
  * national number, no separators. NANP numbers get the familiar US form
  * without the +1. Other countries get the calling code and the national
  * number in pairs from the right (so an odd length leads with a trio), which
- * is readable everywhere even where the local convention groups differently;
- * a real per-country formatter is a library this site does not carry.
+ * is readable everywhere even where the local convention groups differently.
  *
  * Anything that is not an E.164 string — an old ten-digit value from a cached
  * index record, an empty field — returns '' so the caller renders nothing: a

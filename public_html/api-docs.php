@@ -1193,6 +1193,8 @@ curl -X GET \
         "formatted": ["1462 N Milwaukee Ave", "Chicago, IL 60622"],
         "language_code": "en",
         "telephone": null,
+        "telephone_formatted": null,
+        "telephone_national": null,
         "admin_area": {
           "sub_code": "US-IL",
           "name": "Illinois",
@@ -1222,6 +1224,8 @@ curl -X GET \
         "formatted": ["5401 Linda Vista Rd", "San Diego, CA 92110"],
         "language_code": "en",
         "telephone": "+16192952337",
+        "telephone_formatted": "+1 619-295-2337",
+        "telephone_national": "(619) 295-2337",
         "admin_area": {
           "sub_code": "US-CA",
           "name": "California",
@@ -2131,6 +2135,8 @@ curl -X GET \
     "formatted": ["2215 India St", "San Diego, CA 92101-1725"],
     "language_code": "en",
     "telephone": "+16192557213",
+    "telephone_formatted": "+1 619-255-7213",
+    "telephone_national": "(619) 255-7213",
     "admin_area": {
       "sub_code": "US-CA",
       "name": "California",
@@ -2217,6 +2223,16 @@ curl -X GET \
                 <td>The phone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country code and the number, no spaces. Works as-is in a <code>tel:</code> link.</td>
             </tr>
             <tr>
+                <td><var>telephone_formatted</var></td>
+                <td>string or null</td>
+                <td>The same number written for an international reader, grouped the way its country groups it: <var>+31 20 528 6237</var>, <var>+1 619-255-7213</var>. Show this one unless your readers are in the number’s own country.</td>
+            </tr>
+            <tr>
+                <td><var>telephone_national</var></td>
+                <td>string or null</td>
+                <td>The same number as dialed inside its own country: <var>020 528 6237</var>, <var>(619) 255-7213</var>. Both forms come from the country’s numbering plan; a number whose country code we hold no plan for is returned as its E.164 string in both.</td>
+            </tr>
+            <tr>
                 <td><var>admin_area</var></td>
                 <td>object or null</td>
                 <td>The region behind <var>sub_code</var>, if any: its <var>sub_code</var>, its <var>name</var> in the local language and its <var>type</var> (<var>state</var>, <var>province</var>, <var>region</var>, <var>canton</var>, and so on).</td>
@@ -2240,6 +2256,8 @@ curl -X GET \
   "formatted": ["2215 India St", "San Diego, CA 92101-1725"],
   "language_code": "en",
   "telephone": "+16192557213",
+  "telephone_formatted": "+1 619-255-7213",
+  "telephone_national": "(619) 255-7213",
   "admin_area": {
     "sub_code": "US-CA",
     "name": "California",
@@ -2261,6 +2279,8 @@ curl -X GET \
   "formatted": ["Donkerstraat 12", "8640 Westvleteren"],
   "language_code": "nl",
   "telephone": "+3257400376",
+  "telephone_formatted": "+32 57 40 03 76",
+  "telephone_national": "057 40 03 76",
   "admin_area": {
     "sub_code": "BE-VWV",
     "name": "West-Vlaanderen",
@@ -2280,6 +2300,8 @@ curl -X GET \
   "formatted": ["Rue Gheude 56", "1070 Anderlecht"],
   "language_code": "fr",
   "telephone": null,
+  "telephone_formatted": null,
+  "telephone_national": null,
   "admin_area": null
 }
 </pre>
@@ -2383,6 +2405,8 @@ curl -X POST \
     "formatted": ["Donkerstraat 12", "8640 Westvleteren"],
     "language_code": "nl",
     "telephone": "+3257400376",
+    "telephone_formatted": "+32 57 40 03 76",
+    "telephone_national": "057 40 03 76",
     "admin_area": null
   },
   "brewer": {
@@ -2496,6 +2520,8 @@ curl -X POST \
     "formatted": ["110 E 22nd St", "Warehouse No 9", "San Pedro, CA 90731-7202"],
     "language_code": "en",
     "telephone": "+13108339330",
+    "telephone_formatted": "+1 310-833-9330",
+    "telephone_national": "(310) 833-9330",
     "admin_area": {
       "sub_code": "US-CA",
       "name": "California",
@@ -2958,6 +2984,8 @@ curl -X GET \
           "formatted": ["3812 Grim Ave", "San Diego, CA 92104-3602"],
           "language_code": "en",
           "telephone": "+16192557136",
+          "telephone_formatted": "+1 619-255-7136",
+          "telephone_national": "(619) 255-7136",
           "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
@@ -3085,6 +3113,8 @@ curl -X GET \
           "formatted": ["3000 Upas St", "San Diego, CA 92104-4221"],
           "language_code": "en",
           "telephone": "+16192695222",
+          "telephone_formatted": "+1 619-269-5222",
+          "telephone_national": "(619) 269-5222",
           "admin_area": {
             "sub_code": "US-CA",
             "name": "California",
@@ -3217,6 +3247,8 @@ curl -X GET \
           "formatted": ["627 8th Ave", "San Diego, CA 92101-6453"],
           "language_code": "en",
           "telephone": "+16197701844",
+          "telephone_formatted": "+1 619-770-1844",
+          "telephone_national": "(619) 770-1844",
           "admin_area": {
             "sub_code": "US-CA",
             "name": "California",

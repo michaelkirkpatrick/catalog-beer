@@ -564,6 +564,18 @@ ok('BE raw address lines follow formatted',
 ok('BE display name composes brewer and locality',
     locationDisplayName($be) === 'Sint-Sixtus – Westvleteren');
 
+// The API's own grouping wins when it is present: national for a US
+// location, international elsewhere; a Belgian number on a US location is
+// still shown internationally. The arrays a search hit carries work too.
+$usTel = (object)array('telephone' => '+16192557213', 'telephone_formatted' => '+1 619-255-7213', 'telephone_national' => '(619) 255-7213');
+$beTel = (object)array('telephone' => '+3257400376', 'telephone_formatted' => '+32 57 40 03 76', 'telephone_national' => '057 40 03 76');
+ok('US location shows the national form', locationTelephoneDisplay($usTel, 'US') === '(619) 255-7213');
+ok('non-US location shows the international form', locationTelephoneDisplay($beTel, 'BE') === '+32 57 40 03 76');
+ok('a foreign number on a US location stays international', locationTelephoneDisplay($beTel, 'US') === '+32 57 40 03 76');
+ok('a search-hit array is accepted', locationTelephoneDisplay((array)$usTel, 'US') === '(619) 255-7213');
+ok('without the API fields, the fallback grouping applies', locationTelephoneDisplay((object)array('telephone' => '+31205286237'), 'NL') === '+31 205 28 62 37');
+ok('an empty telephone displays nothing', locationTelephoneDisplay((object)array('telephone' => null, 'telephone_formatted' => 'x'), 'US') === '');
+
 // A row without `formatted` (none should exist; the migration backfilled it)
 // still gets a tail built from the fields, in the US order.
 $legacy = json_decode('{"id":"l","country_code":"US","address":{"line1":"1 Main St","locality":"Portland","sub_code":"US-OR","postal_code":"97201"}}');

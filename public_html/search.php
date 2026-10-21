@@ -487,7 +487,7 @@ function srRenderHit($hit){
         // Not linked as tel: — the whole row is already a link to the location
         // page, and a nested anchor is invalid HTML. The number is here to
         // identify the taproom, not to be dialled from the results list.
-        if(!empty($hit['address']['telephone'])){ $value = h(formatTelephone($hit['address']['telephone'])); }
+        if(!empty($hit['address']['telephone'])){ $value = h(locationTelephoneDisplay($hit['address'], (string)$hitCountry)); }
     }elseif($hitType === 'style'){
         if(!empty($hit['subtitle'])){ $context[] = h($hit['subtitle']); }
         $bits = array();
