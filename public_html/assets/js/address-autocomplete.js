@@ -243,7 +243,7 @@
         announce('Looking up address…');
 
         place.fetchFields({
-            fields: ['addressComponents', 'formattedAddress', 'internationalPhoneNumber', 'nationalPhoneNumber', 'websiteUri']
+            fields: ['addressComponents', 'formattedAddress', 'internationalPhoneNumber', 'nationalPhoneNumber', 'websiteURI']
         }).then(function () {
             fill(place);
         }).catch(function (error) {
@@ -331,7 +331,7 @@
         // hand back the brewery's front page.
         var urlField = field('url');
         if (urlField && (urlField.value.trim() === '' || urlField.value === written.url)) {
-            setValue('url', place.websiteUri || '');
+            setValue('url', place.websiteURI || '');
         }
 
         announce('Address filled in. Please check it before saving.');
