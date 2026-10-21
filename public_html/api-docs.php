@@ -102,7 +102,7 @@ echo $htmlHead->html;
             </nav>
             <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Last Updated: October 17, 2026</p>
+                <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Last Updated: October 21, 2026</p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
