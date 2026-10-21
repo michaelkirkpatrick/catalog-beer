@@ -18,6 +18,7 @@ date_default_timezone_set('America/Los_Angeles');
 
 require_once(ROOT . '/classes/helpers/html.php');
 require_once(ROOT . '/classes/helpers/posts.php');
+require_once(ROOT . '/classes/Parsedown.class.php'); // the web autoloads it; this harness has no autoloader
 
 $pass = 0;
 $fail = 0;
@@ -54,12 +55,34 @@ $list = renderPost($release, true);
 $single = renderPost($release, false);
 ok('title is escaped exactly once', str_contains($list, 'Verified records are &lt;editable&gt; &amp; &quot;open&quot;') && !str_contains($list, '&amp;lt;'));
 ok('summary is escaped into the meta', str_contains($list, 'content="Bob&#039;s &lt;b&gt;summary&lt;/b&gt;"'));
-ok('body is emitted raw, by contract', str_contains($list, $release->body));
+ok('an HTML body passes through Parsedown unchanged (pre-Markdown posts)', str_contains($list, $release->body));
 ok('list form links an h2 to the post', str_contains($list, '<h2 class="nw-post__title" itemprop="headline"><a href="/changelog/v5.4.0"'));
 ok('single form is an h1 with no link', str_contains($single, '<h1 class="cb-title nw-post__title" itemprop="headline">') && !str_contains($single, 'itemprop="url"'));
 ok('release shows its version and the breaking tag', str_contains($list, '>v5.4.0<') && str_contains($list, '>Breaking<'));
 ok('news shows neither', !str_contains(renderPost($news, true), 'nw-post__version') && !str_contains(renderPost($news, true), 'Breaking'));
 ok('datePublished is ISO 8601', str_contains($list, 'datetime="2026-10-13T16:08:51-07:00"'));
+
+echo "renderPostBody\n";
+is('paragraphs, emphasis and inline code',
+    "<p>Hello <em>world</em> and <code>GET /post</code>.</p>\n<p>Second.</p>",
+    renderPostBody("Hello *world* and `GET /post`.\n\nSecond."));
+is('heading, list and a root-relative link',
+    "<h3>For developers</h3>\n<ul>\n<li><strong>Fixed:</strong> a thing</li>\n<li>See <a href=\"/api-docs#post\">the docs</a></li>\n</ul>",
+    renderPostBody("### For developers\n\n- **Fixed:** a thing\n- See [the docs](/api-docs#post)"));
+is('fenced code block keeps its language and escapes its contents',
+    "<pre><code class=\"language-json\">{\"a\": \"&lt;b&gt;\"}</code></pre>",
+    renderPostBody("```json\n{\"a\": \"<b>\"}\n```"));
+is('bare URLs and hostnames are not auto-linked', '<p>Poll api.catalog.beer/post or https://catalog.beer/changelog</p>',
+    renderPostBody('Poll api.catalog.beer/post or https://catalog.beer/changelog'));
+is('straight quotes and -- stay straight (no SmartyPants)', '<p>"Hazy" -- it\'s fine</p>', renderPostBody('"Hazy" -- it\'s fine'));
+is('raw HTML inside Markdown is kept, by contract',
+    "<p>A <abbr title=\"Standard Reference Method\">SRM</abbr> swatch.</p>\n<details>\n<summary>More</summary>\nHidden\n</details>",
+    renderPostBody("A <abbr title=\"Standard Reference Method\">SRM</abbr> swatch.\n\n<details>\n<summary>More</summary>\nHidden\n</details>"));
+is('a multi-line HTML body with entities is byte-identical',
+    "<p>Nobody calls it a &#8220;Juicy&#8221; IPA.</p>\n<ul>\n<li><strong>Breaking:</strong> see <code>POST /location</code>.</li>\n</ul>",
+    renderPostBody("<p>Nobody calls it a &#8220;Juicy&#8221; IPA.</p>\n<ul>\n<li><strong>Breaking:</strong> see <code>POST /location</code>.</li>\n</ul>"));
+ok('a Markdown body renders inside the article', str_contains(renderPost((object)array_merge((array)$news, array('body' => "## Hi\n\nThere")), true),
+    '<div class="nw-post__body" itemprop="articleBody"><h2>Hi</h2>' . "\n" . '<p>There</p></div>'));
 
 echo "renderPostPager\n";
 is('one page: no pager', '', renderPostPager('/news', 1, false));

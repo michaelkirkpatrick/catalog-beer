@@ -4218,7 +4218,7 @@ curl -X GET \
             <tr>
                 <td><var>body</var></td>
                 <td>string</td>
-                <td>The full post, as HTML.</td>
+                <td>The full post, as Markdown. It may contain HTML; render it with a Markdown parser that passes HTML through, or show it as text. Posts written before 21 October 2026 are plain HTML, which such a parser renders unchanged.</td>
             </tr>
             <tr>
                 <td><var>version</var></td>
@@ -4323,7 +4323,7 @@ curl -X GET \
       "url": "https://catalog.beer/changelog/v5.3.2",
       "title": "Long descriptions stay searchable",
       "summary": "Search records truncate brewer and beer descriptions to 3,000 bytes.",
-      "body": "&lt;ul&gt;\n&lt;li&gt;&lt;strong&gt;Fixed:&lt;/strong&gt; search records truncate brewer and beer descriptions to 3,000 bytes ...&lt;/li&gt;\n&lt;/ul&gt;",
+      "body": "- **Fixed:** search records truncate brewer and beer descriptions to 3,000 bytes ...",
       "version": "5.3.2",
       "breaking": false,
       "status": "published",

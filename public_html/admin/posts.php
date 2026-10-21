@@ -20,10 +20,12 @@ Three screens:
     through the public template without saving), and Delete behind a
     confirmation step.
 
-The body is HTML and is published as written — the public pages emit it raw
-(see helpers/posts.php), so check it in Preview. Reads by id and the drafts
-list go out under the admin's own key (API::keyFor), since the API shows
-drafts only to an admin.
+The body is Markdown, rendered by renderPostBody() in helpers/posts.php with
+raw HTML allowed, so check it in Preview. Reads by id and the drafts list go
+out under the signed-in admin's key (API::keyFor) and ask for drafts with
+?status=all: the API returns a draft only to an admin who asks, so a read
+without it — every public page — is a 404 on a draft. A refused list request
+(not an admin) is shown as the API's own message, not as an empty table.
 */
 
 require_once ROOT . '/classes/helpers/posts.php';
@@ -44,7 +46,7 @@ $confirmDelete = false;
 $post = null;
 if($postID !== ''){
     $api = new API();
-    $resp = json_decode((string)$api->request('GET', '/post/' . $postID, ''));
+    $resp = json_decode((string)$api->request('GET', '/post/' . $postID . '?status=all', ''));
     if(!is_object($resp) || isset($resp->error)){
         serve404();
     }
@@ -153,6 +155,11 @@ if(!$editing){
         $hasMore = !empty($resp->has_more);
     }elseif($api->unavailable()){
         $errorMsg = 'The API did not answer. Try again in a moment.';
+    }else{
+        // A refusal (not an admin on the API's side) or an unexpected shape.
+        // Shown, not swallowed: until Oct 2026 this fell through to the empty
+        // state and read as "no posts" while the API was saying 403.
+        $errorMsg = 'The API refused the list (HTTP ' . (int)$api->httpcode . ')' . (is_object($resp) && !empty($resp->error_msg) ? ': ' . h($resp->error_msg) : '.');
     }
 }
 
@@ -316,7 +323,7 @@ echo $htmlHead->html;
             $t->description = 'Body';
             $t->required = true;
             $t->rows = 18;
-            $t->hint = 'HTML, published as written: <p>, <h3>, <ul>/<li>, <a href>, <code>, <strong>. Check it with Preview.';
+            $t->hint = 'Markdown: paragraphs, ### headings, - lists, [links](/path), `code`, ``` fenced blocks, **bold**. Raw HTML also works. Check it with Preview.';
             $t->value = $values['body'];
             $t->validState = $validState['body'];
             $t->validMsg = $validMsg['body'];

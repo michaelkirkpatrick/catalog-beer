@@ -7,10 +7,17 @@
  * renders at /news/{slug}, `api` — the API changelog — at /changelog/{slug},
  * where the slug of a release is v{version}.
  *
- * The body is admin-authored HTML and is emitted raw: the third raw-HTML
- * contract on the site, beside Alert::$msg and the Checkbox label, and safe for
- * the same reason — only an admin key can write a post (the API enforces it).
+ * The body is admin-authored Markdown, rendered by renderPostBody() through
+ * Parsedown with raw HTML allowed, and the result is emitted as is: the third
+ * raw-HTML contract on the site, beside Alert::$msg and the Checkbox label,
+ * and safe for the same reason — only an admin key can write a post (the API
+ * enforces it). Posts written before 2026-10-21 are plain HTML; Parsedown
+ * passes HTML blocks through untouched, so they render exactly as they did.
  * Title, summary, slug and version are plain text; h() them at output.
+ *
+ * Parsedown is the one Markdown parser on the site and posts are its only
+ * caller. User prose (descriptions, notes) stays plain text — see CLAUDE.md
+ * § Output Escaping — so do not reach for it from anywhere else.
  */
 
 const POST_CHANNELS = array(
@@ -76,8 +83,9 @@ function fetchPost(string $channel, string $slug): ?object {
         serve503();
     }
     $post = json_decode((string)$response);
-    // The API already hides drafts from the master key this page reads with;
-    // checking status here too means a public page can never render one.
+    // The API returns a draft only to an admin who sends ?status=all, which
+    // this read never does; checking status here too means a public page can
+    // never render one.
     if(!is_object($post) || isset($post->error) || ($post->object ?? '') !== 'post' || ($post->status ?? '') !== 'published'){
         return null;
     }
@@ -92,6 +100,23 @@ function fetchPost(string $channel, string $slug): ?object {
 function absolutizeLinks(string $html): string {
     $origin = siteOrigin();
     return preg_replace('/\b(href|src)=(["\'])\/(?!\/)/i', '$1=$2' . $origin . '/', $html);
+}
+
+/**
+ * The body as HTML: Markdown through Parsedown (classes/Parsedown.class.php,
+ * vendored 1.8.0, byte-identical). Raw HTML passes through, which is what keeps the pre-2026-10
+ * HTML bodies rendering and leaves an escape hatch when Markdown falls short.
+ * Bare URLs are not auto-linked: a changelog quotes paths and hostnames all
+ * the time, and a link should be one because the author wrote one. Straight
+ * quotes stay straight, as everywhere on the site.
+ */
+function renderPostBody(string $markdown): string {
+    static $parsedown = null;
+    if(is_null($parsedown)){
+        $parsedown = new Parsedown();
+        $parsedown->setUrlsLinked(false);
+    }
+    return $parsedown->text($markdown);
 }
 
 /**
@@ -122,8 +147,8 @@ function renderPost($post, bool $linkTitle): string {
     if(!empty($post->summary)){
         $html .= '<meta itemprop="description" content="' . h($post->summary) . '">';
     }
-    // Raw by contract — see the file docblock.
-    $html .= '<div class="nw-post__body" itemprop="articleBody">' . $post->body . '</div>';
+    // Rendered Markdown, emitted raw by contract — see the file docblock.
+    $html .= '<div class="nw-post__body" itemprop="articleBody">' . renderPostBody((string)$post->body) . '</div>';
     $html .= '</article>';
     return $html;
 }

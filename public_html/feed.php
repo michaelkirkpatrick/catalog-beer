@@ -82,7 +82,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 <?php if(!empty($post->summary)){ ?>
         <description><?php echo h($post->summary); ?></description>
 <?php } ?>
-        <content:encoded><?php echo cdata(absolutizeLinks($post->body)); ?></content:encoded>
+        <content:encoded><?php echo cdata(absolutizeLinks(renderPostBody((string)$post->body))); ?></content:encoded>
     </item>
 <?php } ?>
 </channel>
