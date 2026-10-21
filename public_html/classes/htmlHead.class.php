@@ -88,6 +88,13 @@ class htmlHead {
         $this->html = str_replace('</head>', $meta . '</head>', $this->html);
     }
 
+    // Advertise an RSS feed, so browsers and feed readers find it from the
+    // page. $href is a site path (/news/feed.xml).
+    function addFeed($href, $title){
+        $link = "\t" . '<link rel="alternate" type="application/rss+xml" title="' . h($title) . '" href="' . h($href) . '">' . "\n";
+        $this->html = str_replace('</head>', $link . '</head>', $this->html);
+    }
+
     // Embed a JSON-LD structured-data block before </head>. JSON_HEX_TAG so a
     // literal "</script>" in any value can't break out of the script element.
     function addJsonLd(array $data){
