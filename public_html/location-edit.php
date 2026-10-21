@@ -5,18 +5,13 @@ include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 $alert = new Alert();
 
 /* ---
-Edit a location — name, URL and address in one form.
+Edit a location — name, URL and address in one form, and one request.
 
-These used to be two pages (this one, and address-edit.php / address-add.php),
-which split one editing task across two screens and let a location exist with
-nothing attached to it at all. Now that a location's name is optional, a
-location without an address is a bare UUID and a brewer: it can't even label
-itself. So the address lives here, and the address pages redirect in.
-
-Two API calls, because the API keeps them apart: PUT /address/{id} then
-PATCH /location/{id}. The address goes first on purpose — it's the call that
-actually fails (Google validates and standardizes the street, the API rejects a
-bad ZIP), so failing before the location write leaves nothing half-saved.
+PATCH /location/{id} takes the address nested and merges it over the stored
+one, re-validating the whole as one (API 6.0). A blank address section is
+left out of the request entirely: the API has no way to express "remove the
+address" from a form that was simply left empty, and a location that never
+had one shouldn't be held hostage to it when only the name is being edited.
 --- */
 
 // Get Location ID
@@ -31,9 +26,7 @@ if($api->unavailable()){
     serve503();
 }
 if(isset($locationData->error) || !isset($locationData->id)){
-    http_response_code(404);
-    header('location: /error_page/404.php');
-    exit();
+    serve404();
 }
 
 // Permissions — brewer_verified locations are staff/admin-editable only; bounce back
@@ -51,7 +44,7 @@ $brewerID = $locationData->brewer->id;
 $locationIDString = $locationData->id;
 
 // Default Values from Existing Data
-$validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'', 'address1'=>'', 'address2'=>'', 'city'=>'', 'sub_code'=>'', 'zip'=>'', 'telephone'=>'');
+$validState = array('brewer_id'=>'', 'name'=>'', 'url'=>'', 'country_code'=>'', 'line1'=>'', 'line2'=>'', 'locality'=>'', 'dependent_locality'=>'', 'sub_code'=>'', 'postal_code'=>'', 'telephone'=>'');
 $validMsg = $validState;
 // Raw stored name, not the display stand-in — this prefills the form field, and
 // an unnamed location must show an empty box rather than a composed label the
@@ -59,9 +52,24 @@ $validMsg = $validState;
 $name = $locationData->name ?? '';
 $url = $locationData->url ?? '';
 $addressFields = addressFieldsFromLocation($locationData);
-// Whether this location had an address before this edit. Only used to word the
-// "we couldn't save" message accurately.
+// Whether this location had an address before this edit. Words the "we
+// couldn't save" message, and fixes the country: the API refuses a country
+// change on a location that holds an address.
 $hadAddress = isset($locationData->address);
+if(!$hadAddress && isset($_GET['country'])){
+    // The Country select reloaded the page; keep the name and URL typed so
+    // far rather than resetting them to the stored values (address.php).
+    $name = (string)($_GET['name'] ?? '');
+    $url = (string)($_GET['url'] ?? '');
+}
+$countries = addressCountries($api);
+$country_code = $hadAddress
+    ? strtoupper((string)($locationData->country_code ?? 'US'))
+    : addressFormCountry($countries, (string)($locationData->country_code ?? 'US'));
+if(!$hadAddress && isset($_POST['submit']) && !empty($_POST['country_code']) && isset($countries[strtoupper($_POST['country_code'])])){
+    $country_code = strtoupper($_POST['country_code']);
+}
+$subdivisions = addressSubdivisions($api, $country_code);
 
 // Process Form
 if(isset($_POST['submit'])){
@@ -74,53 +82,39 @@ if(isset($_POST['submit'])){
         $url = $_POST['url'] ?? '';
         $addressFields = addressFieldsFromPost();
 
-        $addressSaved = true;
+        $patchData = array('name'=>$name, 'url'=>$url);
         if(addressHasContent($addressFields)){
-            $addressResult = addressPut($api, $locationID, $addressFields);
-            if($addressResult['error']){
-                $addressSaved = false;
-                $alert->msg = $addressResult['error_msg'];
-                $alert->type = 'error';
-                foreach($addressResult['valid_state'] as $field => $state){
-                    $validState[$field] = $state;
-                    $validMsg[$field] = $addressResult['valid_msg'][$field] ?? '';
-                }
-            }
+            $patchData['address'] = $addressFields;
         }
-        // An empty address section is only reachable on a location that never had
-        // one — the fields are marked required, so the browser stops everyone
-        // else. Let the name/URL edit through rather than holding it hostage to
-        // an address the editor may not know.
-
-        if($addressSaved){
-            $patchData = array('name'=>$name, 'url'=>$url);
-            $patchResponse = $api->request('PATCH', '/location/' . $locationID, $patchData);
-            $patchArray = json_decode($patchResponse, true);
-            if(is_array($patchArray) && !isset($patchArray['error'])){
-                // Success — back to the location itself, which is where the Edit
-                // button that opened this form lives.
-                header('location: /location/' . $locationIDString);
-                exit();
-            }else{
-                // Anything we can't parse counts as a failure. Reporting a save
-                // that may not have happened is the worse of the two mistakes.
-                if(is_array($patchArray)){
-                    $alert->msg = $patchArray['error_msg'] ?? 'Sorry, we couldn\'t save this location.';
-                    foreach(($patchArray['valid_state'] ?? array()) as $field => $state){
-                        $validState[$field] = $state;
-                        $validMsg[$field] = $patchArray['valid_msg'][$field] ?? '';
-                    }
-                }else{
-                    $alert->msg = 'Sorry, we couldn\'t save this location just now. Please try again in a few minutes.';
-                }
-                $alert->type = 'error';
-                if($hadAddress || addressHasContent($addressFields)){
-                    // The address write already went through. Say so, so nobody
-                    // retypes it thinking the whole form was rejected.
-                    $alert->msg .= ' (The address was saved.)';
-                }
-            }
+        if(!$hadAddress && $country_code !== strtoupper((string)($locationData->country_code ?? 'US'))){
+            // A country chosen for a location that had no address yet. With
+            // an address in the same request it validates there.
+            $patchData['country_code'] = $country_code;
         }
+        $patchArray = json_decode($api->request('PATCH', '/location/' . $locationID, $patchData), true);
+        if(is_array($patchArray) && !isset($patchArray['error'])){
+            // Success — back to the location itself, which is where the Edit
+            // button that opened this form lives.
+            header('location: /location/' . $locationIDString);
+            exit();
+        }
+        // Anything we can't parse counts as a failure. Reporting a save that
+        // may not have happened is the worse of the two mistakes.
+        if(is_array($patchArray)){
+            $alert->msg = $patchArray['error_msg'] ?? '';
+            if($alert->msg === ''){
+                $alert->msg = 'Sorry, we couldn\'t save this location. Please check the fields below.';
+            }
+            foreach(locationFormState($patchArray['valid_state'] ?? array()) as $field => $state){
+                $validState[$field] = $state;
+            }
+            foreach(locationFormState($patchArray['valid_msg'] ?? array()) as $field => $msg){
+                $validMsg[$field] = $msg;
+            }
+        }else{
+            $alert->msg = 'Sorry, we couldn\'t save this location just now. Please try again in a few minutes.';
+        }
+        $alert->type = 'error';
     }
 }
 
@@ -177,10 +171,13 @@ echo $htmlHead->html;
 
             echo '</div>' . "\n";
 
-            // Address — the dead US-only Country select became the note here
-            echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span><span class="cbf-subhead__n">United States only, for now</span></div>' . "\n";
+            // Address. The country is fixed once an address exists (the API
+            // validated it for that country); before that it is a select that
+            // reloads the form for the chosen country.
+            echo '<div class="cbf-subhead"><span class="cbf-subhead__t">Address</span></div>' . "\n";
             echo '<div class="cbf-sec">' . "\n";
-            echo addressFormFields($addressFields, $validState, $validMsg);
+            echo addressCountryField($countries, $country_code, $validState, $validMsg, $hadAddress);
+            echo addressFormFields($addressFields, $validState, $validMsg, $country_code, $subdivisions);
             echo '</div>' . "\n";
             ?>
             <div class="cbf-actions">

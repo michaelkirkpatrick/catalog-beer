@@ -4,8 +4,8 @@ description: >-
   Read from and contribute to Catalog.beer, an open database of breweries, beers, and brewery locations, via its REST API. Use when the user wants to add or update a beer, brewery, or taproom on catalog.beer; search the beer catalog; find breweries near a location; or needs authoritative beer style specifications (ABV/IBU/SRM ranges from Brewers Association / BJCP guidelines).
 license: MIT
 metadata:
-  version: "2.5.1"
-  updated: "2026-10-06"
+  version: "3.0.1"
+  updated: "2026-10-20"
 ---
 
 # Catalog.beer API
@@ -57,7 +57,7 @@ The most common task. Order of operations:
 2. If not: fetch the brewery's website, then POST /brewer
 3. GET /brewer/{brewer_id}/beer            → does the beer exist?
 4. If not: find the beer on the brewery's site, then POST /beer
-5. (Optional) POST /location + POST /address/{location_id} for taprooms
+5. (Optional) POST /location, address nested, for taprooms
 ```
 
 Step 2 — create the brewery (verify name/URL/description from their site). `short_description` is a subtitle shown in search results and is **limited to 160 characters** — exceeding it returns a 400. `url` is **fetched live by the API** — a dead host or a `404` fails the whole write, but a bot-blocked `403` is accepted, so always send the correct URL; see "The URL field is checked live" below:
@@ -113,7 +113,7 @@ The taxonomy has three tiers — **class** (`ale`/`lager`) → **family** (26, e
   | `partial` | Only some words matched. **Never take `[0]` on faith.** Read the list; prefer `families`/`classes` or a catch-all. |
   | `description` | Matched only our prose about the style. Weakest signal we return. |
 
-  Within a `match` level ties break on how many beers we hold in each style, so a populous style can outrank a better-fitting rare one (for "Cali Pilsner" every candidate is `partial` and the closest is last of six). An all-`partial` list means the API did not recognise your label — that is a cue to file one tier up, not to pick the first row.
+  Within a `match` level ties break on how many beers we hold in each style, so a populous style can outrank a better-fitting rare one (for "Cali Pilsner" every candidate is `partial` and the closest is last of six). An all-`partial` list means the API did not recognize your label — that is a cue to file one tier up, not to pick the first row.
 
   **`families[]` and `classes[]` ride along** when your label names a family or super-class but no style matched outright — "Crisp American Lager" returns the `lager` class. Send `parent`/`class` back the same way you would a `style_id`. **`matched_on`** appears when we could not match your whole label and fell back to its last two words; the candidates describe that shorter phrase, not what you sent.
 
@@ -134,7 +134,7 @@ So **always try the write with the correct URL**, even when your own fetch of it
 Two consequences still hold:
 
 - **A refused URL fails the entire request** — `POST /brewer` with a dead `url` creates *no brewer at all*, not a brewer without a URL.
-- **Nothing is inferred from a blocked site.** When the answer was not a served page, the URL is stored exactly as submitted — no `https://` upgrade, no `www.` normalisation — so send the form a browser lands on.
+- **Nothing is inferred from a blocked site.** When the answer was not a served page, the URL is stored exactly as submitted — no `https://` upgrade, no `www.` normalization — so send the form a browser lands on.
 - **A domain may be shared; a homepage may not.** One brewer per *homepage*, not per domain: an acquired brand that still sells under its own name stores its page on the owner's site (`https://northchair.com/whetstone-beer/`) as its `url`, beside the owner's record at the root. A second brewer at a homepage or a page another brewer already holds is refused with `valid_msg.url` naming that brewer — send the right page, never the owner's homepage.
 
 When a write fails with `valid_msg.url` set (the message says "something seems to be wrong with your URL" for bad syntax and a dead host alike):
@@ -150,8 +150,8 @@ When a write fails with `valid_msg.url` set (the message says "something seems t
 | Search beers / brewers / styles | `GET /beer/search?q=` · `/brewer/search?q=` · `/style/search?q=` (max `count` 100) |
 | Get one | `GET /beer/{id}` · `/brewer/{id}` · `/location/{id}` · `/style/{slug}` |
 | A brewery's beers / locations | `GET /brewer/{id}/beer` · `/brewer/{id}/locations` |
-| Breweries near me | `GET /location/nearby?latitude=&longitude=` · `/location/zip?zip_code=` · `/location/city?city=&state=` |
-| Create | `POST /brewer` · `/beer` · `/location`, then `POST /address/{location_id}` |
+| Breweries near me | `GET /location/nearby?latitude=&longitude=` · `/location/zip?postal_code=&country=` · `/location/city?city=&region=&country=` |
+| Create | `POST /brewer` · `/beer` · `/location` (address nested) |
 | Edit | `PATCH /beer/{id}` etc. (partial) · `PUT` (full replace — clears omitted fields) |
 | Styles | `GET /style` (all, with `version`) · `/style/parent` (families) · `/style/class` |
 | My usage / billing status | `GET /usage/my-usage` · `GET /billing` (never blocked by the usage limit, not counted) |
@@ -175,7 +175,7 @@ All entity IDs are 36-char UUIDs; style IDs are slugs. List endpoints use cursor
 - Using PUT to change one field — it nulls every optional field you omitted.
 - Sending `beverage_type` or verification flags (`cb_verified`, `brewer_verified`) — these are server-controlled and cannot be set.
 - Writing a closure into the description alone. A brewery that has stopped brewing is `PATCH /brewer/{id}` with `{"status": "closed"}` (plus `closed_year` when a source states it); the record and its beers stay. A closed brewer takes no new locations, and a PUT that omits `status` reopens it — see `references/brewers.md` → "Closed breweries".
-- Forgetting the address is a **second request**: `POST /location` creates the location (needs `brewer_id` + `country_code`, ISO 3166-1 alpha-2); `POST /address/{location_id}` adds the street address (US only; needs `address2` = street, plus either `city`+`sub_code` or `zip5`).
+- Creating a location without its address. `POST /location` takes the address **nested**: `{"brewer_id": …, "country_code": "BE", "address": {"line1": "Donkerstraat 12", "locality": "Westvleteren", "postal_code": "8640"}}` — one request, validated before anything is written, so a refused street creates nothing. `country_code` is one of the 40 countries `GET /location/countries` lists; `line1` is the street, plus `locality` or `postal_code` (in the US, `locality` needs `sub_code` beside it). There is no `/address` endpoint and the old `address2`/`city`/`zip5` keys are gone as of API 6.0.
 - Giving a location a `name` that's just the city, or leaving `name` null when a brewer runs several venues in one city. `name` is for what the address doesn't already say: a venue with its own name uses it ("The Barrel House"), siblings in one city use the **neighborhood** ("South Park", "Bay Park"), and a brewer's only location in a city needs no `name`. Read the neighborhood off the brewery's page — never supply one from your own knowledge of the city.
 - Calling billing endpoints (`PATCH /billing`, `DELETE /billing`) without the user explicitly asking. They spend the user's money. On a free-tier `402`, report the options — wait for the monthly reset, or add a payment method at https://catalog.beer/billing — and let the user decide.
 - Error responses use `error`, `error_msg`, and per-field `valid_state`/`valid_msg` objects — read `valid_msg` to see exactly which field failed and why.

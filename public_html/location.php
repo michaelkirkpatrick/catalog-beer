@@ -64,7 +64,7 @@ $streetLine = $addressFacts['street'];
 $cityLine = $addressFacts['cityHtml'];   // HTML: schema spans, pieces pre-escaped
 $cityShort = $addressFacts['cityShort'];    // "Portland, OR" — meta description
 $telephone = $addressFacts['telephone'];
-$telephoneDigits = $addressFacts['telephoneDigits'];
+$telephoneHref = $addressFacts['telephoneHref'];
 
 // The same address unescaped, for the map popup (writes with textContent) and
 // the maps link (runs through rawurlencode()) — an escaped value would reach
@@ -96,7 +96,7 @@ $mapData = array(
     // location page, so the name must not link back to itself.
     'popup' => array(
         'name'       => trim($locationData->name ?? ''),
-        'city'       => $locationData->address->city ?? '',
+        'city'       => $locationData->address->locality ?? '',
         'brewerID'   => $locationData->brewer->id,
         'brewerName' => $locationData->brewer->name,
         'meta'       => $rawAddressLines,
@@ -130,19 +130,9 @@ if(isset($siblingData->data)){
             // Skip the location we're already looking at
             continue;
         }
-        $siblingCity = '';
-        if(isset($sibling->address)){
-            $parts = array();
-            if(!empty($sibling->address->address2)){$parts[] = $sibling->address->address2;}
-            if(!empty($sibling->address->city)){
-                $cityPart = $sibling->address->city;
-                if(!empty($sibling->address->state_short)){
-                    $cityPart .= ', ' . $sibling->address->state_short;
-                }
-                $parts[] = $cityPart;
-            }
-            $siblingCity = implode(', ', $parts);
-        }
+        // The address on one line, in the country's own order:
+        // "2215 India St, San Diego, CA 92101" / "Donkerstraat 12, 8640 Westvleteren".
+        $siblingCity = implode(', ', locationRawAddressLines($sibling));
         // An unnamed sibling takes the address line as its label and drops the
         // separate city span — the brewer is already named in the heading above
         // this list, so the usual "{brewer} – {city}" stand-in would just repeat
@@ -320,7 +310,7 @@ echo $htmlHead->html;
 
                 <?php
                 if($telephone !== ''){
-                    echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="tel:+1' . h($telephoneDigits) . '" itemprop="telephone">' . h($telephone) . '</a></span></div>' . "\n";
+                    echo '<div class="cb-fact"><span class="cb-fact__k">Phone</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($telephoneHref) . '" itemprop="telephone">' . h($telephone) . '</a></span></div>' . "\n";
                 }
 
                 if(!empty($locationData->url)){

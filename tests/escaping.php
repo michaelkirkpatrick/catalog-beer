@@ -48,6 +48,7 @@ require_once(ROOT . '/classes/Alert.class.php');
 require_once(ROOT . '/classes/Navigation.class.php');
 require_once(ROOT . '/classes/Table.class.php');
 require_once(ROOT . '/classes/helpers/location.php');
+require_once(ROOT . '/classes/CountryCode.class.php');   // cityShort names the country outside the US
 
 // Navigation::__construct() reads $_SERVER['REQUEST_URI'] with no fallback.
 // Always present under Apache, absent in CLI -- so stand in for the web context
@@ -475,18 +476,21 @@ ok('startTable() no longer mutates the caller\'s array',
 // ===========================================================================
 section('helpers/location.php — chunk 8');
 
-// A location whose every address field is hostile.
+// A US location whose every address field is hostile, in the API 6.0 shape:
+// `formatted` carries the display lines, `telephone` is E.164.
+$hostileTail = 'Portland" onmouseover="alert(1), OR<b> 97201-1234';
 $loc = json_decode(json_encode(array(
     'id' => 'abc',
     'name' => '',
+    'country_code' => 'US',
     'address' => array(
-        'address2'    => '123 <script>alert(1)</script> St',
-        'address1'    => 'Ste "A"',
-        'city'        => 'Portland" onmouseover="alert(1)',
-        'state_short' => 'OR<b>',
-        'zip5'        => '97201',
-        'zip4'        => '1234',
-        'telephone'   => '5035550100',
+        'line1'       => '123 <script>alert(1)</script> St',
+        'line2'       => 'Ste "A"',
+        'locality'    => 'Portland" onmouseover="alert(1)',
+        'sub_code'    => 'US-OR<b>',
+        'postal_code' => '97201-1234',
+        'formatted'   => array('123 <script>alert(1)</script> St', 'Ste "A"', $hostileTail),
+        'telephone'   => '+15035550100',
     ),
     'brewer' => array('name' => 'Barley & Hops', 'id' => 'brew-1'),
 )));
@@ -497,7 +501,7 @@ $facts = locationAddressFacts($loc);
 ok('street comes back RAW', $facts['street'] === '123 <script>alert(1)</script> St Ste "A"');
 ok('cityShort comes back RAW', $facts['cityShort'] === 'Portland" onmouseover="alert(1), OR<b>');
 ok('telephone is formatted', $facts['telephone'] === '(503) 555-0100');
-ok('telephoneDigits are the raw digits', $facts['telephoneDigits'] === '5035550100');
+ok('telephoneHref is the E.164 number', $facts['telephoneHref'] === 'tel:+15035550100');
 
 // cityShort must stay raw: location.php feeds it to addDescription(), which
 // escapes for itself. Pre-escaping here would double-escape the meta tag.
@@ -510,19 +514,22 @@ ok('cityShort survives addDescription() exactly once',
 noInjectedAttrs('cityShort injects nothing into the meta tag', $mm[0],
     array('content', 'name'));
 
-// The one HTML key: spans intact, every interpolated piece escaped.
+// The one HTML key: the formatted tail as visible text, the schema.org
+// pieces as <meta> tags, every interpolated value escaped.
 $cityHtml = $facts['cityHtml'];
 if($verbose){ echo "    $cityHtml\n"; }
-noInjectedAttrs('cityHtml carries only its itemprops', $cityHtml, array('itemprop'));
+noInjectedAttrs('cityHtml carries only itemprop and content', $cityHtml, array('itemprop', 'content'));
 ok('no onmouseover materialised in cityHtml', !in_array('onmouseover', attrNames($cityHtml)));
-ok('no element smuggled in via state_short',
-    (new DOMXPath(dom($cityHtml)))->query('//b')->length === 0);
+ok('no element smuggled in via sub_code or formatted',
+    (new DOMXPath(dom($cityHtml)))->query('//b|//script')->length === 0);
+ok('the visible line is the formatted tail, intact',
+    textOf($cityHtml, '//body') === $hostileTail);
 ok('addressLocality holds the exact city',
-    textOf($cityHtml, '//span[@itemprop="addressLocality"]') === 'Portland" onmouseover="alert(1)');
-ok('addressRegion holds the exact state',
-    textOf($cityHtml, '//span[@itemprop="addressRegion"]') === 'OR<b>');
-ok('postalCode is zip5-zip4',
-    textOf($cityHtml, '//span[@itemprop="postalCode"]') === '97201-1234');
+    attrValue($cityHtml, '//meta[@itemprop="addressLocality"]', 'content') === 'Portland" onmouseover="alert(1)');
+ok('addressRegion holds the exact region suffix',
+    attrValue($cityHtml, '//meta[@itemprop="addressRegion"]', 'content') === 'OR<b>');
+ok('postalCode is the whole postal code',
+    attrValue($cityHtml, '//meta[@itemprop="postalCode"]', 'content') === '97201-1234');
 
 // A caller escaping the street the way brewer.php and location.php now do.
 $block = '<span itemprop="streetAddress">' . h($facts['street']) . '</span>';
@@ -531,18 +538,52 @@ ok('caller-escaped street opens no element',
 ok('caller-escaped street reads correctly',
     textOf($block, '//span') === '123 <script>alert(1)</script> St Ste "A"');
 
-// No address at all — a location can exist without one.
+// Outside the US: the country-ordered tail, the country named in cityShort,
+// the calling code kept on the phone, and no region meta when there is none.
+$be = json_decode(json_encode(array(
+    'id' => 'be', 'name' => '', 'country_code' => 'BE',
+    'address' => array(
+        'line1' => 'Donkerstraat 12', 'line2' => null, 'locality' => 'Westvleteren',
+        'sub_code' => null, 'postal_code' => '8640',
+        'formatted' => array('Donkerstraat 12', '8640 Westvleteren'),
+        'telephone' => '+3257400376',
+    ),
+    'brewer' => array('name' => 'Sint-Sixtus', 'id' => 'brew-2'),
+)));
+$beFacts = locationAddressFacts($be);
+ok('BE street has no unit appended', $beFacts['street'] === 'Donkerstraat 12');
+ok('BE cityShort names the country', $beFacts['cityShort'] === 'Westvleteren, Belgium');
+ok('BE visible line is postal-code first', textOf($beFacts['cityHtml'], '//body') === '8640 Westvleteren');
+ok('BE has no addressRegion meta',
+    (new DOMXPath(dom($beFacts['cityHtml'])))->query('//meta[@itemprop="addressRegion"]')->length === 0);
+ok('BE telephone keeps its calling code', $beFacts['telephone'] === '+32 57 40 03 76');
+ok('BE telephoneHref is E.164', $beFacts['telephoneHref'] === 'tel:+3257400376');
+ok('BE raw address lines follow formatted',
+    locationRawAddressLines($be) === array('Donkerstraat 12', '8640 Westvleteren'));
+ok('BE display name composes brewer and locality',
+    locationDisplayName($be) === 'Sint-Sixtus – Westvleteren');
+
+// A row without `formatted` (none should exist; the migration backfilled it)
+// still gets a tail built from the fields, in the US order.
+$legacy = json_decode('{"id":"l","country_code":"US","address":{"line1":"1 Main St","locality":"Portland","sub_code":"US-OR","postal_code":"97201"}}');
+ok('no formatted: US tail is "City, ST ZIP"',
+    locationRawAddressLines($legacy) === array('1 Main St', 'Portland, OR 97201'));
+
+// No address at all — a location that predates the address requirement.
 $bare = locationAddressFacts(json_decode('{"id":"x"}'));
 ok('missing address yields the blank shape, all five keys',
-    $bare === array('street'=>'', 'cityHtml'=>'', 'cityShort'=>'', 'telephone'=>'', 'telephoneDigits'=>''));
+    $bare === array('street'=>'', 'cityHtml'=>'', 'cityShort'=>'', 'telephone'=>'', 'telephoneHref'=>''));
 ok('null location yields the blank shape too',
     locationAddressFacts(null)['cityHtml'] === '');
 
-// formatTelephone rejects anything that isn't exactly 10 digits.
-ok('9 digits formats to nothing', formatTelephone('503555010') === '');
-ok('11 digits formats to nothing', formatTelephone('15035550100') === '');
-ok('non-digits format to nothing', formatTelephone('503-555-0100') === '');
-ok('an int from json_decode still formats', formatTelephone(5035550100) === '(503) 555-0100');
+// formatTelephone takes E.164 only; anything else renders nothing.
+ok('a bare 10-digit number formats to nothing', formatTelephone('5035550100') === '');
+ok('a bare 11-digit number formats to nothing', formatTelephone('15035550100') === '');
+ok('a dashed number formats to nothing', formatTelephone('503-555-0100') === '');
+ok('an int from json_decode formats to nothing', formatTelephone(5035550100) === '');
+ok('an empty value formats to nothing', formatTelephone(null) === '');
+ok('E.164 NANP formats as (NPA) NXX-XXXX', formatTelephone('+15035550100') === '(503) 555-0100');
+ok('E.164 odd-length national number leads with a trio', formatTelephone('+49301234567') === '+49 301 23 45 67');
 
 // ===========================================================================
 // Chunk 15 — SendEmail's contact-form HTML body.

@@ -2,8 +2,14 @@
  * Address autocomplete for the location forms (location-add, location-edit).
  *
  * Progressive enhancement over the existing fields: with JS off, a missing API
- * key, or Places unavailable, the form is exactly the six controls it always
- * was. Nothing here is required to submit.
+ * key, or Places unavailable, the form is exactly the controls it always was.
+ * Nothing here is required to submit.
+ *
+ * COUNTRY: the street field carries data-cb-country (the location's country,
+ * chosen on the form's Country select, which reloads the page). Suggestions
+ * are scoped to it, and the region dropdown — when the country has one — is
+ * matched by ISO code or by name, since Google reports a Canadian province as
+ * "QC" but a Belgian one, when it reports it at all, as "West-Vlaanderen".
  *
  * WHY IT SITS IN THE STREET FIELD, AND WHY IT SEARCHES BUSINESSES TOO
  * The person filling this in is transcribing a BREWERY's address off the
@@ -44,6 +50,7 @@
     var PLACEHOLDER_ENHANCED = 'e.g. Worthy Brewing Bend, or 495 NE Bellevue Dr';
 
     var input, form, wrap, list, status;
+    var countryCode = 'us';   // from data-cb-country on the street field; see init()
     var places = null;
     var token = null;
     var suggestions = [];
@@ -197,12 +204,11 @@
         places.AutocompleteSuggestion.fetchAutocompleteSuggestions({
             input: value,
             sessionToken: token,
-            // US-only, because the address form is: the state control holds the
-            // 50 states and country_code is a disabled "US". Drop this line the
-            // day the form can express somewhere else.
-            includedRegionCodes: ['us'],
-            language: 'en-US',
-            region: 'us'
+            // The location's country, from the form (data-cb-country on the
+            // street field). Scoping the suggestions is what keeps "Vleteren"
+            // from finding a Vleteren Street in Ohio.
+            includedRegionCodes: [countryCode],
+            region: countryCode
             // A locationBias circle would go here. Nothing to bias toward yet:
             // on add we don't know where the taproom is, and on edit the address
             // is already filled in.
@@ -237,7 +243,7 @@
         announce('Looking up address…');
 
         place.fetchFields({
-            fields: ['addressComponents', 'formattedAddress', 'nationalPhoneNumber', 'websiteUri']
+            fields: ['addressComponents', 'formattedAddress', 'internationalPhoneNumber', 'nationalPhoneNumber', 'websiteUri']
         }).then(function () {
             fill(place);
         }).catch(function (error) {
@@ -254,12 +260,15 @@
         var components = place.addressComponents || [];
         filling = true;
 
-        // shortText for the route: "NE Bellevue Dr", not "Northeast Bellevue
-        // Drive". That's the USPS-preferred abbreviation, which is both what
-        // /address validation normalises to and what's already in the table.
+        // US: shortText for the route ("NE Bellevue Dr", not "Northeast
+        // Bellevue Drive") — the USPS-preferred abbreviation, which is what
+        // /address validation normalizes to. Elsewhere the spelled-out form,
+        // in the country's own order (number after the street in most of
+        // Europe), which is also what the validator stores.
         var streetNumber = shortText(component(components, 'street_number'));
-        var route = shortText(component(components, 'route'));
-        var street = (streetNumber + ' ' + route).trim();
+        var route = countryCode === 'us' ? shortText(component(components, 'route')) : longText(component(components, 'route'));
+        var numberFirst = ['us', 'ca', 'gb', 'ie', 'au', 'nz', 'fr', 'lu', 'in', 'sg', 'my', 'pr'].indexOf(countryCode) !== -1;
+        var street = (numberFirst ? (streetNumber + ' ' + route) : (route + ' ' + streetNumber)).trim();
         if (street === '' && place.formattedAddress) {
             // An establishment can come back without a street_number. Its first
             // formatted line beats leaving the required field empty.
@@ -270,38 +279,52 @@
             input.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
-        setValue('address1', longText(component(components, 'subpremise')));
+        setValue('line2', longText(component(components, 'subpremise')));
 
         var city = component(components, 'locality')
             || component(components, 'postal_town')
             || component(components, 'sublocality_level_1')
             || component(components, 'neighborhood');
-        setValue('city', longText(city));
+        setValue('locality', longText(city));
 
-        // "US-OR". Only when the state is one the dropdown actually offers — a
-        // value it doesn't have would silently select nothing. The shape test
-        // comes first: `state` is Google's string, and interpolating one that
-        // held a quote would throw out of querySelector and abandon the fields
-        // below. Two letters is also exactly what the dropdown's values are.
-        var country = shortText(component(components, 'country'));
-        var state = shortText(component(components, 'administrative_area_level_1'));
-        var stateField = field('sub_code');
+        // The region dropdown, when the country has one. Match by ISO suffix
+        // first ("OR" -> "US-OR", "QC" -> "CA-QC"), then by the option's text
+        // (Google names a Belgian province "West-Vlaanderen"), at either of
+        // the two administrative levels Google reports. No match leaves the
+        // "-- Choose --" option, a real option with an empty value, so this
+        // can never make the control unselectable.
+        var regionField = field('sub_code');
         var subCode = '';
-        if (country === 'US' && /^[A-Za-z]{2}$/.test(state) && stateField
-            && stateField.querySelector('option[value="US-' + state.toUpperCase() + '"]')) {
-            subCode = 'US-' + state.toUpperCase();
+        if (regionField) {
+            var candidates = [
+                shortText(component(components, 'administrative_area_level_1')),
+                shortText(component(components, 'administrative_area_level_2')),
+                longText(component(components, 'administrative_area_level_1')),
+                longText(component(components, 'administrative_area_level_2'))
+            ];
+            var options = Array.prototype.slice.call(regionField.options);
+            for (var c = 0; c < candidates.length && subCode === ''; c++) {
+                var text = candidates[c];
+                if (!text) { continue; }
+                var upper = countryCode.toUpperCase() + '-' + text.toUpperCase();
+                for (var o = 0; o < options.length; o++) {
+                    if (options[o].value === upper || (options[o].value !== '' && options[o].text.toLowerCase() === text.toLowerCase())) {
+                        subCode = options[o].value;
+                        break;
+                    }
+                }
+            }
         }
-        // '' clears to the dropdown's "-- Choose --" option, which is a real
-        // option with an empty value, so this can't leave it unselectable.
         setValue('sub_code', subCode);
 
-        var zip = longText(component(components, 'postal_code'));
-        var zip4 = longText(component(components, 'postal_code_suffix'));
-        setValue('zip', (zip !== '' && zip4 !== '') ? zip + '-' + zip4 : zip);
+        // Postal code as the country writes it. The ZIP+4 suffix is a US thing.
+        var postal = longText(component(components, 'postal_code'));
+        var postalSuffix = countryCode === 'us' ? longText(component(components, 'postal_code_suffix')) : '';
+        setValue('postal_code', (postal !== '' && postalSuffix !== '') ? postal + '-' + postalSuffix : postal);
 
-        // Stored as ten digits — strip the formatting Google returns.
-        var digits = place.nationalPhoneNumber ? place.nationalPhoneNumber.replace(/\D/g, '') : '';
-        setValue('telephone', digits.length === 10 ? digits : '');
+        // The API stores E.164 and reads international or national forms;
+        // Google's international number ("+32 57 40 03 76") is the unambiguous one.
+        setValue('telephone', place.internationalPhoneNumber || place.nationalPhoneNumber || '');
 
         // Only into an empty box, or over one a previous suggestion filled.
         // Someone who typed a taproom-specific URL meant it, and Places would
@@ -319,6 +342,9 @@
 
     function init() {
         input = document.querySelector('[data-cb-address-autocomplete]');
+        if (input && /^[a-z]{2}$/.test(String(input.getAttribute('data-cb-country') || '').toLowerCase())) {
+            countryCode = input.getAttribute('data-cb-country').toLowerCase();
+        }
         if (!input) { return; }
         form = input.form;
 

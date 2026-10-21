@@ -453,7 +453,7 @@ function srRenderHit($hit){
         // A brewer's subtitle is "City, ST" — but older index records fall back
         // to the short description when the brewer has no located taproom, and
         // that same prose renders as the snippet below. Compare against the
-        // source attributes, not the snippet, which arrives ellipsised.
+        // source attributes, not the snippet, which arrives ellipsized.
         $subtitle = (string)($hit['subtitle'] ?? '');
         if($subtitle !== '' && $subtitle !== (string)($hit['short_description'] ?? '') && $subtitle !== (string)($hit['description'] ?? '')){
             $context[] = h($subtitle);
@@ -468,9 +468,21 @@ function srRenderHit($hit){
         $value = h(implode(' · ', $bits));
     }elseif($hitType === 'location'){
         if(!empty($hit['brewer']['name'])){ $context[] = h($hit['brewer']['name']); }
+        // "San Diego, CA" at home; "Westvleteren, Belgium" abroad. Older index
+        // records (pre-October 2026) carry city/state_short instead; read both
+        // until the next full re-index.
         $place = array();
-        if(!empty($hit['address']['city'])){ $place[] = $hit['address']['city']; }
-        if(!empty($hit['address']['state_short'])){ $place[] = $hit['address']['state_short']; }
+        $hitCity = $hit['address']['locality'] ?? ($hit['address']['city'] ?? '');
+        if($hitCity !== ''){ $place[] = $hitCity; }
+        $hitCountry = $hit['countries'][0] ?? 'US';
+        $hitSub = (string)($hit['address']['sub_code'] ?? '');
+        if($hitCountry === 'US' && strpos($hitSub, 'US-') === 0){
+            $place[] = substr($hitSub, 3);
+        }elseif($hitCountry === 'US' && !empty($hit['address']['state_short'])){
+            $place[] = $hit['address']['state_short'];
+        }elseif($hitCountry !== 'US'){
+            $place[] = CountryCode::shortName($hitCountry) ?? $hitCountry;
+        }
         if(!empty($place)){ $context[] = h(implode(', ', $place)); }
         // Not linked as tel: — the whole row is already a link to the location
         // page, and a nested anchor is invalid HTML. The number is here to
