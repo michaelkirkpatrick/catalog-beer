@@ -624,6 +624,11 @@ curl -X GET \
                                 <td>integer</td>
                                 <td>The number of results you would like returned from your request. The default value is 500.</td>
                             </tr>
+                            <tr>
+                                <td><var>modified_since</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A Unix timestamp. Only brewers whose <var>last_modified</var> is at or after this moment are returned, with the same paging as the full list, so a client that already holds a copy of the catalog can fetch just what changed. See <a href="#brewer-sync">Checking for updates</a>.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -655,6 +660,11 @@ curl -X GET \
                                 <td><var>url</var></td>
                                 <td>string</td>
                                 <td>The API endpoint accessed to retrieve this object. In this case: <code>/brewer</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><var>modified_since</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>Present only when the request carried <var>modified_since</var>: the value that was applied.</td>
                             </tr>
                             <tr>
                                 <td><var>has_more</var></td>
@@ -721,6 +731,15 @@ curl -X GET \
   ]
 }
 </pre>
+
+                <h4 id="brewer-sync">Checking for updates</h4>
+
+                <p>If you keep your own copy of the catalog, you do not need to re-list everything to find out what changed. Note the current Unix time before you start a download. On your next visit, send that time back as <var>modified_since</var>: the list then holds only the brewers whose <var>last_modified</var> is at or after it, paged exactly like the full list, and you fetch each one with <code>GET /brewer/{brewer_id}</code> to refresh your copy. The comparison is inclusive, so a change made in the same second as your timestamp is included; seeing a record twice costs nothing, while missing one would leave your copy stale. The response repeats the value it applied as <var>modified_since</var>. <code>/beer</code> and <code>/location</code> take the same parameter. A beer's or a location's <var>last_modified</var> does not move when its brewer's does, so check all three lists.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/brewer?modified_since=1760918400</pre>
+
+                <p>Deleted records are not reported: a brewer that has been removed simply no longer appears in any list. If your copy needs to retire records, a <code>GET /brewer/{brewer_id}</code> that returns <strong>404</strong> is the signal, and the full list paged through without <var>modified_since</var> is the authoritative set of ids. A <var>modified_since</var> that is not a whole number of seconds is a <strong>400</strong>; it never falls back to the full list.</p>
+
                 <p><a href="#top">^ Return to top</a></p>
 
                 <h3 id="brewer-count">Number of Brewers</h3>
@@ -1750,6 +1769,11 @@ curl -X GET \
                                 <td>integer</td>
                                 <td>The number of results you would like returned from your request. The default value is 500.</td>
                             </tr>
+                            <tr>
+                                <td><var>modified_since</var><br><small class="text-muted">(optional)</small></td>
+                                <td>integer</td>
+                                <td>A Unix timestamp. Only beers whose <var>last_modified</var> is at or after this moment are returned, with the same paging as the full list, so a client that already holds a copy of the catalog can fetch just what changed. See <a href="#brewer-sync">Checking for updates</a>.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -2728,6 +2752,11 @@ curl -X GET \
                 <td><var>count</var><br><small class="text-muted">(optional)</small></td>
                 <td>integer</td>
                 <td>How many results to return. Default 500.</td>
+            </tr>
+            <tr>
+                <td><var>modified_since</var><br><small class="text-muted">(optional)</small></td>
+                <td>integer</td>
+                <td>A Unix timestamp. Only locations whose <var>last_modified</var> is at or after this moment are returned, with the same paging as the full list, so a client that already holds a copy of the catalog can fetch just what changed. See <a href="#brewer-sync">Checking for updates</a>.</td>
             </tr>
         </tbody>
     </table>
