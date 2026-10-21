@@ -38,6 +38,7 @@ define('ENVIRONMENT', 'staging');   // htmlHead only adds Fathom on production
 
 require_once(ROOT . '/classes/helpers/html.php');
 require_once(ROOT . '/classes/helpers/assets.php');
+require_once(ROOT . '/classes/helpers/analytics.php');   // fathomEventsScript(), called from htmlHead
 require_once(ROOT . '/classes/htmlHead.class.php');
 require_once(ROOT . '/classes/InputField.class.php');
 require_once(ROOT . '/classes/Textarea.class.php');
