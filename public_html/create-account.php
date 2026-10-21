@@ -65,6 +65,8 @@ if(isset($_POST['signupFormHidden'])){
                 $array = json_decode($response);
                 $_SESSION['userID'] = $array->id;
                 $success = true;
+                // Same request renders the confirmation, so this fires on it.
+                trackEvent('Account created');
             }else{
                 // Error
                 $array = json_decode($response, true);

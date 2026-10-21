@@ -42,6 +42,7 @@ if(isset($_POST['submit'])){
         if($api->httpcode == 204){
             // Success
             $_SESSION['delete_location_success'] = true;
+            trackEvent('Location deleted');
             header('location: /brewer/' . $brewerID);
             exit();
         }else{

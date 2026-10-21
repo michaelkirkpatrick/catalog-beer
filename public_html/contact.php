@@ -111,6 +111,7 @@ if(isset($_POST['signupFormHidden'])){
 
                 if(!$sendEmail->error){
                     // Email sent, show message
+                    trackEvent('Contact form sent');
                     $alert->msg = 'Thank you! Your message has been sent.';
                     $alert->type = 'success';
                     $alert->dismissible = true;

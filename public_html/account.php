@@ -379,6 +379,8 @@ echo $htmlHead->html;
         var copyTimer;
         copy.addEventListener('click', function(){
             if(navigator.clipboard){ navigator.clipboard.writeText(full); }
+            // Fathom only loads in production, so this is a no-op elsewhere.
+            if(window.fathom){ fathom.trackEvent('API key copied'); }
             copy.textContent = 'Copied';
             clearTimeout(copyTimer);
             copyTimer = setTimeout(function(){ copy.textContent = 'Copy'; }, 1600);

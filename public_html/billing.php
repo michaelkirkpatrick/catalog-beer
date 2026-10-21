@@ -43,6 +43,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         ));
         $sessionData = json_decode($apiResponse);
         if($api->httpcode == 201 && !empty($sessionData->url)){
+            // Fires on the next page here, which is /billing whether they
+            // finish or cancel at Stripe.
+            trackEvent('Billing checkout started');
             header('location: ' . $sessionData->url);
             exit();
         }

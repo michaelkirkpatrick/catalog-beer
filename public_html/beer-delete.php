@@ -45,6 +45,7 @@ if(isset($_POST['submit'])){
         if($api->httpcode == 204){
             // Success
             $_SESSION['delete_beer_success'] = true;
+            trackEvent('Beer deleted');
             header('location: /brewer/' . $brewerIDString);
             exit();
         }else{

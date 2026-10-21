@@ -17,14 +17,17 @@
 /**
  * Queue a Fathom event for the next rendered page.
  *
- * Call it in the success branch, just before the redirect. A no-op without a
- * session, which can't happen on the write pages (they all require login).
+ * Call it in the success branch, just before the redirect. Without a session
+ * (a logged-out visitor on /contact) the event is held for this request only,
+ * which is enough for a page that renders its own confirmation; starting a
+ * session just for analytics would hand an anonymous visitor a cookie.
  */
 function trackEvent(string $name): void {
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        return;
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        $_SESSION['fathom_events'][] = $name;
+    } else {
+        $GLOBALS['fathomEventsThisRequest'][] = $name;
     }
-    $_SESSION['fathom_events'][] = $name;
 }
 
 /**
@@ -36,11 +39,12 @@ function trackEvent(string $name): void {
  * a blocker that stopped the script loading at all.
  */
 function fathomEventsScript(): string {
-    if (empty($_SESSION['fathom_events'])) {
+    $events = array_merge($_SESSION['fathom_events'] ?? array(), $GLOBALS['fathomEventsThisRequest'] ?? array());
+    if (empty($events)) {
         return '';
     }
-    $events = array_values(array_unique($_SESSION['fathom_events']));
-    unset($_SESSION['fathom_events']);
+    $events = array_values(array_unique($events));
+    unset($_SESSION['fathom_events'], $GLOBALS['fathomEventsThisRequest']);
     if (!defined('ENVIRONMENT') || ENVIRONMENT !== 'production') {
         return '';
     }
