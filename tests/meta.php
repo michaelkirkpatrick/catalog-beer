@@ -18,6 +18,7 @@ define('ENVIRONMENT', 'staging');
 require_once(ROOT . '/classes/helpers/html.php');
 require_once(ROOT . '/classes/helpers/assets.php');
 require_once(ROOT . '/classes/helpers/meta.php');
+require_once(ROOT . '/classes/helpers/analytics.php');   // fathomEventsScript(), called from htmlHead
 require_once(ROOT . '/classes/htmlHead.class.php');
 
 $pass = 0;
