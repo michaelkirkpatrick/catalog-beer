@@ -68,6 +68,7 @@ if(isset($_POST['submit'])){
         $validMsg = array_merge($validMsg, $patchArray['valid_msg'] ?? array());
     }else{
         // Success
+        trackEvent('Brewer updated');
         header('location: /brewer/' . $patchArray['id']);
         exit();
     }

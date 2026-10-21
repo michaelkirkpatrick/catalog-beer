@@ -76,6 +76,7 @@ if(isset($_POST['submit'])){
             $validMsg = $patchArray['valid_msg'];
         }else{
             // Success
+            trackEvent('Beer updated');
             header('location: /beer/' . $patchArray['id']);
             exit();
         }

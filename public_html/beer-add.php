@@ -64,6 +64,7 @@ if(isset($_GET['brewerID'])){
                 if(!isset($beerData['error'])){
                     // Successfully Added
                     $_SESSION['add_beer_success'] = true;
+                    trackEvent('Beer created');
                     cacheDelete('counts');  // bust navbar count cache so the new beer shows immediately
                     header('location: /beer/' . $beerData['id']);
                     exit();

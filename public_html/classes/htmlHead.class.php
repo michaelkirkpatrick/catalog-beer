@@ -39,6 +39,13 @@ class htmlHead {
         if(defined('ENVIRONMENT') && ENVIRONMENT === 'production'){
             $fathom = "<!-- Fathom Analytics -->\n\t" . '<script src="https://cdn.usefathom.com/script.js" data-site="YRZMNYXM" defer></script>';
         }
+        // Custom events queued by the previous request's trackEvent() (see
+        // classes/helpers/analytics.php). Called on every environment so the
+        // queue drains; it only returns a script in production.
+        $events = fathomEventsScript();
+        if($events !== ''){
+            $fathom .= "\n\t" . $events;
+        }
         $html = str_replace('##FATHOM##', $fathom, $html);
 
         // Self-referencing canonical. Search Console filed 3,000+ URLs as

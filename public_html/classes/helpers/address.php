@@ -180,8 +180,12 @@ function addressFormCountry(array $countries, string $default): string {
 function addressFieldLabels(string $countryCode, array $subdivisions): array {
     $regionLabel = 'Region';
     if(!empty($subdivisions)){
-        $types = array_values(array_unique(array_map(fn($r) => (string)($r['type'] ?? ''), $subdivisions)));
-        $main = $types[0] ?? '';
+        // The commonest type names the control. Not the first row's: the
+        // Netherlands list opens with Bonaire, a special municipality, and
+        // took the label "Region" from it instead of "Province".
+        $typeCounts = array_count_values(array_map(fn($r) => (string)($r['type'] ?? ''), $subdivisions));
+        arsort($typeCounts);
+        $main = (string)array_key_first($typeCounts);
         $map = array('state' => 'State', 'province' => 'Province', 'canton' => 'Canton', 'region' => 'Region', 'county' => 'County',
             'prefecture' => 'Prefecture', 'land' => 'State', 'district' => 'District', 'department' => 'Department',
             'voivodship' => 'Voivodeship', 'territory' => 'State', 'country' => 'Country', 'municipality' => 'Municipality');

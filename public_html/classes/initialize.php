@@ -99,6 +99,7 @@ require_once ROOT . '/classes/helpers/forms.php';
 require_once ROOT . '/classes/helpers/address.php';
 require_once ROOT . '/classes/helpers/permissions.php';
 require_once ROOT . '/classes/helpers/verification.php';
+require_once ROOT . '/classes/helpers/analytics.php';
 
 // Navigation
 $nav = new Navigation();

@@ -44,6 +44,7 @@ if(isset($_POST['submit'])){
         $validMsg = array_merge($validMsg, $brewerArray['valid_msg'] ?? array());
     }else{
         // Success
+        trackEvent('Brewer created');
         cacheDelete('counts');  // bust navbar count cache so the new brewer shows immediately
         header('location: /brewer/' . $brewerArray['id']);
         exit();

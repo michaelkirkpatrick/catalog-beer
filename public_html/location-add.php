@@ -83,6 +83,7 @@ if(isset($_GET['brewerID'])){
                 $locationResult = json_decode($api->request('POST', '/location', $locationPOST), true);
                 if(is_array($locationResult) && !isset($locationResult['error']) && isset($locationResult['id'])){
                     // Successfully Added
+                    trackEvent('Location created');
                     header('location: /location/' . $locationResult['id']);
                     exit();
                 }

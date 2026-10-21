@@ -95,6 +95,7 @@ if(isset($_POST['submit'])){
         if(is_array($patchArray) && !isset($patchArray['error'])){
             // Success — back to the location itself, which is where the Edit
             // button that opened this form lives.
+            trackEvent('Location updated');
             header('location: /location/' . $locationIDString);
             exit();
         }
