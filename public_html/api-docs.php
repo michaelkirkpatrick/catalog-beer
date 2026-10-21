@@ -47,7 +47,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#beer-search">&gt; Search Beer</a>
                     <a class="list-group-item list-group-item-action" href="#location"><strong>Location</strong></a>
                     <a class="list-group-item list-group-item-action" href="#location-object">&gt; The Location Object</a>
-                    <a class="list-group-item list-group-item-action" href="#location-address">&gt; The Address</a>
+                    <a class="list-group-item list-group-item-action" href="#location-address">&gt; The Address Object</a>
                     <a class="list-group-item list-group-item-action" href="#location-add">&gt; Add a Location</a>
                     <a class="list-group-item list-group-item-action" href="#location-update">&gt; Update a Location (PUT)</a>
                     <a class="list-group-item list-group-item-action" href="#location-patch">&gt; Update a Location (PATCH)</a>
@@ -917,12 +917,12 @@ curl -X GET \
                             <tr>
                                 <td><var>parent</var></td>
                                 <td>string</td>
-                                <td>A style family id (e.g. <var>ipa</var>, <var>porter</var>). Only beers filed in that family are returned; an unknown family returns an empty list.</td>
+                                <td>A style family id. Only beers filed in that family are returned; an unknown family returns an empty list.</td>
                             </tr>
                             <tr>
                                 <td><var>exclude</var></td>
                                 <td>string</td>
-                                <td>A <var>beer_id</var> to leave out of the list, for example the beer whose page is listing its siblings.</td>
+                                <td>A <var>beer_id</var> to leave out of the list.</td>
                             </tr>
                             <tr>
                                 <td><var>count</var></td>
@@ -995,7 +995,7 @@ curl -X GET \
                             <tr>
                                 <td><var>parent</var></td>
                                 <td>string</td>
-                                <td>The canonical family id (e.g. <var>porter</var>).</td>
+                                <td>The canonical family id.</td>
                             </tr>
                             <tr>
                                 <td><var>class</var></td>
@@ -1340,17 +1340,17 @@ curl -X GET \
                             <tr>
                                 <td><var>style</var></td>
                                 <td>string</td>
-                                <td>The style of the beer as a human-readable label — the brewer’s own wording, preserved exactly (e.g. <var>West Coast IPA</var>).</td>
+                                <td>The style of the beer as a human-readable label — the brewer’s own wording, preserved exactly.</td>
                             </tr>
                             <tr>
                                 <td><var>style_id</var></td>
                                 <td>string</td>
-                                <td>The canonical <a href="#styles">style</a> the label resolved to (e.g. <var>american-ipa</var>), or <var>null</var> when the beer is filed at the family or class level rather than a specific style.</td>
+                                <td>The canonical <a href="#styles">style</a> the label resolved to, or <var>null</var> when the beer is filed at the family or class level rather than a specific style.</td>
                             </tr>
                             <tr>
                                 <td><var>parent</var></td>
                                 <td>string</td>
-                                <td>The canonical family (e.g. <var>ipa</var>) the beer belongs to. Derived from <var>style_id</var>, or set directly when filed at the family level.</td>
+                                <td>The canonical family the beer belongs to. Derived from <var>style_id</var>, or set directly when filed at the family level.</td>
                             </tr>
                             <tr>
                                 <td><var>class</var></td>
@@ -1470,12 +1470,12 @@ curl -X GET \
                             <tr>
                                 <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
+                                <td>File at a specific canonical <a href="#styles">style</a>. Takes precedence over <var>style</var>.</td>
                             </tr>
                             <tr>
                                 <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
                                 <td>string</td>
-                                <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
+                                <td>File at a family without choosing a specific style.</td>
                             </tr>
                             <tr>
                                 <td><var>class</var><br><small class="text-muted">(optional)</small></td>
@@ -1555,12 +1555,12 @@ curl -X POST \
             <tr>
                 <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>). Takes precedence over <var>style</var>.</td>
+                <td>File at a specific canonical <a href="#styles">style</a>. Takes precedence over <var>style</var>.</td>
             </tr>
             <tr>
                 <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>File at a family (e.g. <var>ipa</var>) without choosing a specific style.</td>
+                <td>File at a family without choosing a specific style.</td>
             </tr>
             <tr>
                 <td><var>class</var><br><small class="text-muted">(optional)</small></td>
@@ -1635,12 +1635,12 @@ curl -X PUT \
             <tr>
                 <td><var>style_id</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>File at a specific canonical <a href="#styles">style</a> (e.g. <var>american-ipa</var>).</td>
+                <td>File at a specific canonical <a href="#styles">style</a>.</td>
             </tr>
             <tr>
                 <td><var>parent</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>File at a family (e.g. <var>ipa</var>).</td>
+                <td>File at a family.</td>
             </tr>
             <tr>
                 <td><var>class</var><br><small class="text-muted">(optional)</small></td>
@@ -2019,7 +2019,7 @@ curl -X GET \
 
 <h3 id="location-object">The Location Object</h3>
 
-<p>A location is a place where you can drink a brewer’s beer. The object has the following parameters</p>
+<p>The Location object has the following parameters:</p>
 
 <div class="table-responsive">
     <table class="table">
@@ -2089,7 +2089,7 @@ curl -X GET \
             <tr>
                 <td><var>address</var></td>
                 <td>object</td>
-                <td>The street address. Every location has one. See <a href="#location-address">The Address</a>. The same object is how you write an address, and <var>telephone</var> lives inside it.</td>
+                <td>The street address. See <a href="#location-address">The Address Object</a>.</td>
             </tr>
             <tr>
                 <td><var>brewer</var></td>
@@ -2149,11 +2149,11 @@ curl -X GET \
 
 <p><a href="#top">^ Return to top</a></p>
 
-<h3 id="location-address">The Address</h3>
+<h3 id="location-address">The Address Object</h3>
 
-<p>A location has one street address, held in its <var>address</var> field. You read it there, and you write it there too: send it inside the location when you create or update one. There is no separate address endpoint.</p>
+<p>A location has a street address, held in its <var>address</var> field. Send it inside the Location Object when you create or update a location. There is no separate address endpoint.</p>
 
-<p>The address is checked against the postal records of the location’s country before it is saved. What you get back is the corrected version: the street written out in full, the postal code in its standard form, and the map coordinates filled in. The same fields work in every country, and <var>formatted</var> gives you the address as display lines, already in the order that country uses.</p>
+<p>The address is validated before it is saved. What you get back is the corrected version: the street written out in full, the postal code in its standard form, and the map coordinates filled in. The same fields work in every country, and <var>formatted</var> gives you the address as display lines, already in the order that country uses.</p>
 
 <h4>In a response</h4>
 
@@ -2170,32 +2170,32 @@ curl -X GET \
             <tr>
                 <td><var>line1</var></td>
                 <td>string</td>
-                <td>The street line, spelled out and in the country’s order: <var>2215 India St</var>, <var>Donkerstraat 12</var>, <var>Köpenicker Straße 70</var>.</td>
+                <td>The street line, spelled out and in the country’s order.</td>
             </tr>
             <tr>
                 <td><var>line2</var></td>
                 <td>string or null</td>
-                <td>The suite, unit, floor or building, if any (e.g. <var>Ste 800</var>, <var>bus 3</var>).</td>
+                <td>The suite, unit, floor or building, if any.</td>
             </tr>
             <tr>
                 <td><var>locality</var></td>
                 <td>string</td>
-                <td>The city or town, as the postal service names it (e.g. <var>San Diego</var>, <var>Westvleteren</var>, <var>London</var>).</td>
+                <td>The city or town, as the postal service names it.</td>
             </tr>
             <tr>
                 <td><var>dependent_locality</var></td>
                 <td>string or null</td>
-                <td>A district or village inside the locality, in countries that address that way (e.g. <var>Cuauhtémoc</var> in Mexico City). Usually <var>null</var>.</td>
+                <td>A district or village inside the locality, in countries that address that way. Usually <var>null</var>.</td>
             </tr>
             <tr>
                 <td><var>sub_code</var></td>
                 <td>string or null</td>
-                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (e.g. <var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). Always set in the US. Elsewhere, set only when the country uses regions in its addresses and one was found or given. Brussels has no province, so a Brussels address has <var>null</var> here.</td>
+                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code. Always set in the US. Elsewhere, set only when the country uses regions in its addresses and one was found or given. Brussels has no province, so a Brussels address has <var>null</var> here.</td>
             </tr>
             <tr>
                 <td><var>postal_code</var></td>
                 <td>string or null</td>
-                <td>The postal code as the country writes it, always a string: <var>01085</var>, <var>92101-1725</var> (a US ZIP+4), <var>8640</var>, <var>1018 AL</var>, <var>SW1A 1AA</var>, <var>100-0005</var>. Leading zeros and letters matter.</td>
+                <td>The postal code as the country writes it, always a string, so leading zeros and letters matter (e.g. <var>01085</var>, <var>SW1A 1AA</var>).</td>
             </tr>
             <tr>
                 <td><var>formatted</var></td>
@@ -2205,17 +2205,17 @@ curl -X GET \
             <tr>
                 <td><var>language_code</var></td>
                 <td>string</td>
-                <td>The language the address is written in, as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a> tag (e.g. <var>en</var>, <var>nl</var>, <var>fr</var>, <var>ja</var>). A Brussels address comes back in Dutch or French depending on what was sent, and this tells you which.</td>
+                <td>The language the address is written in, as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a> tag. A Brussels address comes back in Dutch or French depending on what was sent, and this tells you which.</td>
             </tr>
             <tr>
                 <td><var>telephone</var></td>
                 <td>string or null</td>
-                <td>The phone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country code and the number, no spaces (e.g. <var>+16192557213</var>, <var>+3257400376</var>). Works as-is in a <code>tel:</code> link.</td>
+                <td>The phone number as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: a plus sign, the country code and the number, no spaces. Works as-is in a <code>tel:</code> link.</td>
             </tr>
-                        <tr>
+            <tr>
                 <td><var>admin_area</var></td>
                 <td>object or null</td>
-                <td>The region behind <var>sub_code</var>, if any: its <var>sub_code</var>, its <var>name</var> in the local language (e.g. <var>California</var>, <var>West-Vlaanderen</var>, <var>Bayern</var>) and its <var>type</var> (<var>state</var>, <var>province</var>, <var>region</var>, <var>canton</var>, and so on).</td>
+                <td>The region behind <var>sub_code</var>, if any: its <var>sub_code</var>, its <var>name</var> in the local language and its <var>type</var> (<var>state</var>, <var>province</var>, <var>region</var>, <var>canton</var>, and so on).</td>
             </tr>
         </tbody>
     </table>
@@ -2280,9 +2280,11 @@ curl -X GET \
 }
 </pre>
 
-<h4>In a request</h4>
+<h4 id="address-request">In a request</h4>
 
-<p>Send these fields inside <var>address</var>, written the way the address is written locally. <strong>Required:</strong> <var>line1</var>, plus either <var>locality</var> or <var>postal_code</var>. In the US, a <var>locality</var> without a <var>postal_code</var> also needs <var>sub_code</var>. Everything else is optional.</p>
+<p>Send these fields inside <var>address</var>, written the way the address is written locally. Each field means what it does in a response; the notes below cover only what is different about sending it.</p>
+
+<p>The fields marked required are the minimum, not the goal. Send everything you have: each field you add is one less thing the validator has to guess.</p>
 
 <p>The validator covers 40 countries; see <a href="#location-countries">Supported Countries</a>. If it cannot match the address to a specific building, the request fails with a <var>400</var> and nothing is saved. On a <strong>POST</strong>, that means no location is created.</p>
 
@@ -2301,7 +2303,7 @@ curl -X GET \
             <tr>
                 <td><var>line1</var><br><small class="text-muted">(required)</small></td>
                 <td>string</td>
-                <td>The street line, as the country writes it: <var>110 E 22nd St</var>, <var>Donkerstraat 12</var>, <var>28 Rue de la Goutte d’Or</var>.</td>
+                <td>The street line.</td>
             </tr>
             <tr>
                 <td><var>line2</var><br><small class="text-muted">(optional)</small></td>
@@ -2316,35 +2318,26 @@ curl -X GET \
             <tr>
                 <td><var>dependent_locality</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>A district or village inside the locality, in countries that address that way (a Belgian <em>deelgemeente</em>, a Mexican <em>colonia</em>). Usually leave it out; the validator fills it in.</td>
+                <td>Usually leave it out; the validator fills it in.</td>
             </tr>
             <tr>
                 <td><var>sub_code</var><br><small class="text-muted">(required in the US when <var>locality</var> stands in for <var>postal_code</var>; optional otherwise)</small></td>
                 <td>string</td>
-                <td>The state, province or region as an <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166–2</a> code (e.g. <var>US-CA</var>, <var>BE-VWV</var>, <var>CA-QC</var>). You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location’s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
+                <td>You can send just the suffix: <var>CA</var> on a US location becomes <var>US-CA</var>. It must belong to the location’s country; see <a href="#location-subdivisions">Subdivisions</a> for the list. If the validator finds a region itself, that one is kept.</td>
             </tr>
             <tr>
                 <td><var>postal_code</var><br><small class="text-muted">(required unless you send <var>locality</var>)</small></td>
                 <td>string</td>
-                <td>The postal code as the country writes it: <var>90731</var> or <var>90731-7202</var> in the US, <var>8640</var> in Belgium, <var>1018 AL</var> in the Netherlands, <var>SW1A 1AA</var> in the UK. A code of clearly the wrong shape is refused before validation. Otherwise the validated form is what gets saved.</td>
+                <td>A code of clearly the wrong shape is refused before validation. Otherwise the validated form is what gets saved.</td>
             </tr>
             <tr>
                 <td><var>telephone</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The phone number, either with its country code (e.g. <var>+32 57 40 03 76</var>, <var>+1 310-833-9330</var>) or as dialed locally in the location’s country (e.g. <var>057 40 03 76</var>, <var>(310) 833-9330</var>). It is saved and returned as an <a href="https://en.wikipedia.org/wiki/E.164" target="_blank" rel="noopener">E.164</a> string: <var>+3257400376</var>.</td>
+                <td>The phone number, either with its country code (e.g. <var>+32 57 40 03 76</var>) or as dialed locally in the location’s country (e.g. <var>057 40 03 76</var>). It comes back as <var>+3257400376</var>.</td>
             </tr>
         </tbody>
     </table>
 </div>
-
-<h4>What each verb does with it</h4>
-
-<ul>
-    <li><strong>POST</strong> creates the address with the location, and requires it. A location without an address is refused with a <var>400</var> that names the fields the country needs.</li>
-    <li><strong>PUT</strong> replaces the address, and requires it. Any field you leave out of it is cleared.</li>
-    <li><strong>PATCH</strong> changes only the fields you send; leave <var>address</var> out and the stored one is kept. The fields you send are merged over the stored address and the result is validated as one, so <var>latitude</var> and <var>longitude</var> move with it. Send <var>null</var> for an optional field to clear it. An address can be corrected but not removed, so <var>"address": null</var> is refused with a <var>400</var>. One rule to know: <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> describe the same place two ways, so if you send one without the other, the stored other is dropped and worked out again from what you sent. That way an old ZIP can never contradict a new city. A patch that sends only <var>telephone</var> skips validation.</li>
-    <li><strong>To move a location to another country</strong>, send the address in the same request so it can be validated there. A country change on its own is refused with a <var>400</var>.</li>
-</ul>
 
 <p>Validation errors come back under <var>valid_state.address</var> and <var>valid_msg.address</var>, keyed by the seven fields above, next to the location’s own <var>brewer_id</var>, <var>name</var>, <var>url</var> and <var>country_code</var>.</p>
 
@@ -2458,7 +2451,7 @@ curl -X PATCH \
             <tr>
                 <td><var>address</var></td>
                 <td>object</td>
-                <td>The street address; see <a href="#location-address">The Address</a> for its fields. If the validator can’t place it, nothing is created.</td>
+                <td>The street address; see <a href="#address-request">The Address Object › In a request</a> for its fields. Without it, the request is refused with a <var>400</var> that names the fields the country needs. If the validator can’t place it, nothing is created.</td>
             </tr>
         </tbody>
     </table>
@@ -2555,7 +2548,7 @@ curl -X POST \
             <tr>
                 <td><var>address</var></td>
                 <td>object</td>
-                <td>The street address; see <a href="#location-address">The Address</a>. It replaces the stored address entirely.</td>
+                <td>The street address; see <a href="#address-request">The Address Object › In a request</a>. It replaces the stored address entirely: any field you leave out is cleared.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
@@ -2583,7 +2576,9 @@ curl -X PUT \
 
 <p>To change part of a location, send a <strong>PATCH</strong> request to <code>/location/{location_id}</code> with only the fields you want to change. Everything else stays as it is. A successful request returns the <a href="#location-object">location object</a>.</p>
 
-<p>You can send <var>address</var> too. It is merged over the stored address and validated as one; see <a href="#location-address">The Address</a>.</p>
+<p>You can send <var>address</var> too; its fields are in <a href="#address-request">The Address Object › In a request</a>. Only the address fields you send change. They are merged over the stored address and the result is validated as one, so <var>latitude</var> and <var>longitude</var> move with it. Send <var>null</var> for an optional field to clear it.</p>
+
+<p>One rule to know: <var>locality</var> + <var>sub_code</var> and <var>postal_code</var> describe the same place two ways, so if you send one without the other, the stored other is dropped and worked out again from what you sent. That way an old ZIP can never contradict a new city. A patch that sends only <var>telephone</var> skips validation.</p>
 
 <pre class="api-code">PATCH https://api.catalog.beer/location/{location_id}</pre>
 
@@ -2610,7 +2605,7 @@ curl -X PUT \
             <tr>
                 <td><var>country_code</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The country, as an ISO 3166–1 alpha-2 code. If the location has an address, send the address too; see <a href="#location-address">The Address</a>.</td>
+                <td>The country, as an ISO 3166–1 alpha-2 code. To change it, send the address too, so it can be validated in the new country; see <a href="#address-request">The Address Object › In a request</a>.</td>
             </tr>
             <tr>
                 <td><var>url</var><br><small class="text-muted">(optional)</small></td>
@@ -2620,7 +2615,7 @@ curl -X PUT \
                     <tr>
                 <td><var>address</var><br><small class="text-muted">(optional)</small></td>
                 <td>object</td>
-                <td>The street address, merged over the stored one; see <a href="#location-address">The Address</a>. Leave it out to keep the stored address. It can’t be removed, so <var>null</var> is refused.</td>
+                <td>The street address, merged over the stored one; see <a href="#address-request">The Address Object › In a request</a>. Leave it out to keep the stored address. It can’t be removed, so <var>null</var> is refused.</td>
             </tr>
 </tbody>
     </table>
@@ -3009,7 +3004,7 @@ curl -X GET \
             <tr>
                 <td><var>postal_code</var></td>
                 <td>string</td>
-                <td>A postal code as the country writes it (e.g. <var>92104</var>, <var>8640</var>, <var>1018 AL</var>).</td>
+                <td>A postal code as the country writes it.</td>
             </tr>
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
@@ -3132,12 +3127,12 @@ curl -X GET \
             <tr>
                 <td><var>city</var></td>
                 <td>string</td>
-                <td>The city to search around (e.g. <var>San Diego</var>).</td>
+                <td>The city to search around.</td>
             </tr>
             <tr>
                 <td><var>region</var><br><small class="text-muted">(required in the US, optional elsewhere)</small></td>
                 <td>string</td>
-                <td>The state, province or region, by name or abbreviation (e.g. <var>California</var> or <var>CA</var>). Required in the US, where a city name alone could be in any of fifty states. Optional elsewhere.</td>
+                <td>The state, province or region, by name or abbreviation. Required in the US, where a city name alone could be in any of fifty states. Optional elsewhere.</td>
             </tr>
             <tr>
                 <td><var>country</var><br><small class="text-muted">(optional)</small></td>
@@ -3546,11 +3541,11 @@ curl -X GET \
             </tr>
         </thead>
         <tbody>
-            <tr><td><var>id</var></td><td>string</td><td>The style’s slug (e.g. <var>american-ipa</var>) — the value used as <var>style_id</var> on a beer.</td></tr>
+            <tr><td><var>id</var></td><td>string</td><td>The style’s slug — the value used as <var>style_id</var> on a beer.</td></tr>
             <tr><td><var>object</var></td><td>string</td><td>The type of object, in this case “style”.</td></tr>
             <tr><td><var>name</var></td><td>string</td><td>The canonical style name.</td></tr>
             <tr><td><var>beverage_type</var></td><td>string</td><td>One of <var>beer</var>, <var>cider</var>, <var>perry</var>, or <var>mead</var>.</td></tr>
-            <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to (e.g. <var>ipa</var>) — the canonical family tier you can file a beer at.</td></tr>
+            <tr><td><var>parent</var></td><td>string</td><td>The slug of the <a href="#style-parents">family</a> this style belongs to — the canonical family tier you can file a beer at.</td></tr>
             <tr><td><var>class</var></td><td>string</td><td>The slug of the <a href="#style-classes">class</a> the style rolls up to (<var>ale</var> or <var>lager</var>), or <var>null</var> for families that do not roll up to one.</td></tr>
             <tr><td><var>parent_name</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The display name of the parent family.</td></tr>
             <tr><td><var>source</var><br><small class="text-muted">(detail only)</small></td><td>string</td><td>The primary guideline the style is drawn from: <var>BA-2026</var>, <var>BJCP-2021</var>, <var>OCB-2012</var>, or <var>NABA-2024</var>.</td></tr>
@@ -3923,7 +3918,7 @@ curl -X GET \
             <tr>
                 <td><var>slug</var></td>
                 <td>string</td>
-                <td>The family’s slug (e.g. <var>ipa</var>) — the value used as <var>parent</var> on a beer.</td>
+                <td>The family’s slug — the value used as <var>parent</var> on a beer.</td>
             </tr>
             <tr>
                 <td><var>object</var></td>
@@ -4017,7 +4012,7 @@ curl -X GET \
             <tr>
                 <td><var>slug</var></td>
                 <td>string</td>
-                <td>The class’s slug (e.g. <var>ale</var>) — the value used as <var>class</var> on a beer.</td>
+                <td>The class’s slug — the value used as <var>class</var> on a beer.</td>
             </tr>
             <tr>
                 <td><var>object</var></td>
