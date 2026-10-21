@@ -3,6 +3,17 @@
 $guest = true;
 include_once $_SERVER["DOCUMENT_ROOT"] . '/classes/initialize.php';
 
+// Current API version: the newest published changelog entry, so this page
+// can't drift from /changelog. Not fetchPosts(), which serves the 503 page
+// when the API is down; the docs stay readable and just lose the line.
+$apiVersion = null;
+$api = new API();
+$response = $api->request('GET', '/post?channel=api&count=1', '');
+$list = json_decode((string)$response);
+if(is_object($list) && !isset($list->error) && isset($list->data[0]->version, $list->data[0]->slug)){
+    $apiVersion = $list->data[0];
+}
+
 // HTML Head
 $htmlHead = new htmlHead('API Documentation');
 $htmlHead->addStylesheet('/assets/css/api-docs.css');
@@ -91,7 +102,7 @@ echo $htmlHead->html;
             </nav>
             <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p>Last Updated: October 17, 2026</p>
+                <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Last Updated: October 17, 2026</p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
