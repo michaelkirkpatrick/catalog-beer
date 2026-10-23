@@ -80,7 +80,7 @@ class API {
         if($type !== 'GET'){ return $this->usersAPIKey; }
         // Per-user GETs: the key's own usage and billing, the admin-gated
         // dashboards and queues, and the caller's role on a brewer.
-        foreach(array('/usage', '/billing', '/activity', '/metrics', '/review', '/brewer-lead') as $prefix){
+        foreach(array('/usage', '/billing', '/activity', '/metrics') as $prefix){
             if(strpos($endpoint, $prefix) === 0){ return $this->usersAPIKey; }
         }
         if(preg_match('#^/brewer/[-0-9a-f]{36}/permissions#', $endpoint)){ return $this->usersAPIKey; }
@@ -100,7 +100,7 @@ class API {
     // admin reports legitimately run longer and keep the old ceiling.
     private function timeoutFor($type, $endpoint): int {
         if($type !== 'GET'){ return 10; }
-        foreach(array('/activity', '/metrics', '/location/map', '/review', '/brewer-lead', '/usage') as $prefix){
+        foreach(array('/activity', '/metrics', '/location/map', '/usage') as $prefix){
             if(strpos($endpoint, $prefix) === 0){ return 10; }
         }
         return 4;

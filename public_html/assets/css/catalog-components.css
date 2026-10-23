@@ -205,7 +205,7 @@ a.cb-chip { text-decoration: none; display: inline-block; }
 .cb-note { display: block; width: 100%; font-family: var(--cb-mono); font-size: var(--cb-fs-label); color: var(--cb-muted-2); text-align: center; padding: .6rem; background: transparent; border: 1px dashed var(--cb-line-2); border-radius: var(--cb-radius-md); margin-top: .9rem; }
 button.cb-note { cursor: pointer; }
 button.cb-note:hover { color: var(--cb-ink-2); border-color: var(--cb-muted-2); }
-/* Server-rendered pages reach for the same control as a link (admin/reviews.php). */
+/* Server-rendered admin pages reach for the same control as a link. */
 a.cb-note { text-decoration: none; }
 a.cb-note:hover { color: var(--cb-ink-2); border-color: var(--cb-muted-2); }
 

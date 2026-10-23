@@ -29,7 +29,7 @@ without it — every public page — is a 404 on a draft. A refused list request
 */
 
 require_once ROOT . '/classes/helpers/posts.php';
-require_once ROOT . '/classes/helpers/review-ui.php';
+require_once ROOT . '/classes/helpers/alert.php';
 
 $postID = isset($_GET['postID']) && preg_match('/^[-0-9a-f]{36}$/', $_GET['postID']) ? $_GET['postID'] : '';
 $isNew = isset($_GET['new']);

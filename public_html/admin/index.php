@@ -50,18 +50,9 @@ echo $htmlHead->html;
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h5 class="card-title">Reviews</h5>
-                                <p class="card-text">The brewer review loop's check-in: answer what is waiting on a decision, and read every change a review made.</p>
-                                <a href="/admin/reviews" class="btn btn-primary">View Reviews</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Leads</h5>
-                                <p class="card-text">Breweries the review loop met that the catalog does not hold, queued to be researched before anything is created.</p>
-                                <a href="/admin/leads" class="btn btn-primary">View Leads</a>
+                                <h5 class="card-title">Brewer reviews</h5>
+                                <p class="card-text">The review loop lives in its own service: the check-in, the queue, every run and review, leads and the URL audit. Its own sign-in.</p>
+                                <a href="<?php echo ENVIRONMENT === 'staging' ? 'https://review-staging.catalog.beer/admin' : 'https://review.catalog.beer/admin'; ?>" class="btn btn-primary">Open the review service</a>
                             </div>
                         </div>
                     </div>
