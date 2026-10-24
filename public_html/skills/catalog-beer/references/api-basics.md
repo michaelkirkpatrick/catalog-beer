@@ -87,6 +87,10 @@ Cursor-based. List responses:
 - `count` query param controls page size. Defaults: 500 for `/brewer`, `/beer`, `/location`; 25 (max 100) for `*/search`; 100 for `/location/nearby|zip|city`.
 - URL-encode query values (everything except alphanumerics, `-`, `_`).
 
+## Syncing a copy of the catalog
+
+`GET /brewer`, `GET /beer` and `GET /location` take `modified_since=<unix seconds>` and return only the rows whose `last_modified` is at or after it, paged like the full list; the response echoes the value as `modified_since`. To refresh a local copy: note the current time before the run, page each of the three lists with the *previous* run's time, fetch every id returned (`GET /brewer/{id}` and so on), then store the new time. The comparison is inclusive, so a record can show up in two consecutive runs; that is harmless. A malformed value (anything but digits, the empty string included) is a `400`, never the whole catalog. Deletes are not reported — a `404` on the entity is the only signal, and the full unfiltered list is the authoritative set of ids. A beer's or location's `last_modified` does not move when its brewer's does, so page all three lists.
+
 ## IDs
 
 Entity IDs (beer, brewer, location, user) are 36-character UUIDs. Style IDs are human-readable slugs (`american-ipa`). `last_modified` fields are Unix timestamps (integers).

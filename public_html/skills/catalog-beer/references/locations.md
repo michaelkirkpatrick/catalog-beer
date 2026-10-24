@@ -116,4 +116,4 @@ Each `data[]` element has three keys: `location` (with its `address` object; eve
 ## Reads
 
 - `GET /location/{location_id}` — one location object.
-- `GET /location` — all locations; rows `{id, name (nullable), last_modified}`; `count` default 500.
+- `GET /location` — all locations; rows `{id, name (nullable), last_modified}`; `count` default 500. `modified_since=<unix seconds>` keeps only locations changed at or after that moment (inclusive); see api-basics.md § Syncing a copy of the catalog.
