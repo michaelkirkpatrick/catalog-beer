@@ -102,7 +102,7 @@ echo $htmlHead->html;
             </nav>
             <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Last Updated: October 21, 2026</p>
+                <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Last Updated: October 29, 2026</p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
@@ -4874,7 +4874,7 @@ curl -X GET \
             <tr>
                 <td><var>email</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The user’s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain.</td>
+                <td>The user’s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain. Temporary and disposable email domains are refused with a <var>400</var>.</td>
             </tr>
             <tr>
                 <td><var>password</var><br><small class="text-muted">(optional)</small></td>
