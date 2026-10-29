@@ -203,6 +203,7 @@ Apache `public_html/.htaccess` handles clean URLs. Pattern: `/resource/UUID` →
 - Set `$guest = false` at page top to require login
 - Protected pages redirect to `/login?request=<URI>` with return URL (validated to prevent open redirects)
 - Email verification enforced — unverified users are redirected to `/verify-email`
+- `/verify-email/{code}` verifies on **POST only**: the GET renders a confirm button whose form POSTs the code (since 2026-10-29). Mail gateways and link previews fetch every URL in a message, so a GET that verified on sight was being satisfied by scanners before the person opened the email, and could spend the single-use code first. Scanners follow links but do not submit forms. The link in the API's email is unchanged. Apply the same rule to any future emailed link that mutates (a password reset, an unsubscribe).
 - Session cookies: `httponly`, `secure`, `samesite=Lax`
 - `session_regenerate_id(true)` after login and account creation
 - CSRF tokens on all authenticated forms via `csrf_field()` / `csrf_verify()`
