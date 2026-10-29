@@ -435,7 +435,11 @@ echo $htmlHead->html;
                             // homepage. The homepage itself stays host-only.
                             $urlPath = rtrim((string)parse_url($brewerData->brewer->url, PHP_URL_PATH), '/');
                             $urlLabel = $urlHost . (preg_match('#^(/index\.(html?|php))?$#i', $urlPath) ? '' : $urlPath);
-                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . h($urlLabel) . ' &#8599;</a></span></div>';
+                            // <wbr> after each slash so a long label wraps at a path
+                            // boundary ("…brewing.com/" / "blendery.html") instead of
+                            // mid-word. Inserted after h(), which would escape it.
+                            $urlLabelHtml = str_replace('/', '/<wbr>', h($urlLabel));
+                            echo '<div class="cb-fact"><span class="cb-fact__k">Website</span><span class="cb-fact__v cb-fact__v--sm"><a href="' . h($brewerData->brewer->url) . '" target="_blank" rel="noopener">' . $urlLabelHtml . ' &#8599;</a></span></div>';
                         }
                     }
                     ?>

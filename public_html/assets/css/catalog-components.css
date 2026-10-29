@@ -127,7 +127,7 @@ a.cb-chip { text-decoration: none; display: inline-block; }
 .cb-fact:last-child { border-bottom: 0; }
 .cb-fact__k { font-family: var(--cb-mono); font-size: var(--cb-fs-label-sm); letter-spacing: var(--cb-track-tag); text-transform: uppercase; color: var(--cb-muted); }
 .cb-fact__v { font-family: var(--cb-serif); font-size: 1.5rem; color: var(--cb-ink); line-height: 1; }
-.cb-fact__v--sm { font-family: var(--cb-sans); font-size: var(--cb-fs-sm); font-weight: var(--cb-fw-medium); text-align: right; }
+.cb-fact__v--sm { font-family: var(--cb-sans); font-size: var(--cb-fs-sm); font-weight: var(--cb-fw-medium); text-align: right; overflow-wrap: anywhere; }
 .cb-fact__v a { color: var(--cb-link); text-decoration: none; }
 .cb-fact__v a:hover { color: var(--cb-link-hover); }
 
