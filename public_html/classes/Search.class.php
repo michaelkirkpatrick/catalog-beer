@@ -29,6 +29,22 @@ class Search {
     public $errorMsg = '';
     public $httpcode = 0;
 
+    /**
+     * The physical index to query: `catalog` on production, `catalog_staging`
+     * on staging. Staging and production share one Algolia application, and
+     * since 2026-10-29 the API writes each environment's records to its own
+     * index (Algolia::indexName() in the API repo), so staging search must
+     * read the same one or it shows production data.
+     *
+     * @return string
+     */
+    public static function indexName(){
+        if(defined('ENVIRONMENT') && ENVIRONMENT === 'staging'){
+            return 'catalog_staging';
+        }
+        return 'catalog';
+    }
+
     private $filename = 'Search.class.php';
 
     /*
@@ -61,7 +77,7 @@ class Search {
                 }
             }
             $requests[] = array(
-                'indexName' => 'catalog',
+                'indexName' => self::indexName(),
                 'params'    => http_build_query($encoded)
             );
         }
