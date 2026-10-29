@@ -100,6 +100,7 @@ require_once ROOT . '/classes/helpers/address.php';
 require_once ROOT . '/classes/helpers/permissions.php';
 require_once ROOT . '/classes/helpers/verification.php';
 require_once ROOT . '/classes/helpers/analytics.php';
+require_once ROOT . '/classes/helpers/antispam.php';
 
 // Navigation
 $nav = new Navigation();

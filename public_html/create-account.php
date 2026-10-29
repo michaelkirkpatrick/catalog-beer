@@ -39,58 +39,38 @@ if(isset($_POST['signupFormHidden'])){
     }
     $captcha = $_POST['g-recaptcha-response'] ?? '';
 
-    // Verify Captcha
-    $captchaSecretKey = RECAPTCHA_SECRET_KEY;
-    $captchaResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $captchaSecretKey . '&response=' . $captcha . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
-    $captchaJSON = json_decode($captchaResponse, true);
-    if($captchaJSON['success'] == false){
-        // Didn't Pass Captcha
+    // Honeypot, signed form stamp, then reCAPTCHA (classes/helpers/antispam.php).
+    // The account-level checks — disposable domains, per-network caps — are the
+    // API's, which is why the visitor's address goes along as signup_ip.
+    $blocked = formGate('signup', $captcha, 'create-account.php');
+    if($blocked === 'honeypot'){
+        // A bot filled the hidden field: show it the success page, create nothing.
+        $success = true;
+    }elseif($blocked !== ''){
         $error = true;
-        $errorMsg = 'Sorry, there was an error processing the Captcha.';
-
-        // Update Alert
-        $alert->msg = $errorMsg;
-
+        $alert->msg = formGateMessage($blocked, 'create an account');
     }else{
-        // Successful Captcha, check score
-        if($captchaJSON['score'] >= 0.5){
-            // Send to API
-            $data = array('name'=>$name, 'email'=>$email, 'password'=>$password, 'terms_agreement'=>$termsAgreement);
-            $api = new API();
-            $response = $api->request('POST', '/users', $data);
-            if($api->httpcode == 201){
-                // Successfully Created Account
-                ensureSession();
-                session_regenerate_id(true);
-                $array = json_decode($response);
-                $_SESSION['userID'] = $array->id;
-                $success = true;
-                // Same request renders the confirmation, so this fires on it.
-                trackEvent('Account created');
-            }else{
-                // Error
-                $array = json_decode($response, true);
-                if(!empty($array['error_msg'])){
-                    $alert->msg = $array['error_msg'];
-                }
-                if(isset($array['valid_state'])){$validState = $array['valid_state'];}
-                if(isset($array['valid_msg'])){$validMsg = $array['valid_msg'];}
-            }
+        // Send to API
+        $data = array('name'=>$name, 'email'=>$email, 'password'=>$password, 'terms_agreement'=>$termsAgreement, 'signup_ip'=>($_SERVER['REMOTE_ADDR'] ?? ''));
+        $api = new API();
+        $response = $api->request('POST', '/users', $data);
+        if($api->httpcode == 201){
+            // Successfully Created Account
+            ensureSession();
+            session_regenerate_id(true);
+            $array = json_decode($response);
+            $_SESSION['userID'] = $array->id;
+            $success = true;
+            // Same request renders the confirmation, so this fires on it.
+            trackEvent('Account created');
         }else{
-            // Didn't Pass Captcha
-            $error = true;
-            $errorMsg = 'Sorry, Google\'s reCAPTCHA algorithm thinks you are a bot. As such, we are not going to allow you to create an account using this form. We have logged this incident. Try <a href="/contact">contacting us</a> for support.';
-
-            // Update Alert
-            $alert->msg = $errorMsg;
-
-            // Log Error
-            $errorLog = new LogError();
-            $errorLog->errorNumber = 'C21';
-            $errorLog->errorMsg = 'reCAPTCHA: Likely Bot';
-            $errorLog->badData = $captchaJSON;
-            $errorLog->filename = 'create-account.php';
-            $errorLog->write();
+            // Error (a 400 carries field messages; the API's 429 sign-up caps carry error_msg)
+            $array = json_decode($response, true);
+            if(!empty($array['error_msg'])){
+                $alert->msg = $array['error_msg'];
+            }
+            if(isset($array['valid_state'])){$validState = $array['valid_state'];}
+            if(isset($array['valid_msg'])){$validMsg = $array['valid_msg'];}
         }
     }
 }
@@ -120,8 +100,9 @@ echo $htmlHead->html;
         // Display Alerts
         echo $alert->display();
         ?>
-        <form method="POST" id="signup-form" class="cbf-panel">
+        <form method="POST" id="signup-form" class="cbf-panel" data-recaptcha-sitekey="<?php echo h(RECAPTCHA_SITE_KEY); ?>" data-recaptcha-action="signup">
             <input type="hidden" name="signupFormHidden" value="set" />
+            <?php echo formGuardFields('signup'); ?>
             <?php
             // Everything here is required — no asterisks, no legend.
             // Name
@@ -170,7 +151,7 @@ echo $htmlHead->html;
             echo $checkbox->display('terms_agreement', 'I agree to the <a href="/terms">Terms of Use</a> for using this site.', true, $termsAgreement);
             ?>
             <div class="cbf-actions">
-                <button class="cbf-btn cbf-btn--wide" data-callback="onSubmit">Sign Up</button>
+                <button type="submit" class="cbf-btn cbf-btn--wide">Sign Up</button>
             </div>
             <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
         </form>
@@ -180,16 +161,7 @@ echo $htmlHead->html;
     <?php echo $nav->footer(); ?>
 </body>
 <?php if(!$success){ ?>
-<script src='https://www.google.com/recaptcha/api.js?render=<?php echo RECAPTCHA_SITE_KEY; ?>'></script>
-<script type="application/javascript">
-    grecaptcha.ready(function() {
-        grecaptcha.execute('<?php echo RECAPTCHA_SITE_KEY; ?>', {action: 'contact_form'}).then(function(token) {
-            document.getElementById("g-recaptcha-response").value = token;
-        });
-    });
-    function onSubmit(token) {
-        document.getElementById("signup-form").submit();
-    }
-</script>
+<script src="https://www.google.com/recaptcha/api.js?render=<?php echo h(RECAPTCHA_SITE_KEY); ?>"></script>
+<?php echo jsTag('/assets/js/recaptcha-form.js'); ?>
 <?php } ?>
 </html>

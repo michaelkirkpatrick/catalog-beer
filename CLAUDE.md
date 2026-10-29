@@ -207,6 +207,12 @@ Apache `public_html/.htaccess` handles clean URLs. Pattern: `/resource/UUID` →
 - `session_regenerate_id(true)` after login and account creation
 - CSRF tokens on all authenticated forms via `csrf_field()` / `csrf_verify()`
 
+### Form abuse checks (`classes/helpers/antispam.php`)
+
+The two guest forms, `create-account.php` and `contact.php`, run `formGate($action, $token, $filename)` before any work: a honeypot (`website`, in a `.cb-sr-only` `aria-hidden` wrapper from `formGuardFields()`), a signed form stamp (HMAC of the render time keyed off `RECAPTCHA_SECRET_KEY`, so no guest session is needed; missing or forged or over a day old → "expired", under 3 s → "quick"), then reCAPTCHA v3 through `recaptchaEvaluate()`, which checks `success`, the token's `action`, its `hostname` against this host, and the 0.5 score. Google unreachable fails closed, as it always did, and is now logged (C29). A honeypot hit is the one case answered with a fake success; everything else re-renders the form with `formGateMessage()`. Refusals log as C30 (honeypot, stamp), C21 (score), C29 (anything else). Added 2026-10-29; the offline test is `php tests/antispam.php`.
+
+**None of this stops a person**, and the wave that prompted it was a person: nine accounts in two days (seven in fourteen minutes) from temp-mail addresses, each verified from the throwaway inbox and its key burned to the free limit dumping `/brewer/{id}/beer`; reCAPTCHA passed every one, the error log showed nothing, and the only trace was Postmark's outbound list. The checks that stop that live in the API's `POST /users` (`SignupGuard`: disposable-domain refusal on create and on an email change, 3 accounts per network per day, 10 website sign-ups per hour site-wide, both counted on the new `users.createdAt` / `signupNet` columns). That is why the form sends the visitor's `REMOTE_ADDR` as `signup_ip`: an account created without one (Newman, a script) is never counted and never capped. The API's 429 carries an `error_msg` the form shows as-is.
+
 ### Form Processing Pattern
 
 Forms use POST to the same page. The pattern:
@@ -249,7 +255,7 @@ Errors are identified by error numbers prefixed with `C` (e.g., `C2`, `C5`, `C15
 
 - **Algolia search** — Server-rendered results page at `/search` (`search.php`), the destination for the nav search form. Queries go through `Search.class.php` (cURL to Algolia's multi-query REST endpoint) using `ALGOLIA_APPLICATION_ID` / `ALGOLIA_SEARCH_API_KEY` from `passwords.php` — the search-only key that used to ship to browsers; no client-side Algolia JS remains (the old SiteSearch modal and its CDN assets are gone). Indexing, index settings, and synonyms are managed in the API repo (`generateSearchObject()` methods, `algolia/settings.php`, `algolia/synonyms.php`, `algolia/batch-upload.php`).
 - **Postmark** — Transactional email via `PostmarkSendEmail.class.php`
-- **Google reCAPTCHA v3** — Form protection, verified inline in `create-account.php` and `contact.php`. Public site key in `config.php`, `RECAPTCHA_SECRET_KEY` in `passwords.php`.
+- **Google reCAPTCHA v3** — On `create-account.php` (action `signup`) and `contact.php` (action `contact_form`), verified through `formGate()` in `classes/helpers/antispam.php` (see § Form abuse checks). Public site key in `config.php`, `RECAPTCHA_SECRET_KEY` in `passwords.php`. The token is fetched at submit time by `assets/js/recaptcha-form.js` (tokens live two minutes; fetching only on page load failed slow typists).
 - **Google Maps JavaScript API** — Maps on brewer / location / brewery-map. `GOOGLE_MAPS_KEY` in **`passwords.php`**; `GOOGLE_MAPS_MAP_ID` (public by design, configures the vector renderer and style in the Cloud Console) in `config.php`.
 - **Google Places API (New)** — Street-field autocomplete on the location forms (`assets/js/address-autocomplete.js`, wired by `addressAutocompleteScripts()`). Separate key, `GOOGLE_PLACES_KEY` in **`passwords.php`**, restricted to Places API (New) **+** Maps JavaScript API — the library loads through the Maps JS bootstrap, so a Places-only restriction 403s the loader. Kept apart from `GOOGLE_MAPS_KEY` because that one is readable on three public pages and Places sessions are far costlier than tile loads; splitting them also means a Places rotation or overage can't take the maps down.
 
