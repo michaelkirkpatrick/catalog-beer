@@ -78,6 +78,11 @@ if(isset($locationData->data)){
 $locationCount = count($locations);
 $taproomsLabel = ($locationCount === 1) ? 'Taproom' : 'Taprooms';
 
+// A closed brewery with nothing on file has no taprooms to list, so the
+// section, its "do you know where they pour?" ask and the rail's count of zero
+// all go. Any locations that are on file still show: they are the record.
+$hideTaprooms = (($brewerData->brewer->status ?? 'active') === 'closed') && $locationCount === 0;
+
 // A brewery with a single taproom carries it in the facts rail instead of a
 // section of its own: one card in a two-column grid, under a heading that counts
 // to one, is a lot of page furniture for one address. The rail block mirrors the
@@ -277,7 +282,7 @@ echo $htmlHead->html;
                 <?php
                 // Single-taproom breweries get the Location block in the rail
                 // instead of this section — see the note up top.
-                if($singleLocation === null){
+                if($singleLocation === null && !$hideTaprooms){
                 ?>
                 <h2 class="cb-label cb-label--rule bp-sec" id="locations">
                     <span><?php echo $taproomsLabel; if($locationCount > 0){ echo ' &middot; ' . $locationCount; } ?></span>
@@ -404,7 +409,7 @@ echo $htmlHead->html;
                     <?php
                     // The taproom count is the Location block's job when there's
                     // exactly one — counting to one beside it just repeats it.
-                    if($singleLocation === null){
+                    if($singleLocation === null && !$hideTaprooms){
                         echo '<div class="cb-fact"><span class="cb-fact__k">' . $taproomsLabel . '</span><span class="cb-fact__v">' . $locationCount . '</span></div>' . "\n";
                     }
                     ?>
