@@ -37,7 +37,7 @@ echo $htmlHead->html;
         <p>A few details worth knowing:</p>
 
         <ul>
-            <li><strong>Monthly invoicing.</strong> Usage past the free tier is invoiced on the first of the following month and charged automatically to your saved card. Payments are handled by <a href="https://stripe.com">Stripe</a>; your card details never touch Catalog.beer&#8217;s servers.</li>
+            <li><strong>Monthly invoicing.</strong> On the 1st we email you the exact amount for the month before and the card it will go on; three days later, on the 4th, it&#8217;s charged automatically to that card. Payments are handled by <a href="https://stripe.com">Stripe</a>; your card details never touch Catalog.beer&#8217;s servers.</li>
             <li><strong>Small balances roll forward.</strong> Balances under $5 aren&#8217;t charged right away&#8212;they carry over until they reach $5 (payment processing fees would eat most of a $1 invoice). Light overage may take a few months to appear on a bill.</li>
             <li><strong>Spend cap.</strong> Every key has a monthly spend cap&#8212;$50 by default, adjustable from $1 to $1,000&#8212;so a runaway script can&#8217;t give you a surprise bill. Once the month&#8217;s usage would cost more than your cap, further requests are declined until the month resets.</li>
             <li><strong>Turn it off anytime.</strong> You can disable billing from your <a href="/billing">Billing page</a> and go back to the free tier whenever you like.</li>

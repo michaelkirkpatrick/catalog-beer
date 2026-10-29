@@ -4492,7 +4492,7 @@ curl -X GET \
 <p>A few things to know:</p>
 
 <ul>
-    <li><strong>Invoicing.</strong> Overage is invoiced on the first of the following month and charged automatically to your saved card. Balances under $5 roll forward to a later invoice rather than being charged immediately.</li>
+    <li><strong>Invoicing.</strong> On the 1st of the following month we email the exact amount and the card it will go on; it&#8217;s charged automatically to your saved card on the 4th. Balances under $5 roll forward to a later invoice rather than being charged immediately.</li>
     <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month’s usage would cost more than the cap, further requests receive a <var>402</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage.</li>
     <li><strong>Exempt endpoints.</strong> The <code>/billing</code> and <code>/usage</code> endpoints are never blocked by the usage limit and don’t count toward your usage, so you can always check your status and manage billing—even when your key is over its cap.</li>
 </ul>
