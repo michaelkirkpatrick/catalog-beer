@@ -338,18 +338,6 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
   </div>
 </section>
 
-<section id="s-urls">
-  <h2>Brewer URL health</h2>
-  <p class="lede">Nine verdicts from <code>cron/check-urls.php</code>. Severity is an ordered
-  scale, so it is drawn as one hue getting darker — four status colours became a single olive
-  under deuteranopia simulation, and no reader should have to tell &ldquo;healthy&rdquo; from
-  &ldquo;dead&rdquo; by hue.</p>
-  <div class="grid two">
-    <div class="card" id="c-url"></div>
-    <div class="card" id="c-url-trend"></div>
-  </div>
-</section>
-
 <section id="s-api">
   <h2>API demand</h2>
   <p class="lede">Trailing-30-day request counts, snapshotted nightly because
@@ -1134,110 +1122,7 @@ function renderAll() {
     tableView(c.host, ['Type', 'Records', 'Share'], types.map(t => [t.key, fmt(t.v), fpct(t.v, total)]));
   }
 
-  /* ---------- 6 URL health ---------- */
-  /* Severity is an ordered scale, not a set of identities — a status-colour
-     stack collapsed into one hue under deuteranopia simulation, so it is an
-     ordinal ramp with every verdict named on the axis instead. */
-  const SEV = { healthy: tok('--ord-2'), redirected: tok('--ord-3'),
-                unreachable: tok('--ord-4'), 'dead or wrong': tok('--ord-5') };
-  const URLB = [
-    { key: 'ok', label: 'ok', grp: 'healthy' },
-    { key: 'moved', label: 'moved', grp: 'redirected' },
-    { key: 'blocked', label: 'blocked', grp: 'unreachable' },
-    { key: 'no_answer', label: 'no answer', grp: 'unreachable' },
-    { key: 'server_error', label: 'server error', grp: 'unreachable' },
-    { key: 'parked', label: 'parked', grp: 'dead or wrong' },
-    { key: 'gone', label: 'gone', grp: 'dead or wrong' },
-    { key: 'url_wrong', label: 'wrong URL', grp: 'dead or wrong' },
-    { key: 'unverified', label: 'not yet checked', grp: 'not yet checked' }
-  ];
-  {
-    const vals = {};
-    URLB.forEach(b => { vals[b.key] = now('brewer_url_status|' + b.key); });
-    const backlog = vals.unverified, checked = TBR - backlog;
-    const rows = URLB.filter(b => b.key !== 'unverified');
-    const c = card('c-url', {
-      title: 'URL verdicts, brewers checked so far',
-      sub: 'One row per verdict for the ' + fmt(checked) + ' brewers the monitor has reached, ' +
-           'worst last. Shade carries severity; the name on the axis carries the identity.',
-      note: 'A further ' + fmt(backlog) + ' brewers are still unchecked — see the crawl chart. ' +
-            fmt(checked - vals.ok) + ' of the ' + fmt(checked) + ' checked, ' +
-            fpct(checked - vals.ok, checked) + ', came back as something other than ok.'
-    });
-    mk(c.plot(300), {
-      type: 'bar',
-      data: { labels: rows.map(b => b.label), datasets: [{
-        label: 'brewers', data: rows.map(b => vals[b.key]),
-        backgroundColor: rows.map(b => SEV[b.grp]),
-        borderRadius: 4, borderSkipped: 'middle', maxBarThickness: 18 }] },
-      options: {
-        indexAxis: 'y', animation: false, responsive: true, maintainAspectRatio: false,
-        layout: { padding: { right: 104, top: 4 } },
-        interaction: { mode: 'nearest', intersect: true },
-        plugins: {
-          legend: { display: false },
-          tooltip: tooltipStyle({ displayColors: false, callbacks: {
-            title: it => it[0].label + ' · ' + rows[it[0].dataIndex].grp,
-            label: ct => fmt(ct.parsed.x) + ' brewers  (' + fpct(ct.parsed.x, checked) + ' of checked)' } }),
-          tipLabels: { enabled: true, dataset: 0,
-            fmt: (v, j) => fmt(v) + '  ·  ' + fpct(v, checked) }
-        },
-        scales: {
-          x: { grid: { color: tok('--grid'), drawTicks: false }, border: { display: false }, beginAtZero: true,
-            ticks: { color: tok('--text-muted'), font: { size: 11, family: FONT }, callback: axisNum } },
-          y: { grid: { display: false }, border: { display: false },
-            ticks: { color: tok('--text-primary'), font: { size: 12.5, family: FONT } } }
-        }
-      },
-      plugins: [tipLabels]
-    });
-    c.done();
-    tableView(c.host, ['Verdict', 'Severity', 'Brewers', 'Of all', 'Of checked'],
-      URLB.map(b => [b.label, b.grp, fmt(vals[b.key]), fpct(vals[b.key], TBR),
-        b.key === 'unverified' ? '—' : fpct(vals[b.key], checked)]));
-  }
-  {
-    const c = card('c-url-trend', {
-      title: 'Crawl progress',
-      sub: 'Brewers still unchecked, and those the monitor has cleared as healthy.',
-      note: 'The monitor began from a standing start on ' + shortDay(FIRST) + ', when all ' +
-            fmt(first('brewer_url_status|unverified')) + ' brewers were unchecked. It has since cleared ' +
-            fmt(now('brewer_url_status|ok')) + ' and flagged ' +
-            fmt(TBR - now('brewer_url_status|unverified') - now('brewer_url_status|ok')) + ' as needing attention.'
-    });
-    mk(c.plot(230), {
-      type: 'line',
-      data: { labels: LD, datasets: [
-        Object.assign(lineOf('not yet checked', tok('--neutral'),
-          live('brewer_url_status|unverified').map(v => v || 0), 1), { tension: 0.2 }),
-        Object.assign(lineOf('ok', tok('--status-good'),
-          live('brewer_url_status|ok').map(v => v || 0), 0), { tension: 0.2 })
-      ] },
-      options: {
-        animation: false, responsive: true, maintainAspectRatio: false,
-        layout: { padding: { top: 6, right: 58 } },
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: legendStyle(true),
-          tooltip: tooltipStyle({ callbacks: {
-            title: it => shortDate(LD[it[0].dataIndex]),
-            label: ct => fmt(ct.parsed.y) + '  ' + ct.dataset.label } }),
-          endLabels: { enabled: true }
-        },
-        scales: {
-          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, {
-            callback: dateTicks(LD, (d, i) => i % 3 === 0, shortDay) }) }),
-          y: gridY({ beginAtZero: true })
-        }
-      },
-      plugins: [crosshair, endLabels]
-    });
-    c.done();
-    tableView(c.host, ['Date', ...URLB.map(b => b.label)],
-      LD.map((d, i) => [d, ...URLB.map(b => fmt(live('brewer_url_status|' + b.key)[i] || 0))]));
-  }
-
-  /* ---------- 7 API ---------- */
+  /* ---------- 6 API ---------- */
   {
     const c = card('c-api', {
       title: 'Requests, trailing 30 days',
