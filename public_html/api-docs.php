@@ -4493,7 +4493,7 @@ curl -X GET \
 
 <ul>
     <li><strong>Invoicing.</strong> On the 1st of the following month we email the exact amount and the card it will go on; it&#8217;s charged automatically to your saved card on the 4th. Balances under $5 roll forward to a later invoice rather than being charged immediately.</li>
-    <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month’s usage would cost more than the cap, further requests receive a <var>402</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage.</li>
+    <li><strong>Spend cap.</strong> Each key has a monthly spend cap ($50 by default) as protection against runaway usage. Once the month’s usage would cost more than the cap, further requests receive a <var>402</var> response until the month resets. You can adjust the cap between $1 and $1,000, or set it to $0 to block all paid usage. A cap can be raised at any time, but it can never be set below what the month’s usage has already committed you to pay (nor below last month’s charge until it has been recorded on the 1st); <var>minimum_cap_cents</var> on the billing object tells you the lowest cap accepted right now.</li>
     <li><strong>Exempt endpoints.</strong> The <code>/billing</code> and <code>/usage</code> endpoints are never blocked by the usage limit and don’t count toward your usage, so you can always check your status and manage billing—even when your key is over its cap.</li>
 </ul>
 
@@ -4556,12 +4556,22 @@ curl -X GET \
             <tr>
                 <td><var>estimated_charge_cents</var></td>
                 <td>integer</td>
-                <td>What this month’s usage would cost so far, in cents ($1 per 1,000 billable requests, rounded up, capped at your spend cap). <code>0</code> when billing is not enabled.</td>
+                <td>What this month’s usage would cost so far, in cents ($1 per 1,000 billable requests, rounded up, capped at your spend cap). <code>0</code> when billing is not enabled, unless usage already served past the free tier is still to be invoiced.</td>
             </tr>
             <tr>
                 <td><var>unbilled_balance_cents</var></td>
                 <td>integer</td>
                 <td>Charges from earlier months that haven’t been invoiced yet because they’re under the $5 invoice minimum.</td>
+            </tr>
+            <tr>
+                <td><var>minimum_cap_cents</var></td>
+                <td>integer</td>
+                <td>The lowest value <code>PATCH /billing</code> will accept for the spend cap right now: what this month’s usage has already committed you to pay, or last month’s charge until it has been recorded for billing. <code>0</code> when nothing binds.</td>
+            </tr>
+            <tr>
+                <td><var>minimum_cap_until</var></td>
+                <td>string</td>
+                <td>The first day a lower cap becomes possible (<code>YYYY-MM-DD</code>, the 1st of next month) while this month’s usage sets the minimum; <code>null</code> when the minimum is <code>0</code>, or when it comes from an unrecorded previous month and will clear as soon as that charge is recorded.</td>
             </tr>
         </tbody>
     </table>
@@ -4605,6 +4615,8 @@ curl -X GET \
   "request_limit": 1000,
   "billable_requests": 3215,
   "estimated_charge_cents": 400,
+  "minimum_cap_cents": 400,
+  "minimum_cap_until": "2026-12-01",
   "unbilled_balance_cents": 0
 }
 </pre>
@@ -4632,11 +4644,24 @@ curl -X GET \
             <tr>
                 <td><var>monthly_spend_cap_cents</var></td>
                 <td>integer</td>
-                <td>The new cap, in cents. Either <code>0</code> (block all usage past the free tier) or a value between <code>100</code> ($1) and <code>100000</code> ($1,000).</td>
+                <td>The new cap, in cents. Either <code>0</code> (block all usage past the free tier) or a value between <code>100</code> ($1) and <code>100000</code> ($1,000). It cannot be set below <var>minimum_cap_cents</var> (see below).</td>
             </tr>
         </tbody>
     </table>
 </div>
+
+<p><strong>The floor.</strong> A cap can never be set below what the key has already committed to pay this month — the overage so far, clamped to the current cap — nor below last month’s charge until that charge has been recorded for billing on the 1st. Lowering the cap stops further paid usage; it does not reduce the bill for requests already served. A request under the floor is refused with <var>400</var> and a body that carries the floor:</p>
+
+<pre class="api-code">
+{
+  "error": true,
+  "error_msg": "Your November 2026 usage has already reached $4.00 (4,120 requests), so the cap can't be set below $4 this month. Set it to $4 to stop further paid usage; a lower cap can be set from December 1, 2026.",
+  "minimum_cap_cents": 400,
+  "minimum_cap_until": "2026-12-01"
+}
+</pre>
+
+<p>Setting the cap exactly to <var>minimum_cap_cents</var> is always accepted. Raising it is always accepted.</p>
 
 <h4>Sample Request</h4>
 
@@ -4657,7 +4682,9 @@ curl -X PATCH \
 {
   "object": "billing",
   "billing_enabled": true,
-  "monthly_spend_cap_cents": 10000
+  "monthly_spend_cap_cents": 10000,
+  "minimum_cap_cents": 400,
+  "minimum_cap_until": "2026-12-01"
 }
 </pre>
 
@@ -4667,7 +4694,7 @@ curl -X PATCH \
 
 <h3 id="billing-disable">Disable Billing</h3>
 
-<p>To turn off billing and return your key to the free tier, send a <strong>DELETE</strong> request to the <code>/billing</code> endpoint. Your card stays saved with Stripe, and usage already accrued past the free tier will still be invoiced. To re-enable billing, add a payment method again from your <a href="/billing">billing page</a>.</p>
+<p>To turn off billing and return your key to the free tier, send a <strong>DELETE</strong> request to the <code>/billing</code> endpoint. Your card stays saved with Stripe, and usage already accrued past the free tier will still be invoiced; the response says how much, as <var>estimated_charge_cents</var>. To re-enable billing, add a payment method again from your <a href="/billing">billing page</a>.</p>
 
 <pre class="api-code">DELETE https://api.catalog.beer/billing</pre>
 
@@ -4677,7 +4704,8 @@ curl -X PATCH \
 {
   "object": "billing",
   "billing_enabled": false,
-  "monthly_spend_cap_cents": 5000
+  "monthly_spend_cap_cents": 5000,
+  "estimated_charge_cents": 400
 }
 </pre>
 

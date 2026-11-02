@@ -69,6 +69,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $validState['spendCap'] = 'invalid';
             $validMsg['spendCap'] = 'Enter a whole-dollar amount between $1 and $1,000, or $0 to block all usage past the free tier.';
         }else{
+            // The API refuses a cap below what the month has already committed
+            // (its error_msg names the amount and the date); nothing to pre-check
+            // here beyond the shape, since the floor is the API's to compute.
             $apiResponse = $api->request('PATCH', '/billing', array('monthly_spend_cap_cents'=>intval($capValue) * 100));
             $patchData = json_decode($apiResponse);
             if($api->httpcode == 200 && isset($patchData->monthly_spend_cap_cents)){
@@ -84,9 +87,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         }
     }elseif(isset($_POST['submitDisable'])){
         // --- Turn Off Billing ---
-        $api->request('DELETE', '/billing', '');
+        $disableResp = $api->request('DELETE', '/billing', '');
+        $disableData = json_decode($disableResp);
         if($api->httpcode == 200){
-            $_SESSION['billing_flash'] = 'Billing has been turned off. Your API key is back on the free tier&#8212;1,000 requests per month.';
+            $flash = 'Billing has been turned off. Your API key is back on the free tier&#8212;1,000 requests per month.';
+            // Turning billing off stops further paid usage, not the bill for
+            // what was already served: the API says what is still due.
+            $owedCents = intval($disableData->estimated_charge_cents ?? 0);
+            if($owedCents > 0){
+                $flash .= ' Your ' . h(date('F')) . ' usage of $' . number_format($owedCents / 100, 2) . ' will still be invoiced on ' . h(date('F j, Y', strtotime('first day of next month'))) . '.';
+            }
+            $_SESSION['billing_flash'] = $flash;
             header('location: /billing');
             exit();
         }
@@ -117,6 +128,11 @@ if($api->httpcode == 200 && isset($billingData->billing_enabled)){
     $billableRequests = intval($billingData->billable_requests);
     $estimatedCents = intval($billingData->estimated_charge_cents);
     $unbilledCents = intval($billingData->unbilled_balance_cents);
+    // The spend-cap floor: the lowest cap PATCH /billing accepts right now,
+    // and when a lower one becomes possible (null while only an unrecorded
+    // previous month binds). Absent from an API that predates 6.6.0.
+    $minimumCapCents = intval($billingData->minimum_cap_cents ?? 0);
+    $minimumCapUntil = $billingData->minimum_cap_until ?? null;
     $usageMonth = date('F Y', mktime(0, 0, 0, intval($billingData->month), 1, intval($billingData->year)));
 
     // Card on file
@@ -180,10 +196,10 @@ echo $htmlHead->html;
             <span class="cbf-label ac-row__label">Requests</span>
             <span class="ac-row__value"><?php echo number_format($usageCount); ?> <span class="ac-row__note">(<?php echo number_format($usageLimit); ?> free per month)</span></span>
         </div>
-        <?php if($billingEnabled){ ?>
+        <?php if($billingEnabled || $estimatedCents > 0){ ?>
         <div class="ac-row">
             <span class="cbf-label ac-row__label">Estimated charge</span>
-            <span class="ac-row__value">$<?php echo number_format($estimatedCents / 100, 2); ?><?php if($billableRequests > 0){ echo ' <span class="ac-row__note">(' . number_format($billableRequests) . ' requests past the free tier)</span>'; } ?></span>
+            <span class="ac-row__value">$<?php echo number_format($estimatedCents / 100, 2); ?><?php if($billableRequests > 0){ echo ' <span class="ac-row__note">(' . number_format($billableRequests) . ' requests past the free tier' . ($billingEnabled ? '' : ', served while billing was on') . ')</span>'; } ?></span>
         </div>
         <?php } ?>
         <?php if($unbilledCents > 0){ ?>
@@ -213,6 +229,13 @@ echo $htmlHead->html;
             $inputCap->validState = $validState['spendCap'];
             $inputCap->validMsg = $validMsg['spendCap'];
             $inputCap->hint = 'Whole dollars, $1–$1,000. Each $1 covers 1,000 requests past the free tier. Set $0 to block all paid usage.';
+            if($minimumCapCents > 0){
+                // The floor, in the hint, so the API's 400 is the backstop
+                // rather than the first thing seen.
+                $floorDollars = number_format(ceil($minimumCapCents / 100));
+                $inputCap->hint .= ' Your ' . h($usageMonth) . ' usage is already $' . number_format($minimumCapCents / 100, 2) . ', so the cap can&#8217;t go below $' . $floorDollars;
+                $inputCap->hint .= ($minimumCapUntil !== null) ? ' until ' . h(date('F j', strtotime($minimumCapUntil))) . '.' : ' until that usage has been recorded for billing.';
+            }
             echo $inputCap->display();
             ?>
             <div class="ac-actions">
@@ -226,7 +249,7 @@ echo $htmlHead->html;
             <span class="ac-row__value">$<?php echo number_format($capCents / 100, ($capCents % 100) ? 2 : 0); ?> <span class="ac-row__note">(up to <?php echo number_format(intdiv($capCents, 100) * 1000); ?> requests past the free tier)</span></span>
             <a class="cb-action" href="/billing?edit=cap">Edit</a>
         </div>
-        <p class="cbf-hint ac-note">A guardrail against surprise bills&#8212;once the month&#8217;s usage would cost more than the cap, further requests are declined until the month resets.</p>
+        <p class="cbf-hint ac-note">A guardrail against surprise bills&#8212;once the month&#8217;s usage would cost more than the cap, further requests are declined until the month resets.<?php if($minimumCapCents > 0){ echo ' It can&#8217;t be set below this month&#8217;s usage so far ($' . number_format($minimumCapCents / 100, 2) . ').'; } ?></p>
         <?php } ?>
 
         <span class="cb-label cb-label--rule ac-sec">Turn off billing</span>
