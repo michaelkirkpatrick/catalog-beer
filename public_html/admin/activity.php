@@ -172,16 +172,20 @@ echo $htmlHead->html;
                     echo '<h2>GET Traffic <small class="text-muted">(Last 3 Months)</small></h2>';
                     if(!empty($report->read_traffic->by_endpoint)){
                         $table = new Table();
-                        echo $table->startTable(array('Endpoint', 'Count'));
+                        // Durations exist on rows logged since API 6.7.0 (null before)
+                        echo $table->startTable(array('Endpoint', 'Count', 'Avg ms', 'Max ms'));
                         foreach($report->read_traffic->by_endpoint as $ep){
                             echo '<tr>';
                             echo '<td><code>' . h($ep->endpoint) . '</code></td>';
                             echo '<td>' . number_format($ep->count) . '</td>';
+                            echo '<td>' . (isset($ep->avg_ms) ? number_format($ep->avg_ms) : '<span class="text-muted">&#8212;</span>') . '</td>';
+                            echo '<td>' . (isset($ep->max_ms) ? number_format($ep->max_ms) : '<span class="text-muted">&#8212;</span>') . '</td>';
                             echo '</tr>' . "\n";
                         }
                         echo '<tr class="table-active">';
                         echo '<td><strong>Total</strong></td>';
                         echo '<td><strong>' . number_format($report->read_traffic->total) . '</strong></td>';
+                        echo '<td></td><td></td>';
                         echo '</tr>' . "\n";
                         echo $table->closeTable();
                     }else{
