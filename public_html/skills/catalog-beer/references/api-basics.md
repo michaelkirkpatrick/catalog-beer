@@ -68,9 +68,9 @@ Read `valid_msg` for the failing field — it says exactly what to fix.
 
 | Endpoint | What it does |
 |---|---|
-| `GET /billing` | Billing status for the key: `billing_enabled`, `monthly_spend_cap_cents`, `card` (brand/last4, or `null`), plus this month's `count`, `request_limit`, `billable_requests`, `estimated_charge_cents`, `unbilled_balance_cents` |
-| `PATCH /billing` | Body: `monthly_spend_cap_cents` — `0` (block all paid usage) or `100`–`100000` ($1–$1,000) |
-| `DELETE /billing` | Turns billing off; the key returns to the free-tier cap. The card stays saved with Stripe |
+| `GET /billing` | Billing status for the key: `billing_enabled`, `monthly_spend_cap_cents`, `card` (brand/last4, or `null`), plus this month's `count`, `request_limit`, `billable_requests`, `estimated_charge_cents`, `unbilled_balance_cents`, and `minimum_cap_cents` / `minimum_cap_until` (the lowest cap accepted right now, and when a lower one becomes possible) |
+| `PATCH /billing` | Body: `monthly_spend_cap_cents` — `0` (block all paid usage) or `100`–`100000` ($1–$1,000). **A cap can never be set below what the month's usage has already committed the key to pay** (nor below last month's charge until it has been recorded on the 1st): a request under `minimum_cap_cents` is a `400` whose body carries `minimum_cap_cents` and `minimum_cap_until`, and whose `error_msg` names the month and amount. Lowering the cap stops further paid usage; it never reduces the bill for requests already served |
+| `DELETE /billing` | Turns billing off; the key returns to the free-tier cap. The card stays saved with Stripe, and usage already served past the free tier is still invoiced — the response's `estimated_charge_cents` says how much |
 
 **These endpoints spend the user's money — only call them when the user explicitly asks.** Never raise a spend cap or disable billing on your own initiative. Adding or managing a payment method happens on the website, not through the API. If a key hits its free-tier `402` mid-task, stop and tell the user their options — wait for the monthly reset, or add a payment method at https://catalog.beer/billing — rather than "fixing" it yourself.
 
