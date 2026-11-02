@@ -84,6 +84,9 @@ class API {
             if(strpos($endpoint, $prefix) === 0){ return $this->usersAPIKey; }
         }
         if(preg_match('#^/brewer/[-0-9a-f]{36}/permissions#', $endpoint)){ return $this->usersAPIKey; }
+        // The audit log: a record's history and the admin feed are admin-gated
+        // by the API, so they go out as the signed-in user, never as the site.
+        if(preg_match('#^/(brewer|beer|location)/[-0-9a-f]{36}/history#', $endpoint) || strpos($endpoint, '/audit') === 0){ return $this->usersAPIKey; }
         // Posts: the public pages read by channel/slug and list published
         // posts under the master key like any catalog read. The admin editor
         // reads by id and asks for drafts (?status=all), which the API grants

@@ -42,6 +42,7 @@ $loggedIn = (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['userID'
 // still enforces on submit — this is cosmetic only.
 $perms = $loggedIn ? brewerPermissions($api, $beerData->brewer->id) : null;
 $canManage = permissionsCanManage($perms);
+$isAdmin = ($perms !== null && ($perms->role ?? '') === 'admin');   // the revision history is admin-only
 $canEditBeer = permissionsCanEdit($perms, !empty($beerData->cb_verified), !empty($beerData->brewer_verified));
 
 // Raw API values. Every one of these lands in more than one sink -- $beerName
@@ -173,6 +174,9 @@ if($canEditBeer){
 }
 if($canManage){
     $editBtn .= '<a href="/beer/' . h($beerIDString) . '/delete" class="cb-delete-link cb-delete-link--inline" title="Delete beer"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg> Delete beer</a>';
+}
+if($isAdmin){
+    $editBtn .= '<a href="/beer/' . h($beerIDString) . '/history" class="cb-action">History</a>';
 }
 if($editBtn !== ''){
     $editBtn = '<div class="be-topbar-actions">' . $editBtn . '</div>';

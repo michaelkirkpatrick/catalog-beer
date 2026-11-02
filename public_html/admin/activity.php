@@ -36,7 +36,14 @@ echo $htmlHead->html;
                 }elseif(isset($report->write_activity)){
 
                     // --- Write Activity Summary ---
+                    // Since API 6.5.0 the write half comes from audit_log: every
+                    // revision of a brewer, beer or location, master keys included,
+                    // with the Newman suite's entities filtered out by name.
+                    $excluded = intval($report->test_entities_excluded ?? 0);
                     echo '<h2>Write Activity <small class="text-muted">(Last 3 Months)</small></h2>';
+                    if($excluded > 0){
+                        echo '<p class="text-muted"><small>' . number_format($excluded) . ' test ' . ($excluded === 1 ? 'entity' : 'entities') . ' from the API test suite excluded.</small></p>';
+                    }
                     if(!empty($report->write_activity->summary)){
                         $table = new Table();
                         echo $table->startTable(array('Resource', 'Created', 'Updated', 'Deleted', 'Total'));
@@ -73,7 +80,7 @@ echo $htmlHead->html;
                     echo '<h2>Top Contributors <small class="text-muted">(Last 3 Months)</small></h2>';
                     if(!empty($report->write_activity->top_contributors)){
                         $table = new Table();
-                        echo $table->startTable(array('Name', 'Email', 'Created', 'Updated', 'Total'));
+                        echo $table->startTable(array('Name', 'Email', 'Created', 'Updated', 'Deleted', 'Total'));
                         foreach($report->write_activity->top_contributors as $contributor){
                             echo '<tr>';
                             echo '<td>' . h($contributor->name) . '</td>';
@@ -84,6 +91,7 @@ echo $htmlHead->html;
                             }
                             echo '<td>' . number_format($contributor->created) . '</td>';
                             echo '<td>' . number_format($contributor->updated) . '</td>';
+                            echo '<td>' . number_format($contributor->deleted ?? 0) . '</td>';
                             echo '<td><strong>' . number_format($contributor->total) . '</strong></td>';
                             echo '</tr>' . "\n";
                         }
@@ -96,64 +104,63 @@ echo $htmlHead->html;
                     echo '<h2>Recent Activity</h2>';
                     if(!empty($report->write_activity->recent)){
                         $table = new Table();
-                        echo $table->startTable(array('When', 'Who', 'Action', 'What', 'Status'));
+                        echo $table->startTable(array('When', 'Who', 'Action', 'What', 'History'));
                         foreach($report->write_activity->recent as $entry){
-                            // Determine action label
-                            switch($entry->method){
-                                case 'POST':
+                            $entityType = $entry->entity_type ?? '';
+                            $entityID = $entry->entity_id ?? '';
+                            switch($entry->action ?? ''){
+                                case 'create':
                                     $action = 'Created';
                                     break;
-                                case 'PUT':
-                                case 'PATCH':
+                                case 'update':
                                     $action = 'Updated';
                                     break;
-                                case 'DELETE':
+                                case 'delete':
                                     $action = 'Deleted';
                                     break;
+                                case 'revert':
+                                    $action = 'Restored';
+                                    break;
                                 default:
-                                    $action = $entry->method;
+                                    $action = ucfirst($entry->action ?? '');
                             }
-
-                            // Extract resource type from URI
-                            $uriPath = strtok($entry->uri, '?');
-                            $parts = explode('/', trim($uriPath, '/'));
-                            $resource = !empty($parts[0]) ? ucfirst($parts[0]) : '';
-                            $actionLabel = $action . ' ' . $resource;
-
-                            // Status badge
-                            $statusCode = $entry->response_code;
-                            if($statusCode >= 200 && $statusCode < 300){
-                                $badge = '<span class="badge bg-success">' . $statusCode . '</span>';
-                            }elseif($statusCode >= 400){
-                                $badge = '<span class="badge bg-danger">' . $statusCode . '</span>';
+                            $actionLabel = $action . ' ' . ucfirst($entityType);
+                            if(!empty($entry->note)){
+                                $actionLabel .= ' <small class="text-muted">' . h($entry->note) . '</small>';
                             }else{
-                                $badge = '<span class="badge bg-secondary">' . $statusCode . '</span>';
+                                $actionLabel = h($actionLabel);
                             }
 
-                            // Build "What" column — resource name with link if available
-                            $resourceName = isset($entry->resource_name) ? $entry->resource_name : null;
-                            $resourceId = isset($entry->resource_id) ? $entry->resource_id : null;
-                            $brewerName = isset($entry->brewer_name) ? $entry->brewer_name : null;
-                            $brewerId = isset($entry->brewer_id) ? $entry->brewer_id : null;
-
-                            if($resourceName && $brewerName && $brewerId && in_array($parts[0], array('location', 'address'))){
-                                // Location/Address: "Location Name, Brewer Name" (brewer linked)
-                                $whatHtml = h($resourceName) . ', <a href="/brewer/' . h($brewerId) . '">' . h($brewerName) . '</a>';
-                            }elseif($resourceName && $resourceId && in_array($parts[0], array('beer', 'brewer'))){
-                                // Beer/Brewer: name linked to detail page
-                                $whatHtml = '<a href="/' . h($parts[0]) . '/' . h($resourceId) . '">' . h($resourceName) . '</a>';
-                            }elseif($resourceName){
+                            // "What": the record, linked while it exists; a deleted
+                            // record still names itself from its last snapshot
+                            $resourceName = $entry->resource_name ?? null;
+                            $brewerName = $entry->brewer_name ?? null;
+                            $brewerId = $entry->brewer_id ?? null;
+                            $deleted = (($entry->action ?? '') === 'delete');
+                            if($resourceName !== null && $entityID !== '' && !$deleted){
+                                $whatHtml = '<a href="/' . h($entityType) . '/' . h($entityID) . '">' . h($resourceName) . '</a>';
+                            }elseif($resourceName !== null){
                                 $whatHtml = h($resourceName);
                             }else{
-                                $whatHtml = '<code>' . h($uriPath) . '</code>';
+                                $whatHtml = '<code>' . h($entityType . '/' . $entityID) . '</code>';
+                            }
+                            if($brewerName !== null && $brewerId !== null && $entityType !== 'brewer'){
+                                $whatHtml .= ', <a href="/brewer/' . h($brewerId) . '">' . h($brewerName) . '</a>';
+                            }elseif($brewerName !== null && $entityType !== 'brewer'){
+                                $whatHtml .= ', ' . h($brewerName);
+                            }
+
+                            $historyHtml = '';
+                            if($entityID !== '' && in_array($entityType, array('brewer', 'beer', 'location'), true)){
+                                $historyHtml = '<a href="/' . h($entityType) . '/' . h($entityID) . '/history#rev-' . intval($entry->audit_id ?? 0) . '">#' . intval($entry->audit_id ?? 0) . '</a>';
                             }
 
                             echo '<tr>';
                             echo '<td>' . date('M j, g:ia', $entry->timestamp) . '</td>';
                             echo '<td>' . h($entry->user_name) . '</td>';
-                            echo '<td>' . h($actionLabel) . '</td>';
+                            echo '<td>' . $actionLabel . '</td>';
                             echo '<td>' . $whatHtml . '</td>';
-                            echo '<td>' . $badge . '</td>';
+                            echo '<td>' . $historyHtml . '</td>';
                             echo '</tr>' . "\n";
                         }
                         echo $table->closeTable();
