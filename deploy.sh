@@ -385,6 +385,10 @@ define('VERSION_COMMIT_SHORT', '$(git rev-parse --short HEAD)');
 define('VERSION_BRANCH', '$(git rev-parse --abbrev-ref HEAD)');
 define('VERSION_TIMESTAMP', '$(date -u '+%Y-%m-%d %H:%M:%S UTC')');
 define('VERSION_DIRTY', $VERSION_DIRTY);
+// The last commit that touched the API reference: api-docs.php shows it as
+// "Documentation updated". Commit docs edits before deploying, or the date
+// understates them.
+define('VERSION_DOCS_UPDATED', '$(git log -1 --format=%cs -- public_html/api-docs.php)');
 ?>
 VEOF
 echo "Generated config/version.php ($(git rev-parse --short HEAD))"

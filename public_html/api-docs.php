@@ -14,6 +14,21 @@ if(is_object($list) && !isset($list->error) && isset($list->data[0]->version, $l
     $apiVersion = $list->data[0];
 }
 
+// When this page last changed: the date of the last commit that touched it,
+// stamped by deploy.sh into config/version.php (gitignored; absent locally,
+// where the file's own mtime stands in). Independent of the API version: a
+// release that changes nothing documented here leaves this date alone.
+$docsUpdated = null;
+if(is_readable(ROOT . '/config/version.php')){
+    require_once ROOT . '/config/version.php';
+}
+if(defined('VERSION_DOCS_UPDATED') && preg_match('/^\d{4}-\d{2}-\d{2}$/', VERSION_DOCS_UPDATED)){
+    $docsUpdated = strtotime(VERSION_DOCS_UPDATED . ' 12:00:00');
+}
+if(empty($docsUpdated)){
+    $docsUpdated = filemtime(__FILE__);
+}
+
 // HTML Head
 $htmlHead = new htmlHead('API Documentation');
 $htmlHead->addStylesheet('/assets/css/api-docs.css');
@@ -102,7 +117,7 @@ echo $htmlHead->html;
             </nav>
             <div class="ad-content">
                 <h1 id="top">API Reference</h1>
-                <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Last Updated: October 29, 2026</p>
+                <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Documentation updated <?php echo date('F j, Y', $docsUpdated); ?></p>
 
                 <h2 id="url">API Basics</h2>
                 <hr>
