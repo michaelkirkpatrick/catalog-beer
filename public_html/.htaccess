@@ -36,6 +36,21 @@ Options -Indexes
 	</FilesMatch>
 </IfModule>
 
+# Self-hosted fonts — cached for a year, unconditionally. Unlike CSS/JS there is no
+# ?v= token (catalog.css's @font-face src URLs are plain), so the filename IS the
+# version: a font file is never edited in place. If a font ever changes, ship it
+# under a NEW filename and update the @font-face src (and head.html's preloads);
+# overwriting assets/fonts/x.woff2 would leave visitors on the old copy for a year.
+#
+# Without this, fonts got no Cache-Control at all and browsers fell back to
+# heuristic freshness off Last-Modified — which production's `git archive` deploy
+# resets to HEAD's commit time on every deploy, so the fonts kept re-fetching.
+<IfModule mod_headers.c>
+	<FilesMatch "\.woff2$">
+		Header set Cache-Control "public, max-age=31536000, immutable"
+	</FilesMatch>
+</IfModule>
+
 # Staging must not be indexed. initialize.php sends this header on every PHP
 # response, but static files (sitemap*.xml, CSS, robots.txt) never reach PHP,
 # and Search Console had staging.catalog.beer in the index (Sep 2026). Matched
