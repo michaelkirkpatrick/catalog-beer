@@ -54,11 +54,13 @@ function actAgentLabel($agents){
     }
     return implode(' · ', $parts);
 }
-function actStatusLabel($status, $chargeDay, $lastYm){
+// The note under a month's charge: a recorded charge's status, or that an
+// owed amount has no billing_charges row yet (the record phase runs on the 1st)
+function actStatusLabel($status, $chargeDay, $lastYm, $chargeCents = 0){
     switch($status){
         case 'invoicing': return 'pending · invoice ' . actMon(date('Y-m', strtotime('+1 month', actMonTs($lastYm)))) . ' ' . $chargeDay;
         case 'rolling': return 'rolls forward · under the floor';
-        case null: return '';
+        case null: return $chargeCents > 0 ? 'owed · not recorded yet' : '';
         default: return $status;
     }
 }
@@ -194,7 +196,7 @@ if(!$ok){
             echo '<span class="' . ($cur === null || $cur->requests === 0 ? 'is-dim' : ($cur->requests > $bk->request_limit ? 'is-over' : '')) . '">' . actN($cur->requests ?? 0) . '</span>';
             echo '<span>' . actMoney($bk->this_month->committed_cents) . '</span>';
             echo '<span>' . actMoney($bk->this_month->forecast_cents) . '</span></div>';
-            echo '<div class="act-tg act-tg--bk act-tg--sub"><span>' . h($status) . '</span><span></span><span></span><span>' . h($last !== null ? actStatusLabel($last->status, (int)$b->charge_day, $lastYm) : '') . '</span><span></span><span></span><span>' . h($forecastNote) . '</span></div>';
+            echo '<div class="act-tg act-tg--bk act-tg--sub"><span>' . h($status) . '</span><span></span><span></span><span>' . h($last !== null ? actStatusLabel($last->status, (int)$b->charge_day, $lastYm, $last->charge_cents) : '') . '</span><span></span><span></span><span>' . h($forecastNote) . '</span></div>';
             echo '</div>';
         }
     }
