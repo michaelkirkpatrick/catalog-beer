@@ -662,6 +662,13 @@ function dateTicks(dates, pick, label) {
   return v => pick(dates[v], v) ? label(dates[v]) : '';
 }
 
+/* Day labels for the live-window charts. That window grows by one day every day, so a
+   fixed "every Nth day" eventually overlaps; let Chart.js thin the labels to what fits
+   the chart's width, capped at maxTicksLimit, instead. */
+function dayTicks(dates) {
+  return { autoSkip: true, autoSkipPadding: 12, maxTicksLimit: 8, callback: v => shortDay(dates[v]) };
+}
+
 /* Date ticks sized to the window: years across a decade, months across a quarter.
    One helper so every chart the range control scopes labels its axis the same way. */
 function spanTicks(dates) {
@@ -757,8 +764,7 @@ function renderAll() {
               label: ct => fmt(Math.abs(ct.parsed.y)) + '  ' + ct.dataset.label.toLowerCase() } })
           },
           scales: {
-            x: Object.assign(gridX(), { stacked: true, ticks: Object.assign(gridX().ticks, {
-              callback: dateTicks(LD, (d, i) => i % 4 === 0, shortDay) }) }),
+            x: Object.assign(gridX(), { stacked: true, ticks: Object.assign(gridX().ticks, dayTicks(LD)) }),
             y: gridY({ stacked: true, min: -bound, max: bound, ticks: {
               color: tok('--text-muted'), font: { size: 11, family: FONT }, padding: 8, stepSize: bound / 2,
               callback: v => v === 0 ? '0' : axisNum(Math.abs(v)) } })
@@ -1064,8 +1070,7 @@ function renderAll() {
             label: ct => fmt(ct.parsed.y) + '  ' + ct.dataset.label } })
         },
         scales: {
-          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, {
-            callback: dateTicks(LD, (d, i) => i % 3 === 0, shortDay) }) }),
+          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, dayTicks(LD)) }),
           y: gridY({ beginAtZero: true })
         }
       },
@@ -1148,8 +1153,7 @@ function renderAll() {
           endLabels: { enabled: true }
         },
         scales: {
-          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, {
-            callback: dateTicks(LD, (d, i) => i % 3 === 0, shortDay) }) }),
+          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, dayTicks(LD)) }),
           y: gridY({ beginAtZero: true })
         }
       },
@@ -1181,8 +1185,7 @@ function renderAll() {
           endLabels: { enabled: true }
         },
         scales: {
-          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, {
-            callback: dateTicks(LD, (d, i) => i % 3 === 0, shortDay) }) }),
+          x: Object.assign(gridX(), { ticks: Object.assign(gridX().ticks, dayTicks(LD)) }),
           y: gridY({ beginAtZero: true })
         }
       },
