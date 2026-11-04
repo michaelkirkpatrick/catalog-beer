@@ -277,10 +277,6 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
 
 <section id="s-growth">
   <h2>Size &amp; growth</h2>
-  <p class="lede">The only family with real history. One day dominates it: the 2 May 2020 bulk
-  import landed 60,307 beers and 6,154 brewers at once, so the whole-run view is read on a log
-  axis — a linear one shows a single step and nothing else. The range below scopes the two
-  history charts; <i>Created vs deleted</i> is live-window-only and ignores it.</p>
   <div class="ctlrow">
     <span class="ctllab">Range</span>
     <div class="ctl" id="rangeCtl" role="group" aria-label="Time range"></div>
@@ -665,8 +661,8 @@ function dateTicks(dates, pick, label) {
 /* Day labels for the live-window charts. That window grows by one day every day, so a
    fixed "every Nth day" eventually overlaps; let Chart.js thin the labels to what fits
    the chart's width, capped at maxTicksLimit, instead. */
-function dayTicks(dates) {
-  return { autoSkip: true, autoSkipPadding: 12, maxTicksLimit: 8, callback: v => shortDay(dates[v]) };
+function dayTicks(dates, label = shortDay) {
+  return { autoSkip: true, autoSkipPadding: 12, maxTicksLimit: 8, callback: v => label(dates[v]) };
 }
 
 /* Date ticks sized to the window: years across a decade, months across a quarter.
@@ -734,52 +730,7 @@ function renderAll() {
   rebuild('c-rate', renderRate);
 
   /* ---------- 1.3 created vs deleted ---------- */
-  {
-    const c = card('c-churn', {
-      title: 'Created vs deleted, daily',
-      sub: 'Above the line created, below deleted. The live window is the only place deletions are knowable.',
-      note: 'Deletions are inferred by differencing yesterday’s total, so a record created and deleted on the same day is invisible to it. Aug 3 is the URL cleanup: 183 brewers removed, and 2,817 beers gone the same day — consistent with the cascade from those brewers.'
-    });
-    ENT.forEach(([e, label], n) => {
-      c.rowLabel(label);
-      const up = LD.map(d => hAt('created_' + e + '_1d', d));
-      const down = live('deleted_' + e + '_1d').map(v => -(v || 0));
-      /* symmetric bounds so up and down are read on the same scale */
-      const bound = niceCeil(Math.max(...up, ...down.map(Math.abs), 1));
-      mk(c.plot(112), {
-        type: 'bar',
-        data: { labels: LD, datasets: [
-          { label: 'Created', data: up, backgroundColor: tok('--pos'), borderRadius: 4, borderSkipped: 'middle', maxBarThickness: 18 },
-          { label: 'Deleted', data: down, backgroundColor: tok('--neg'), borderRadius: 4, borderSkipped: 'middle', maxBarThickness: 18 }
-        ] },
-        options: {
-          animation: false, responsive: true, maintainAspectRatio: false,
-          layout: { padding: { top: 2 } },
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { display: n === 0, position: 'top', align: 'start',
-              labels: { color: tok('--text-secondary'), boxWidth: 11, boxHeight: 11, padding: 14, font: { size: 12.5, family: FONT } } },
-            tooltip: tooltipStyle({ callbacks: {
-              title: it => shortDate(LD[it[0].dataIndex]),
-              label: ct => fmt(Math.abs(ct.parsed.y)) + '  ' + ct.dataset.label.toLowerCase() } })
-          },
-          scales: {
-            x: Object.assign(gridX(), { stacked: true, ticks: Object.assign(gridX().ticks, dayTicks(LD)) }),
-            y: gridY({ stacked: true, min: -bound, max: bound, ticks: {
-              color: tok('--text-muted'), font: { size: 11, family: FONT }, padding: 8, stepSize: bound / 2,
-              callback: v => v === 0 ? '0' : axisNum(Math.abs(v)) } })
-          }
-        },
-        plugins: [crosshair]
-      });
-    });
-    c.done();
-    tableView(c.host, ['Date', 'Beer +', 'Beer −', 'Brewer +', 'Brewer −', 'Loc +', 'Loc −'],
-      LD.map((d, i) => [d,
-        fmt(hAt('created_beer_1d', d)), fmt(live('deleted_beer_1d')[i]),
-        fmt(hAt('created_brewer_1d', d)), fmt(live('deleted_brewer_1d')[i]),
-        fmt(hAt('created_location_1d', d)), fmt(live('deleted_location_1d')[i])]));
-  }
+  rebuild('c-churn', renderChurn);
 
   /* ---------- 2.1 recency bands ---------- */
   {
@@ -899,8 +850,8 @@ function renderAll() {
           'unfilled placeholder — ' + fmt(now('beer_abv_zero')) + (now('beer_abv_zero') === 1 ? ' row is' : ' rows are') +
           ' ambiguous today.',
     items: [
-      { label: 'ABV recorded (> 0)', value: now('beer_with_abv'), total: TB },
-      { label: 'IBU recorded (not null)', value: now('beer_with_ibu'), total: TB },
+      { label: 'ABV recorded', value: now('beer_with_abv'), total: TB },
+      { label: 'IBU recorded', value: now('beer_with_ibu'), total: TB },
       { label: 'Description', value: now('beer_with_description'), total: TB }
     ]
   });
@@ -1197,8 +1148,8 @@ function renderAll() {
 }
 
 /* ==================== size & growth: range + scale ==================== */
-/* The size family is the only one with real history, so it is the only one that
-   can be windowed. RANGE is in days; 0 means the whole run. */
+/* The size family and its created counts are the only series with real history, so they
+   are the only ones that can be windowed. RANGE is in days; 0 means the whole run. */
 const RANGES = [{ id: '3m', label: '3M', days: 90 }, { id: '1y', label: '1Y', days: 365 },
                 { id: '5y', label: '5Y', days: 1825 }, { id: 'all', label: 'All', days: 0 }];
 const SCALES = [{ id: 'abs', label: 'Absolute' }, { id: 'idx', label: 'Indexed' }];
@@ -1344,6 +1295,91 @@ function renderRate() {
     'Table view (trailing 30-day series, live window)');
 }
 
+/* Bars per range: a year of days or nine years of weeks will not fit a half-width card.
+   Each group is labelled by its first date. Weeks count back from the latest day, so the
+   newest bar is always a whole week. */
+function churnGroups(dates) {
+  const by = gRange === '3m' ? 'day' : gRange === '1y' ? 'week' : 'month';
+  const groups = new Map();
+  dates.forEach((d, i) => {
+    const key = by === 'day' ? d : by === 'month' ? d.slice(0, 7)
+      : Math.floor((dates.length - 1 - i) / 7);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(d);
+  });
+  return { by, list: [...groups.values()] };
+}
+
+function renderChurn() {
+  const dates = HD.slice(windowSlice());
+  const { by, list } = churnGroups(dates);
+  const starts = list.map(g => g[0]);
+  const monthLabel = d => MONTH[+d.slice(5, 7) - 1] + ' ’' + d.slice(2, 4);
+  const groupTitle = g => by === 'day' ? shortDate(g[0])
+    : by === 'month' ? MONTH[+g[0].slice(5, 7) - 1] + ' ' + g[0].slice(0, 4)
+    : shortDay(g[0]) + ' – ' + shortDate(g[g.length - 1]);
+  const hIndex = new Map(HD.map((d, i) => [d, i]));
+  const lIndex = new Map(LD.map((d, i) => [d, i]));
+  const created = e => list.map(g => g.reduce((sum, d) => sum + (hist('created_' + e + '_1d')[hIndex.get(d)] || 0), 0));
+  /* null, never 0, for a group wholly before the first snapshot: not recorded is not none */
+  const deleted = e => list.map(g => {
+    const known = g.filter(d => lIndex.has(d));
+    return known.length ? known.reduce((sum, d) => sum + (live('deleted_' + e + '_1d')[lIndex.get(d)] || 0), 0) : null;
+  });
+
+  const c = card('c-churn', {
+    title: 'Created vs deleted, ' + { day: 'daily', week: 'weekly', month: 'monthly' }[by],
+    sub: 'Above the line created, below deleted.' +
+      (dates[0] < FIRST ? ' Deletions are only recorded from ' + shortDate(FIRST) + '.' : ''),
+    note: 'Deletions are inferred by differencing yesterday’s total, so a record created and deleted on the same day is invisible to it.' +
+      (dates[0] <= '2026-08-03' ? ' Aug 3 is the URL cleanup: 183 brewers removed, and 2,817 beers gone the same day — consistent with the cascade from those brewers.' : '')
+  });
+  const series = {};
+  ENT.forEach(([e, label], n) => {
+    c.rowLabel(label);
+    const up = created(e), gone = deleted(e);
+    series[e] = { up, gone };
+    const down = gone.map(v => v === null ? null : -v);
+    /* symmetric bounds so up and down are read on the same scale */
+    const bound = niceCeil(Math.max(...up, ...gone.map(v => v || 0), 1));
+    mk(c.plot(112), {
+      type: 'bar',
+      data: { labels: starts, datasets: [
+        { label: 'Created', data: up, backgroundColor: tok('--pos'), borderRadius: 4, borderSkipped: 'middle', maxBarThickness: 18 },
+        { label: 'Deleted', data: down, backgroundColor: tok('--neg'), borderRadius: 4, borderSkipped: 'middle', maxBarThickness: 18 }
+      ] },
+      options: {
+        animation: false, responsive: true, maintainAspectRatio: false,
+        layout: { padding: { top: 2 } },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: n === 0, position: 'top', align: 'start',
+            labels: { color: tok('--text-secondary'), boxWidth: 11, boxHeight: 11, padding: 14, font: { size: 12.5, family: FONT } } },
+          tooltip: tooltipStyle({ callbacks: {
+            title: it => groupTitle(list[it[0].dataIndex]),
+            label: ct => fmt(Math.abs(ct.parsed.y)) + '  ' + ct.dataset.label.toLowerCase(),
+            afterBody: it => gone[it[0].dataIndex] === null ? 'deletions not recorded' : '' } })
+        },
+        scales: {
+          x: Object.assign(gridX(), { stacked: true, ticks: Object.assign(gridX().ticks,
+            dayTicks(starts, by === 'month' ? monthLabel : shortDay)) }),
+          y: gridY({ stacked: true, min: -bound, max: bound, ticks: {
+            color: tok('--text-muted'), font: { size: 11, family: FONT }, padding: 8, stepSize: bound / 2,
+            callback: v => v === 0 ? '0' : axisNum(Math.abs(v)) } })
+        }
+      },
+      plugins: [crosshair]
+    });
+  });
+  c.done();
+  const cell = v => v === null ? '—' : fmt(v);
+  tableView(c.host, [{ day: 'Date', week: 'Week from', month: 'Month' }[by], 'Beer +', 'Beer −', 'Brewer +', 'Brewer −', 'Loc +', 'Loc −'],
+    starts.map((d, i) => [by === 'month' ? d.slice(0, 7) : d,
+      fmt(series.beer.up[i]), cell(series.beer.gone[i]),
+      fmt(series.brewer.up[i]), cell(series.brewer.gone[i]),
+      fmt(series.location.up[i]), cell(series.location.gone[i])]));
+}
+
 /* One row of buttons per control; the pressed one is the current state. */
 function segmented(hostId, items, get, set) {
   const host = document.getElementById(hostId);
@@ -1361,6 +1397,7 @@ function segmented(hostId, items, get, set) {
       host.parentElement.querySelectorAll('.ctl button').forEach(x => x.dispatchEvent(new Event('repaint')));
       rebuild('c-totals', renderTotals);
       rebuild('c-rate', renderRate);
+      rebuild('c-churn', renderChurn);
     });
     b.addEventListener('repaint', paint);
     paint();
