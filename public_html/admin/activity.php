@@ -112,7 +112,8 @@ if(!$ok){
     foreach($report->keys as $k){ if($k->requests >= 500){ $busy++; } }
     echo '<section class="act-glance">';
     echo '<div><div class="act-glance__k">External requests</div><div class="act-glance__v">' . actN($s->external_requests) . '</div><div class="act-glance__s">' . ($s->site_requests > 0 ? 'Plus ' . actN($s->site_requests) . ' from the site\'s own ' . (count($report->site_keys) === 1 ? 'key' : 'keys') : 'None from the site\'s own keys') . '</div></div>';
-    echo '<div><div class="act-glance__k">Keys active</div><div class="act-glance__v">' . actN($s->keys_active) . '</div><div class="act-glance__s">' . actN($busy) . ' above the 500-request mark</div></div>';
+    $deletedNote = (!empty($s->keys_deleted)) ? actN($s->keys_deleted) . ' of them belong to deleted accounts' : actN($busy) . ' above the 500-request mark';
+    echo '<div><div class="act-glance__k">Keys active</div><div class="act-glance__v">' . actN($s->keys_active) . '</div><div class="act-glance__s">' . h($deletedNote) . '</div></div>';
     echo '<div><div class="act-glance__k">New accounts</div><div class="act-glance__v' . ($s->new_accounts === 0 ? ' is-zero' : '') . '">' . actN($s->new_accounts) . '</div><div class="act-glance__s">Created ' . h($newLabel) . '</div></div>';
     $agentWrites = 0;
     foreach($report->write_activity->top_contributors as $c){ foreach($report->site_keys as $sk){ if($sk->user_id === $c->user_id){ $agentWrites += $c->total; } } }
@@ -239,8 +240,15 @@ if(!$ok){
     }else{
         echo '<div class="act-sechead"><h2>Keys by month</h2><p>Requests per key per calendar month. A cell past the free tier is billable if the key has a card; a key with no card is stopped at its limit plus the buffer.</p></div>';
     }
+    $notes = array();
     if(!empty($siteNote)){
-        echo '<p class="act-note">The site\'s own ' . (count($siteNote) === 1 ? 'key' : 'keys') . ', <span class="act-mono">' . implode(', ', $siteNote) . '</span>, ' . (count($siteNote) === 1 ? 'is' : 'are') . ' kept out of this list.</p>';
+        $notes[] = 'The site\'s own ' . (count($siteNote) === 1 ? 'key' : 'keys') . ', <span class="act-mono">' . implode(', ', $siteNote) . '</span>, ' . (count($siteNote) === 1 ? 'is' : 'are') . ' kept out of this list.';
+    }
+    if(!empty($s->keys_deleted)){
+        $notes[] = actN($s->keys_deleted) . ' key' . ($s->keys_deleted === 1 ? '' : 's') . ' with traffic belong' . ($s->keys_deleted === 1 ? 's' : '') . ' to accounts since deleted and cannot be listed.';
+    }
+    if(!empty($notes)){
+        echo '<p class="act-note">' . implode(' ', $notes) . '</p>';
     }
     if(empty($keys)){
         echo '<p class="act-empty">No requests ' . h($period === 'month' ? 'this month' : 'in the period') . '.</p>';
