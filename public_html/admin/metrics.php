@@ -1302,9 +1302,7 @@ function renderRate() {
   const c = card('c-rate', {
     title: 'Creation rate, ' + (gRange === 'all' ? 'whole run' : 'last ' + label),
     sub: 'Trailing-30-day new records, on a linear axis.' +
-      (gRange === 'all' ? ' The 2020 import dwarfs everything else at this range.' : ''),
-    note: 'August 2026 is the busiest stretch since the import: ' + fmt(now('created_beer_30d')) +
-          ' beers and ' + fmt(now('created_location_30d')) + ' locations in the last 30 days.'
+      (gRange === 'all' ? ' The 2020 import dwarfs everything else at this range.' : '')
   });
   const sets = ENTC.map((e, i) =>
     lineOf(e.label, tok('--series-' + (i + 1)), hist('created_' + e.key + '_30d').slice(from), i));
@@ -1341,9 +1339,6 @@ function renderRate() {
     ])))
   ])]));
   c.done();
-  c.host.appendChild(el('p', { class: 'note',
-    text: 'The 365-day and 30-day beer figures nearly agree (' + fmt(now('created_beer_365d')) + ' vs ' +
-          fmt(now('created_beer_30d')) + '): almost everything added in the past year arrived in the past month.' }));
   tableView(c.host, ['Date', 'Beers', 'Brewers', 'Locations'],
     LD.map(d => [d, fmt(hAt('created_beer_30d', d)), fmt(hAt('created_brewer_30d', d)), fmt(hAt('created_location_30d', d))]),
     'Table view (trailing 30-day series, live window)');
