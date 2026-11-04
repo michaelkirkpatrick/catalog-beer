@@ -24,7 +24,7 @@ echo $htmlHead->html;
                         <div class="card h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Activity</h5>
-                                <p class="card-text">See what users are adding and updating, top contributors, and GET traffic by endpoint.</p>
+                                <p class="card-text">What the API's keys are doing, what the catalog's writers changed, and what the usage is worth: committed and forecast charges, invoices, refusals.</p>
                                 <a href="/admin/activity.php" class="btn btn-primary">View Activity</a>
                             </div>
                         </div>
