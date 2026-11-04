@@ -103,7 +103,11 @@ class API {
     // admin reports legitimately run longer and keep the old ceiling.
     private function timeoutFor($type, $endpoint): int {
         if($type !== 'GET'){ return 10; }
-        foreach(array('/activity', '/metrics', '/location/map', '/usage') as $prefix){
+        // The activity report reads three months of the request log on a box
+        // whose buffer pool is smaller than that table; it is one admin's page
+        // view, so it may take the long way.
+        if(strpos($endpoint, '/activity') === 0){ return 20; }
+        foreach(array('/metrics', '/location/map', '/usage') as $prefix){
             if(strpos($endpoint, $prefix) === 0){ return 10; }
         }
         return 4;
