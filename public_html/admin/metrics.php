@@ -149,15 +149,11 @@ h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em
 }
 .theme-toggle:hover { color: var(--text-primary); }
 
-footer code, .lede code {
-  font-size: 12px; background: var(--page); border: 1px solid var(--border);
-  border-radius: 4px; padding: 1px 5px;
-}
 
 section { margin-top: 46px; }
 section > h2 {
   font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--text-muted); margin: 0 0 5px;
+  color: var(--text-muted); margin: 0 0 12px;
 }
 section > .lede { color: var(--text-secondary); font-size: 14px; margin: 0 0 18px; max-width: 78ch; }
 
@@ -222,7 +218,6 @@ td:first-child { color: var(--text-primary); }
   border-left: 3px solid var(--status-critical); border-radius: 10px;
   padding: 14px 18px; margin: 24px 0; font-size: 13.5px; color: var(--text-secondary);
 }
-footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12.5px; }
 </style>
 </head>
 <body>
@@ -261,17 +256,12 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
 
 <section id="s-fresh">
   <h2>Freshness</h2>
-  <p class="lede">How long since each record was last touched. The windows in the schema are
-  nested (30 ⊂ 90 ⊂ 365 days), so they are differenced into exclusive bands that sum to the
-  whole catalog.</p>
   <div class="grid"><div class="card" id="c-recency"></div></div>
   <div id="t-age" class="tiles" style="margin-top:18px"></div>
 </section>
 
 <section id="s-complete">
   <h2>Completeness</h2>
-  <p class="lede">Share of records carrying each optional field. Bars are the same hue because
-  the fields are names, not an ordered scale — length is the only thing being compared.</p>
   <div class="grid three">
     <div class="card" id="c-beer-fields"></div>
     <div class="card" id="c-brewer-fields"></div>
@@ -281,8 +271,6 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
 
 <section id="s-verify">
   <h2>Verification &amp; engagement</h2>
-  <p class="lede">Two independent flags — a record can carry both — so these are grouped bars,
-  not a stack.</p>
   <div class="grid two">
     <div class="card" id="c-verify"></div>
     <div class="card" id="c-users"></div>
@@ -292,7 +280,6 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
 
 <section id="s-style">
   <h2>Style classification</h2>
-  <p class="lede">The style taxonomy rollout is the most active thing in the live window.</p>
   <div class="grid two">
     <div class="card" id="c-conf"></div>
     <div class="card" id="c-conf-trend"></div>
@@ -305,20 +292,12 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
 
 <section id="s-api">
   <h2>API demand</h2>
-  <p class="lede">Trailing-30-day request counts, snapshotted nightly because
-  <code>api_logging</code> is pruned at three months. Master-key requests are never logged,
-  so every number here is a floor.</p>
+  <p class="lede">Master-key requests are never logged, so every number here is a floor.</p>
   <div class="grid two">
     <div class="card" id="c-api"></div>
     <div class="card" id="c-keys"></div>
   </div>
 </section>
-
-<footer>
-  <p>Built from <code>metrics_daily.csv</code> (48,744 rows, 3,183 snapshot days). Metric
-  definitions live in <code>classes/Metrics.class.php</code>. Every chart has a table view;
-  no value is reachable only by hovering.</p>
-</footer>
 
 </div>
 
@@ -698,9 +677,7 @@ function renderAll() {
   /* ---------- 2.1 recency bands ---------- */
   {
     const c = card('c-recency', {
-      title: 'When was each record last touched?',
-      sub: 'Nested windows differenced into exclusive bands. Each row sums to that entity’s total.',
-      note: 'Locations are almost entirely fresh because the address backfill rewrote them. Beers are not: 92.8% have not been touched in two years.'
+      title: 'When was each record last touched?'
     });
     const bands = [
       { label: '≤ 30 days', color: tok('--ord-5') },
@@ -807,7 +784,7 @@ function renderAll() {
 
   const TB = now('total_beer'), TBR = now('total_brewer'), TL = now('total_location');
   meterCard('c-beer-fields', {
-    title: 'Beer fields', sub: 'Share of ' + fmt(TB) + ' beers',
+    title: 'Beer fields',
     note: 'ibu = 0 now means “no measurable bitterness” (' + fmt(now('beer_ibu_zero')) +
           ' beers). abv has no NULL, so a 0 there is either a genuine non-alcoholic beer or an ' +
           'unfilled placeholder — ' + fmt(now('beer_abv_zero')) + (now('beer_abv_zero') === 1 ? ' row is' : ' rows are') +
@@ -819,8 +796,7 @@ function renderAll() {
     ]
   });
   meterCard('c-brewer-fields', {
-    title: 'Brewer fields', sub: 'Share of ' + fmt(TBR) + ' brewers',
-    note: 'url and domainName track each other exactly — the domain is derived from the URL, so clearing one clears both.',
+    title: 'Brewer fields',
     items: [
       { label: 'Website URL', value: now('brewer_with_url'), total: TBR },
       { label: 'Domain name', value: now('brewer_with_domain'), total: TBR },
@@ -831,8 +807,7 @@ function renderAll() {
     ]
   });
   meterCard('c-loc-fields', {
-    title: 'Location fields', sub: 'Share of ' + fmt(TL) + ' locations',
-    note: 'name is optional by design (API v3.1.0) — a location without one is a valid record, not a gap.',
+    title: 'Location fields',
     items: [
       { label: 'Verified US address', value: now('location_with_address'), total: TL },
       { label: 'Latitude / longitude', value: now('location_with_latlng'), total: TL },
@@ -844,9 +819,7 @@ function renderAll() {
   /* ---------- 4 verification ---------- */
   {
     const c = card('c-verify', {
-      title: 'Verification coverage',
-      sub: 'Percent of each entity carrying the flag. Both bars share one axis and both are labelled.',
-      note: 'Brewery-staff verification is effectively unused — 28 beers, 3 brewers and 1 location catalog-wide, which is why those bars are hairlines rather than an error.'
+      title: 'Verification coverage'
     });
     const cb = ENT.map(([e]) => pct(now('cb_verified_' + e), now('total_' + e)));
     const bv = ENT.map(([e]) => pct(now('brewer_verified_' + e), now('total_' + e)));
@@ -902,9 +875,8 @@ function renderAll() {
       ENT.map(([e, l]) => [l, fmt(now('total_' + e)), fmt(now('cb_verified_' + e)), fmt(now('brewer_verified_' + e))]));
   }
   meterCard('c-users', {
-    title: 'Accounts', sub: 'Share of ' + fmt(now('users_total')) + ' registered users',
+    title: 'Accounts',
     thing: 'Measure',
-    note: 'Only ' + fmt(now('privileges_total')) + ' explicit privilege row exists; brewery-staff access otherwise comes from an email-domain match. User growth is in the tile at the top of the page.',
     items: [{ label: 'Email verified', value: now('users_email_verified'), total: now('users_total') }]
   });
   {
@@ -930,9 +902,7 @@ function renderAll() {
   ];
   {
     const c = card('c-conf', {
-      title: 'Style confidence, today',
-      sub: 'Every beer sits in exactly one bucket, so this is part-to-whole.',
-      note: 'Segments too narrow to hold a label are left unlabelled by measurement, not by guess — their values are in the tooltip and the table.'
+      title: 'Style confidence, today'
     });
     const vals = CONF.map(x => now('beer_style_confidence|' + x.key));
     mk(c.plot(130), {
@@ -964,9 +934,7 @@ function renderAll() {
   }
   {
     const c = card('c-conf-trend', {
-      title: 'Classification campaign, last 14 days',
-      sub: 'Beers moving out of “none” into a resolved bucket. Four series, one axis, same unit.',
-      note: 'End labels are omitted here because confident (1,447) and override (1,503) converge — the legend, tooltip and table carry those values instead.'
+      title: 'Classification campaign'
     });
     mk(c.plot(230), {
       type: 'line',
@@ -995,8 +963,7 @@ function renderAll() {
       LD.map((d, i) => [d, ...CONF.map(x => fmt(live('beer_style_confidence|' + x.key)[i] || 0))]));
   }
   meterCard('c-resolved', {
-    title: 'Taxonomy fields resolved', sub: 'Share of ' + fmt(TB) + ' beers', thing: 'Column',
-    note: 'Three separate columns, not nested stages — class is resolved least often.',
+    title: 'Taxonomy fields resolved', thing: 'Column',
     items: [
       { label: 'parent', value: now('beer_parent_resolved'), total: TB },
       { label: 'style_id', value: now('beer_style_id_resolved'), total: TB },
@@ -1009,8 +976,7 @@ function renderAll() {
     const others = types.slice(1);
     const c = card('c-beverage', {
       title: 'Beverage type',
-      sub: 'Beer is ' + fpct(types[0].v, total) + ' of the catalog, so the other three are charted alone.',
-      note: 'A part-to-whole chart of all four would render three invisible slivers; the table keeps the whole picture.'
+      sub: 'Beer is ' + fpct(types[0].v, total) + ' of the catalog, so the other three are charted alone.'
     });
     mk(c.plot(180), {
       type: 'bar',
@@ -1044,9 +1010,7 @@ function renderAll() {
   /* ---------- 6 API ---------- */
   {
     const c = card('c-api', {
-      title: 'Requests, trailing 30 days',
-      note: 'Writes climbed from ' + fmt(first('api_write_30d')) + ' to ' + fmt(now('api_write_30d')) +
-            ' as the classification and address work ran; read traffic is flat.'
+      title: 'Requests, trailing 30 days'
     });
     mk(c.plot(230), {
       type: 'line',
@@ -1078,8 +1042,7 @@ function renderAll() {
   }
   {
     const c = card('c-keys', {
-      title: 'Distinct API keys used, trailing 30 days',
-      note: 'Master-key traffic is never written to api_logging, so this undercounts by however many master keys were in use.'
+      title: 'Distinct API keys used, trailing 30 days'
     });
     mk(c.plot(230), {
       type: 'line',
@@ -1142,14 +1105,8 @@ function renderTotals() {
 
   const c = card('c-totals', {
     title: 'Catalog size, ' + shortDate(dates[0]) + ' \u2192 ' + shortDate(dates[dates.length - 1]),
-    sub: idx
-      ? 'Each entity indexed to 100 at the start of the window. ' +
-        (useLog ? 'Log scale — the window spans a large multiple.' : 'Linear scale.')
-      : 'Total records per entity. Log scale — the entities sit two orders of magnitude apart.',
-    note: (idx
-      ? 'Indexed values are ratios, not counts: a line at 140 means that entity is 1.4\u00d7 its size at the start of the window. Tooltips and the table below carry the real counts. '
-      : 'Locations begin at their first record in May 2020; zero is not plottable on a log axis, so each line starts at its first record. ') +
-      'Backfilled from createdAt, so records deleted since are absent from every earlier point.'
+    sub: (idx ? 'Indexed to 100 at the start of the window. ' : '') + (useLog ? 'Log scale.' : ''),
+    note: 'Backfilled from createdAt, so records deleted since are absent from every earlier point.'
   });
 
   const sets = ENTC.map((e, i) => lineOf(e.label, tok('--series-' + (i + 1)), plotted[i], i));
@@ -1213,8 +1170,7 @@ function renderRate() {
   const label = (RANGES.find(r => r.id === gRange) || RANGES[3]).label;
   const c = card('c-rate', {
     title: 'Creation rate, ' + (gRange === 'all' ? 'whole run' : 'last ' + label),
-    sub: 'Trailing-30-day new records, on a linear axis.' +
-      (gRange === 'all' ? ' The 2020 import dwarfs everything else at this range.' : '')
+    sub: 'New records, trailing 30 days.'
   });
   const sets = ENTC.map((e, i) =>
     lineOf(e.label, tok('--series-' + (i + 1)), hist('created_' + e.key + '_30d').slice(from), i));
@@ -1290,8 +1246,7 @@ function renderChurn() {
 
   const c = card('c-churn', {
     title: 'Created vs deleted, ' + { day: 'daily', week: 'weekly', month: 'monthly' }[by],
-    sub: 'Above the line created, below deleted.' +
-      (dates[0] < FIRST ? ' Deletions are only recorded from ' + shortDate(FIRST) + '.' : ''),
+    sub: dates[0] < FIRST ? 'Deletions are only recorded from ' + shortDate(FIRST) + '.' : '',
     note: 'Deletions are inferred by differencing yesterday’s total, so a record created and deleted on the same day is invisible to it.' +
       (dates[0] <= '2026-08-03' ? ' Aug 3 is the URL cleanup: 183 brewers removed, and 2,817 beers gone the same day — consistent with the cascade from those brewers.' : '')
   });
