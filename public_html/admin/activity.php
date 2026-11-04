@@ -58,8 +58,8 @@ function actAgentLabel($agents){
 // owed amount has no billing_charges row yet (the record phase runs on the 1st)
 function actStatusLabel($status, $chargeDay, $lastYm, $chargeCents = 0){
     switch($status){
-        case 'invoicing': return 'pending · invoice ' . actMon(date('Y-m', strtotime('+1 month', actMonTs($lastYm)))) . ' ' . $chargeDay;
-        case 'rolling': return 'rolls forward · under the floor';
+        case 'invoicing': return 'invoice ' . actMon(date('Y-m', strtotime('+1 month', actMonTs($lastYm)))) . ' ' . $chargeDay;
+        case 'rolling': return 'rolls forward';
         case null: return $chargeCents > 0 ? 'owed · not recorded yet' : '';
         default: return $status;
     }
@@ -82,9 +82,9 @@ echo $htmlHead->html;
             <div>
                 <h1 class="act-h1">Activity</h1>
                 <?php if($period === 'month'){ ?>
-                <p class="act-lede">What the API's keys are doing. Reads come from the request log, writes from the audit log. <?php echo date('F Y'); ?>, through today.</p>
+                <p class="act-lede"><?php echo date('F Y'); ?></p>
                 <?php }else{ ?>
-                <p class="act-lede">What the API's keys have been doing since <?php echo $ok ? date('F j', $report->since) : 'three months ago'; ?>. Reads from the request log, which keeps three months; writes from the audit log.</p>
+                <p class="act-lede">Since <?php echo $ok ? date('F j', $report->since) : 'three months ago'; ?></p>
                 <?php } ?>
             </div>
             <div class="act-seg" role="tablist">
@@ -107,19 +107,17 @@ if(!$ok){
     foreach($report->site_keys as $sk){
         $siteNote[] = h($sk->name) . ' · …' . h($sk->api_key_last4) . ' (' . actN($sk->requests) . ')';
     }
-    $newLabel = $period === 'month' ? 'this month' : 'since ' . date('M j', $report->since);
 
     // ----- At a glance -----
-    $busy = 0;
-    foreach($report->keys as $k){ if($k->requests >= 500){ $busy++; } }
+    // The line under a figure, only when it says something the figure doesn't
+    $glanceSub = function($text){ return $text === '' ? '' : '<div class="act-glance__s">' . $text . '</div>'; };
     echo '<section class="act-glance">';
-    echo '<div><div class="act-glance__k">External requests</div><div class="act-glance__v">' . actN($s->external_requests) . '</div><div class="act-glance__s">' . ($s->site_requests > 0 ? 'Plus ' . actN($s->site_requests) . ' from the site\'s own ' . (count($report->site_keys) === 1 ? 'key' : 'keys') : 'None from the site\'s own keys') . '</div></div>';
-    $deletedNote = (!empty($s->keys_deleted)) ? actN($s->keys_deleted) . ' of them belong to deleted accounts' : actN($busy) . ' above the 500-request mark';
-    echo '<div><div class="act-glance__k">Keys active</div><div class="act-glance__v">' . actN($s->keys_active) . '</div><div class="act-glance__s">' . h($deletedNote) . '</div></div>';
-    echo '<div><div class="act-glance__k">New accounts</div><div class="act-glance__v' . ($s->new_accounts === 0 ? ' is-zero' : '') . '">' . actN($s->new_accounts) . '</div><div class="act-glance__s">Created ' . h($newLabel) . '</div></div>';
+    echo '<div><div class="act-glance__k">External requests</div><div class="act-glance__v">' . actN($s->external_requests) . '</div>' . $glanceSub($s->site_requests > 0 ? 'Plus ' . actN($s->site_requests) . ' from the site\'s own ' . (count($report->site_keys) === 1 ? 'key' : 'keys') : '') . '</div>';
+    echo '<div><div class="act-glance__k">Keys active</div><div class="act-glance__v">' . actN($s->keys_active) . '</div>' . $glanceSub(!empty($s->keys_deleted) ? actN($s->keys_deleted) . ' from deleted accounts, not listed' : '') . '</div>';
+    echo '<div><div class="act-glance__k">New accounts</div><div class="act-glance__v' . ($s->new_accounts === 0 ? ' is-zero' : '') . '">' . actN($s->new_accounts) . '</div></div>';
     $agentWrites = 0;
     foreach($report->write_activity->top_contributors as $c){ foreach($report->site_keys as $sk){ if($sk->user_id === $c->user_id){ $agentWrites += $c->total; } } }
-    echo '<div><div class="act-glance__k">Catalog revisions</div><div class="act-glance__v">' . actN($s->revisions) . '</div><div class="act-glance__s">' . ($agentWrites > 0 ? actN($agentWrites) . ' by the site\'s own keys' : 'Creates, updates and deletes') . '</div></div>';
+    echo '<div><div class="act-glance__k">Catalog revisions</div><div class="act-glance__v">' . actN($s->revisions) . '</div>' . $glanceSub($agentWrites > 0 ? actN($agentWrites) . ' by the site\'s own keys' : '') . '</div>';
     echo '</section>';
 
     // ----- Requests per day (Chart.js) -----
@@ -138,11 +136,9 @@ if(!$ok){
 
     // ----- Billing -----
     echo '<section class="act-section" id="billing">';
-    echo '<div class="act-sechead"><h2>Billing</h2><p>$' . number_format($b->block_price_cents / 100, 0) . ' per ' . actN($b->block_size) . ' requests past the free tier, clamped to each key\'s cap. Notices go out on the 1st, cards are charged on the ' . (int)$b->charge_day . 'th, under ' . actMoney($b->invoice_floor_cents) . ' rolls forward.</p></div>';
+    echo '<div class="act-sechead"><h2>Billing</h2></div>';
     $tm = $b->this_month;
     $lm = $b->last_month;
-    $cardKeys = 0;
-    foreach($b->keys as $bk){ if($bk->billing_enabled){ $cardKeys++; } }
     $invoicingNames = array();
     $rollingNames = array();
     $paidCents = 0;
@@ -152,23 +148,23 @@ if(!$ok){
         else{ $paidCents += $c->amount_cents; }
     }
     echo '<div class="act-bill">';
-    echo '<div><div class="act-glance__k">Committed, ' . h(actMon($thisYm)) . '</div><div class="act-glance__v act-glance__v--sm' . ($tm->committed_cents === 0 ? ' is-zero' : '') . '">' . actMoney($tm->committed_cents) . '</div><div class="act-glance__s">' . ($tm->committed_cents === 0 ? 'No billing key has passed the free tier yet' : 'Forecast ' . actMoney($tm->forecast_cents) . ' at the current pace') . '</div></div>';
+    echo '<div><div class="act-glance__k">Committed, ' . h(actMon($thisYm)) . '</div><div class="act-glance__v act-glance__v--sm' . ($tm->committed_cents === 0 ? ' is-zero' : '') . '">' . actMoney($tm->committed_cents) . '</div>' . $glanceSub($tm->forecast_cents > 0 ? 'Forecast ' . actMoney($tm->forecast_cents) : '') . '</div>';
     if($lm->invoicing_cents > 0){
         echo '<div><div class="act-glance__k">Invoicing ' . h(actMon($thisYm)) . ' ' . (int)$b->charge_day . '</div><div class="act-glance__v act-glance__v--sm">' . actMoney($lm->invoicing_cents) . '</div><div class="act-glance__s">' . h(actMonLong($lastYm)) . ': ' . implode(', ', $invoicingNames) . '</div></div>';
     }else{
-        echo '<div><div class="act-glance__k">' . h(actMon($lastYm)) . ' charges</div><div class="act-glance__v act-glance__v--sm' . ($lm->charged_cents === 0 ? ' is-zero' : '') . '">' . actMoney($lm->charged_cents) . '</div><div class="act-glance__s">' . ($lm->charged_cents === 0 ? 'Nothing past the free tier' : actMoney($paidCents) . ' invoiced' . ($lm->rolling_cents > 0 ? ', ' . actMoney($lm->rolling_cents) . ' rolling' : '')) . '</div></div>';
+        echo '<div><div class="act-glance__k">' . h(actMon($lastYm)) . ' charges</div><div class="act-glance__v act-glance__v--sm' . ($lm->charged_cents === 0 ? ' is-zero' : '') . '">' . actMoney($lm->charged_cents) . '</div>' . $glanceSub($lm->charged_cents === 0 ? '' : actMoney($paidCents) . ' invoiced' . ($lm->rolling_cents > 0 ? ', ' . actMoney($lm->rolling_cents) . ' rolling' : '')) . '</div>';
     }
-    echo '<div><div class="act-glance__k">Rolling forward</div><div class="act-glance__v act-glance__v--sm' . ($lm->rolling_cents === 0 ? ' is-zero' : '') . '">' . actMoney($lm->rolling_cents) . '</div><div class="act-glance__s">' . (empty($rollingNames) ? 'Nothing under the ' . actMoney($b->invoice_floor_cents) . ' floor' : implode(', ', $rollingNames) . ', under the floor') . '</div></div>';
+    echo '<div><div class="act-glance__k">Rolling forward</div><div class="act-glance__v act-glance__v--sm' . ($lm->rolling_cents === 0 ? ' is-zero' : '') . '">' . actMoney($lm->rolling_cents) . '</div>' . $glanceSub(implode(', ', $rollingNames)) . '</div>';
     $near = 0;
     foreach($b->ceiling as $c){ if($c->status === 'near'){ $near++; } }
     $refSub = array();
     if($period === '3m'){
-        foreach($b->refused->by_month as $ym => $n){ $refSub[] = actN($n) . ' in ' . actMon($ym); }
+        foreach($b->refused->by_month as $ym => $n){ if($n > 0){ $refSub[] = actN($n) . ' in ' . actMon($ym); } }
         $refSub = implode(', ', $refSub);
     }else{
-        $refSub = $b->refused->total > 0 ? actN($b->refused->keys) . ' key' . ($b->refused->keys === 1 ? '' : 's') . ' hit the ceiling' : ($near > 0 ? actN($near) . ' key' . ($near === 1 ? '' : 's') . ' within reach of it' : 'No key has reached the ceiling');
+        $refSub = $b->refused->total > 0 ? actN($b->refused->keys) . ' key' . ($b->refused->keys === 1 ? '' : 's') . ' hit the ceiling' : ($near > 0 ? actN($near) . ' key' . ($near === 1 ? '' : 's') . ' within reach of it' : '');
     }
-    echo '<div><div class="act-glance__k">Refused at the free tier</div><div class="act-glance__v act-glance__v--sm' . ($b->refused->total === 0 ? ' is-zero' : '') . '">' . actN($b->refused->total) . '</div><div class="act-glance__s">' . h($refSub) . '</div></div>';
+    echo '<div><div class="act-glance__k">Refused at the free tier</div><div class="act-glance__v act-glance__v--sm' . ($b->refused->total === 0 ? ' is-zero' : '') . '">' . actN($b->refused->total) . '</div>' . $glanceSub(h($refSub)) . '</div>';
     echo '</div>';
 
     // Billing keys: a card on file, or a charge in the window
@@ -187,7 +183,6 @@ if(!$ok){
             }
             $status = ($bk->billing_enabled ? 'card on file' : 'billing off') . ($bk->pending_cents > 0 ? ' · ' . actMoney($bk->pending_cents) . ' pending' : '');
             if(!empty($earlier)){ $status .= ' · ' . implode(' · ', $earlier); }
-            $forecastNote = $bk->this_month->requests === 0 ? 'no requests this month' : 'on pace for ' . actN($bk->this_month->projected_requests) . ' requests';
             echo '<div>';
             echo '<div class="act-tg act-tg--bk act-tg--row"><span>' . h($bk->name) . '<small>…' . h($bk->api_key_last4) . '</small></span>';
             echo '<span>' . actMoney($bk->spend_cap_cents) . '</span>';
@@ -196,31 +191,13 @@ if(!$ok){
             echo '<span class="' . ($cur === null || $cur->requests === 0 ? 'is-dim' : ($cur->requests > $bk->request_limit ? 'is-over' : '')) . '">' . actN($cur->requests ?? 0) . '</span>';
             echo '<span>' . actMoney($bk->this_month->committed_cents) . '</span>';
             echo '<span>' . actMoney($bk->this_month->forecast_cents) . '</span></div>';
-            echo '<div class="act-tg act-tg--bk act-tg--sub"><span>' . h($status) . '</span><span></span><span></span><span>' . h($last !== null ? actStatusLabel($last->status, (int)$b->charge_day, $lastYm, $last->charge_cents) : '') . '</span><span></span><span></span><span>' . h($forecastNote) . '</span></div>';
+            echo '<div class="act-tg act-tg--bk act-tg--sub"><span>' . h($status) . '</span><span></span><span></span><span>' . h($last !== null ? actStatusLabel($last->status, (int)$b->charge_day, $lastYm, $last->charge_cents) : '') . '</span><span></span><span></span><span></span></div>';
             echo '</div>';
         }
     }
 
-    // Forecast + the free keys at the ceiling
-    echo '<div class="act-forecast"><div><span class="cb-label">Forecast</span>';
-    if($tm->committed_cents === 0){
-        echo '<p>' . h(actMonLong($thisYm)) . ' so far commits ' . actMoney(0) . ': ' . ($cardKeys === 0 ? 'no key has a card on file' : 'none of the ' . actN($cardKeys) . ' key' . ($cardKeys === 1 ? '' : 's') . ' with a card has passed the free tier') . '. The forecast stays at ' . actMoney(0) . ' until one does.</p>';
-    }else{
-        echo '<p>' . h(actMonLong($thisYm)) . ' so far commits ' . actMoney($tm->committed_cents) . '. At the current pace the month ends at ' . actMoney($tm->forecast_cents) . ', each key clamped to its cap.</p>';
-    }
-    if($lm->invoicing_cents > 0){
-        echo '<p>' . h(actMonLong($lastYm)) . '\'s ' . actMoney($lm->invoicing_cents) . ' invoices on ' . h(actMon($thisYm)) . ' ' . (int)$b->charge_day . ($lm->rolling_cents > 0 ? ', and ' . actMoney($lm->rolling_cents) . ' rolls forward under the ' . actMoney($b->invoice_floor_cents) . ' floor' : '') . '.</p>';
-    }elseif($lm->charged_cents > 0){
-        echo '<p>' . h(actMonLong($lastYm)) . ' recorded ' . actMoney($lm->charged_cents) . ($paidCents > 0 ? ', ' . actMoney($paidCents) . ' of it invoiced' : '') . ($lm->rolling_cents > 0 ? ', ' . actMoney($lm->rolling_cents) . ' rolling forward under the ' . actMoney($b->invoice_floor_cents) . ' floor' : '') . '.</p>';
-    }
-    $hit = count($b->ceiling) - $near;
-    if($hit > 0 || $near > 0){
-        $bits = array();
-        if($hit > 0){ $bits[] = actN($hit) . ' free key' . ($hit === 1 ? '' : 's') . ' hit the ceiling' . ($period === 'month' ? ' this month' : ' in the period'); }
-        if($near > 0){ $bits[] = actN($near) . ' ' . ($hit > 0 ? 'more ' : 'free key' . ($near === 1 ? ' is' : 's are') . ' ') . ($hit > 0 ? ($near === 1 ? 'is' : 'are') . ' ' : '') . 'within reach of it'; }
-        echo '<p>' . h(ucfirst(implode(', and ', $bits))) . '. A free key is stopped at its limit plus the buffer and refused after that; a card turns the refusals into charges.</p>';
-    }
-    echo '</div><div><span class="cb-label">' . ($period === 'month' ? 'Free keys at the ceiling' : 'Free keys that hit the ceiling') . '</span>';
+    // The free keys at the ceiling
+    echo '<div class="act-ceilings"><span class="cb-label">' . ($period === 'month' ? 'Free keys at the ceiling' : 'Free keys that hit the ceiling') . '</span>';
     if(empty($b->ceiling)){
         echo '<p class="act-empty">None ' . h($period === 'month' ? 'this month' : 'in the period') . '.</p>';
     }else{
@@ -230,7 +207,7 @@ if(!$ok){
         }
         if(count($b->ceiling) > 8){ echo '<p class="act-empty">and ' . actN(count($b->ceiling) - 8) . ' more</p>'; }
     }
-    echo '</div></div>';
+    echo '</div>';
     echo '</section>';
 
     // ----- Keys -----
@@ -238,16 +215,13 @@ if(!$ok){
     $shown = 25;
     echo '<section class="act-section" id="keys">';
     if($period === 'month'){
-        echo '<div class="act-sechead"><h2>Keys this month</h2><p>One row per key, busiest first. Open a row to see what it fetched, when, and from where.</p></div>';
+        echo '<div class="act-sechead"><h2>Keys this month</h2></div>';
     }else{
-        echo '<div class="act-sechead"><h2>Keys by month</h2><p>Requests per key per calendar month. A cell past the free tier is billable if the key has a card; a key with no card is stopped at its limit plus the buffer.</p></div>';
+        echo '<div class="act-sechead"><h2>Keys by month</h2></div>';
     }
     $notes = array();
     if(!empty($siteNote)){
-        $notes[] = 'The site\'s own ' . (count($siteNote) === 1 ? 'key' : 'keys') . ', <span class="act-mono">' . implode(', ', $siteNote) . '</span>, ' . (count($siteNote) === 1 ? 'is' : 'are') . ' kept out of this list.';
-    }
-    if(!empty($s->keys_deleted)){
-        $notes[] = actN($s->keys_deleted) . ' key' . ($s->keys_deleted === 1 ? '' : 's') . ' with traffic belong' . ($s->keys_deleted === 1 ? 's' : '') . ' to accounts since deleted and cannot be listed.';
+        $notes[] = 'Not listed: the site\'s own ' . (count($siteNote) === 1 ? 'key' : 'keys') . ', <span class="act-mono">' . implode(', ', $siteNote) . '</span>';
     }
     if(!empty($notes)){
         echo '<p class="act-note">' . implode(' ', $notes) . '</p>';
@@ -367,7 +341,7 @@ if(!$ok){
 
     // ----- Reads by endpoint -----
     echo '<section class="act-section" id="reads">';
-    echo '<div class="act-sechead"><h2>Reads by endpoint</h2><p>Every key, the site\'s own included. ' . actN($report->read_traffic->total) . ' GET requests ' . h($period === 'month' ? 'this month' : 'in the period') . '. Average and slowest response in milliseconds; durations are recorded since Nov 2, 2026.</p></div>';
+    echo '<div class="act-sechead"><h2>Reads by endpoint</h2><p>' . actN($report->read_traffic->total) . ' GET requests, the site\'s own included. Average · slowest, in ms' . ($period === '3m' ? ', recorded since Nov 2, 2026' : '') . '.</p></div>';
     $eps = $report->read_traffic->by_endpoint;
     if(empty($eps)){
         echo '<p class="act-empty">No reads.</p>';
@@ -382,7 +356,7 @@ if(!$ok){
 
     // ----- Write activity + recent revisions -----
     echo '<div class="act-grid2">';
-    echo '<section class="act-section"><div class="act-sechead"><h2>Write activity</h2><p>From the audit log' . ($period === '3m' ? ', which began Nov 2, 2026' : '') . '. ' . ($report->test_entities_excluded > 0 ? actN($report->test_entities_excluded) . ' test-suite ' . ($report->test_entities_excluded === 1 ? 'entity' : 'entities') . ' excluded.' : '') . '</p></div>';
+    echo '<section class="act-section"><div class="act-sechead"><h2>Write activity</h2><p>' . ($period === '3m' ? 'Audit log began Nov 2, 2026. ' : '') . ($report->test_entities_excluded > 0 ? actN($report->test_entities_excluded) . ' test-suite ' . ($report->test_entities_excluded === 1 ? 'entity' : 'entities') . ' excluded.' : '') . '</p></div>';
     $ws = $report->write_activity->summary;
     if(empty($ws)){
         echo '<p class="act-empty">No writes.</p>';
@@ -409,7 +383,7 @@ if(!$ok){
     }
     echo '</section>';
 
-    echo '<section class="act-section" id="recent"><div class="act-sechead"><h2>Recent revisions</h2><p>Newest first.</p></div>';
+    echo '<section class="act-section" id="recent"><div class="act-sechead"><h2>Recent revisions</h2></div>';
     $recent = $report->write_activity->recent;
     if(empty($recent)){
         echo '<p class="act-empty">No revisions.</p>';
