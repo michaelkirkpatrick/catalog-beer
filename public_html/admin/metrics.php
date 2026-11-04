@@ -149,19 +149,7 @@ h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em
 }
 .theme-toggle:hover { color: var(--text-primary); }
 
-.hero { margin: 30px 0 8px; }
-.hero .figure { font-size: 56px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; }
-.hero .cap { color: var(--text-secondary); font-size: 14px; margin-top: 6px; max-width: 70ch; }
-
-.callout {
-  background: var(--surface-1); border: 1px solid var(--border); border-left: 3px solid var(--series-4);
-  border-radius: 10px; padding: 14px 18px; margin: 24px 0 8px;
-  color: var(--text-secondary); font-size: 13.5px;
-}
-.callout b { color: var(--text-primary); font-weight: 600; }
-.callout p { margin: 0 0 8px; }
-.callout p:last-child { margin-bottom: 0; }
-.callout code, footer code, .lede code {
+footer code, .lede code {
   font-size: 12px; background: var(--page); border: 1px solid var(--border);
   border-radius: 4px; padding: 1px 5px;
 }
@@ -252,25 +240,6 @@ footer { margin-top: 58px; padding-top: 20px; border-top: 1px solid var(--border
 <div class="offline" id="offline">
   <b>Chart.js did not load.</b> This page pulls it from jsDelivr, so it needs a network
   connection. Every value is still readable — open the “Table view” under any chart.
-</div>
-
-<div class="hero">
-  <div class="figure" id="heroFigure"></div>
-  <div class="cap" id="heroCap"></div>
-</div>
-
-<div class="callout">
-  <p><b>Two data regimes, and they are not comparable.</b> The size and growth family was
-  replayed from <code>createdAt</code> back to Nov 2017 by <code>cron/backfill-metrics.php</code>;
-  everything else is current-state only and begins at the first live snapshot.</p>
-  <p><b>The long history is a survivor curve.</b> The backfill counts only records that still
-  exist today, so a historical total runs low wherever something was later deleted — the line
-  can never show a record that has since been removed.</p>
-  <p><b>No chart needs colour vision to read.</b> Every line carries its own stroke pattern
-  (solid, dashed, dotted, dash-dot) and its own end label; stacked segments are named inside
-  the bar wherever the text fits; every chart has a table view. Hues were picked by running
-  each candidate set through protanopia and deuteranopia simulation and keeping the widest
-  separation available.</p>
 </div>
 
 <div id="kpis" class="tiles" style="margin-top:18px"></div>
@@ -704,12 +673,6 @@ function renderAll() {
   document.getElementById('asof').textContent =
     'Snapshot ' + shortDate(D.asOf) + ' · history replayed from ' + shortDate(HD[0]) +
     ' · live metrics since ' + shortDate(FIRST) + ' (' + LD.length + ' days)';
-  document.getElementById('heroFigure').textContent = fmt(now('total_beer')) + ' beers';
-  document.getElementById('heroCap').textContent =
-    'from ' + fmt(now('total_brewer')) + ' brewers across ' + fmt(now('total_location')) +
-    ' locations · ' + fmt(now('total_beer') - now('beer_style_confidence|none')) +
-    ' beers now carry a resolved style, up from ' + fmt(hAt('total_beer', FIRST) - first('beer_style_confidence|none')) +
-    ' two weeks ago';
 
   /* ---------- KPI row ---------- */
   const k = document.getElementById('kpis');
