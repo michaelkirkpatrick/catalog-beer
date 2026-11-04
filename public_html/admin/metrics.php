@@ -1045,7 +1045,6 @@ function renderAll() {
   {
     const c = card('c-api', {
       title: 'Requests, trailing 30 days',
-      sub: 'Reads and writes share one axis — same unit, comparable magnitudes.',
       note: 'Writes climbed from ' + fmt(first('api_write_30d')) + ' to ' + fmt(now('api_write_30d')) +
             ' as the classification and address work ran; read traffic is flat.'
     });
@@ -1080,7 +1079,6 @@ function renderAll() {
   {
     const c = card('c-keys', {
       title: 'Distinct API keys used, trailing 30 days',
-      sub: 'One series, so no legend box — the title names it.',
       note: 'Master-key traffic is never written to api_logging, so this undercounts by however many master keys were in use.'
     });
     mk(c.plot(230), {
