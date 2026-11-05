@@ -31,6 +31,9 @@ Disallow: /*/delete
 Disallow: /beer/add/
 Disallow: /brewer/add$
 Disallow: /brewer/add?
+# /search is noindex and its filter links multiply without end; Bingbot
+# was spending about 430 metered Algolia requests a day walking them.
+Disallow: /search
 
 
 # ---------------------------------------------------------------------
@@ -138,6 +141,7 @@ Disallow: /login
 Disallow: /logout
 Disallow: /signup
 Disallow: /admin/
+Disallow: /search
 
 User-agent: Claude-User
 Allow: /
@@ -154,6 +158,7 @@ Disallow: /login
 Disallow: /logout
 Disallow: /signup
 Disallow: /admin/
+Disallow: /search
 
 User-agent: PerplexityBot
 Allow: /
@@ -162,6 +167,7 @@ Disallow: /login
 Disallow: /logout
 Disallow: /signup
 Disallow: /admin/
+Disallow: /search
 
 User-agent: Perplexity-User
 Allow: /
