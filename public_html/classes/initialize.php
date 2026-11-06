@@ -128,8 +128,13 @@ if($guest == false){
             // Valid User
             $userInfo = json_decode($jsonResponse);
             if(!$userInfo->email_verified){
-                // Unverified Email
-                if($URI == '/verify-email' || $URI == '/account'){
+                // Unverified Email. The path is compared without its query
+                // string: /account?edit=email is where a mistyped sign-up
+                // address gets corrected, and the exact match used to bounce
+                // that panel (and its POST) to /verify-email, so an unverified
+                // account could see its email but never fix it.
+                $uriPath = strtok($URI, '?');
+                if($uriPath == '/verify-email' || $uriPath == '/account'){
                     // Page Okay
                 }else{
                     // Redirect

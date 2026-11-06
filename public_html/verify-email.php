@@ -111,6 +111,7 @@ echo $htmlHead->html;
         </div>
         <div class="cbf-panel">
             <p>This helps us reduce spam on the site. Check your email; we sent you a message<?php echo $dateString; ?> with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Open the link in that email and press the button on the page it takes you to.</p>
+            <p>Signed up with the wrong address? <a href="/account?edit=email">Change it on your account page</a> and we&#8217;ll send the message there instead.</p>
         </div>
         <?php }else{ ?>
         <div class="cbf-pagehead">
