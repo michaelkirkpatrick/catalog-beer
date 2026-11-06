@@ -131,10 +131,8 @@ class InputField {
 
         // Validation State
         if($invalid){
-            // Plain text now. These are API-authored validation strings; all
-            // 51 validMsg assignments across the entity classes were checked for
-            // Markdown syntax and none carry any, so this renders the same. The
-            // inner div stays as the flex child that used to hold the Markdown
+            // Plain text: API-authored validation strings, which carry no Markdown
+            // or HTML (a link is a bare URL). The inner div stays as the flex child that used to hold the Markdown
             // <p> — DropDown has always rendered its message exactly this way,
             // which is why nothing moves.
             $message = h($this->validMsg);
