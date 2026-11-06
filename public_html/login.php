@@ -49,6 +49,11 @@ if(isset($_GET['request'])){
                 $message = 'Hello! Before you can edit this location, you will need to sign in. Don\'t have an account? You can <a href="/signup">create one</a>.';
             }
             break;
+        case 'confirm-email':
+            // The link in a "confirm your new email address" message. The
+            // account still signs in with its CURRENT address at this point.
+            $message = 'Hello! To confirm your new email address, please sign in first. Use your account&#8217;s current email address; the new one takes over once you confirm.';
+            break;
         default:
             // No Action
     }

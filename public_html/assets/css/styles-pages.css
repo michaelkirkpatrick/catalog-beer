@@ -489,6 +489,14 @@ a.be-lede:hover { text-decoration: underline; }
 .ac-danger { color: var(--cb-error); }
 .ac-danger:hover { color: var(--cb-error); }
 
+/* ---- a change of email waiting for its confirmation link ---- */
+.ac-pending { padding: 0 .2rem .85rem calc(110px + 1.2rem); border-bottom: 1px solid var(--cb-line); }
+.ac-pending__text { margin: 0 0 .4rem; font-size: var(--cb-fs-sm); color: var(--cb-text-muted); }
+.ac-pending__actions { display: flex; gap: 1.25rem; }
+.ac-pending .ac-note { margin: .85rem 0 0; }
+.ac-linkbtn { background: none; border: 0; padding: 0; cursor: pointer; }
+@media (max-width: 560px){ .ac-pending { padding-left: .2rem; } }
+
 /* ---- inline editor card ---- */
 .ac-card { background: var(--cb-paper-2); border: 1px solid var(--cb-line-2); border-radius: var(--cb-radius-xl); padding: 1.1rem 1.25rem; margin: .35rem 0 .75rem; }
 .ac-actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.1rem; }

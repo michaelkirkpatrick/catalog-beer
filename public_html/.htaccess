@@ -137,4 +137,5 @@ RewriteRule ^location/([-0-9a-f]{36})/?$ location.php?locationID=$1 [L]
 RewriteRule ^location/?$ brewer-list.php [L]
 
 RewriteRule ^verify-email(\/[-0-9a-f]{36})?$ verify-email.php?emailAuth=$1 [L]
+RewriteRule ^confirm-email(\/[-0-9a-f]{36})?$ confirm-email.php?code=$1 [L]
 

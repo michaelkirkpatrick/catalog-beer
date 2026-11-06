@@ -13,8 +13,12 @@ if(isset($_GET['edit']) && in_array($_GET['edit'], array('name', 'email', 'passw
 }
 
 // Validation State
-$validState = array('name'=>'', 'email'=>'', 'currentPassword'=>'', 'newPassword'=>'');
-$validMsg = array('name'=>'', 'email'=>'', 'currentPassword'=>'', 'newPassword'=>'');
+$validState = array('name'=>'', 'email'=>'', 'emailPassword'=>'', 'currentPassword'=>'', 'newPassword'=>'');
+$validMsg = array('name'=>'', 'email'=>'', 'emailPassword'=>'', 'currentPassword'=>'', 'newPassword'=>'');
+
+// A change of email waiting for its confirmation link to be opened (API 6.10.0:
+// a verified account's email changes only when the new inbox confirms it).
+$pendingEmail = !empty($userInfo->pending_email) ? $userInfo->pending_email : '';
 
 // Field values (repopulated from the POST on a validation error)
 $nameValue = $userInfo->name;
@@ -49,34 +53,73 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $openPanel = 'email';
         $emailValue = trim($_POST['email'] ?? '');
 
-        // Mirror the API's re-verification rule for messaging: moving to a new
-        // email *domain* resets verification, brewery privileges, and the API key.
-        $oldDomain = strtolower(substr(strrchr($userInfo->email, '@') ?: '', 1));
-        $newDomain = strtolower(substr(strrchr($emailValue, '@') ?: '', 1));
+        $emailPassword = $_POST['emailPassword'] ?? '';
 
-        $apiResponse = $api->request('PATCH', '/users/' . $_SESSION['userID'], array('email'=>$emailValue));
-        $patchData = json_decode($apiResponse);
-        if($api->httpcode == 200 && isset($patchData->id)){
-            if($newDomain !== $oldDomain){
-                // h() because this flash lands in $alert->msg, which is raw HTML
-                // by contract, and $emailValue is whatever the user typed into
-                // the form. The plan listed beer.php as the only site
-                // interpolating user data into an alert; this is the second.
-                $_SESSION['account_flash'] = 'Your email address has been updated. Because it is on a new domain, we sent a verification message to ' . h($emailValue) . ' and reset your API key. Verify your address to keep adding data.';
+        // The API's PATCH doesn't ask for the current password, so confirm it
+        // against /login first, as the password panel does: a borrowed session
+        // can't start moving the account to another inbox.
+        $loginResponse = $api->request('POST', '/login', array('email'=>$userInfo->email, 'password'=>$emailPassword));
+        $loginData = json_decode($loginResponse, true);
+        if(isset($loginData['id'])){
+            $apiResponse = $api->request('PATCH', '/users/' . $_SESSION['userID'], array('email'=>$emailValue));
+            $patchData = json_decode($apiResponse);
+            if($api->httpcode == 200 && isset($patchData->id)){
+                // h() because the flash lands in $alert->msg, which is raw HTML
+                // by contract, and the address is whatever was typed.
+                if(!empty($patchData->pending_email)){
+                    // Held: nothing about the account changes until the link
+                    // in that message is opened and confirmed.
+                    $_SESSION['account_flash'] = 'We sent a confirmation link to <strong>' . h($patchData->pending_email) . '</strong>. Your email address changes once you open that link and confirm.';
+                }elseif($patchData->email !== $userInfo->email){
+                    // An unverified account's address is corrected in place.
+                    $_SESSION['account_flash'] = 'Your email address has been updated. We sent a new verification message to ' . h($patchData->email) . '.';
+                }elseif($pendingEmail !== ''){
+                    // The current address, typed while a change was waiting
+                    $_SESSION['account_flash'] = 'Your email address is unchanged, and the change you had waiting was cancelled.';
+                }else{
+                    $_SESSION['account_flash'] = 'Your email address is unchanged.';
+                }
+                header('location: /account');
+                exit();
+            }elseif(isset($patchData->error)){
+                $validState['email'] = $patchData->valid_state->email ?? 'invalid';
+                $validMsg['email'] = $patchData->valid_msg->email ?? '';
+                if(empty($validMsg['email']) && !empty($patchData->error_msg)){
+                    // Includes the 429: one confirmation email a minute, five a day
+                    $alert->msg = h($patchData->error_msg);
+                }
             }else{
-                $_SESSION['account_flash'] = 'Your email address has been updated.';
+                $alert->msg = 'Sorry, we are unable to update your email address right now. Please try again later.';
             }
-            header('location: /account');
-            exit();
-        }elseif(isset($patchData->error)){
-            $validState['email'] = $patchData->valid_state->email ?? 'invalid';
-            $validMsg['email'] = $patchData->valid_msg->email ?? '';
-            if(empty($validMsg['email']) && !empty($patchData->error_msg)){
-                $alert->msg = $patchData->error_msg;
-            }
+        }elseif(is_array($loginData) && isset($loginData['valid_state'])){
+            $validState['emailPassword'] = 'invalid';
+            $validMsg['emailPassword'] = $loginData['valid_msg']['password'] ?? 'Incorrect password. Please check your password and try again.';
         }else{
             $alert->msg = 'Sorry, we are unable to update your email address right now. Please try again later.';
         }
+    }elseif(isset($_POST['resendEmail']) && $pendingEmail !== ''){
+        // --- Send the confirmation link again (a new code; earlier links stop working) ---
+        $apiResponse = $api->request('PATCH', '/users/' . $_SESSION['userID'], array('email'=>$pendingEmail));
+        $patchData = json_decode($apiResponse);
+        if($api->httpcode == 200 && isset($patchData->id)){
+            $_SESSION['account_flash'] = 'We sent a new confirmation link to <strong>' . h($pendingEmail) . '</strong>. Links from earlier messages no longer work.';
+            header('location: /account');
+            exit();
+        }elseif(!empty($patchData->error_msg)){
+            $alert->msg = h($patchData->error_msg);
+        }else{
+            $alert->msg = 'Sorry, we are unable to send the confirmation link right now. Please try again later.';
+        }
+    }elseif(isset($_POST['cancelEmail']) && $pendingEmail !== ''){
+        // --- Withdraw the change: the API reads the current address as "leave it as it is" ---
+        $apiResponse = $api->request('PATCH', '/users/' . $_SESSION['userID'], array('email'=>$userInfo->email));
+        $patchData = json_decode($apiResponse);
+        if($api->httpcode == 200 && isset($patchData->id)){
+            $_SESSION['account_flash'] = 'Your email change was cancelled. Your email address is still ' . h($userInfo->email) . '.';
+            header('location: /account');
+            exit();
+        }
+        $alert->msg = 'Sorry, we are unable to cancel the change right now. Please try again later.';
     }elseif(isset($_POST['submitPassword'])){
         // --- Update Password ---
         $openPanel = 'password';
@@ -91,7 +134,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $apiResponse = $api->request('PATCH', '/users/' . $_SESSION['userID'], array('password'=>$newPassword));
             $patchData = json_decode($apiResponse);
             if($api->httpcode == 200 && isset($patchData->id)){
-                $_SESSION['account_flash'] = 'Your password has been updated.';
+                // The API drops a change of email that was waiting when the
+                // password changes, so say so rather than leave a dead link.
+                $_SESSION['account_flash'] = 'Your password has been updated.' . ($pendingEmail !== '' ? ' The email change you had waiting was cancelled; request it again if you still want it.' : '');
                 header('location: /account');
                 exit();
             }elseif(isset($patchData->error)){
@@ -179,6 +224,30 @@ if($userInfo->email_verified){
     }
 }
 
+// A change of email in progress: when the link went out, whether it has
+// lapsed (links work for 24 hours), and what confirming it would end.
+$pendingSentString = '';
+$pendingExpired = false;
+if($pendingEmail !== '' && !empty($userInfo->pending_email_sent)){
+    $sentDay = date('l, F jS', $userInfo->pending_email_sent);
+    $pendingSentString = ($sentDay == date('l, F jS') ? 'today' : $sentDay) . ' at ' . date('g:i A', $userInfo->pending_email_sent);
+    $pendingExpired = ($userInfo->pending_email_sent + 86400 < time());
+}
+
+// The brewery staff notice. On the form the new address isn't known yet, so
+// it is conditional; beside a pending change to another domain it is definite.
+$staffNoticeForm = '';
+$staffNoticePending = '';
+if($userInfo->email_verified && ($openPanel === 'email' || $pendingEmail !== '')){
+    $staffNames = staffBrewerNames($api, $_SESSION['userID']);
+    if(!empty($staffNames)){
+        $staffNoticeForm = staffNoticeHtml($staffNames, emailDomain($userInfo->email), false);
+        if($pendingEmail !== '' && emailDomain($pendingEmail) !== emailDomain($userInfo->email)){
+            $staffNoticePending = staffNoticeHtml($staffNames, emailDomain($userInfo->email), true);
+        }
+    }
+}
+
 // HTML Head
 $htmlHead = new htmlHead('My Account');
 $htmlHead->addStylesheet('/assets/css/styles-pages.css');
@@ -238,19 +307,58 @@ echo $htmlHead->html;
             $inputEmail->value = $emailValue;
             $inputEmail->validState = $validState['email'];
             $inputEmail->validMsg = $validMsg['email'];
-            $inputEmail->hint = 'If the new address is on a different domain, you’ll need to re-verify your email and your API key will be reset.';
+            $inputEmail->hint = $userInfo->email_verified
+                ? 'We’ll send a confirmation link to the new address. Your email changes once you confirm.'
+                : 'We’ll send the verification message to the new address.';
             echo $inputEmail->display();
+
+            $inputEmailPassword = new InputField();
+            $inputEmailPassword->name = 'emailPassword';
+            $inputEmailPassword->description = 'Current password';
+            $inputEmailPassword->type = 'password';
+            $inputEmailPassword->required = true;
+            $inputEmailPassword->markRequired = false;
+            $inputEmailPassword->autocomplete = 'current-password';
+            $inputEmailPassword->validState = $validState['emailPassword'];
+            $inputEmailPassword->validMsg = $validMsg['emailPassword'];
+            echo $inputEmailPassword->display();
             ?>
+            <?php if($staffNoticeForm !== ''){ ?>
+            <div class="cbf-alert cbf-alert--warn ac-note">
+                <span class="cbf-alert__i" aria-hidden="true">!</span>
+                <div><?php echo $staffNoticeForm; ?></div>
+            </div>
+            <?php } ?>
             <div class="ac-actions">
                 <button type="submit" class="cbf-btn" name="submitEmail">Save</button>
                 <a class="cbf-btn cbf-btn--ghost" href="/account">Cancel</a>
             </div>
         </form>
         <?php }else{ ?>
-        <div class="ac-row">
+        <div class="ac-row<?php echo $pendingEmail !== '' ? ' ac-row--bare' : ''; ?>">
             <span class="cbf-label ac-row__label">Email</span>
             <span class="ac-row__value"><?php echo h($userInfo->email) . $emailTag; ?></span>
             <a class="cb-action" href="/account?edit=email">Change</a>
+        </div>
+        <?php } ?>
+        <?php if($pendingEmail !== ''){ ?>
+        <div class="ac-pending">
+            <?php if($pendingExpired){ ?>
+            <p class="ac-pending__text">The confirmation link we sent to <strong><?php echo h($pendingEmail); ?></strong> <?php echo h($pendingSentString); ?> has expired. Send a new one, or cancel the change.</p>
+            <?php }else{ ?>
+            <p class="ac-pending__text">Waiting for confirmation at <strong><?php echo h($pendingEmail); ?></strong>. We sent a link <?php echo h($pendingSentString); ?>; open it to finish the change. It works for 24 hours.</p>
+            <?php } ?>
+            <form method="post" class="ac-pending__actions">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="cb-action ac-linkbtn" name="resendEmail">Resend</button>
+                <button type="submit" class="cb-action ac-linkbtn" name="cancelEmail">Cancel change</button>
+            </form>
+            <?php if($staffNoticePending !== ''){ ?>
+            <div class="cbf-alert cbf-alert--warn ac-note">
+                <span class="cbf-alert__i" aria-hidden="true">!</span>
+                <div><?php echo $staffNoticePending; ?></div>
+            </div>
+            <?php } ?>
         </div>
         <?php } ?>
 

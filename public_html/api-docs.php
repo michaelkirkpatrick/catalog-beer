@@ -109,6 +109,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#users-object">&gt; The User Object</a>
                     <a class="list-group-item list-group-item-action" href="#users-retrieve">&gt; Retrieve a User</a>
                     <a class="list-group-item list-group-item-action" href="#users-api-key">&gt; Get API Key</a>
+                    <a class="list-group-item list-group-item-action" href="#users-privileges">&gt; Brewery Staff Privileges</a>
                     <a class="list-group-item list-group-item-action" href="#users-patch">&gt; Update a User (PATCH)</a>
                     <a class="list-group-item list-group-item-action" href="#users-delete">&gt; Delete a User</a>
                     <a class="list-group-item list-group-item-action" href="#users-reset-password">&gt; Request Password Reset</a>
@@ -4777,12 +4778,27 @@ curl -X PATCH \
             <tr>
                 <td><var>email_auth</var></td>
                 <td>string/null</td>
-                <td>The email verification code, or <var>null</var> if the email has already been verified.</td>
+                <td>Reserved. Always <var>null</var> for your key: verification codes are never returned through the API.</td>
             </tr>
             <tr>
                 <td><var>email_auth_sent</var></td>
                 <td>integer/null</td>
                 <td>A Unix timestamp indicating when the email verification was sent, or <var>null</var>.</td>
+            </tr>
+            <tr>
+                <td><var>pending_email</var></td>
+                <td>string/null</td>
+                <td>An email address you have asked to change to that is waiting to be confirmed from its inbox, or <var>null</var>. See <a href="#users-patch">Update a User</a>.</td>
+            </tr>
+            <tr>
+                <td><var>pending_email_auth</var></td>
+                <td>null</td>
+                <td>Reserved. Always <var>null</var> for your key.</td>
+            </tr>
+            <tr>
+                <td><var>pending_email_sent</var></td>
+                <td>integer/null</td>
+                <td>A Unix timestamp indicating when the confirmation link was sent to <var>pending_email</var>, or <var>null</var>. The link works for 24 hours.</td>
             </tr>
             <tr>
                 <td><var>admin</var></td>
@@ -4804,6 +4820,9 @@ curl -X PATCH \
   "email_verified": true,
   "email_auth": null,
   "email_auth_sent": null,
+  "pending_email": null,
+  "pending_email_auth": null,
+  "pending_email_sent": null,
   "admin": false
 }
 </pre>
@@ -4891,11 +4910,69 @@ curl -X GET \
 
 <p><a href="#top">^ Return to top</a></p>
 
+<!----- USERS: PRIVILEGES ----->
+
+<h3 id="users-privileges">Brewery Staff Privileges</h3>
+
+<p>To list the brewers your account is brewery staff of, send a <strong>GET</strong> request to the <code>/users/{user_id}/privileges</code> endpoint. You can only list your own. An account is brewery staff of every brewer whose website is on the same domain as its email address, which is more than one brewer when a brewery keeps a sub-brand on a page of its own site. Brewery staff may edit and delete the records their brewery has verified.</p>
+
+<pre class="api-code">GET https://api.catalog.beer/users/{user_id}/privileges</pre>
+
+<h4>Response</h4>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><var>object</var></td>
+                <td>string</td>
+                <td>The type of object, in this case “list”.</td>
+            </tr>
+            <tr>
+                <td><var>url</var></td>
+                <td>string</td>
+                <td>The path of this request.</td>
+            </tr>
+            <tr>
+                <td><var>data</var></td>
+                <td>array</td>
+                <td>One entry per brewer, each with its <var>brewer_id</var> and <var>name</var>, in name order. Empty when the account is not brewery staff anywhere.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Sample Response</h4>
+
+<pre class="api-code">
+{
+  "object": "list",
+  "url": "/users/a1b2c3d4-e5f6-7890-abcd-ef1234567890/privileges",
+  "data": [
+    {
+      "brewer_id": "497fb37e-7388-4660-9fa8-1de1f829e5d7",
+      "name": "Beachwood Brewing"
+    }
+  ]
+}
+</pre>
+
+<p><a href="#top">^ Return to top</a></p>
+
 <!----- USERS: PATCH ----->
 
 <h3 id="users-patch">Update a User (PATCH)</h3>
 
 <p>To update your account, send a <strong>PATCH</strong> request to the <code>/users</code> endpoint with your <var>user_id</var> appended to the path. Only the fields you include will be updated; all other fields remain unchanged. Successful requests return a <a href="#users-object">user object</a>.</p>
+
+<p><strong>A change of email takes effect when the new address confirms it.</strong> Sending <var>email</var> does not replace your address: the request is stored as <var>pending_email</var> and a confirmation link is sent to the new address. Your <var>email</var> changes when that link is opened and confirmed on the website, by someone signed in to the account, within 24 hours. Your API key, usage and billing settings are not affected by a change of email. Sending your current address withdraws a request that is waiting. Requests are limited to one confirmation email a minute and five a day; past that the response is a <var>429 Too Many Requests</var> with a <var>Retry-After</var> header.</p>
 
 <pre class="api-code">PATCH https://api.catalog.beer/users/{user_id}</pre>
 
@@ -4917,12 +4994,12 @@ curl -X GET \
             <tr>
                 <td><var>email</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>The user’s email address. Changing your email to a different domain will reset your email verification status and any brewery staff privileges associated with the previous domain. Temporary and disposable email domains are refused with a <var>400</var>.</td>
+                <td>The email address to change to. It is held as <var>pending_email</var> until confirmed from its inbox (see above). Confirming an address on a different domain ends any <a href="#users-privileges">brewery staff privileges</a> that came from the previous domain. Temporary and disposable email domains are refused with a <var>400</var>, as is an address another account already uses.</td>
             </tr>
             <tr>
                 <td><var>password</var><br><small class="text-muted">(optional)</small></td>
                 <td>string</td>
-                <td>A new password for the account. Must be at least 8 characters.</td>
+                <td>A new password for the account. Must be at least 8 characters. Changing the password withdraws a change of email that is waiting to be confirmed.</td>
             </tr>
         </tbody>
     </table>

@@ -52,3 +52,68 @@ function permissionsCanEdit($permissions, $cbVerified, $brewerVerified){
     }
     return !$brewerVerified;
 }
+
+/*---
+Brewery staff notice, for a change of email (account.php, confirm-email.php)
+
+Staff rights come from the email's domain, so confirming an address on a new
+domain ends them. GET /users/{id}/privileges names the brewers involved: more
+than one when brewers share the domain (a sub-brand kept on a page of its
+owner's site, such as Beachwood Brewing and Beachwood Blendery).
+---*/
+
+// The names of the brewers this account is staff of; empty when there are
+// none or the API can't say (the notice is then simply not shown).
+function staffBrewerNames($api, $userID){
+    $response = $api->request('GET', '/users/' . $userID . '/privileges', '');
+    $data = json_decode($response);
+    if($api->httpcode != 200 || !isset($data->data) || !is_array($data->data)){
+        return array();
+    }
+    $names = array();
+    foreach($data->data as $brewer){
+        if(isset($brewer->name) && $brewer->name !== ''){
+            $names[] = $brewer->name;
+        }
+    }
+    return $names;
+}
+
+// "A", "A and B", "A, B and C", then "A, B and 4 other breweries". Escaped
+// and bolded, ready to echo.
+function staffBrewerList(array $names){
+    $bold = array_map(fn($name) => '<strong>' . h($name) . '</strong>', $names);
+    $count = count($bold);
+    if($count === 0){ return ''; }
+    if($count === 1){ return $bold[0]; }
+    if($count === 2){ return $bold[0] . ' and ' . $bold[1]; }
+    if($count === 3){ return $bold[0] . ', ' . $bold[1] . ' and ' . $bold[2]; }
+    return $bold[0] . ', ' . $bold[1] . ' and ' . ($count - 2) . ' other breweries';
+}
+
+// The notice itself, as HTML. $definite = false on the email form, where the
+// new address isn't known yet ("If your new address is at a different
+// domain..."); true once it is known to be on another domain. The edit-and-
+// delete clause is not optional: brewer_verified is a gate, so a former staff
+// member is locked out of the brewery's verified records, their own included.
+function staffNoticeHtml(array $names, $domain, $definite){
+    if(empty($names)){
+        return '';
+    }
+    $list = staffBrewerList($names);
+    $one = (count($names) === 1);
+    $verifiedBy = $one ? h($names[0]) . ' has verified' : 'those breweries have verified';
+    $addFor = $one ? h($names[0]) : 'them';
+    if($definite){
+        $html = 'Confirming this address ends your brewery staff privileges for ' . $list . '.';
+    }else{
+        $html = 'You have brewery staff privileges for ' . $list . ' because your email address is at ' . h($domain) . '. If your new address is at a different domain, you will lose those privileges when you confirm it.';
+    }
+    $html .= ' Everything you have contributed stays in the catalog. From then on you won&#8217;t be able to edit or delete records ' . $verifiedBy . ', including the ones you added, and anything new you add for ' . $addFor . ' won&#8217;t carry the Brewer Verified mark.';
+    return $html;
+}
+
+// The part of an email address after the @, lowercased.
+function emailDomain($email){
+    return strtolower(substr(strrchr((string)$email, '@') ?: '', 1));
+}
