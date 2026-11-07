@@ -638,5 +638,74 @@ ok('the <email> in the prefix is inert text now, not an autolink',
 ok('nl2br is called in HTML5 mode', strpos($body, '<br />') === false);
 
 // ===========================================================================
+// apiMessageLinks(): the URLs in API messages become named links. These are the
+// API's exact strings (catalog-beer-api: Brewer, Beer, Location, Users,
+// index.php, errors.php), so a wording change there shows up here once copied.
+section('apiMessageLinks');
+
+$linksOf = function(string $html){
+    $found = [];
+    foreach((new DOMXPath(dom('<div>' . $html . '</div>')))->query('//a') as $a){
+        $found[] = [$a->getAttribute('href'), $a->textContent];
+    }
+    return $found;
+};
+$contactLink = ['/contact', 'contact us'];
+
+$verified = 'Sorry, because this beer is brewer_verified, we limit editing capabilities to brewery staff. If you would like to see an update made to this beer, please contact us: https://catalog.beer/contact';
+ok('brewer_verified refusal reads "please contact us" with the words linked',
+    apiMessageLinks($verified) === 'Sorry, because this beer is brewer_verified, we limit editing capabilities to brewery staff. If you would like to see an update made to this beer, please <a href="/contact">contact us</a>');
+
+$signup = "Several accounts have been created from your network in the last day, so we can't open another one right now. Please try again tomorrow, or contact us at https://catalog.beer/contact if you need more than one account.";
+ok('sign-up refusal links "contact us" and keeps the rest of the sentence',
+    strpos(apiMessageLinks($signup), 'or <a href="/contact">contact us</a> if you need') !== false);
+
+$limit = "You've reached your 1,000 request limit for November 2026. Your count resets on December 1, 2026. To keep going now, add a payment method at https://catalog.beer/billing — usage past the free tier is $1 per 1,000 requests, billed monthly. For more information, visit https://catalog.beer/api-pricing, or contact us at https://catalog.beer/contact or michael@catalog.beer.";
+$limitOut = apiMessageLinks($limit);
+ok('request-limit message has its three links, in order',
+    $linksOf($limitOut) === [['/billing', 'add a payment method'], ['/api-pricing', 'API pricing'], $contactLink]);
+ok('request-limit message reads as a sentence',
+    strpos($limitOut, 'For more information, see <a href="/api-pricing">API pricing</a>, or <a href="/contact">contact us</a>.') !== false);
+
+$cap = 'You can raise the cap with PATCH /billing (monthly_spend_cap_cents) or from your account at https://catalog.beer.';
+ok('spend-cap message links "your account" and keeps its full stop',
+    str_ends_with(apiMessageLinks($cap), 'from <a href="/billing">your account</a>.'));
+
+foreach([$verified, $signup, $limit, $cap] as $message){
+    ok('no raw URL is left: ' . substr($message, 0, 30), strpos(apiMessageLinks($message), 'https://') === false);
+}
+
+ok('a reworded message still gets a link, not a raw URL',
+    apiMessageLinks('Write to us: https://catalog.beer/contact') === 'Write to us: <a href="/contact">our contact page</a>');
+ok('the docs URL is left alone, it is aimed at developers',
+    strpos(apiMessageLinks('see https://catalog.beer/api-docs#location-address.'), 'https://catalog.beer/api-docs#location-address.') !== false);
+ok('a URL elsewhere on the site is not cut in half',
+    apiMessageLinks('https://catalog.beer/beer/123') === 'https://catalog.beer/beer/123');
+
+// Through the two classes that call it.
+$urlField = new InputField();
+$urlField->name = 'url';
+$urlField->description = 'Website';
+$urlField->validState = 'invalid';
+$urlField->validMsg = 'Sorry, <img src=x onerror=alert(1)> Bob\'s already uses that page as its website. If this is the same brewery, please contact us: https://catalog.beer/contact';
+$urlHtml = $urlField->display();
+$urlXpath = new DOMXPath(dom('<div>' . $urlHtml . '</div>'));
+ok('InputField links the contact URL', strpos($urlHtml, 'please <a href="/contact">contact us</a>') !== false);
+ok('InputField still escapes the brewery name around the link',
+    $urlXpath->query('//img')->length === 0 && strpos($urlHtml, '&lt;img src=x') !== false);
+
+// A hostile name holding a key gets the fixed link and nothing else.
+$hostile = apiMessageLinks(h('"><script>alert(1)</script>contact us: https://catalog.beer/contact'));
+ok('a key inside a hostile name opens no script', (new DOMXPath(dom('<div>' . $hostile . '</div>')))->query('//script')->length === 0);
+ok('a key inside a hostile name links only to the fixed page', $linksOf($hostile) === [$contactLink]);
+
+$linkAlert = new Alert();
+$linkAlert->msg = $verified;
+ok('Alert links the contact URL', strpos($linkAlert->display(), 'please <a href="/contact">contact us</a>') !== false);
+$devAlert = new Alert();
+$devAlert->msg = 'Try the <a href="/brewer">list of brewers</a>.';
+ok('Alert leaves developer-written links as they are', strpos($devAlert->display(), '<div>Try the <a href="/brewer">list of brewers</a>.</div>') !== false);
+
+// ===========================================================================
 echo "\n$pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

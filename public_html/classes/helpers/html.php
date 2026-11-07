@@ -53,3 +53,47 @@
 function h($value): string {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+
+/**
+ * Turn the catalog.beer URLs in an API message into links with proper names.
+ *
+ * error_msg and valid_msg are plain text, and a link in one is a bare URL,
+ * because every API client reads them. This map is how the website shows those
+ * URLs as links instead. It is an exact-string lookup and not a formatting
+ * language: an href only ever comes from this table, and no text from a user or
+ * the API can choose one. A brewery name containing a key would at worst link
+ * to one of these pages.
+ *
+ * Keys carry the words around the URL so the sentence still reads ("please
+ * contact us: https://..." becomes "please <a>contact us</a>"). The bare URLs
+ * last in the table catch a reworded message. There is deliberately no bare
+ * https://catalog.beer row, since a URL elsewhere on the site would get cut in
+ * half. API-docs URLs stay out too: those messages are written for developers.
+ *
+ * strtr() and not str_replace(): it takes the longest key at each position and
+ * never rescans its own output, so the order of this table does not matter.
+ *
+ * Output is HTML. Call this on a message that is already escaped (InputField)
+ * or that is HTML by contract (Alert), never on a raw value. The keys contain
+ * nothing h() changes, so they match either way.
+ *
+ * A new URL in an API message needs a row here, and tests/escaping.php pins the
+ * API's current wording.
+ *
+ * @param string $message  Escaped message text, or Alert's developer HTML
+ * @return string          The same message with the known URLs linked
+ */
+function apiMessageLinks(string $message): string {
+    $contact = '<a href="/contact">contact us</a>';
+    return strtr($message, [
+        'contact us: https://catalog.beer/contact' => $contact,
+        'contact us at https://catalog.beer/contact or michael@catalog.beer' => $contact,
+        'contact us at https://catalog.beer/contact' => $contact,
+        'add a payment method at https://catalog.beer/billing' => '<a href="/billing">add a payment method</a>',
+        'visit https://catalog.beer/api-pricing' => 'see <a href="/api-pricing">API pricing</a>',
+        'your account at https://catalog.beer' => '<a href="/billing">your account</a>',
+        'https://catalog.beer/contact' => '<a href="/contact">our contact page</a>',
+        'https://catalog.beer/billing' => '<a href="/billing">your billing page</a>',
+        'https://catalog.beer/api-pricing' => '<a href="/api-pricing">API pricing</a>',
+    ]);
+}

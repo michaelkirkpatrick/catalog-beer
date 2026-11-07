@@ -27,6 +27,9 @@ canned message delegated from $db / $uuid / $users / $stripe / $sendEmail. The
 only interpolations are numeric (minutes, dollar caps) or internal identifiers,
 and TextInput::check() names the problem rather than echoing the input. So the
 ~20 `$alert->msg = $x['error_msg']` sites carry no user data.
+
+A catalog.beer URL in an API message becomes a named link in display(), through
+apiMessageLinks() in helpers/html.php.
 */
 
 class Alert {
@@ -55,7 +58,7 @@ class Alert {
             // audited when this changed; none pass unescaped user data.
             $return = '<div class="' . $class . '" role="alert">';
             $return .= '<span class="cbf-alert__i" aria-hidden="true">' . $icon . '</span>';
-            $return .= '<div>' . $this->msg . '</div>';
+            $return .= '<div>' . apiMessageLinks($this->msg) . '</div>';
             $return .= '</div>';
         }else{
             // No Message

@@ -132,10 +132,11 @@ class InputField {
         // Validation State
         if($invalid){
             // Plain text: API-authored validation strings, which carry no Markdown
-            // or HTML (a link is a bare URL). The inner div stays as the flex child that used to hold the Markdown
+            // or HTML. A link is a bare URL, which apiMessageLinks() turns into
+            // an anchor after h(). The inner div stays as the flex child that used to hold the Markdown
             // <p> — DropDown has always rendered its message exactly this way,
             // which is why nothing moves.
-            $message = h($this->validMsg);
+            $message = apiMessageLinks(h($this->validMsg));
             $return .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>';
         }
 
