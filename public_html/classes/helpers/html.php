@@ -65,7 +65,8 @@ function h($value): string {
  * to one of these pages.
  *
  * Keys carry the words around the URL so the sentence still reads ("please
- * contact us: https://..." becomes "please <a>contact us</a>"). The bare URLs
+ * contact us: https://..." becomes "please <a>contact us</a>."; those messages
+ * end at the URL with no full stop, so that row adds one). The bare URLs
  * last in the table catch a reworded message. There is deliberately no bare
  * https://catalog.beer row, since a URL elsewhere on the site would get cut in
  * half. API-docs URLs stay out too: those messages are written for developers.
@@ -87,7 +88,7 @@ function apiMessageLinks(string $message): string {
     $contact = '<a href="/contact">contact us</a>';
     return strtr($message, [
         'Would you like to create one?' => 'Would you like to <a href="/signup">create one</a>?',
-        'contact us: https://catalog.beer/contact' => $contact,
+        'contact us: https://catalog.beer/contact' => $contact . '.',
         'contact us at https://catalog.beer/contact or michael@catalog.beer' => $contact,
         'contact us at https://catalog.beer/contact' => $contact,
         'add a payment method at https://catalog.beer/billing' => '<a href="/billing">add a payment method</a>',

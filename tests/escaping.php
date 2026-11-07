@@ -654,7 +654,7 @@ $contactLink = ['/contact', 'contact us'];
 
 $verified = 'Sorry, because this beer is brewer_verified, we limit editing capabilities to brewery staff. If you would like to see an update made to this beer, please contact us: https://catalog.beer/contact';
 ok('brewer_verified refusal reads "please contact us" with the words linked',
-    apiMessageLinks($verified) === 'Sorry, because this beer is brewer_verified, we limit editing capabilities to brewery staff. If you would like to see an update made to this beer, please <a href="/contact">contact us</a>');
+    apiMessageLinks($verified) === 'Sorry, because this beer is brewer_verified, we limit editing capabilities to brewery staff. If you would like to see an update made to this beer, please <a href="/contact">contact us</a>.');
 
 $login = "Sorry, we couldn't find your account. Would you like to create one?";
 ok('login message links "create one" to the sign-up page',
@@ -696,7 +696,7 @@ $urlField->validState = 'invalid';
 $urlField->validMsg = 'Sorry, <img src=x onerror=alert(1)> Bob\'s already uses that page as its website. If this is the same brewery, please contact us: https://catalog.beer/contact';
 $urlHtml = $urlField->display();
 $urlXpath = new DOMXPath(dom('<div>' . $urlHtml . '</div>'));
-ok('InputField links the contact URL', strpos($urlHtml, 'please <a href="/contact">contact us</a>') !== false);
+ok('InputField links the contact URL', strpos($urlHtml, 'please <a href="/contact">contact us</a>.') !== false);
 ok('InputField still escapes the brewery name around the link',
     $urlXpath->query('//img')->length === 0 && strpos($urlHtml, '&lt;img src=x') !== false);
 
@@ -707,7 +707,7 @@ ok('a key inside a hostile name links only to the fixed page', $linksOf($hostile
 
 $linkAlert = new Alert();
 $linkAlert->msg = $verified;
-ok('Alert links the contact URL', strpos($linkAlert->display(), 'please <a href="/contact">contact us</a>') !== false);
+ok('Alert links the contact URL', strpos($linkAlert->display(), 'please <a href="/contact">contact us</a>.') !== false);
 $devAlert = new Alert();
 $devAlert->msg = 'Try the <a href="/brewer">list of brewers</a>.';
 ok('Alert leaves developer-written links as they are', strpos($devAlert->display(), '<div>Try the <a href="/brewer">list of brewers</a>.</div>') !== false);
