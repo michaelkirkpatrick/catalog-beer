@@ -86,6 +86,7 @@ function h($value): string {
 function apiMessageLinks(string $message): string {
     $contact = '<a href="/contact">contact us</a>';
     return strtr($message, [
+        'Would you like to create one?' => 'Would you like to <a href="/signup">create one</a>?',
         'contact us: https://catalog.beer/contact' => $contact,
         'contact us at https://catalog.beer/contact or michael@catalog.beer' => $contact,
         'contact us at https://catalog.beer/contact' => $contact,

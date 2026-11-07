@@ -656,6 +656,12 @@ $verified = 'Sorry, because this beer is brewer_verified, we limit editing capab
 ok('brewer_verified refusal reads "please contact us" with the words linked',
     apiMessageLinks($verified) === 'Sorry, because this beer is brewer_verified, we limit editing capabilities to brewery staff. If you would like to see an update made to this beer, please <a href="/contact">contact us</a>');
 
+$login = "Sorry, we couldn't find your account. Would you like to create one?";
+ok('login message links "create one" to the sign-up page',
+    apiMessageLinks($login) === 'Sorry, we couldn\'t find your account. Would you like to <a href="/signup">create one</a>?');
+ok('login message still links once it has been through h()',
+    $linksOf(apiMessageLinks(h($login))) === [['/signup', 'create one']]);
+
 $signup = "Several accounts have been created from your network in the last day, so we can't open another one right now. Please try again tomorrow, or contact us at https://catalog.beer/contact if you need more than one account.";
 ok('sign-up refusal links "contact us" and keeps the rest of the sentence',
     strpos(apiMessageLinks($signup), 'or <a href="/contact">contact us</a> if you need') !== false);
