@@ -40,6 +40,10 @@
 .cbf-lede{font-family:var(--cb-serif);font-style:italic;font-size:1.125rem;line-height:1.45;color:#4A453D;margin:.55rem 0 0;max-width:50ch;}
 
 /* One line, right-aligned, directly above the panel. Omit on all-required forms. */
+/* Sans intro under a page head, for instructions (the italic .cbf-lede is the
+   editorial voice; don't stack the two). */
+.cbf-intro{font-size:var(--cb-fs-base);line-height:1.6;color:var(--cb-text);margin:.6rem 0 0;max-width:50ch;}
+
 .cbf-legend{display:flex;justify-content:flex-end;align-items:baseline;gap:.28rem;font-family:var(--cb-mono);font-size:var(--cb-fs-label-xs);letter-spacing:.08em;text-transform:uppercase;color:#5C564C;margin:0 0 .6rem;}
 .cbf-legend span{color:var(--cb-amber-ink);font-size:.875rem;line-height:1;}
 
@@ -159,3 +163,23 @@ textarea.cbf-input{min-height:6rem;line-height:1.6;resize:vertical;}
 .cbf-inert .cbf-input,.cbf-inert .cbf-unitwrap{background:var(--cb-paper-3);border-color:var(--cb-line-2);color:#5C564C;}
 .cbf-inert .cbf-btn{background:#6B6660;border-color:#6B6660;color:var(--cb-paper-2);cursor:not-allowed;}
 .cbf-inert .cbf-label{color:#5C564C;}
+
+/* --------------------------------------------------------------------------
+   Numbered next steps in a panel (signup confirmation). Done steps get a
+   check and are struck through; numbers are mono, amber-ink on .is-current.
+   -------------------------------------------------------------------------- */
+.cbf-steps{list-style:none;margin:0;padding-top:.5rem;padding-bottom:.5rem;}
+.cbf-step{display:grid;grid-template-columns:2.1rem 1fr;gap:.75rem;padding:1rem 0;}
+.cbf-step + .cbf-step{border-top:1px solid var(--cb-line-2);}
+.cbf-step__n{font-family:var(--cb-mono);font-size:var(--cb-fs-2xs);line-height:1.5rem;color:var(--cb-muted);}
+.cbf-step.is-current .cbf-step__n{color:var(--cb-amber-ink);}
+.cbf-step.is-done .cbf-step__n{color:var(--cb-success);font-size:var(--cb-fs-lg);}
+.cbf-step__body p{margin:0;}
+.cbf-step__t{font-weight:var(--cb-fw-semibold);color:var(--cb-ink);line-height:1.5rem;overflow-wrap:anywhere;}
+.cbf-step.is-done .cbf-step__t{color:var(--cb-muted);text-decoration:line-through;text-decoration-color:var(--cb-muted-2);}
+.cbf-step__body .cbf-step__d{margin-top:.25rem;}
+.cbf-step__d{font-size:var(--cb-fs-sm);line-height:1.5;color:var(--cb-text);}
+.cbf-step__d--muted{color:var(--cb-muted);}
+.cbf-step__em{font-weight:var(--cb-fw-medium);color:var(--cb-ink);}
+.cbf-steps__foot{display:flex;margin:1.25rem 0 2rem;}
+.cbf-steps__foot .cbf-btn{text-align:center;}

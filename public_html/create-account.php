@@ -84,13 +84,31 @@ echo $htmlHead->html;
         <div class="cbf-authmark"><a class="cb-wordmark" href="/">Catalog<span class="tld">.beer</span></a></div>
         <?php if($success){ ?>
         <div class="cbf-pagehead">
-            <h1 class="cbf-h1 cbf-h1--sm">Account created!</h1>
-            <p class="cbf-lede">Before you can contribute to the database, or obtain an API key, you&#8217;ll need to verify your email address.</p>
+            <h1 class="cbf-h1 cbf-h1--sm">One more step</h1>
+            <p class="cbf-intro">Please verify your email address to finish setting up your account.</p>
         </div>
-        <div class="cbf-panel">
-            <p>Check your inbox for an email with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Click the link in that email and you&#8217;ll be all set!</p>
-            <a class="cbf-btn" href="/" role="button">Go to Homepage</a>
-        </div>
+        <ol class="cbf-panel cbf-steps">
+            <li class="cbf-step is-done">
+                <span class="cbf-step__n"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div class="cbf-step__body"><p class="cbf-step__t"><span class="cb-sr-only">Done: </span>Create an account</p></div>
+            </li>
+            <li class="cbf-step is-current">
+                <span class="cbf-step__n" aria-hidden="true">02</span>
+                <div class="cbf-step__body">
+                    <p class="cbf-step__t">Open the email we sent to <?php echo h($email); ?></p>
+                    <p class="cbf-step__d">Subject: <span class="cbf-step__em">Confirm your Catalog.beer Account</span></p>
+                    <p class="cbf-step__d cbf-step__d--muted">Wrong address? <a href="/account?edit=email">Fix it</a></p>
+                </div>
+            </li>
+            <li class="cbf-step">
+                <span class="cbf-step__n" aria-hidden="true">03</span>
+                <div class="cbf-step__body">
+                    <p class="cbf-step__t">Click the link to verify</p>
+                    <p class="cbf-step__d">Then you can add beers and breweries, and get an API key.</p>
+                </div>
+            </li>
+        </ol>
+        <div class="cbf-steps__foot"><a class="cbf-btn cbf-btn--ghost cbf-btn--wide" href="/">Go to the homepage</a></div>
         <?php }else{ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">Create an account</h1>
