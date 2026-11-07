@@ -34,15 +34,15 @@ $htmlHead = new htmlHead('API Documentation');
 $htmlHead->addStylesheet('/assets/css/api-docs.css');
 echo $htmlHead->html;
 ?>
-<body data-bs-spy="scroll" data-bs-target="#ad-toc" data-bs-root-margin="0px 0px -55%">
+<body data-bs-spy="scroll" data-bs-target="#apidoc-toc" data-bs-root-margin="0px 0px -55%">
     <?php
     // Navbar
     echo $nav->navbar('');
     ?>
     <div class="cb-page">
-        <div class="ad-layout">
-            <button class="ad-toc-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#ad-toc" aria-expanded="false" aria-controls="ad-toc">On this page</button>
-            <nav class="ad-toc collapse d-lg-block" id="ad-toc" aria-label="API reference sections">
+        <div class="apidoc-layout">
+            <button class="apidoc-toc-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#apidoc-toc" aria-expanded="false" aria-controls="apidoc-toc">On this page</button>
+            <nav class="apidoc-toc collapse d-lg-block" id="apidoc-toc" aria-label="API reference sections">
                 <div class="list-group">
                     <a class="list-group-item list-group-item-action" href="#url"><strong>API Basics</strong></a>
                     <a class="list-group-item list-group-item-action" href="#authentication"><strong>Authentication</strong></a>
@@ -116,7 +116,7 @@ echo $htmlHead->html;
                     <a class="list-group-item list-group-item-action" href="#users-password-reset">&gt; Reset Password</a>
                 </div>
             </nav>
-            <div class="ad-content">
+            <div class="apidoc-content">
                 <h1 id="top">API Reference</h1>
                 <p><?php if($apiVersion){ ?>API version <a href="/changelog/<?php echo h(rawurlencode($apiVersion->slug)); ?>"><?php echo h($apiVersion->version); ?></a> · <?php } ?>Documentation updated <?php echo date('F j, Y', $docsUpdated); ?></p>
 
