@@ -2,7 +2,7 @@
 /* ---
 // Top Navigation
 $nav = new Navigation();
-echo $nav->topNav('section');
+echo $nav->navbar('section');
 
 <?php
 // Breadcrumbs

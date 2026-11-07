@@ -122,7 +122,7 @@ $htmlHead = new htmlHead('Add a Location');
 echo $htmlHead->html;
 ?>
 <body>
-    <?php echo $nav->navbar('Brewer'); ?>
+    <?php echo $nav->navbar('Brewers'); ?>
     <div class="cb-page cb-page--form">
         <?php
         // Breadcrumbs — these carry the brewer context; no disabled Brewer input
