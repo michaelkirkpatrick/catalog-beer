@@ -145,6 +145,8 @@ echo $htmlHead->html;
             $inputEmail->value = $email;
             $inputEmail->validState = $validState['email'];
             $inputEmail->validMsg = $validMsg['email'];
+            // Only here: /account shows the same message to someone already signed in.
+            $inputEmail->validMsgLinks = ['Sorry, someone has already created an account with this email address.' => 'Sorry, someone has already created an account with this email address. <a href="/login">Sign in</a>'];
             echo $inputEmail->display();
 
             // Password

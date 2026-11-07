@@ -45,6 +45,7 @@ class InputField {
     public $type = 'text';
     public $validState = '';
     public $validMsg = '';
+    public $validMsgLinks = [];   // Extra apiMessageLinks() rows for this field: exact text => developer-authored HTML
     public $value;
 
     public function display(){
@@ -136,7 +137,7 @@ class InputField {
             // an anchor after h(). The inner div stays as the flex child that used to hold the Markdown
             // <p> — DropDown has always rendered its message exactly this way,
             // which is why nothing moves.
-            $message = apiMessageLinks(h($this->validMsg));
+            $message = apiMessageLinks(h($this->validMsg), $this->validMsgLinks);
             $return .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>';
         }
 

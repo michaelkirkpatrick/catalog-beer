@@ -700,6 +700,21 @@ ok('InputField links the contact URL', strpos($urlHtml, 'please <a href="/contac
 ok('InputField still escapes the brewery name around the link',
     $urlXpath->query('//img')->length === 0 && strpos($urlHtml, '&lt;img src=x') !== false);
 
+// A row for one field: the sign-up page offers "Sign in", /account must not.
+$taken = 'Sorry, someone has already created an account with this email address.';
+$takenField = new InputField();
+$takenField->name = 'email';
+$takenField->description = 'Email address';
+$takenField->validState = 'invalid';
+$takenField->validMsg = $taken;
+ok('a field with no page rows leaves the already-registered message unlinked',
+    $linksOf($takenField->display()) === []);
+$takenField->validMsgLinks = [$taken => $taken . ' <a href="/login">Sign in</a>'];
+ok('a field with a page row links "Sign in"',
+    $linksOf($takenField->display()) === [['/login', 'Sign in']]);
+$takenField->validMsg = 'Please enter a valid email address.';
+ok('a page row leaves other messages alone', $linksOf($takenField->display()) === []);
+
 // A hostile name holding a key gets the fixed link and nothing else.
 $hostile = apiMessageLinks(h('"><script>alert(1)</script>contact us: https://catalog.beer/contact'));
 ok('a key inside a hostile name opens no script', (new DOMXPath(dom('<div>' . $hostile . '</div>')))->query('//script')->length === 0);

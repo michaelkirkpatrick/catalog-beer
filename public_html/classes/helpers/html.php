@@ -81,12 +81,18 @@ function h($value): string {
  * A new URL in an API message needs a row here, and tests/escaping.php pins the
  * API's current wording.
  *
- * @param string $message  Escaped message text, or Alert's developer HTML
- * @return string          The same message with the known URLs linked
+ * $pageLinks adds rows for one page, for a link that is only right there: the
+ * email-already-registered message also reaches a signed-in person changing
+ * their address on /account, who must not be told to sign in. Its values are
+ * developer-authored HTML, on the same terms as this table.
+ *
+ * @param string $message    Escaped message text, or Alert's developer HTML
+ * @param array  $pageLinks  Extra rows for this page: exact text => HTML
+ * @return string            The same message with the known URLs linked
  */
-function apiMessageLinks(string $message): string {
+function apiMessageLinks(string $message, array $pageLinks = []): string {
     $contact = '<a href="/contact">contact us</a>';
-    return strtr($message, [
+    return strtr($message, $pageLinks + [
         'Would you like to create one?' => 'Would you like to <a href="/signup">create one</a>?',
         'contact us: https://catalog.beer/contact' => $contact . '.',
         'contact us at https://catalog.beer/contact or michael@catalog.beer' => $contact,
