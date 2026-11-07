@@ -129,6 +129,8 @@ textarea.cbf-input{min-height:6rem;line-height:1.6;resize:vertical;}
    -------------------------------------------------------------------------- */
 .cbf-actions{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-top:1.6rem;padding-top:1.15rem;border-top:2px solid var(--cb-ink);}
 .cbf-actions--bare{margin-top:0;}   /* actions not preceded by a panel (delete confirmation) */
+.cbf-actions--top{margin-top:0;padding-top:0;border-top:0;}   /* the button leads the panel, with text below (email confirmation) */
+.cbf-actions--top + p{margin:1rem 0 0;}
 .cbf-btn{font-family:var(--cb-sans);font-size:.9375rem;font-weight:600;padding:.62rem 1.35rem;border-radius:var(--cb-radius-md);border:1px solid var(--cb-ink);background:var(--cb-ink);color:var(--cb-paper);cursor:pointer;text-decoration:none;display:inline-block;}
 .cbf-btn:hover{background:var(--cb-amber-deep);border-color:var(--cb-amber-deep);color:#fff;}
 .cbf-btn--ghost{background:none;border-color:var(--cb-line-3);color:var(--cb-ink-2);}

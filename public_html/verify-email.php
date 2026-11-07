@@ -58,13 +58,12 @@ echo $htmlHead->html;
         <?php if($state === 'confirm'){ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">Confirm your email address</h1>
-            <p class="cbf-lede">One more click and your Catalog.beer account is ready.</p>
         </div>
         <form method="POST" class="cbf-panel" action="/verify-email/<?php echo h($emailAuth); ?>">
-            <p>Press the button to confirm this is your email address. Once you have, you&#8217;ll be able to contribute to the database and get an API key.</p>
-            <div class="cbf-actions">
+            <div class="cbf-actions cbf-actions--top">
                 <button type="submit" name="confirm" value="1" class="cbf-btn cbf-btn--wide">Confirm Email Address</button>
             </div>
+            <p>Once you have confirmed your email address, you&#8217;ll be able to contribute to the database and get an API key.</p>
         </form>
         <?php }elseif($state === 'verified'){ ?>
         <div class="cbf-pagehead">
