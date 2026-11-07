@@ -85,7 +85,6 @@ echo $htmlHead->html;
         <?php if($success){ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">One more step</h1>
-            <p class="cbf-intro">Please verify your email address to finish setting up your account.</p>
         </div>
         <ol class="cbf-panel cbf-steps">
             <li class="cbf-step is-done">
@@ -95,20 +94,12 @@ echo $htmlHead->html;
             <li class="cbf-step is-current">
                 <span class="cbf-step__n" aria-hidden="true">02</span>
                 <div class="cbf-step__body">
-                    <p class="cbf-step__t">Open the email we sent to <?php echo h($email); ?></p>
-                    <p class="cbf-step__d">Subject: <span class="cbf-step__em">Confirm your Catalog.beer Account</span></p>
+                    <p class="cbf-step__t">Open the email we sent to <?php echo h($email); ?> and click the link</p>
+                    <p class="cbf-step__d">Subject line &#8220;Confirm your Catalog.beer Account&#8221;</p>
                     <p class="cbf-step__d cbf-step__d--muted">Wrong address? <a href="/account?edit=email">Fix it</a></p>
                 </div>
             </li>
-            <li class="cbf-step">
-                <span class="cbf-step__n" aria-hidden="true">03</span>
-                <div class="cbf-step__body">
-                    <p class="cbf-step__t">Click the link to verify</p>
-                    <p class="cbf-step__d">Then you can add beers and breweries, and get an API key.</p>
-                </div>
-            </li>
         </ol>
-        <div class="cbf-steps__foot"><a class="cbf-btn cbf-btn--ghost cbf-btn--wide" href="/">Go to the homepage</a></div>
         <?php }else{ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">Create an account</h1>
