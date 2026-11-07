@@ -112,7 +112,6 @@ echo $htmlHead->html;
         <?php }else{ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">Create an account</h1>
-            <p class="cbf-lede">Free to use, free to build on.</p>
         </div>
         <?php
         // Display Alerts
