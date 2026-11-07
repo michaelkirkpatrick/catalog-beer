@@ -70,17 +70,23 @@ echo $htmlHead->html;
             <div class="cbf-actions cbf-actions--top">
                 <button type="submit" name="confirm" value="1" class="cbf-btn cbf-btn--wide">Confirm</button>
             </div>
-            <p>Once confirmed, you&#8217;ll be able to contribute to the database and get an API key.</p>
+            <p>Once confirmed, you&#8217;ll be able to add to the catalog and get your API key.</p>
         </form>
         <?php }elseif($state === 'verified'){ ?>
         <div class="cbf-pagehead">
-            <h1 class="cbf-h1 cbf-h1--sm">Email verified!</h1>
-            <p class="cbf-lede">Thank you for jumping through those hoops to set up an account. It helps us combat spam on our site.</p>
+            <h1 class="cbf-h1 cbf-h1--sm">Email verified</h1>
+            <p class="cbf-intro">Your account is set up.</p>
         </div>
-        <div class="cbf-panel">
-            <p>You&#8217;re ready to get started. You can start by <a href="/brewer/add">adding a brewer</a> or by adding a beer that&#8217;s not currently listed under your favorite brewer. As always, if you have questions, <a href="/contact">let us know</a>.</p>
-            <a class="cbf-btn" href="/" role="button">Get Started</a>
+        <div class="cbf-panel cbf-choices">
+            <a class="cbf-choice" href="/brewer/add">
+                <span class="cbf-choice__t">Add to the catalog</span>
+                <span class="cbf-choice__d">Brewers, beers, and taprooms.</span>
+            </a>
+            <a class="cbf-choice" href="/account">
+                <span class="cbf-choice__t">Get your API key</span>
+            </a>
         </div>
+        <p class="cbf-authfoot">Questions? <a href="/contact">Get in touch</a></p>
         <?php }elseif($state === 'error'){ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">We couldn&#8217;t verify that</h1>
@@ -108,25 +114,26 @@ echo $htmlHead->html;
             if($api->httpcode == 200 && !empty($userInfo->email_auth_sent)){
                 $sent = date('l, F jS', $userInfo->email_auth_sent);
                 $when = ($sent == date('l, F jS')) ? 'today' : $sent;
-                $dateString = ' <strong>' . h($when . ' at ' . date('g:i A', $userInfo->email_auth_sent)) . '</strong>';
+                $dateString = ' ' . h($when . ' at ' . date('g:i A', $userInfo->email_auth_sent));
             }
         ?>
         <div class="cbf-pagehead">
-            <h1 class="cbf-h1 cbf-h1--sm">Email verification required</h1>
-            <p class="cbf-lede">Before you can add to the Catalog.beer database or obtain an API key, you&#8217;ll need to verify your email address.</p>
+            <h1 class="cbf-h1 cbf-h1--sm">Verify your email to continue</h1>
+            <p class="cbf-intro">Adding to the catalog and getting your API key both need a verified email address.</p>
         </div>
         <div class="cbf-panel">
-            <p>This helps us reduce spam on the site. Check your email; we sent you a message<?php echo $dateString; ?> with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>. Open the link in that email and press the button on the page it takes you to.</p>
-            <p>Signed up with the wrong address? <a href="/account?edit=email">Change it on your account page</a> and we&#8217;ll send the message there instead.</p>
+            <p>We sent a message<?php echo $dateString; ?> with the subject line &#8220;Confirm your Catalog.beer Account&#8221;. Open the link in it and press the button.</p>
+            <p>Wrong address? <a href="/account?edit=email">Change it on your account page</a> and we&#8217;ll send the message there instead.</p>
         </div>
         <?php }else{ ?>
         <div class="cbf-pagehead">
-            <h1 class="cbf-h1 cbf-h1--sm">Verify your email</h1>
-            <p class="cbf-lede">The link to this page is in the email we sent when you created your account.</p>
+            <h1 class="cbf-h1 cbf-h1--sm">That link is missing its code</h1>
+            <p class="cbf-intro">This page only works from the link in your verification email.</p>
         </div>
         <div class="cbf-panel">
-            <p>Look for a message with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong> and open the link in it. Already verified? <a href="/login">Sign in</a>.</p>
+            <p>Open the email we sent when you created your account, subject line &#8220;Confirm your Catalog.beer Account&#8221;, and click the link in it. If it was copied by hand, make sure the whole URL came along.</p>
         </div>
+        <p class="cbf-authfoot">Already verified? <a href="/login">Sign in</a></p>
         <?php } ?>
     </div>
     <?php echo $nav->footer(); ?>

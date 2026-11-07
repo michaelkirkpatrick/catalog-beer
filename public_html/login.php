@@ -145,7 +145,7 @@ echo $htmlHead->html;
             echo $inputPassword->display();
             ?>
             <div class="cbf-actions">
-                <button type="submit" class="cbf-btn cbf-btn--wide" name="submit">Sign In</button>
+                <button type="submit" class="cbf-btn cbf-btn--wide" name="submit">Sign in</button>
             </div>
         </form>
         <p class="cbf-authfoot">New here? <a href="/signup">Create an account</a></p>

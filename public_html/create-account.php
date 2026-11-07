@@ -76,7 +76,7 @@ if(isset($_POST['signupFormHidden'])){
 }
 
 // HTML Head
-$htmlHead = new htmlHead('Create an Account');
+$htmlHead = new htmlHead('Create an account');
 echo $htmlHead->html;
 ?>
 <body>
@@ -96,7 +96,7 @@ echo $htmlHead->html;
                 <div class="cbf-step__body">
                     <p class="cbf-step__t">Open the email we sent to <?php echo h($email); ?> and click the link</p>
                     <p class="cbf-step__d">Subject line &#8220;Confirm your Catalog.beer Account&#8221;</p>
-                    <p class="cbf-step__d cbf-step__d--muted">Wrong address? <a href="/account?edit=email">Fix it</a></p>
+                    <p class="cbf-step__d">Wrong address? <a href="/account?edit=email">Fix it</a></p>
                 </div>
             </li>
         </ol>
@@ -160,7 +160,7 @@ echo $htmlHead->html;
             echo $checkbox->display('terms_agreement', 'I agree to the <a href="/terms">Terms of Use</a> for using this site.', true, $termsAgreement);
             ?>
             <div class="cbf-actions">
-                <button type="submit" class="cbf-btn cbf-btn--wide">Sign Up</button>
+                <button type="submit" class="cbf-btn cbf-btn--wide">Create account</button>
             </div>
             <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" value="">
         </form>
