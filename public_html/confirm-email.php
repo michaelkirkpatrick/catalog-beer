@@ -75,8 +75,8 @@ $htmlHead->noindex();
 echo $htmlHead->html;
 ?>
 <body>
+    <?php echo $nav->navbar(''); ?>
     <div class="cb-page cb-page--xs">
-        <div class="cbf-authmark"><a class="cb-wordmark" href="/">Catalog<span class="tld">.beer</span></a></div>
         <?php if($state === 'confirm'){ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">Confirm your new email address</h1>

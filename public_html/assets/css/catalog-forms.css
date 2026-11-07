@@ -47,9 +47,8 @@
 .cbf-legend{display:flex;justify-content:flex-end;align-items:baseline;gap:.28rem;font-family:var(--cb-mono);font-size:var(--cb-fs-label-xs);letter-spacing:.08em;text-transform:uppercase;color:#5C564C;margin:0 0 .6rem;}
 .cbf-legend span{color:var(--cb-amber-ink);font-size:.875rem;line-height:1;}
 
-/* Signed-out pages (login, signup): centered wordmark above the narrow column,
-   and the centered "New here? …" line under the panel. */
-.cbf-authmark{display:flex;justify-content:center;padding:2.4rem 0 .2rem;}
+/* Signed-out pages (login, signup): the centered "New here? …" line under the
+   panel. The header is the site navbar, same as every other page. */
 .cbf-authfoot{text-align:center;font-size:.9375rem;color:#4A453D;margin:1.15rem 0 2rem;}
 
 /* --------------------------------------------------------------------------

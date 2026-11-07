@@ -80,8 +80,8 @@ $htmlHead = new htmlHead('Create an Account');
 echo $htmlHead->html;
 ?>
 <body>
+    <?php echo $nav->navbar(''); ?>
     <div class="cb-page cb-page--xs">
-        <div class="cbf-authmark"><a class="cb-wordmark" href="/">Catalog<span class="tld">.beer</span></a></div>
         <?php if($success){ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">One more step</h1>

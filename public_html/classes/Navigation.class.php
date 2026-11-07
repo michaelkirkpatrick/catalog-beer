@@ -148,10 +148,10 @@ class Navigation {
             $signIn = '<li><a class="dropdown-item" href="/account">My Account</a></li>' . "\n";
             $signIn .= '<li><a class="dropdown-item" href="/billing">Billing</a></li>' . "\n";
             $signIn .= '<li><hr class="dropdown-divider"></li>' . "\n";
-            $signIn .= '<li><a class="dropdown-item" href="/logout">Log out</a></li>' . "\n";
+            $signIn .= '<li><a class="dropdown-item" href="/logout">Sign out</a></li>' . "\n";
         }else{
-            $signIn = '<li><a class="dropdown-item" href="/signup">Create an Account</a></li>' . "\n";
-            $signIn .= '<li><a class="dropdown-item" href="/login">Log in</a></li>' . "\n";
+            $signIn = '<li><a class="dropdown-item" href="/signup">Create an account</a></li>' . "\n";
+            $signIn .= '<li><a class="dropdown-item" href="/login">Sign in</a></li>' . "\n";
         }
         $html = str_replace('##ACCOUNT##', $signIn, $html);
 

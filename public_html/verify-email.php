@@ -36,6 +36,13 @@ if($emailAuth !== ''){
             $apiErrorMsg = $apiData->error_msg ?? '';
         }else{
             $state = 'verified';
+            // Sign the person in: the link is often opened on a different device
+            // from the one that created the account, where no session exists, and
+            // the page's next steps (add a brewer, the API key) all need one. Same
+            // pattern as create-account.php; the response is the user object.
+            ensureSession();
+            session_regenerate_id(true);
+            $_SESSION['userID'] = $apiData->id;
             trackEvent('Email verified');
         }
     }else{
@@ -53,8 +60,8 @@ $htmlHead->noindex();
 echo $htmlHead->html;
 ?>
 <body>
+    <?php echo $nav->navbar(''); ?>
     <div class="cb-page cb-page--xs">
-        <div class="cbf-authmark"><a class="cb-wordmark" href="/">Catalog<span class="tld">.beer</span></a></div>
         <?php if($state === 'confirm'){ ?>
         <div class="cbf-pagehead">
             <h1 class="cbf-h1 cbf-h1--sm">Confirm your email address</h1>
