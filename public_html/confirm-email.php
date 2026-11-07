@@ -26,15 +26,19 @@ Two rules shape the page:
 
 // The rewrite hands the code over with its leading slash.
 $code = isset($_GET['code']) ? substr($_GET['code'], 1, 36) : '';
-$state = '';          // confirm | nopending | confirmed | error | unavailable | nocode
+$state = '';          // confirm | expired | nopending | confirmed | error | unavailable | nocode
 $apiErrorMsg = '';
 $newEmail = '';
 $pendingEmail = !empty($userInfo->pending_email) ? $userInfo->pending_email : '';
+// The API refuses a code older than 24 hours; knowing that here lets a GET
+// say so instead of offering a button that can only fail.
+$pendingExpired = ($pendingEmail !== '' && !empty($userInfo->pending_email_sent) && $userInfo->pending_email_sent + 86400 < time());
+$pendingSent = $pendingExpired ? date('l, F jS \\a\\t g:i A', $userInfo->pending_email_sent) : '';
 
 // What confirming would end: brewery staff rights, when the domain changes.
 // Read before the POST, because afterwards the privileges are gone.
 $staffNames = array();
-if($code !== '' && $pendingEmail !== '' && emailDomain($pendingEmail) !== emailDomain($userInfo->email)){
+if($code !== '' && $pendingEmail !== '' && !$pendingExpired && emailDomain($pendingEmail) !== emailDomain($userInfo->email)){
     $staffNames = staffBrewerNames($api, $_SESSION['userID']);
 }
 
@@ -65,6 +69,8 @@ if($code === ''){
     // Signed in, but this account has no change waiting: the link was already
     // used, the change was cancelled or replaced, or it belongs to another account.
     $state = 'nopending';
+}elseif($pendingExpired){
+    $state = 'expired';
 }else{
     $state = 'confirm';
 }
@@ -125,6 +131,15 @@ echo $htmlHead->html;
         <div class="cbf-panel">
             <p>Your link is still valid. Please try again in a few minutes.</p>
             <a class="cbf-btn" href="/confirm-email/<?php echo h($code); ?>" role="button">Try Again</a>
+        </div>
+        <?php }elseif($state === 'expired'){ ?>
+        <div class="cbf-pagehead">
+            <h1 class="cbf-h1 cbf-h1--sm">This link has expired</h1>
+            <p class="cbf-lede">Your email address has not been changed.</p>
+        </div>
+        <div class="cbf-panel">
+            <p>Confirmation links work for 24 hours, and the one we sent to <strong><?php echo h($pendingEmail); ?></strong> on <?php echo h($pendingSent); ?> is past that. Your account page can send a new one, or cancel the change.</p>
+            <a class="cbf-btn" href="/account" role="button">Go to My Account</a>
         </div>
         <?php }elseif($state === 'nopending'){ ?>
         <div class="cbf-pagehead">
