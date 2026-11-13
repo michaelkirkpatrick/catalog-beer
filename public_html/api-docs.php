@@ -4801,6 +4801,11 @@ curl -X PATCH \
                 <td>A Unix timestamp indicating when the confirmation link was sent to <var>pending_email</var>, or <var>null</var>. The link works for 24 hours.</td>
             </tr>
             <tr>
+                <td><var>session_gen</var></td>
+                <td>integer</td>
+                <td>A counter that goes up by one each time the account&#8217;s password is changed or reset. The Catalog.beer website uses it to sign the account out of its other browsers when that happens. It has no effect on your API key.</td>
+            </tr>
+            <tr>
                 <td><var>admin</var></td>
                 <td>Boolean</td>
                 <td>A <var>true</var> or <var>false</var> value denoting whether the user has administrator privileges.</td>
@@ -4823,6 +4828,7 @@ curl -X PATCH \
   "pending_email": null,
   "pending_email_auth": null,
   "pending_email_sent": null,
+  "session_gen": 0,
   "admin": false
 }
 </pre>

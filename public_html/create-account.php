@@ -56,10 +56,8 @@ if(isset($_POST['signupFormHidden'])){
         $response = $api->request('POST', '/users', $data);
         if($api->httpcode == 201){
             // Successfully Created Account
-            ensureSession();
-            session_regenerate_id(true);
             $array = json_decode($response);
-            $_SESSION['userID'] = $array->id;
+            signIn($array->id, $array->session_gen ?? 0);
             $success = true;
             // Same request renders the confirmation, so this fires on it.
             trackEvent('Account created');
