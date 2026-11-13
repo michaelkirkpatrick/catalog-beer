@@ -134,6 +134,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $apiResponse = $api->request('PATCH', '/users/' . $_SESSION['userID'], array('password'=>$newPassword));
             $patchData = json_decode($apiResponse);
             if($api->httpcode == 200 && isset($patchData->id)){
+                // The new password moved the account's session_gen on, which
+                // signs out every session still holding the old number. This
+                // one made the change, so it takes the new number and stays.
+                signIn($patchData->id, $patchData->session_gen ?? 0);
                 // The API drops a change of email that was waiting when the
                 // password changes, so say so rather than leave a dead link.
                 $_SESSION['account_flash'] = 'Your password has been updated.' . ($pendingEmail !== '' ? ' The email change you had waiting was cancelled; request it again if you still want it.' : '');

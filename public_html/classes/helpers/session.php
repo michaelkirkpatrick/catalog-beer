@@ -23,6 +23,47 @@ function ensureSession(): void {
 }
 
 /**
+ * Open a signed-in session for an account.
+ *
+ * $sessionGen is the account's `session_gen` from the API (on the user object
+ * and on POST /login): a number that goes up by one each time the password is
+ * changed or reset. The session keeps the number it signed in with, and
+ * initialize.php ends a session whose number no longer matches the account's
+ * (sessionCurrent()), which is how a new password signs the account out on
+ * every other device. Every page that signs someone in goes through here.
+ */
+function signIn(string $userID, $sessionGen): void {
+    ensureSession();
+    session_regenerate_id(true);
+    $_SESSION['userID'] = $userID;
+    $_SESSION['gen'] = (int) $sessionGen;
+}
+
+/**
+ * Whether this session was opened under the account's current password.
+ *
+ * A session from before `gen` existed counts as 0, and so does an account
+ * whose password has not changed since the column was added, so the deploy
+ * itself signs nobody out. An API that predates `session_gen` reads as 0 too.
+ *
+ * @param object $userInfo  The decoded user object from GET /users/{id}.
+ */
+function sessionCurrent($userInfo): bool {
+    return (int) ($userInfo->session_gen ?? 0) === (int) ($_SESSION['gen'] ?? 0);
+}
+
+/**
+ * End the session in this request. session_destroy() alone leaves $_SESSION
+ * populated until the request ends, and pages read it.
+ */
+function endSession(): void {
+    $_SESSION = array();
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_destroy();
+    }
+}
+
+/**
  * A hidden CSRF-token field for authenticated forms.
  *
  * Mints a per-session token on first use (ensuring a session exists first) and

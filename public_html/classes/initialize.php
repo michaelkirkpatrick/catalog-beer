@@ -102,6 +102,26 @@ require_once ROOT . '/classes/helpers/verification.php';
 require_once ROOT . '/classes/helpers/analytics.php';
 require_once ROOT . '/classes/helpers/antispam.php';
 
+// Is the session still good? Every request that arrives signed in reads its
+// account once, here, public pages included: a session opened before the
+// account's last password change or reset is ended (sessionCurrent() in
+// helpers/session.php), so a new password signs the account out on every
+// other device. It runs before Navigation and before any page builds an API
+// object, so nothing in the request acts as a user who has been signed out.
+// A public page then simply renders signed out; a signed-in page goes to
+// /login below, which says why.
+$signedOutByPassword = false;
+if(session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['userID'])){
+    $api = new API();
+    $jsonResponse = $api->request('GET', '/users/' . $_SESSION['userID'], '');
+    if($api->httpcode == 200 && !sessionCurrent(json_decode($jsonResponse))){
+        endSession();
+        $signedOutByPassword = true;
+        // It was built holding the account's API key
+        unset($api, $jsonResponse);
+    }
+}
+
 // Navigation
 $nav = new Navigation();
 
@@ -111,13 +131,13 @@ if($guest == false){
     $URI = $_SERVER['REQUEST_URI'];
     $request = '';
     if(!empty($URI)){
-        $request = '?request=' . $URI;
+        $request = ($signedOutByPassword ? '?signed_out=1&request=' : '?request=') . $URI;
+    }elseif($signedOutByPassword){
+        $request = '?signed_out=1';
     }
-    
-    if(session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['userID'])){
-        $api = new API();
-        $jsonResponse = $api->request('GET', '/users/' . $_SESSION['userID'], '');
 
+    if(session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['userID'])){
+        // $api and $jsonResponse: the account read above
         if($api->unavailable()){
             // Backend down — don't bounce the user to /login (which would also
             // fail); serve a 503 so they know it's temporary and to retry.

@@ -40,9 +40,7 @@ if($emailAuth !== ''){
             // from the one that created the account, where no session exists, and
             // the page's next steps (add a brewer, the API key) all need one. Same
             // pattern as create-account.php; the response is the user object.
-            ensureSession();
-            session_regenerate_id(true);
-            $_SESSION['userID'] = $apiData->id;
+            signIn($apiData->id, $apiData->session_gen ?? 0);
             trackEvent('Email verified');
         }
     }else{

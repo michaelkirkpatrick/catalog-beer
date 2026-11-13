@@ -58,6 +58,12 @@ if(isset($_GET['request'])){
             // No Action
     }
     
+    // Sent here because the password changed after this browser signed in
+    // (initialize.php): that outranks the page they were headed for.
+    if(isset($_GET['signed_out'])){
+        $message = 'Your password was changed, so you have been signed out here. Please sign in with your new password.';
+    }
+
     // Show Alert
     $alert->msg = $message;
     $alert->type = 'warning';
@@ -78,9 +84,7 @@ if(isset($_POST['submit'])){
     $loginArray = json_decode($apiResponse, true);
     if(isset($loginArray['id'])){
         // Successful Log In
-        ensureSession();
-        session_regenerate_id(true);
-        $_SESSION['userID'] = $loginArray['id'];
+        signIn($loginArray['id'], $loginArray['session_gen'] ?? 0);
         
         // Go to $nextPage
         header('location: ' . $nextPage);
