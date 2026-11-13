@@ -45,6 +45,7 @@ require_once(ROOT . '/classes/Textarea.class.php');
 require_once(ROOT . '/classes/GuidedStyleField.class.php');
 require_once(ROOT . '/classes/DropDown.class.php');
 require_once(ROOT . '/classes/Checkbox.class.php');
+require_once(ROOT . '/classes/helpers/alert.php');   // alertBox(), which Alert::display() builds with
 require_once(ROOT . '/classes/Alert.class.php');
 require_once(ROOT . '/classes/Navigation.class.php');
 require_once(ROOT . '/classes/Table.class.php');
@@ -293,7 +294,7 @@ if($verbose){ echo "    $html\n"; }
 
 noInjectedAttrs('no attribute injected anywhere in the field', $html, array(
     'class', 'for', 'id', 'name', 'type', 'value', 'placeholder',
-    'autocomplete', 'hidden', 'data-sf', 'aria-hidden',
+    'autocomplete', 'hidden', 'data-sf', 'aria-hidden', 'aria-describedby',
 ));
 ok('style value survives exactly',
     attrValue($html, '//input[@id="styleField"]', 'value') === $HANDLER);
@@ -336,6 +337,7 @@ if($verbose){ echo "    $html\n"; }
 // loose == makes any non-empty value match it.
 noInjectedAttrs('no attribute injected by name/value/validMsg', $html, array(
     'class', 'for', 'id', 'name', 'type', 'value', 'href', 'aria-hidden', 'checked',
+    'aria-describedby',
 ));
 ok('checkbox value survives exactly',
     attrValue($html, '//input', 'value') === $ATTR_BREAKOUT);
@@ -395,8 +397,11 @@ $safe = new Alert();
 $safe->msg = '<a href="/beer/add/' . h('abc"><script>alert(1)</script>') . '">Add another beer by ' . h($hostileName) . '</a>.';
 $html = $safe->display();
 
+// The rest are the badge glyph's own: alertBox() draws it as an inline SVG.
 noInjectedAttrs('caller-escaped interpolation injects no attribute', $html, array(
     'class', 'role', 'href', 'aria-hidden',
+    'xmlns', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin',
+    'focusable', 'viewbox', 'd',
 ));
 ok('no onmouseover handler materialised', !in_array('onmouseover', attrNames($html)));
 ok('no script element materialised',

@@ -51,6 +51,7 @@ class GuidedStyleField {
         $return .= '<input type="text" class="' . $inputClass . '" id="styleField" name="style" autocomplete="off"'
                  . ' placeholder="' . h($this->placeholder) . '"'
                  . ' value="' . h($this->value) . '"'
+                 . ($invalid ? ' aria-describedby="helpMsgstyle"' : '')
                  . ($this->required ? ' required' : '') . '>';
         $return .= '<input type="hidden" name="style_id" value="' . h($this->styleId) . '">';
         $return .= '<input type="hidden" name="parent" value="' . h($this->parent) . '">';
@@ -69,7 +70,7 @@ class GuidedStyleField {
         // Validation message
         if($invalid){
             // Plain text now — see InputField for why this renders the same.
-            $return .= '<div class="cbf-err"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . h($this->validMsg) . '</div></div>';
+            $return .= '<div class="cbf-err" id="helpMsgstyle"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . h($this->validMsg) . '</div></div>';
         }
 
         $return .= '</div>';

@@ -146,15 +146,21 @@ textarea.cbf-input{min-height:6rem;line-height:1.6;resize:vertical;}
 .cbf-confirm strong{font-style:normal;font-weight:400;border-bottom:2px solid var(--cb-amber);}
 
 /* --------------------------------------------------------------------------
-   5. Alerts — one warm family: rust error / amber warning / green success
+   5. Alerts — one warm family: rust error / amber warning / ink info /
+      green success. Markup comes only from alertBox() (helpers/alert.php);
+      the badge glyph is an inline Lucide SVG sized here.
    -------------------------------------------------------------------------- */
 .cbf-alert{display:flex;gap:.7rem;align-items:flex-start;padding:.85rem 1rem;border:1px solid var(--cb-error-border);border-left:3px solid var(--cb-error);background:var(--cb-error-bg);border-radius:var(--cb-radius-md);color:#5E1A12;font-size:.9375rem;line-height:1.55;margin-bottom:1.5rem;}
 .cbf-alert__i{flex:0 0 auto;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--cb-error);color:var(--cb-error-bg);display:grid;place-items:center;font-family:var(--cb-mono);font-size:.8rem;font-weight:700;margin-top:.06rem;}
+.cbf-alert__i svg{width:.9rem;height:.9rem;display:block;}
 .cbf-alert a{color:#7A1D14;}
 .cbf-alert p:last-child{margin-bottom:0;}
 .cbf-alert--warn{border-color:rgba(178,107,30,.38);border-left-color:var(--cb-amber-deep);background:var(--cb-warn-bg);color:#4A3213;}
 .cbf-alert--warn .cbf-alert__i{background:var(--cb-amber-deep);color:var(--cb-warn-bg);}
 .cbf-alert--warn a{color:var(--cb-link);}
+.cbf-alert--info{border-color:var(--cb-info-border);border-left-color:var(--cb-info);background:var(--cb-info-bg);color:var(--cb-info);}
+.cbf-alert--info .cbf-alert__i{background:var(--cb-info);color:var(--cb-info-bg);}
+.cbf-alert--info a{color:var(--cb-link);}
 .cbf-alert--ok{border-color:#A2C4AC;border-left-color:var(--cb-success);background:var(--cb-success-bg);color:#1E4A2C;}
 .cbf-alert--ok .cbf-alert__i{background:var(--cb-success);color:var(--cb-success-bg);}
 

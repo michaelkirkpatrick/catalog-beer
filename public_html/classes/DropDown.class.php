@@ -109,7 +109,7 @@ class DropDown {
 
         // Validation State
         if($invalid){
-            $return .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><span>' . h($this->validMsg) . '</span></div>' . "\n";
+            $return .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . h($this->validMsg) . '</div></div>' . "\n";
         }
 
         // Close Field

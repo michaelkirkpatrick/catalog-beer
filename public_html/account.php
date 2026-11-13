@@ -324,10 +324,7 @@ echo $htmlHead->html;
             echo $inputEmailPassword->display();
             ?>
             <?php if($staffNoticeForm !== ''){ ?>
-            <div class="cbf-alert cbf-alert--warn ac-note">
-                <span class="cbf-alert__i" aria-hidden="true">!</span>
-                <div><?php echo $staffNoticeForm; ?></div>
-            </div>
+            <?php echo alertBox('warning', $staffNoticeForm, 'ac-note'); ?>
             <?php } ?>
             <div class="ac-actions">
                 <button type="submit" class="cbf-btn" name="submitEmail">Save</button>
@@ -354,10 +351,7 @@ echo $htmlHead->html;
                 <button type="submit" class="cb-action ac-linkbtn" name="cancelEmail">Cancel change</button>
             </form>
             <?php if($staffNoticePending !== ''){ ?>
-            <div class="cbf-alert cbf-alert--warn ac-note">
-                <span class="cbf-alert__i" aria-hidden="true">!</span>
-                <div><?php echo $staffNoticePending; ?></div>
-            </div>
+            <?php echo alertBox('warning', $staffNoticePending, 'ac-note'); ?>
             <?php } ?>
         </div>
         <?php } ?>
@@ -407,10 +401,7 @@ echo $htmlHead->html;
         <span class="cb-label cb-label--rule ac-sec">API</span>
 
         <?php if(!$userInfo->email_verified){ ?>
-        <div class="cbf-alert cbf-alert--warn ac-note">
-            <span class="cbf-alert__i" aria-hidden="true">!</span>
-            <div>Before you will be able to add data to the Catalog.beer database or obtain an API key, you will need to verify your email address. This helps us reduce spam on the site. Check your email; we sent you a message <strong><?php echo $dateString; ?></strong> with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>.</div>
-        </div>
+        <?php echo alertBox('warning', 'Before you will be able to add data to the Catalog.beer database or obtain an API key, you will need to verify your email address. This helps us reduce spam on the site. Check your email; we sent you a message <strong>' . h($dateString) . '</strong> with the subject line <strong>&#8220;Confirm your Catalog.beer Account&#8221;</strong>.', 'ac-note'); ?>
         <?php }elseif(isset($apiKey)){ ?>
         <div class="ac-keybar">
             <span class="cbf-label ac-keybar__label">Secret key</span>
@@ -444,10 +435,7 @@ echo $htmlHead->html;
         </div>
         <p class="ac-apidocs">Want to use the Catalog.beer API? Check out our <a href="/api-docs">API Documentation</a>.</p>
         <?php }else{ ?>
-        <div class="cbf-alert ac-note">
-            <span class="cbf-alert__i" aria-hidden="true">!</span>
-            <div>Unable to load your API key. Please try again later.</div>
-        </div>
+        <?php echo alertBox('error', 'Unable to load your API key. Please try again later.', 'ac-note'); ?>
         <?php } ?>
 
         <span class="cb-label cb-label--rule ac-sec">Danger zone</span>

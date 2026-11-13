@@ -96,6 +96,7 @@ require_once ROOT . '/classes/helpers/http.php';
 require_once ROOT . '/classes/helpers/cache.php';
 require_once ROOT . '/classes/helpers/location.php';
 require_once ROOT . '/classes/helpers/forms.php';
+require_once ROOT . '/classes/helpers/alert.php';
 require_once ROOT . '/classes/helpers/address.php';
 require_once ROOT . '/classes/helpers/permissions.php';
 require_once ROOT . '/classes/helpers/verification.php';

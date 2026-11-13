@@ -41,10 +41,10 @@ echo $htmlHead->html;
                 <?php
                 // Flash messages
                 if(isset($_GET['resolved'])){
-                    echo '<div class="alert alert-success">Resolved ' . number_format(intval($_GET['resolved'])) . ' errors.</div>';
+                    echo alertHtml('Resolved ' . number_format(intval($_GET['resolved'])) . ' errors.', 'success');
                 }
                 if(isset($_GET['error'])){
-                    echo '<div class="alert alert-danger">' . h($_GET['error']) . '</div>';
+                    echo alertHtml($_GET['error']);
                 }
 
                 // Fetch error report data
@@ -53,7 +53,7 @@ echo $htmlHead->html;
                 $report = json_decode($response);
 
                 if(isset($report->error) && $report->error){
-                    echo '<div class="alert alert-danger">' . h($report->error_msg) . '</div>';
+                    echo alertHtml($report->error_msg);
                 }elseif(isset($report->summary)){
                     // Summary Cards
                     echo '<div class="row mb-4">';

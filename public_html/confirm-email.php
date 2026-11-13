@@ -92,10 +92,7 @@ echo $htmlHead->html;
             <?php echo csrf_field(); ?>
             <p>Change the email address on your Catalog.beer account from <strong><?php echo h($userInfo->email); ?></strong> to <strong><?php echo h($pendingEmail); ?></strong>? You&#8217;ll sign in with the new address from now on.</p>
             <?php if(!empty($staffNames)){ ?>
-            <div class="cbf-alert cbf-alert--warn">
-                <span class="cbf-alert__i" aria-hidden="true">!</span>
-                <div><?php echo staffNoticeHtml($staffNames, emailDomain($userInfo->email), true); ?></div>
-            </div>
+            <?php echo alertBox('warning', staffNoticeHtml($staffNames, emailDomain($userInfo->email), true)); ?>
             <?php } ?>
             <div class="cbf-actions">
                 <button type="submit" name="confirm" value="1" class="cbf-btn cbf-btn--wide">Confirm New Email Address</button>

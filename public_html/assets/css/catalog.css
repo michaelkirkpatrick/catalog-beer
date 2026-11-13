@@ -312,4 +312,9 @@ a:hover { color: var(--cb-link-hover); }
   --cb-error-bg:    #FBEEEA;
   --cb-error-border:#DCB6AA;
   --cb-placeholder: #857E73;
+  /* info alert: neutral ink on the recessed paper — no third hue, so it can't
+     be mistaken for the amber warning. --cb-info is 9.4:1 on --cb-info-bg. */
+  --cb-info:        var(--cb-ink-2);
+  --cb-info-bg:     var(--cb-paper-3);
+  --cb-info-border: var(--cb-line-2);
 }

@@ -1,7 +1,8 @@
 <?php
 /*
-Warm alert family (.cbf-alert, catalog-forms.css): rust error / amber warning
-and info / green success. One icon dot, message body alongside.
+Warm alert family (.cbf-alert, catalog-forms.css): rust error / amber warning /
+neutral info / green success. One icon dot, message body alongside. The markup
+itself comes from alertBox() in helpers/alert.php.
 
 $alert->type = 'success/info/warning/error';
 
@@ -42,24 +43,9 @@ class Alert {
     public function display(){
 
         if(!empty($this->msg)){
-            // Variant + icon per type. Error is the base class; warning and info
-            // share the amber wash so only success and failure read differently.
-            $class = 'cbf-alert';
-            $icon = '!';
-            if($this->type == 'success'){
-                $class .= ' cbf-alert--ok';
-                $icon = '&#10003;';   // ✓
-            }elseif($this->type == 'warning' || $this->type == 'info'){
-                $class .= ' cbf-alert--warn';
-            }
-
-            // ----- HTML Output -----
-            // $msg is raw by contract -- see the docblock. Every caller was
-            // audited when this changed; none pass unescaped user data.
-            $return = '<div class="' . $class . '" role="alert">';
-            $return .= '<span class="cbf-alert__i" aria-hidden="true">' . $icon . '</span>';
-            $return .= '<div>' . apiMessageLinks($this->msg) . '</div>';
-            $return .= '</div>';
+            // Built by alertBox() (helpers/alert.php): one markup, one icon set,
+            // role="status" everywhere. $msg is raw by contract -- see the docblock.
+            $return = alertBox($this->type, apiMessageLinks($this->msg));
         }else{
             // No Message
             $return = '';

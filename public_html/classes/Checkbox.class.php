@@ -47,6 +47,9 @@ class Checkbox{
 
         // Begin Checkbox
         $html .= '<input type="checkbox" value="' . h($this->value) . '" name="' . h($this->name) . '" id="check' . h($this->name) . '"';
+        if($invalid && $this->validMsg !== ''){
+            $html .= ' aria-describedby="helpMsg' . h($this->name) . '"';
+        }
 
         // Checked?
         if(is_array($this->variable)){
@@ -71,7 +74,7 @@ class Checkbox{
         if($invalid && $this->validMsg !== ''){
             // Escaped, unlike $text: validation messages are API-authored data.
             $message = h($this->validMsg);
-            $html .= '<div class="cbf-err"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>' . "\n";
+            $html .= '<div class="cbf-err" id="helpMsg' . h($this->name) . '"><span class="cbf-err__m" aria-hidden="true">!</span><div>' . $message . '</div></div>' . "\n";
         }
 
         $html .= "</div>\n";

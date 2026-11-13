@@ -32,7 +32,7 @@ echo $htmlHead->html;
                 $usageData = json_decode($response);
 
                 if(isset($usageData->error) && $usageData->error){
-                    echo '<div class="alert alert-danger">' . h($usageData->error_msg) . '</div>';
+                    echo alertHtml($usageData->error_msg);
                 }elseif(isset($usageData->data)){
                     // Pivot data: one row per key. The API never sends the
                     // key itself, only its owner and its last four characters.

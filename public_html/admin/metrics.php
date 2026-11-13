@@ -26,7 +26,7 @@ if(!is_object($report) || !empty($report->error) || !isset($report->history)){
     echo $nav->breadcrumbs();
     echo '<h1>Metrics</h1>';
     $msg = (is_object($report) && isset($report->error_msg)) ? $report->error_msg : 'No response from the API.';
-    echo '<div class="alert alert-danger">' . h($msg) . '</div>';
+    echo alertHtml($msg);
     echo '</div></div></div>';
     echo $nav->footer();
     echo '</body></html>';
