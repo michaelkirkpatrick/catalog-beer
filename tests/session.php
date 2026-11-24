@@ -55,6 +55,22 @@ ok('endSession empties $_SESSION in this request and closes the session', $_SESS
 endSession();
 ok('endSession with no session open is harmless', $_SESSION === array());
 
+// Where sign-in sends you back to
+foreach(array('/brewer/abc', '/beer/x?page=2', '/') as $p){
+    ok("safeReturnPath keeps $p", safeReturnPath($p) === $p);
+}
+foreach(array('//evil.com', '/\\evil.com', 'https://evil.com', 'evil.com', '', null, "/a\r\nSet-Cookie: x") as $p){
+    ok('safeReturnPath refuses ' . json_encode($p), safeReturnPath($p) === '/');
+}
+$_SERVER['REQUEST_URI'] = '/brewer/abc?x=1&y=2';
+ok('signInHref carries the page, query and all', signInHref() === '/login?next=%2Fbrewer%2Fabc%3Fx%3D1%26y%3D2');
+foreach(array('/', '/login', '/login?next=%2Fbeer', '/signup', '/logout', '/verify-email/abc') as $p){
+    $_SERVER['REQUEST_URI'] = $p;
+    ok("signInHref is bare on $p", signInHref() === '/login');
+}
+$_SERVER['REQUEST_URI'] = '//evil.com';
+ok('signInHref on a hostile URI is bare', signInHref() === '/login');
+
 ob_end_clean();
 array_map('unlink', glob($dir . '/*'));
 rmdir($dir);

@@ -132,7 +132,7 @@ if($guest == false){
     $URI = $_SERVER['REQUEST_URI'];
     $request = '';
     if(!empty($URI)){
-        $request = ($signedOutByPassword ? '?signed_out=1&request=' : '?request=') . $URI;
+        $request = ($signedOutByPassword ? '?signed_out=1&request=' : '?request=') . rawurlencode($URI);
     }elseif($signedOutByPassword){
         $request = '?signed_out=1';
     }

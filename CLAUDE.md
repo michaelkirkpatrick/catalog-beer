@@ -202,7 +202,7 @@ Apache `public_html/.htaccess` handles clean URLs. Pattern: `/resource/UUID` →
 
 - Session-based: `$_SESSION['userID']`
 - Set `$guest = false` at page top to require login
-- Protected pages redirect to `/login?request=<URI>` with return URL (validated to prevent open redirects)
+- Protected pages redirect to `/login?request=<URI>` with return URL; the nav's "Sign in" link sends `/login?next=<URI>` (`signInHref()`), which returns to the page without the "page you requested" alert. Both go through `safeReturnPath()` in `classes/helpers/session.php` (a path on this site or `/`, so no open redirect)
 - Email verification enforced — unverified users are redirected to `/verify-email`
 - `/verify-email/{code}` verifies on **POST only**: the GET renders a confirm button whose form POSTs the code (since 2026-10-29). Mail gateways and link previews fetch every URL in a message, so a GET that verified on sight was being satisfied by scanners before the person opened the email, and could spend the single-use code first. Scanners follow links but do not submit forms. The link in the API's email is unchanged. Apply the same rule to any future emailed link that mutates (a password reset, an unsubscribe).
 - Session cookies: `httponly`, `secure`, `samesite=Lax`

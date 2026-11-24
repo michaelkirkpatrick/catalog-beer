@@ -64,6 +64,41 @@ function endSession(): void {
 }
 
 /**
+ * The page to send someone to after they sign in, or '/' if $path isn't one.
+ *
+ * Only a path on this site passes: it must start with one '/', and may not
+ * start '//' or '/\' (browsers read both as another host) or hold a control
+ * character. Anything else is an open redirect, so it goes home instead.
+ */
+function safeReturnPath($path): string {
+    if (!is_string($path) || $path === '' || $path[0] !== '/') {
+        return '/';
+    }
+    if (isset($path[1]) && ($path[1] === '/' || $path[1] === '\\')) {
+        return '/';
+    }
+    if (preg_match('/[\x00-\x1F\x7F]/', $path)) {
+        return '/';
+    }
+    return $path;
+}
+
+/**
+ * The nav's "Sign in" link: /login carrying the page it was clicked on, so
+ * signing in lands back there. Pages where coming back makes no sense (home,
+ * and the account pages themselves) get a bare /login.
+ */
+function signInHref(): string {
+    $uri = safeReturnPath($_SERVER['REQUEST_URI'] ?? '/');
+    $path = strtok($uri, '?');
+    $skip = array('/', '/login', '/logout', '/signup', '/verify-email');
+    if (in_array(rtrim($path, '/') ?: '/', $skip, true) || str_starts_with($path, '/verify-email/')) {
+        return '/login';
+    }
+    return '/login?next=' . rawurlencode($uri);
+}
+
+/**
  * A hidden CSRF-token field for authenticated forms.
  *
  * Mints a per-session token on first use (ensuring a session exists first) and

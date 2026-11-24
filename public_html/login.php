@@ -14,14 +14,9 @@ $password = '';
 
 // Requested Page
 if(isset($_GET['request'])){
-    // Save Next Page — validate it's a local path
-    $requestedPage = $_GET['request'];
-    if(strpos($requestedPage, '://') !== false || strpos($requestedPage, '//') === 0){
-        $nextPage = '/';
-    }else{
-        $nextPage = substr($requestedPage, 1);
-    }
-    $exploded = explode('/', $nextPage);
+    // Save Next Page — a path on this site only (safeReturnPath())
+    $nextPage = safeReturnPath($_GET['request']);
+    $exploded = explode('/', substr($nextPage, 1));
     
     // Default Message
     $message = 'Hello! Before redirecting you to the page you requested, would you please sign in?';
@@ -68,6 +63,11 @@ if(isset($_GET['request'])){
     $alert->msg = $message;
     $alert->type = 'warning';
     $alert->dismissible = false;
+}elseif(isset($_GET['next'])){
+    // The nav's "Sign in" link (signInHref()): the visitor chose to sign in
+    // from a page they could already see, so go back there without the
+    // "page you requested" alert, which is for login-gated pages.
+    $nextPage = safeReturnPath($_GET['next']);
 }else{
     $nextPage = '/';
 }
